@@ -1,0 +1,355 @@
+<%- include('./partials/header') %>
+<%- include('./partials/userHeader') %>
+
+<!-- **************** MAIN CONTENT START **************** -->
+<main>
+
+	<!-- =======================
+Main Content START -->
+<section class="pt-4 pt-lg-5">
+	<div class="container">
+
+		<div class="row g-4 g-xl-5">
+			<!-- Left Content START -->
+			<div class="col-xl-8">
+				<div class="card bg-transparent p-0">
+					<!-- Card header START -->
+					<div class="card-header bg-transparent p-0">
+						<h1 class="card-title fs-2 mb-0">Enter Your Payment Details</h1>
+					</div>
+					<!-- Card header END -->
+
+					<!-- Card body START -->
+					<div class="card-body p-0 mt-3">
+						<!-- Alert box -->
+						<div class="alert alert-success" role="alert">
+							Hey' you are saving<strong class="mx-1">$2,560</strong>discount using coupon code
+						</div>
+
+						 <!-- Payment Tabs -->
+						 <ul class="nav nav-tabs" id="paymentTabs">
+							<li class="nav-item">
+								<a class="nav-link active" data-bs-toggle="tab" href="#card">Card</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" data-bs-toggle="tab" href="#upi">UPI</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" data-bs-toggle="tab" href="#wallet">Wallet</a>
+							</li>
+						</ul>
+
+						 <!-- Tab Content -->
+						 <div class="tab-content mt-3">
+							<!-- Card Payment -->
+							<div class="tab-pane fade show active" id="card">
+								<form class="bg-light rounded-3 p-4">
+									<div class="row g-3">
+										<div class="col-12">
+											<label class="form-label">Card Number *</label>
+											<div class="position-relative">
+												<input type="text" class="form-control" maxlength="16" placeholder="XXXX XXXX XXXX XXXX">
+												<img src="assets/images/element/visa.svg" class="w-30px position-absolute top-50 end-0 translate-middle-y me-2 d-none d-sm-block" alt="">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<label class="form-label">Expiration Date *</label>
+											<div class="input-group">
+												<input type="text" class="form-control" maxlength="2" placeholder="MM">
+												<input type="text" class="form-control" maxlength="4" placeholder="YYYY">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<label class="form-label">CVV / CVC *</label>
+											<input type="text" class="form-control" maxlength="3" placeholder="XXX">
+										</div>
+										<div class="col-12">
+											<label class="form-label">Name on Card *</label>
+											<input type="text" class="form-control" placeholder="Enter cardholder name">
+										</div>
+									</div>
+								</form>
+							</div>
+			
+							<!-- UPI Payment -->
+							<div class="tab-pane fade show active" id="upi">
+								<form class="bg-light rounded-3 p-4">
+									<div class="mb-3">
+										<label class="form-label">UPI ID *</label>
+										<input type="text" id="upiId" class="form-control" placeholder="example@upi">
+									</div>
+									<div class="mb-3">
+										<label class="form-label">Mobile Number *</label>
+										<input type="text" id="mobileNumber" class="form-control" placeholder="Enter your mobile number">
+									</div>
+								</form>
+							</div>
+
+							<!-- Wallet Payment -->
+							<div class="tab-pane fade" id="wallet">
+								<form class="bg-light rounded-3 p-4">
+									<div class="mb-3">
+										<label class="form-label">Wallet Provider *</label>
+										<select class="form-select">
+											<option>Select Wallet</option>
+											<option>PayPal</option>
+											<option>Google Pay</option>
+											<option>Amazon Pay</option>
+										</select>
+									</div>
+									<div class="mb-3">
+										<label class="form-label">Mobile Number *</label>
+										<input type="text" class="form-control" placeholder="Enter your mobile number">
+									</div>
+								</form>
+							</div>
+						</div>
+			
+						<!-- Pay Now Button -->
+						<div class="col-12 mt-3">
+							<button class="btn btn-primary w-100" id="payNowBtn">Pay Now</button>
+						</div>
+
+					</div>
+					<!-- Card body END -->
+				</div>
+			</div>
+			<!-- Left Content END -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const paymentTabs = document.querySelectorAll('#paymentTabs a');
+    
+    paymentTabs.forEach(tab => {
+        tab.addEventListener("click", function () {
+            paymentTabs.forEach(t => t.classList.remove("active"));
+            this.classList.add("active");
+        });
+    });
+});
+</script>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+	document.getElementById("payNowBtn").addEventListener("click", function () {
+		const upiId = document.getElementById("upiId").value;
+		const mobileNumber = document.getElementById("mobileNumber").value;
+	
+		const bookingData = JSON.parse(sessionStorage.getItem("bookingData"));
+		const flightDetails = JSON.parse(sessionStorage.getItem("flightDetails"));
+
+    if (!bookingData) {
+        alert("Booking data not found!");
+        return;
+    }
+
+    const { travelers, email, mobile_number, totalFare } = bookingData;
+    console.log(travelers, email, mobile_number, totalFare);
+	
+	// const { from, to, stops, duration } = flightDetails;
+
+    if (!upiId || !mobileNumber) {
+        alert("Please fill in all details.");
+        return;
+    }
+
+    // Convert totalFare to paise (Razorpay uses INR in paise)
+    const amountInPaise = parseFloat(totalFare.replace(/[^0-9.]/g, "")) * 100;
+    console.log(amountInPaise);
+
+		// Razorpay Options
+		var options = {
+			"key": "rzp_test_1ziG9HjgAv6f6j",  // Replace with your Razorpay API Key
+			"amount": amountInPaise,  // Amount in paise (₹1000 = 100000 paise)
+			"currency": "INR",
+			"name": "Bismi",
+			"description": "UPI Payment",
+			"image": "https://your-logo-url.com/logo.png",  
+			"prefill": {
+				"email": "email",
+				"contact": mobile_number
+			},
+			"handler": function (response) {
+
+			const paymentDetails = {
+                razorpay_payment_id: response.razorpay_payment_id,
+                travelers: travelers,
+                mobile_number: mobile_number,
+                email: email,
+                totalFare: amountInPaise / 100,
+				flightDetails: flightDetails
+            };
+
+            // Send data to backend via POST request
+            fetch("/flight-booking", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(paymentDetails)
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log("Server Response:", data);
+                alert("Booking confirmed! Redirecting...");
+                window.location.href = "/bookings"; // Redirect to confirmation page
+            })
+            .catch(error => console.error("Error:", error));
+        },
+			"theme": {
+				"color": "#3399cc"
+			}
+		};
+	
+		var razorpayInstance = new Razorpay(options);
+		razorpayInstance.open();
+	});
+</script>
+			<!-- Right content START -->
+			<aside class="col-xl-4">
+				<div class="row g-4">
+					<!-- Fare summary START -->
+					<div class="col-md-6 col-xl-12">
+						<div class="card bg-light rounded-2">
+							<!-- card header -->
+							<div class="card-header border-bottom bg-light">
+								<h5 class="card-title mb-0">Fare Summary</h5>
+							</div>
+
+							<!-- Card body -->
+							<div class="card-body">
+								<ul class="list-group list-group-borderless">
+									<li class="list-group-item d-flex justify-content-between align-items-center">
+										<span class="h6 fw-normal mb-0">Base Fare
+											<a tabindex="0" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="bottom" data-bs-content="COVID-19 test required Vaccinated travelers can visit">
+												<i class="bi bi-info-circle"></i>
+											</a>
+										</span>
+										<span class="fs-5" id="base-fare">₹0</span>
+									</li>
+									<li class="list-group-item d-flex justify-content-between align-items-center">
+										<span class="h6 fw-normal mb-0">Discount</span>
+										<span class="fs-5 text-success" id="discount">+₹0</span>
+									</li>
+									<li class="list-group-item d-flex justify-content-between align-items-center">
+										<span class="h6 fw-normal mb-0">Other Services</span>
+										<span class="fs-5" id="discount">₹0</span>
+									</li>
+								</ul>
+							</div>
+
+							<!-- Card footer -->
+							<div class="card-footer border-top bg-light">
+								<div class="d-flex justify-content-between align-items-center">
+									<span class="h5 fw-normal mb-0">Total Fare</span>
+									<span class="h5 fw-normal mb-0" id="total-fare">₹0</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Fare summary END -->
+
+					<!-- Booking START -->
+					<div class="col-md-6 col-xl-12">
+						<div class="card border">
+							<!-- Card header -->
+							<div class="card-header border-bottom">
+								<h5 class="mb-0 cardt-title">Your Booking</h5>
+							</div>
+
+							<!-- Card body -->
+							<div class="card-body">
+								<!-- Flight detail -->
+								<small><i class="bi bi-ticket me-2"></i>Flight Ticket</small>
+								<div class="d-flex mt-2">
+									<img src="assets/images/element/09.svg" class="w-40px me-2" alt="">
+									<!-- <h6 class="fw-normal mb-0" id="flight-route">Mumbai <i class="bi bi-arrow-right"></i> New York</h6> -->
+									<h6 id="flight-route" class="fw-normal mb-0"></h6>
+								</div>
+								<ul class="nav nav-divider small text-body mt-1 mb-0">
+									<li class="nav-item" id="flight-date"></li>
+                <li class="nav-item" id="flight-stops"></li>
+                <li class="nav-item" id="flight-duration"></li>
+								</ul>
+
+								<hr> <!-- Divider -->
+
+								<!-- Traveler detail -->
+								<small><i class="bi bi-person me-1"></i>Traveler detail</small>
+								<div id="traveler-list"></div>
+							</div>
+
+							<!-- Card footer -->
+							<div class="card-footer border-top text-center p-3">
+								<a href="#" class="btn btn-link mb-0 p-0">Review booking</a>
+							</div>
+						</div>
+					</div>
+					<!-- Booking END -->
+				</div>	
+			</aside>
+			<!-- Right content END -->
+		</div>
+	</div>
+</section>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+    // Retrieve stored booking data from sessionStorage
+    const bookingData = JSON.parse(sessionStorage.getItem("bookingData"));
+
+    if (bookingData) {
+        console.log("Loaded Booking Data:", bookingData);
+
+        // Extract values (use a fallback if values are missing)
+        document.getElementById("total-fare").innerText = bookingData.totalFare || "$0";
+        document.getElementById("base-fare").innerText = bookingData.baseFare || "$0";
+        document.getElementById("discount").innerText = bookingData.discount || "$0";
+        document.getElementById("other-services").innerText = bookingData.otherServices || "$0";
+    } else {
+        console.log("No fare data found in session storage.");
+    }
+});
+
+</script>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		// Get flight details from sessionStorage
+		const flightDetails = JSON.parse(sessionStorage.getItem("flightDetails"));
+		const bookingData = JSON.parse(sessionStorage.getItem("bookingData"));
+	
+		if (flightDetails) {
+			document.getElementById("flight-route").textContent = 
+				`${flightDetails.from} -> ${flightDetails.to}`;
+			document.getElementById("flight-date").textContent = 
+				flightDetails.inventoryDates[0].date || "N/A";
+			document.getElementById("flight-stops").textContent = 
+				flightDetails.stops.length === 0 ? "Non-stop" : `${flightDetails.stops.length} Stop(s)`;
+			document.getElementById("flight-duration").textContent = 
+				flightDetails.duration || "Unknown Duration";
+		}
+	
+		if (bookingData && bookingData.travelers.length > 0) {
+			const travelerList = document.getElementById("traveler-list");
+			bookingData.travelers.forEach(traveler => {
+				const gender = traveler.title === "Mr" ? "Male" : "Female"; // Fixed gender check
+				const travelerHTML = `
+					<h6 class="mb-0 fw-normal mt-2">${traveler.first_name} ${traveler.last_name}</h6>
+					<ul class="nav nav-divider small text-body mt-1 mb-0">
+						<li class="nav-item">${traveler.type}</li>
+                    	<li class="nav-item">${gender}</li>
+						<li class="nav-item">${traveler.dob}</li>
+					</ul>
+				`;
+				travelerList.innerHTML += travelerHTML;
+			});
+		}
+	});
+	</script>
+<!-- =======================
+Main Content END -->
+
+</main>
+<!-- **************** MAIN CONTENT END **************** -->
+
+
+<%- include('./partials/footer') %>

@@ -1,0 +1,1105 @@
+<%- include('./partials/header') %>
+<%- include('./partials/userHeader') %>
+
+<!-- **************** MAIN CONTENT START **************** -->
+<main>
+  <!-- =======================
+    Search START -->
+  <section class="pt-0">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <!-- Booking from START -->
+          <form
+            class="bg-mode border rounded position-relative px-4 pt-4 mb-4 mb-sm-0" action="/flight-list" method="post"
+          >
+            <div class="row g-4">
+              <!-- Nav tabs START -->
+              <div class="col-lg-6">
+                <ul
+                  class="nav nav-pills nav-pills-dark"
+                  id="pills-tab"
+                  role="tablist"
+                >
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link rounded-start rounded-0 mb-0 <%= !requestDetails.flexible ? 'active' : '' %>"
+                      id="pills-one-way-tab"
+                      data-bs-toggle="pill"
+                      data-bs-target="#pills-one-way"
+                      type="button"
+                      role="tab"
+                      aria-selected="<%= !requestDetails.flexible %>"
+                      onclick="toggleCheckbox(false)"
+                    >
+                      Fixed Date
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link rounded-end rounded-0 mb-0 <%= requestDetails.flexible ? 'active' : '' %>"
+                      id="pills-round-trip-tab"
+                      data-bs-toggle="pill"
+                      data-bs-target="#pills-round-trip"
+                      type="button"
+                      role="tab"
+                      aria-selected="<%= !requestDetails.flexible %>"
+                      onclick="toggleCheckbox(true)"
+                    >
+                      Flexible Date
+                    </button>
+                  </li>
+                </ul>
+              </div>
+                         
+            <!-- Hidden Checkbox -->
+            <input hidden type="checkbox" id="dateTypeCheckbox" name="dateTypeCheckbox" <%= requestDetails.flexible ? "checked" : "" %> />
+
+            
+            <script>
+              function toggleCheckbox(isChecked) {
+                document.getElementById("dateTypeCheckbox").checked = isChecked;
+              }
+            </script>
+            
+            <!-- Nav tabs END -->
+
+              <!-- Ticket Passenger -->
+              <div class="col-lg-4 ms-auto">
+                <div class="form-control-bg-light form-fs-md position-relative">
+                  <div
+                    id="selectTravellersClass"
+                    class="travellers-class-select form-control"
+                    name="travellers-class"
+                  >
+                  </div>
+  
+                  <div
+                    class="travellers-dropdown"
+                    id="travellersDropdown"
+                    style="
+                      display: none;
+                      position: absolute;
+                      width: 100%;
+                      background: #fff;
+                      border: 1px solid #ddd;
+                      padding: 10px;
+                      z-index: 1000;
+                    "
+                  >
+                    <div class="row d-flex align-items-center justify-content-between">
+                      <div class="col-auto d-flex justify-content-between">
+                       <div class="qty input-group d-flex align-items-center">
+                          <p class="mb-0">Adults <small class="text-muted">(12+ yrs)</small></p>
+                          <button type="button" class="btn bg-light-4 decrease" data-target="#adults">-</button>
+                          <input type="text" name="adults" id="adults" class="qty-spinner form-control text-center" value="<%= requestDetails.adults %>" readonly style="max-width: 50px;">
+                          <button type="button" class="btn bg-light-4 increase" data-target="#adults">+</button>
+                        </div>
+                      </div>
+                    </div>
+  
+                    <hr class="my-2" />
+                    
+                    <div class="row d-flex align-items-center justify-content-between">
+                      <div class="col-auto">
+                        <div class="qty input-group d-flex align-items-center">
+                          <p class="mb-0">Children <small class="text-muted">(2-12 yrs)</small></p>
+                          <button type="button" class="btn bg-light-4 decrease" data-target="#children">-</button>
+                          <input type="text" name="children" id="children" class="qty-spinner form-control text-center" value="<%= requestDetails.children %>" readonly style="max-width: 50px;">
+                          <button type="button" class="btn bg-light-4 increase" data-target="#children">+</button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <hr class="my-2" />
+                    
+                    <div class="row d-flex align-items-center justify-content-between">
+                      <div class="col-auto">
+                        <div class="qty input-group d-flex align-items-center">
+                          <p class="mb-0">Infants <small class="text-muted">(< 2 yrs)</small></p>
+                          <button type="button" class="btn bg-light-4 decrease" data-target="#infants">-</button>
+                          <input type="text" name="infants" id="infants" class="qty-spinner form-control text-center" value="<%= requestDetails.infants %>" readonly style="max-width: 50px;">
+                          <button type="button" class="btn bg-light-4 increase" data-target="#infants">+</button>
+                        </div>
+                      </div>
+                    </div>
+                    
+  
+                    <div class="d-grid mt-3">
+                      <button
+                        class="btn btn-primary submit-done"
+                        type="button"
+                        id="closeDropdown"
+                      >
+                        Done
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            <!-- Tab content START -->
+            <div class="tab-content mt-4" id="pills-tabContent">
+              <!-- One way tab START -->
+              <div
+                class="tab-pane fade show <%= !requestDetails.flexible ? 'active' : '' %>"
+                id="pills-one-way"
+                role="tabpanel"
+                aria-labelledby="pills-one-way-tab"
+              >
+                <div class="row g-4">
+                  <!-- Leaving From -->
+                  <div class="col-md-6 col-lg-4 position-relative">
+                    <div
+                      class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3"
+                    >
+                      <!-- Input field -->
+                      <label class="mb-1"
+                        ><i class="bi bi-geo-alt me-2"></i>From</label
+                      >
+                      <select class="form-select" data-search-enabled="true" id="fixedFrom" name="fixedFrom">
+                        <option value="">Select location</option>
+                        <option value="San Jacinto, USA" <%= requestDetails.fixedFrom === 'San Jacinto, USA' ? 'selected' : '' %> >San Jacinto, USA</option>
+                        <option value="North Dakota, Canada" <%= requestDetails.fixedFrom === 'North Dakota, Canada' ? 'selected' : '' %>>North Dakota, Canada</option>
+                        <option value="West Virginia, Paris" <%= requestDetails.fixedFrom === 'West Virginia, Paris' ? 'selected' : '' %>>West Virginia, Paris</option>
+                        <option value="Doha International Airport" <%= requestDetails.fixedFrom === 'Doha International Airport' ? 'selected' : '' %>>Doha International Airport</option>
+                        <option value="Calicut Airport" <%= requestDetails.fixedFrom === 'Calicut Airport' ? 'selected' : '' %>>Calicut Airport</option>
+                        <option value="Delhi" <%= requestDetails.fixedFrom === 'Delhi' ? 'selected' : '' %>>Delhi</option>
+                        <option value="Ahmedabad" <%= requestDetails.fixedFrom === 'Ahmedabad' ? 'selected' : '' %>>Ahmedabad</option>
+                      </select>
+                      
+                    </div>
+
+                    <!-- Auto fill button -->
+                    <div class="btn-flip-icon mt-3 mt-md-0">
+                      <button class="btn btn-white shadow btn-round mb-0" type="button" onclick="swapValues()">
+                        <i class="fa-solid fa-right-left"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Going To -->
+                  <div class="col-md-6 col-lg-4">
+                    <div
+                      class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3"
+                    >
+                      <!-- Input field -->
+                      <label class="mb-1"
+                        ><i class="bi bi-send me-2"></i>To</label
+                      >
+                      <select class="form-select" data-search-enabled="true" id="fixedTo" name="fixedTo">
+                        <option value="">Select location</option>
+                        <option value="San Jacinto, USA" <%= requestDetails.fixedTo === 'San Jacinto, USA' ? 'selected' : '' %>>San Jacinto, USA</option>
+                        <option value="North Dakota, Canada" <%= requestDetails.fixedTo === 'North Dakota, Canada' ? 'selected' : '' %>>North Dakota, Canada</option>
+                        <option value="West Virginia, Paris" <%= requestDetails.fixedTo === 'West Virginia, Paris' ? 'selected' : '' %>>West Virginia, Paris</option>
+                        <option value="Doha International Airport" <%= requestDetails.fixedTo === 'Doha International Airport' ? 'selected' : '' %>>Doha International Airport</option>
+                        <option value="Calicut Airport" <%= requestDetails.fixedTo === 'Calicut Airport' ? 'selected' : '' %>>Calicut Airport</option>
+                        <option value="Delhi" <%= requestDetails.fixedTo === 'Delhi' ? 'selected' : '' %>>Delhi</option>
+                        <option value="Ahmedabad" <%= requestDetails.fixedTo === 'Ahmedabad' ? 'selected' : '' %>>Ahmedabad</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Departure -->
+                  <div class="col-lg-4">
+                    <div
+                      class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3"
+                    >
+                      <label class="mb-1"
+                        ><i class="bi bi-calendar me-2"></i>Departure</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control flatpickr"
+                        placeholder="Select date"
+                        data-date-format="d M Y"
+                        id="departure"
+                        name="departure"
+                        value="<%= requestDetails.departure || '' %>"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col-12 text-end pt-0">
+                    <button class="btn btn-primary mb-n4" type="submit"
+                      >Find ticket <i class="bi bi-arrow-right ps-3"></i
+                    ></button>
+                  </div>
+                </div>
+              </div>
+              <!-- One way tab END -->
+
+              <!-- Round way tab END -->
+              <div
+                class="tab-pane fade show <%= requestDetails.flexible ? 'active' : '' %>"
+                id="pills-round-trip"
+                role="tabpanel"
+                aria-labelledby="pills-round-trip-tab"
+              >
+                <div class="row g-4">
+                  <!-- Leaving From -->
+                  <div class="col-md-6 col-xl-3 position-relative">
+                    <div
+                      class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3"
+                    >
+                      <!-- Input field -->
+                      <label class="mb-1"
+                        ><i class="bi bi-geo-alt me-2"></i>From</label
+                      >
+                      <select class="form-select" data-search-enabled="true" id="from" name="from">
+                        <option value="">Select location</option>
+                        <option value="San Jacinto, USA" <%= requestDetails.from === "San Jacinto, USA" ? "selected" : "" %>>San Jacinto, USA</option>
+                        <option value="North Dakota, Canada" <%= requestDetails.from === "North Dakota, Canada" ? "selected" : "" %>>North Dakota, Canada</option>
+                        <option value="West Virginia, Paris" <%= requestDetails.from === "West Virginia, Paris" ? "selected" : "" %>>West Virginia, Paris</option>
+                        <option value="Doha International Airport" <%= requestDetails.from === "Doha International Airport" ? "selected" : "" %>>Doha International Airport</option>
+                        <option value="Calicut Airport" <%= requestDetails.from === "Calicut Airport" ? "selected" : "" %>>Calicut Airport</option>
+                        <option value="Delhi" <%= requestDetails.from === 'Delhi' ? 'selected' : '' %>>Delhi</option>
+                        <option value="Ahmedabad" <%= requestDetails.from === 'Ahmedabad' ? 'selected' : '' %>>Ahmedabad</option>
+                      </select>
+                    </div>
+
+                    <!-- Auto fill button -->
+                    <div class="btn-flip-icon mt-3 mt-md-0">
+                      <button class="btn btn-white shadow btn-round mb-0" type="button" onclick="swapValues()">
+                        <i class="fa-solid fa-right-left"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Going To -->
+                  <div class="col-md-6 col-xl-3">
+                    <div
+                      class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3"
+                    >
+                      <!-- Input field -->
+                      <label class="mb-1"
+                        ><i class="bi bi-send me-2"></i>To</label
+                      >
+                      <select class="form-select" data-search-enabled="true" id="to" name="to">
+                        <option value="">Select location</option>
+                        <option value="San Jacinto, USA" <%= requestDetails.to === "San Jacinto, USA" ? "selected" : "" %>>San Jacinto, USA</option>
+                        <option value="North Dakota, Canada" <%= requestDetails.to === "North Dakota, Canada" ? "selected" : "" %>>North Dakota, Canada</option>
+                        <option value="West Virginia, Paris" <%= requestDetails.to === "West Virginia, Paris" ? "selected" : "" %>>West Virginia, Paris</option>
+                        <option value="Doha International Airport" <%= requestDetails.to === "Doha International Airport" ? "selected" : "" %>>Doha International Airport</option>
+                        <option value="Calicut Airport" <%= requestDetails.to === "Calicut Airport" ? "selected" : "" %>>Calicut Airport</option>
+                        <option value="Delhi" <%= requestDetails.to === 'Delhi' ? 'selected' : '' %>>Delhi</option>
+                        <option value="Ahmedabad" <%= requestDetails.to === 'Ahmedabad' ? 'selected' : '' %>>Ahmedabad</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Departure -->
+                  <div class="col-md-6 col-xl-3">
+                    <div
+                      class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3"
+                    >
+                      <label class="mb-1"
+                        ><i class="bi bi-calendar me-2"></i>Departure</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control flatpickr"
+                        data-date-format="d M Y"
+                        placeholder="Select date"
+                        id="departure"
+                        name="departureDate"
+                        value="<%= requestDetails.departureDate || '' %>"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- Return -->
+                  <div class="col-md-6 col-xl-3">
+                    <div
+                      class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3"
+                    >
+                      <label class="mb-1"
+                        ><i class="bi bi-calendar me-2"></i>Return</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control flatpickr"
+                        data-date-format="d M Y"
+                        placeholder="Select date"
+                        id="return"
+                        name="returnDate"
+                        value="<%= requestDetails.returnDate || '' %>"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col-12 text-end pt-0">
+                    <button class="btn btn-primary mb-n4" type="submit"
+                      >Find ticket <i class="bi bi-arrow-right ps-3"></i
+                    ></button>
+                  </div>
+                </div>
+              </div>
+              <!-- Round way tab END -->
+            </div>
+            <!-- Tab content END -->
+          </form>
+          <!-- Booking from END -->
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- =======================
+    Search START -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const selectTravellers = document.getElementById("selectTravellersClass");
+        const dropdown = document.getElementById("travellersDropdown");
+        const closeDropdown = document.getElementById("closeDropdown");
+  
+        selectTravellers.addEventListener("click", function () {
+          dropdown.style.display =
+            dropdown.style.display === "none" ? "block" : "none";
+        });
+  
+        closeDropdown.addEventListener("click", function () {
+          dropdown.style.display = "none";
+          updateTravellersSummary(); // Update the displayed travellers count
+        });
+  
+        // Hide dropdown when clicking outside
+        document.addEventListener("click", function (event) {
+          if (
+            !selectTravellers.contains(event.target) &&
+            !dropdown.contains(event.target)
+          ) {
+            dropdown.style.display = "none";
+            updateTravellersSummary();
+          }
+        });
+  
+        // Increase / Decrease Functionality
+        document.querySelectorAll(".increase, .decrease").forEach((button) => {
+          button.addEventListener("click", function () {
+            const targetId = this.getAttribute("data-target");
+            const inputField = document.querySelector(targetId);
+            let currentValue = parseInt(inputField.value);
+  
+            if (this.classList.contains("increase")) {
+              inputField.value = currentValue + 1;
+            } else if (this.classList.contains("decrease") && currentValue > 0) {
+              inputField.value = currentValue - 1;
+            }
+  
+            updateTravellersSummary(); // Update the travellers text after each change
+          });
+        });
+  
+        // Update Travellers Summary in the Input Field
+        function updateTravellersSummary() {
+          const adults = parseInt(document.getElementById("adults").value);
+          const children = parseInt(document.getElementById("children").value);
+          const infants = parseInt(document.getElementById("infants").value);
+  
+          const totalTravellers = adults + children + infants;
+          selectTravellers.textContent = totalTravellers === 0 ? "Select Travellers" : `${totalTravellers} Travellers`
+          //selectTravellers.textContent = `${adults} Adults, ${children} Children, ${infants} Infants`;
+        }
+  
+        // Initialize summary on load
+        updateTravellersSummary();
+      });
+    </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Normalize time
+
+  const departureInputs = document.querySelectorAll("[id='departure']"); // Select multiple departure inputs
+  const returnInput = document.querySelector("#return"); // Only one return input
+
+  // Initialize Departure Date Pickers
+  departureInputs.forEach((departureInput) => {
+      flatpickr(departureInput, {
+          dateFormat: "d M Y",
+          minDate: today, // ✅ Ensure minDate is today
+          disableMobile: true,
+          onChange: function (selectedDates) {
+              const departureDate = selectedDates[0];
+
+              // Ensure return date is after the selected departure date
+              if (returnInput) {
+                  returnPicker.set("minDate", departureDate);
+              }
+          },
+      });
+  });
+
+  // Initialize Return Date Picker
+  const returnPicker = flatpickr(returnInput, {
+      dateFormat: "d M Y",
+      minDate: today, // ✅ Ensure minDate is today
+      disableMobile: true,
+      onChange: function (selectedDates) {
+          const returnDate = selectedDates[0];
+
+          // Ensure departure date is before return date
+          departureInputs.forEach((departureInput) => {
+              if (departureInput.value && new Date(departureInput.value) >= returnDate) {
+                  departureInput._flatpickr.setDate(returnDate, true);
+              }
+          });
+      },
+  });
+});
+
+</script>
+
+<script>
+  function swapValues() {
+      console.log("Swap button clicked!");
+  
+      const isFlexible = document.getElementById("dateTypeCheckbox").checked;
+      let fromSelect = isFlexible ? document.getElementById("from") : document.getElementById("fixedFrom");
+      let toSelect = isFlexible ? document.getElementById("to") : document.getElementById("fixedTo");
+  
+      // Swap values
+      let tempValue = fromSelect.value;
+      fromSelect.value = toSelect.value;
+      toSelect.value = tempValue;
+
+  }
+  </script>
+
+  <!-- =======================
+    Title and notice board START -->
+  <section class="pt-0">
+    <div class="container position-relative">
+      <!-- Title and button START -->
+      <div class="row">
+        <div class="col-12">
+          <div class="d-sm-flex justify-content-sm-between align-items-center">
+            <!-- Title -->
+            <div class="mb-3 mb-sm-0">
+              <h1 class="fs-3"><%= flights.length %> Flight Available</h1>
+              <ul class="nav nav-divider h6 mb-0">
+                <li>
+                  <% if (requestDetails.departure) { %>
+                    <%= requestDetails.departure %>
+                <% } else if(requestDetails.departureDate && requestDetails.returnDate){ %>
+                    <%= requestDetails.departureDate %> - <%= requestDetails.returnDate %>
+                <% } %>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Offcanvas Button -->
+            <button
+              class="btn btn-primary d-xl-none mb-0"
+              type="button"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#offcanvasSidebar"
+              aria-controls="offcanvasSidebar"
+            >
+              <i class="fa-solid fa-sliders-h me-1"></i> Show filters
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Title and button END -->
+
+      
+    </div>
+  </section>
+  <!-- =======================
+    Title and notice board END -->
+
+  <!-- =======================
+    Flight list START -->
+  <section class="pt-0">
+    <div class="container">
+      <div class="row">
+        <!-- Left sidebar START -->
+  
+        <!-- Left sidebar END -->
+  
+        <!-- Main content START -->
+        <div class="col-xl-12 col-xxl-12">
+          <div class="vstack gap-4">
+            <div id="flight-list">
+              <% if (flights.length > 0) { %>
+              <% flights.forEach((flight)=> { %>
+  
+                <!-- Ticket item START -->
+                <div class="card border">
+                  <!-- Card header -->
+                  <div class="card-header d-sm-flex justify-content-sm-between align-items-center">
+                    <!-- Airline Name -->
+                    <div class="d-flex align-items-center mb-2 mb-sm-0">
+                      <img src="assets/images/element/13.svg" class="w-30px me-2" alt="">
+                      <h6 class="fw-normal mb-0">
+                        <%= flight.airline %> (<%= flight.flightNumber %>)
+                      </h6>
+                    </div>
+                  </div>
+  
+                  <!-- Card body START -->
+                  <div class="card-body p-4 pb-0">
+                    <!-- Ticket START -->
+                    <div class="row g-4">
+  
+                      <div class="col-sm-4 col-md-3">
+                        <h4>
+                          <%= flight.departureTime %>
+                        </h4>
+                        <h6 class="mb-0 fw-normal">
+                          <%= flight.departureDate %>
+                        </h6>
+                        <p class="mb-0">
+                          <%= flight.from %>
+                        </p>
+                      </div>
+                      <!-- Time -->
+                      <div class="col-sm-4 col-md-3 my-sm-auto text-center">
+                        <h5>
+                          <%= flight.duration %>
+                        </h5>
+                        <div class="position-relative my-4">
+                          <hr class="bg-primary opacity-5 position-relative">
+                          <div
+                            class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
+                            <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
+                          </div>
+                        </div>
+                        <h5>
+                          <% if (flight.stops.length === 0) { %>
+                            Non-stop
+                          <% } else if (flight.stops.length === 1) { %>
+                            1 stop
+                          <% } else { %>
+                            <%= flight.stops.length %> stops
+                          <% } %>
+                        </h5>
+                        
+                      </div>
+  
+                      <div class="col-sm-4 col-md-3">
+                        <h4>
+                          <%= flight.arrivalTime %>
+                        </h4>
+                        <h6 class="mb-0 fw-normal">
+                          <%= flight.arrivalDate %>
+                        </h6>
+                        <p class="mb-0">
+                          <%= flight.to %>
+                        </p>
+                      </div>
+  
+                      <!-- Price START -->
+                      <div class="col-md-3 text-md-end">
+                        <!-- Price -->
+                        <h4>₹ <%= flight.price %>
+                        </h4>
+                        <button class="btn btn-dark mb-0 mb-sm-2 book-now-btn" onclick="bookNow('<%= flight._id%>')">
+                          Book Now
+                        </button>
+                        <button class="btn btn-link text-decoration-underline p-0 mb-0 flight-detail-btn"
+                          data-bs-toggle="modal" data-bs-target="#flightdetail"
+                          data-flight='<%= JSON.stringify(flight) %>'>
+                          <i class="bi bi-eye-fill me-1"></i>Flight Details
+                        </button>
+  
+                      </div>
+                      <!-- Price END -->
+                    </div> <!-- Row END -->
+  
+  
+                    <!-- Card footer -->
+                    <div class="card-footer pt-4">
+                      <ul
+                        class="list-inline bg-light d-sm-flex text-center justify-content-sm-between rounded-2 py-2 px-4 mb-0">
+                        <li class="list-inline-item text-danger">Only 10 Seat Left</li>
+                        <li class="list-inline-item text-success">Refundable</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <!-- Ticket item END -->
+  
+                  <% }) %>
+                  <% } else { %>
+                    <!-- No flights available message -->
+                    <div class="text-center py-5">
+                      <h4 class="text-muted">No flights are available</h4>
+                    </div>
+                  <% } %>
+  
+                </div>
+  
+            </div>
+          </div>
+          <!-- Main content END -->
+        </div>
+        <!-- Row END -->
+      </div>
+  </section>
+  
+  <script>
+async function bookNow(id) {
+  console.log("Booking flight with ID:", id);
+
+  const requestDetails = {
+    adults: "<%= requestDetails.adults %>",
+    children: "<%= requestDetails.children %>",
+    infants: "<%= requestDetails.infants %>",
+  };
+
+  try {
+    const response = await fetch("/flight-detail", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id, requestDetails }),
+    });
+
+    if (!response.ok) {
+      alert("Failed to fetch flight details");
+      return;
+    }
+
+    // Extract redirect URL and navigate
+    const data = await response.json();
+    window.location.href = data.redirectUrl;
+  } catch (error) {
+    console.error("Error booking flight:", error);
+  }
+}
+
+  </script>
+
+  <!-- Flight detail modal START -->
+<div class="modal fade" id="flightdetail" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<!-- Title -->
+			<div class="modal-header">
+				<h5 class="modal-title">Flight Details</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+
+			<!-- Body -->
+			<div class="modal-body p-3">
+				<!-- Tabs START -->
+				<ul class="nav nav-pills nav-justified nav-responsive bg-primary bg-opacity-10 rounded p-2 mb-3" id="flight-pills-tab" role="tablist">
+					<!-- Tab item -->
+					<li class="nav-item" role="presentation">
+						<button class="nav-link active mb-0" id="flight-info" data-bs-toggle="pill" data-bs-target="#flight-info-tab" type="button" role="tab" aria-controls="flight-info-tab" aria-selected="true">Flight Information</button>
+					</li>
+					<!-- Tab item -->
+					<li class="nav-item" role="presentation">
+						<button class="nav-link mb-0" id="flight-fare" data-bs-toggle="pill" data-bs-target="#flight-fare-tab" type="button" role="tab" aria-controls="flight-fare-tab" aria-selected="false">Fare Detail</button>
+					</li>
+					<!-- Tab item -->
+					<li class="nav-item" role="presentation">
+						<button class="nav-link mb-0" id="flight-baggage" data-bs-toggle="pill" data-bs-target="#flight-baggage-tab" type="button" role="tab" aria-controls="flight-baggage-tab" aria-selected="false">Baggage Rules</button>
+					</li>
+					<!-- Tab item -->
+					<li class="nav-item" role="presentation">
+						<button class="nav-link mb-0" id="flight-policy" data-bs-toggle="pill" data-bs-target="#flight-policy-tab" type="button" role="tab" aria-controls="flight-policy-tab" aria-selected="false">Cancellation Rules</button>
+					</li>
+				</ul>
+				<!-- Tabs END -->
+
+				<!-- Tab content START -->
+				<div class="tab-content mb-0" id="flight-pills-tabContent">
+
+					<!-- Content item START -->
+					<div class="tab-pane fade show active" id="flight-info-tab" role="tabpanel" aria-labelledby="flight-info">
+						<div class="card border">
+
+							<!-- Card header -->
+							<div class="card-header">
+								<div class="d-sm-flex justify-content-sm-between align-items-center">
+									<!-- Airline Name -->
+									<div class="d-flex mb-2 mb-sm-0">
+										<img src="assets/images/element/09.svg" class="w-40px me-2" alt="">
+										<h6 class="fw-normal mb-0 heading"></h6>
+									</div>
+								</div>
+							</div>
+
+							<!-- Card body START -->
+							<div class="card-body p-4">
+								<!-- Ticket item START -->
+								<div class="row g-4">
+									<!-- Airport detail -->
+									<div class="col-sm-4">
+										<!-- Title -->
+										<h4 id="departure-code"></h4>
+										<h6 class="mb-0" id="departure-time"></h6>
+										<p class="mb-0" id="departure-airport"></p>
+									</div>
+
+									<!-- Time -->
+									<div class="col-sm-4 my-sm-auto text-center">
+										<!-- Time -->
+										<h5 id="flight-duration"></h5>
+
+										<div class="position-relative my-4">
+											<!-- Line -->
+											<hr class="bg-primary opacity-5 position-relative">
+											<!-- Icon -->
+											<div class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
+												<i class="fa-solid fa-fw fa-plane rtl-flip"></i>
+											</div>
+										</div>
+									</div>
+
+									<!-- Airport detail -->
+									<div class="col-sm-4">
+										<!-- Title -->
+										<h4 id="arrival-code"></h4>
+										<h6 class="mb-0" id="arrival-time"></h6>
+										<p class="mb-0" id="arrival-airport"></p>
+									</div>
+								</div>
+								<!-- Ticket item END -->
+
+								<!-- Divider -->
+								<div class="bg-light text-center fw-normal rounded-2 mt-3 mb-4 p-2" id="layover-info">
+									Change of planes: 3h 15m Layover in France
+								</div>
+
+								<!-- Ticket item START -->
+								<div class="row g-4">
+									<!-- Airport detail -->
+									<div class="col-sm-4">
+										<!-- Title -->
+										<h4>CDG</h4>
+										<h6 class="mb-0">2:50</h6>
+										<p class="mb-0">Ch. De Gaulle, Paris, France</p>
+									</div>
+
+									<!-- Time -->
+									<div class="col-sm-4 my-sm-auto text-center">
+										<!-- Time -->
+										<h5>5hr 50min</h5>
+
+										<div class="position-relative my-4">
+											<!-- Line -->
+											<hr class="bg-primary opacity-5 position-relative">
+											<!-- Icon -->
+											<div class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
+												<i class="fa-solid fa-fw fa-plane rtl-flip"></i>
+											</div>
+										</div>
+									</div>
+
+									<!-- Airport detail -->
+									<div class="col-sm-4">
+										<!-- Title -->
+										<h4>JFK</h4>
+										<h6 class="mb-0">7:35</h6>
+										<p class="mb-0">John F Kennedy Intl-NY</p>
+									</div>
+								</div>
+								<!-- Ticket item END -->
+							</div>  
+							<!-- Card body END -->
+						</div>
+					</div>		
+					<!-- Content item END -->
+
+					<!-- Content item START -->
+					<div class="tab-pane fade" id="flight-fare-tab" role="tabpanel" aria-labelledby="flight-fare">
+						<div class="card card-body">
+
+							<!-- Table START -->
+							<div class="table-responsive-lg">
+								<table class="table caption-bottom mb-0">
+									<!-- Caption -->
+									<caption class="pb-0">*From The Date Of Departure</caption>
+									<!-- Table head -->
+									<thead class="table-dark">
+										<tr>
+											<th scope="col" class="border-0 rounded-start">Base Fare</th>
+											<th scope="col" class="border-0">Taxes and Fees</th>
+											<th scope="col" class="border-0 rounded-end">Total Fees</th>
+										</tr>
+									</thead>
+									<!-- Table body -->
+									<tbody>
+										<tr>
+											<td id="base-fare">$36,500</td>
+											<td id="taxes">$1,050</td>
+											<td><h5 id="total-fare" class="mb-0">$37,550</h5></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							<!-- Table END -->
+						</div>
+					</div>	
+					<!-- Content item END -->
+
+					<!-- Content item START -->
+					<div class="tab-pane fade" id="flight-baggage-tab" role="tabpanel" aria-labelledby="flight-baggage">
+						<div class="card border">
+							<!-- Card header -->
+							<div class="card-header d-flex align-items-center border-bottom">
+								<!-- Title -->
+								<img src="assets/images/element/09.svg" class="h-20px me-1" alt="">
+								<h5 class="card-title mb-0"></h5>
+							</div>
+		
+							<!-- Card body -->
+							<div class="card-body">
+								<!-- Table START -->
+								<div class="table-responsive-lg">
+									<table class="table caption-bottom mb-0">
+										<!-- Caption -->
+										<caption class="pb-0">*1PC = 23KG</caption>
+										<!-- Table head -->
+										<thead class="table-dark">
+											<tr>
+												<th scope="col" class="border-0 rounded-start">Baggage Type</th>
+												<th scope="col" class="border-0">Check In</th>
+												<th scope="col" class="border-0 rounded-end">Cabin</th>
+											</tr>
+										</thead>
+										<!-- Table body -->
+										<tbody class="border-top-0">
+											<tr>
+												<td>Adult</td>
+												<td id="baggage-adult-checkin"></td>
+												<td id="baggage-adult-cabin"></td>
+											</tr>
+                      <tr>
+												<td>Child</td>
+												<td id="baggage-child-checkin"></td>
+												<td id="baggage-child-cabin"></td>
+											</tr>
+                      <tr>
+												<td>Infant</td>
+												<td id="baggage-infant-checkin"></td>
+												<td id="baggage-infant-cabin"></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								<!-- Table END -->
+							</div>
+						</div>
+					</div>	
+					<!-- Content item END -->
+
+					<!-- Content item START -->
+					<div class="tab-pane fade" id="flight-policy-tab" role="tabpanel" aria-labelledby="flight-policy">
+						<div class="card border">
+							<!-- Card header -->
+							<div class="card-header d-flex align-items-center border-bottom">
+								<!-- Title -->
+								<img src="assets/images/element/09.svg" class="h-20px me-1" alt="">
+								<h5 class="card-title mb-0"></h5>
+							</div>
+
+							<!-- Card body -->
+							<div class="card-body">
+								<!-- Table START -->
+								<div class="table-responsive-lg">
+									<table class="table caption-bottom mb-0">
+										<!-- Caption -->
+										<caption class="pb-0">*From The Date Of Departure</caption>
+										<!-- Table head -->
+										<thead class="table-dark">
+											<tr>
+												<th scope="col" class="border-0 rounded-start">Time Frame</th>
+												<th scope="col" class="border-0 rounded-end">Air Free + MMT Free</th>
+											</tr>
+										</thead>
+										<!-- Table body -->
+										<tbody class="border-top-0">
+											<tr>
+												<td>0 hours to 24 hours</td>
+												<td id="cancellation-0-24">Non Refundable</td>
+											</tr>
+											<tr>
+												<td>24 hours to 365 days</td>
+												<td id="cancellation-24-plus">$16,325 + $250</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								<!-- Table END -->
+							</div>
+						</div>
+					</div>		
+					<!-- Content item END -->
+
+				</div>
+				<!-- Tab content END -->
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Flight detail modal END -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const flightDetailButtons = document.querySelectorAll(".flight-detail-btn");
+
+    flightDetailButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const flightData = JSON.parse(this.getAttribute("data-flight"));
+
+            // Update modal title
+            document.querySelector(".heading").innerText = `${flightData.airline} (${flightData.flightNumber})`;
+
+            document.querySelectorAll(".card-title").forEach(title => {
+                title.innerText = `${flightData.from} - ${flightData.to}`;
+            });
+
+            // Update flight schedule dynamically
+            const flightInfoTab = document.querySelector("#flight-info-tab .card-body");
+
+            // Clear previous details
+            flightInfoTab.innerHTML = "";
+
+            let flightSegments = "";
+
+            if (flightData.stops.length > 0) {
+                // First segment: from -> first stop
+                flightSegments += generateFlightSegment(
+                    flightData.from, 
+                    flightData.departureTime, 
+                    flightData.departureDate, 
+                    flightData.stops[0].location, 
+                    flightData.stops[0].arrivalTime, 
+                    flightData.stops[0].arrivalDate, 
+                    flightData.stops[0].stopDuration
+                );
+
+                // Intermediate stops
+                for (let i = 0; i < flightData.stops.length - 1; i++) {
+                    flightSegments += generateFlightSegment(
+                        flightData.stops[i].location, 
+                        flightData.stops[i].departureTime, 
+                        flightData.stops[i].departureDate, 
+                        flightData.stops[i + 1].location, 
+                        flightData.stops[i + 1].arrivalTime, 
+                        flightData.stops[i + 1].arrivalDate, 
+                        flightData.stops[i + 1].stopDuration
+                    );
+                }
+
+                // Final segment: last stop -> destination
+                let lastStop = flightData.stops[flightData.stops.length - 1];
+                flightSegments += generateFlightSegment(
+                    lastStop.location, 
+                    lastStop.departureTime, 
+                    lastStop.departureDate, 
+                    flightData.to, 
+                    flightData.arrivalTime, 
+                    flightData.arrivalDate, 
+                    flightData.duration
+                );
+            } else {
+                // Direct flight: from -> to
+                flightSegments = generateFlightSegment(
+                    flightData.from, 
+                    flightData.departureTime, 
+                    flightData.departureDate, 
+                    flightData.to, 
+                    flightData.arrivalTime, 
+                    flightData.arrivalDate, 
+                    flightData.duration
+                );
+            }
+
+            // Inject the updated flight segments into the modal
+            flightInfoTab.innerHTML = flightSegments;
+
+            // Update fare details
+            document.querySelector("#flight-fare-tab tbody tr td:nth-child(1)").innerText = flightData.price ? `$${flightData.price}` : "N/A";
+            document.querySelector("#flight-fare-tab tbody tr td:nth-child(2)").innerText = flightData.taxes ? `$${flightData.taxes}` : "N/A";
+            document.querySelector("#flight-fare-tab tbody tr td:nth-child(3) h5").innerText = flightData.totalFare ? `$${flightData.totalFare}` : "N/A";
+  
+            // Update baggage details
+            document.querySelector("#flight-baggage-tab tbody tr:nth-child(1) td:nth-child(2)").innerText = flightData.baggage?.adult?.numberOfPieces ? `${flightData.baggage.adult.numberOfPieces} PC` : "N/A";
+            document.querySelector("#flight-baggage-tab tbody tr:nth-child(1) td:nth-child(3)").innerText = flightData.baggage?.adult?.cabin?.weightPerPiece ? `${flightData.baggage.adult.cabin.weightPerPiece} Kg` : "N/A";
+  
+            document.querySelector("#flight-baggage-tab tbody tr:nth-child(2) td:nth-child(2)").innerText = flightData.baggage?.child?.numberOfPieces ? `${flightData.baggage.child.numberOfPieces} PC` : "N/A";
+            document.querySelector("#flight-baggage-tab tbody tr:nth-child(2) td:nth-child(3)").innerText = flightData.baggage?.child?.cabin?.weightPerPiece ? `${flightData.baggage.child.cabin.weightPerPiece} Kg` : "N/A";
+  
+            document.querySelector("#flight-baggage-tab tbody tr:nth-child(3) td:nth-child(2)").innerText = flightData.baggage?.infant?.numberOfPieces ? `${flightData.baggage.infant.numberOfPieces} PC` : "N/A";
+            document.querySelector("#flight-baggage-tab tbody tr:nth-child(3) td:nth-child(3)").innerText = flightData.baggage?.infant?.cabin?.weightPerPiece ? `${flightData.baggage.infant.cabin.weightPerPiece} Kg` : "N/A";
+  
+            // Update cancellation policy
+            document.querySelector("#flight-policy-tab tbody tr:nth-child(1) td:nth-child(2)").innerText = flightData.cancellation?.["0-24 hours"] || "N/A";
+            document.querySelector("#flight-policy-tab tbody tr:nth-child(2) td:nth-child(2)").innerText = flightData.cancellation?.["24+ hours"] || "N/A";
+  
+            // Show the modal
+            let modal = new bootstrap.Modal(document.getElementById("flightdetail"));
+            modal.show();
+        });
+    });
+});
+
+// Helper function to generate HTML for flight segments
+function generateFlightSegment(from, depTime, depDate, to, arrTime, arrDate, duration) {
+    return `
+        <div class="row">
+            <div class="col-sm-4">
+                <h4>${depTime}</h4>
+                <h6 class="mb-0 fw-normal">${depDate}</h6>
+                <p class="mb-0">${from}</p>
+            </div>
+            <div class="col-sm-4 my-sm-auto text-center">
+                <h5>${duration}</h5>
+                <div class="position-relative my-4">
+                    <hr class="bg-primary opacity-5 position-relative">
+                    <div class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
+                        <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <h4>${arrTime}</h4>
+                <h6 class="mb-0 fw-normal">${arrDate}</h6>
+                <p class="mb-0">${to}</p>
+            </div>
+            <hr class="my-4">
+    `;
+}
+
+  </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+  const modal = document.getElementById("flightdetail");
+
+  modal.addEventListener("hidden.bs.modal", function () {
+    // Remove any extra modal-backdrop elements that might be lingering
+    document.querySelectorAll(".modal-backdrop").forEach((backdrop) => backdrop.remove());
+    
+    // Also ensure the body class is removed to prevent background overlay issues
+    document.body.classList.remove("modal-open");
+  });
+
+  modal.addEventListener("shown.bs.modal", function () {
+    // If there are multiple backdrops, remove extras
+    const backdrops = document.querySelectorAll(".modal-backdrop");
+    if (backdrops.length > 1) {
+      backdrops[0].remove(); // Remove the first extra backdrop
+    }
+  });
+});
+
+  </script>
+
+<script>
+  window.history.replaceState(null, "", window.location.href)
+</script>
+  
+  <!-- =======================
+    Flight list END -->
+</main>
+<!-- **************** MAIN CONTENT END **************** -->
+
+<%- include('./partials/footer') %>
