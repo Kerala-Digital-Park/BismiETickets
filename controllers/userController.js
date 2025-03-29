@@ -369,9 +369,18 @@ const viewFlightDetail = async (req, res) => {
   }
 };
 
+const getFlights = async (req, res) => {
+  try {
+    res.render("user/flights", {requestDetails: ""});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({error: "Internal Server Error"})
+  }
+}
+
 const signup = async (req, res) => {
   try {
-    const { name, email, password, confirmPassword } = req.body;
+    const { name, email, pan, password, confirmPassword } = req.body;
     if (password != confirmPassword) {
       return res.render("user/sign-up", { message: "Password does not match", messageType: "danger" });
     }
@@ -384,6 +393,7 @@ const signup = async (req, res) => {
     const newUser = new Users({
       name: name,
       email: email,
+      pan: pan,
       password: password,
     });
     
@@ -702,7 +712,7 @@ const updateProfile = async (req, res) => {
       // Handle profile image upload
       if (req.file) {
           // Delete old image if exists
-          if (user.image && user.image !== "assets/images/avatar/default.png") {
+          if (user.image && user.image !== "/assets/images/avatar/default.png") {
               const oldImagePath = path.join(__dirname, "..", "public", user.image);
               if (fs.existsSync(oldImagePath)) {
                   fs.unlinkSync(oldImagePath);
@@ -724,6 +734,76 @@ const updateProfile = async (req, res) => {
   }
 };
 
+const updateEmail = async (req, res) => {
+  const { email } = req.body;
+  console.log(req.body);
+  
+  try {
+      const userId = req.session.userId; // Get logged-in user ID
+      if (!userId) {
+          return res.status(401).json({ success: false, message: "Unauthorized" });
+      }
+         // Check if the new email already exists
+    const existingUser = await Users.findOne({ email: email });
+    if (existingUser && existingUser._id.toString() !== userId) { // Ensure it's not the current user's email
+      return res.status(400).json({ success: false, message: "Email already exists" });
+    }
+
+    // Fetch user from database
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Update user in the database
+    const updatedUser = await Users.findByIdAndUpdate(userId, { email: email }, { new: true });
+    res.json({ success: true, user: updatedUser });
+  } catch (error) {
+      console.error("Error updating email:", error);
+      res.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
+const updatePassword = async (req, res) => {
+  const { currentPassword, newPassword, confirmPassword } = req.body;
+  console.log(req.body);
+
+  try{
+    const userId = req.session.userId; // Get logged-in user ID
+    if (!userId) {
+        return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    // Fetch user from database
+    const user = await Users.findById(userId);
+    if (!user) {
+        return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Check if current password is correct
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+        return res.status(400).json({ success: false, message: "Incorrect current password" });
+    }
+
+    // Check if new password matches confirm password
+    if (newPassword !== confirmPassword) {
+        return res.status(400).json({ success: false, message: "Passwords do not match" });
+    }
+
+    // Update password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.json({ success: true, message: "Password updated successfully" });
+  } catch (error) {
+      console.error("Error updating password:", error);
+      res.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
 module.exports = {
   viewHomepage,
   viewFlightList,
@@ -743,6 +823,7 @@ module.exports = {
   viewPrivacy,
   findTicket,
   getFlightDetail,
+  getFlights,
   signup,
   signin,
   forgotPassword,
@@ -758,5 +839,7 @@ module.exports = {
   viewDeleteProfile,
   flightBooking,
   updateProfile,
+  updateEmail,
+  updatePassword,
 
 };

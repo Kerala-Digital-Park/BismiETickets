@@ -1,0 +1,74 @@
+	<!-- Sidebar START -->
+	<nav class="navbar sidebar navbar-expand-xl navbar-light">
+		<!-- Navbar brand for xl START -->
+		<div class="d-flex align-items-center">
+			<a class="navbar-brand" href="index.html">
+				<img class="light-mode-item navbar-brand-item" src="/assets/images/logo.svg" alt="logo">
+				<img class="dark-mode-item navbar-brand-item" src="/assets/images/logo-light.svg" alt="logo">
+			</a>
+		</div>
+		<!-- Navbar brand for xl END -->
+		
+		<div class="offcanvas offcanvas-start flex-row custom-scrollbar h-100" data-bs-backdrop="true" tabindex="-1" id="offcanvasSidebar">
+			<div class="offcanvas-body sidebar-content d-flex flex-column pt-4">
+	
+				<!-- Sidebar menu START -->
+				<ul class="navbar-nav flex-column" id="navbar-sidebar">
+					<!-- Menu item -->
+					<li class="nav-item"><a href="/admin" class="nav-link">Dashboard</a></li>
+
+					<!-- Title -->
+					<li class="nav-item ms-2 my-2">Pages</li>
+
+					<li class="nav-item">
+						<a class="nav-link" href="/admin/bookings" role="button">Bookings</a>
+					</li>
+
+					<li class="nav-item">
+						<a class="nav-link" href="/admin/users" role="button">Users</a>
+					</li>
+
+					<li class="nav-item">
+						<a class="nav-link" href="/admin/agents" role="button">Agents</a>
+					</li>
+
+					<li class="nav-item">
+						<a class="nav-link" href="/admin/settings" role="button">Settings</a>
+					</li>
+					
+					
+				</ul>
+				<!-- Sidebar menu end -->
+	
+				<!-- Sidebar footer START -->
+				<div class="d-flex align-items-center justify-content-between text-primary-hover mt-auto p-3">
+					<a class="h6 fw-light mb-0 text-body" href="sign-in.html" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Sign out">
+						<i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
+					</a>
+					<a class="h6 mb-0 text-body" href="admin-settings.html" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Settings">
+						<i class="bi bi-gear-fill"></i>
+					</a>
+				</div>
+				<!-- Sidebar footer END -->
+				
+			</div>
+		</div>
+	</nav>
+	<!-- Sidebar END -->
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			let sidebarLinks = document.querySelectorAll(".sidebar-content .nav-link");
+			let currentUrl = window.location.pathname;
+	
+			sidebarLinks.forEach(link => {
+				let linkHref = link.getAttribute("href");
+	
+				// Ensure both "/admin" and "/admin/" match
+				if (currentUrl === linkHref || (currentUrl === "/admin/" && linkHref === "/admin")) {
+					link.classList.add("active");
+				}
+			});
+		});
+	</script>
+	

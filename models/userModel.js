@@ -5,6 +5,7 @@ const userSchema = mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    pan: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     resetToken: { type: String, default: null },
     resetTokenExpiry: { type: Date, default: null },
@@ -12,7 +13,7 @@ const userSchema = mongoose.Schema(
     nationality: { type: String, default: null },
      gender: {
       type: String,
-      enum: ["male", "female", "others"]
+      enum: ["Male", "Female", "Others"]
     },
     address: { type: String, default: null },
     image:{type:String,default:null},

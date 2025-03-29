@@ -80,7 +80,7 @@
                                                             <span class="avatar avatar-xl">
                                                                 <img id="uploadfile-1-preview"
                                                                     class="avatar-img rounded-circle border border-white border-3 shadow"
-                                                                    src="<%= userDetails.image ? userDetails.image : 'assets/images/avatar/default.png' %>"
+                                                                    src="<%= userDetails.image ? userDetails.image : '/assets/images/avatar/default.png' %>"
                                                                     alt="profile">
                                                             </span>
                                                         </label>
@@ -195,15 +195,16 @@
 
                                         <!-- Card body START -->
                                         <div class="card-body">
-                                            <form>
+                                            <form id="emailForm">
                                                 <!-- Email -->
                                                 <label class="form-label">Enter your new email id<span
                                                         class="text-danger">*</span></label>
-                                                <input type="email" class="form-control"
+                                                <input type="email" class="form-control" id="new-email"
                                                     placeholder="Enter your email id">
 
                                                 <div class="text-end mt-3">
-                                                    <button class="btn btn-primary mb-0">Save Email</button>
+                                                    <button class="btn btn-primary mb-0" id="saveEmailBtn">Save
+                                                        Email</button>
                                                 </div>
                                             </form>
                                         </div>
@@ -226,7 +227,7 @@
                                             <!-- Current password -->
                                             <div class="mb-3">
                                                 <label class="form-label">Current password</label>
-                                                <input class="form-control" type="password"
+                                                <input class="form-control" type="password" id="crnt-pswd"
                                                     placeholder="Enter current password">
                                             </div>
                                             <!-- New password -->
@@ -244,12 +245,12 @@
                                             <!-- Confirm -->
                                             <div class="mb-3">
                                                 <label class="form-label">Confirm new password</label>
-                                                <input class="form-control" type="password"
+                                                <input class="form-control" type="password" id="cnfm-pswd"
                                                     placeholder="Confirm new password">
                                             </div>
 
                                             <div class="text-end">
-                                                <button class="btn btn-primary mb-0">Change Password</button>
+                                                <button class="btn btn-primary mb-0" id="savePswdBtn">Change Password</button>
                                             </div>
                                         </form>
                                         <!-- Card body END -->
@@ -265,7 +266,6 @@
             <!-- ======================= Content END -->
 
             <script>
-
                 document.addEventListener("DOMContentLoaded", function () {
                     // Handle image preview
                     document.getElementById("uploadfile-1").addEventListener("change", function (event) {
@@ -278,11 +278,11 @@
                             reader.readAsDataURL(file);
                         }
                     });
-
+            
                     // Handle form submission
                     document.getElementById("saveProfileBtn").addEventListener("click", async function (event) {
                         event.preventDefault(); // Prevent form from reloading the page
-
+            
                         const formData = new FormData();
                         const fileInput = document.getElementById("uploadfile-1");
                         if (fileInput.files.length > 0) {
@@ -293,25 +293,28 @@
                         formData.append("mobile", document.getElementById("mobile").value);
                         formData.append("nationality", document.getElementById("nationality").value);
                         formData.append("address", document.getElementById("address").value);
-
+            
                         // Get selected gender
                         const genderInputs = document.getElementsByName("flexRadioDefault");
                         let selectedGender = "";
                         for (const input of genderInputs) {
                             if (input.checked) {
-                                selectedGender = input.value; // Use value instead of textContent
+                                // Correctly get the value of the selected radio button
+                                selectedGender = document.querySelector(`label[for="${input.id}"]`).textContent.trim();
+                                break; // Stop after finding the selected gender
                             }
                         }
                         formData.append("gender", selectedGender);
-
+                        console.log(selectedGender);
+            
                         try {
                             const response = await fetch("/update-profile", {
                                 method: "POST",
                                 body: formData,
                             });
-
+            
                             const data = await response.json();
-
+            
                             if (data.success) {
                                 alert("Profile updated successfully!");
                                 location.reload(); // Refresh page to reflect changes
@@ -326,6 +329,90 @@
                 });
             </script>
 
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    document.getElementById("saveEmailBtn").addEventListener("click", async function (event) {
+                        event.preventDefault(); // Prevent form from reloading the page
+
+                        const email = document.getElementById("new-email").value;
+                        console.log(email);
+
+                        if (!email) {
+                            alert("Please enter a valid email address.");
+                            return;
+                        }
+
+                        try {
+                            const response = await fetch("/update-email", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json", // Important: specify content type
+                                },
+                                body: JSON.stringify({ email: email }), // Send as JSON object
+                            });
+
+                            const data = await response.json();
+
+                            if (data.success) {
+                                alert("Email updated successfully!");
+                                location.reload(); // Refresh page to reflect changes
+                            } else {
+                                alert("Error updating profile: " + data.message);
+                            }
+                        } catch (error) {
+                            console.error("Error:", error);
+                            alert("An error occurred while updating your profile.");
+                        }
+                    });
+                });
+            </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("savePswdBtn").addEventListener("click", async function (event) {
+            event.preventDefault(); // Prevent form from reloading the page
+
+            const currentPassword = document.getElementById("crnt-pswd").value;
+            const newPassword = document.getElementById("psw-input").value;
+            const confirmPassword = document.getElementById("cnfm-pswd").value;
+
+            console.log(currentPassword, newPassword, confirmPassword);
+            
+            if ( !currentPassword || !newPassword || !confirmPassword) {
+                alert("Please enter all fields.");
+                return;
+            }
+
+            const requestBody = {
+                currentPassword: currentPassword,
+                newPassword: newPassword,
+                confirmPassword: confirmPassword,
+            };
+
+            try {
+                const response = await fetch("/update-password", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json", // Important: specify content type
+                    },
+                    body: JSON.stringify(requestBody), // Send as JSON object
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert("Password updated successfully!");
+                    location.reload(); // Refresh page to reflect changes
+                } else {
+                    alert("Error updating profile: " + data.message);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An error occurred while updating your profile.");
+            }
+        });
+    });
+</script>
 
         </main>
         <!-- **************** MAIN CONTENT END **************** -->

@@ -20,8 +20,8 @@
       <div class="container">
         <!-- Logo START -->
         <a class="navbar-brand" href="/">
-          <img class="light-mode-item navbar-brand-item" src="assets/images/logo.svg" alt="logo" />
-          <img class="dark-mode-item navbar-brand-item" src="assets/images/logo-light.svg" alt="logo" />
+          <img class="light-mode-item navbar-brand-item" src="/assets/images/logo.svg" alt="logo" />
+          <img class="dark-mode-item navbar-brand-item" src="/assets/images/logo-light.svg" alt="logo" />
         </a>
         <!-- Logo END -->
 
@@ -39,13 +39,13 @@
         <!-- Main navbar START -->
         <div class="navbar-collapse collapse" id="navbarCollapse">
           <!-- Nav main menu START -->
-          <ul class="navbar-nav align-items-center list-unstyled ms-xl-auto gap-5 me-auto">
-            <li class="nav-item"><a href="/about">About</a></li>
-            <li class="nav-item"><a href="/contact">Contact</a></li>
-            <li class="nav-item"><a href="/blog">Blog</a></li>
-            <li class="nav-item"><a href="/help">Help</a></li>
-            <li class="nav-item"><a href="/pricing">Pricing</a></li>
-            <li class="nav-item"><a href="/faq">FAQs</a></li>
+          <ul class="navbar-nav navbar-nav-scroll me-auto mx-auto">
+            <li class="nav-item dropdown"><a class="nav-link" href="/about">About</a></li>
+            <li class="nav-item dropdown"><a class="nav-link" href="/contact">Contact</a></li>
+            <li class="nav-item dropdown"><a class="nav-link" href="/blog">Blog</a></li>
+            <li class="nav-item dropdown"><a class="nav-link" href="/help">Help</a></li>
+            <li class="nav-item dropdown"><a class="nav-link" href="/pricing">Pricing</a></li>
+            <li class="nav-item dropdown"><a class="nav-link" href="/faq">FAQs</a></li>
           </ul>
           <!-- Nav main menu END -->
         </div>
@@ -126,7 +126,7 @@
               <!-- Avatar -->
               <a class="avatar avatar-sm p-0" href="#" id="profileDropdown" role="button" data-bs-auto-close="outside"
                 data-bs-display="static" data-bs-toggle="dropdown" aria-expanded="false">
-                <img class="avatar-img rounded-circle" src="assets/images/avatar/default.png" alt="User Profile"
+                <img class="avatar-img rounded-circle" src="<%= user.image ? user.image : '/assets/images/avatar/default.png' %>" alt="User Profile"
                   width="40" height="40">
               </a>
 
@@ -136,15 +136,15 @@
                 <li class="px-3 mb-3">
                   <div class="d-flex align-items-center">
                     <!-- Avatar -->
+                    <% if (user) { %>
                     <div class="avatar me-3">
-                      <img class="avatar-img rounded-circle shadow" src="assets/images/avatar/default.png" alt="avatar">
+                      <img class="avatar-img rounded-circle shadow" src="<%= user.image ? user.image : '/assets/images/avatar/default.png' %>" alt="avatar">
                     </div>
                     <div>
-                      <% if (user) { %>
                       <a class="h6 mt-2 mt-sm-0" href="/profile"><%= user.name %></a>
                       <p class="small m-0"><%= user.email %></p>
-                      <% } %>
                     </div>
+                    <% } %>
                   </div>
                 </li>
 
@@ -152,8 +152,8 @@
                 <li>
                   <hr class="dropdown-divider">
                 </li>
-                <li><a class="dropdown-item" href="/bookings"><i class="bi bi-bookmark-check fa-fw me-2"></i>My Bookings</a>
-                </li>
+                <li><a class="dropdown-item" href="/profile"><i class="bi bi-person fa-fw me-2"></i>My Profile</a></li>
+                <li><a class="dropdown-item" href="/bookings"><i class="bi bi-bookmark-check fa-fw me-2"></i>My Bookings</a></li>
                 <li><a class="dropdown-item" href="/wishlist"><i class="bi bi-heart fa-fw me-2"></i>My Wishlist</a></li>
                 <li><a class="dropdown-item" href="/settings"><i class="bi bi-gear fa-fw me-2"></i>Settings</a></li>
                 <li><a class="dropdown-item" href="/help"><i class="bi bi-info-circle fa-fw me-2"></i>Help Center</a></li>

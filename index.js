@@ -16,6 +16,8 @@ const preventCache = (req, res, next) => {
 };
 app.use(preventCache);
 const userRouter = require('./routes/userRouter')
+const adminRouter = require('./routes/adminRouter')
+const agentRouter = require('./routes/agentRouter')
 
 const mongoose = require("mongoose");
 const connect = mongoose.connect(process.env.MONGODB)
@@ -48,14 +50,18 @@ app.use(
   ); 
 
   app.use('/uploads', express.static('public/uploads'));
-//   app.use("/admin", express.static("public/adminAssets"));
+  app.use("/agent", express.static("public/"));
+  app.use("/admin", express.static("public/"));
   app.use("/", express.static("public/"));
   app.use(express.static('uploads'))
  
   app.use(fetchUserDetails);
   app.use('/',preventCache,userRouter); 
-//   app.use('/admin',adminRouter);
-
+  app.use('/admin',adminRouter);
+  app.use('/agent',agentRouter);
+  app.use((req,res,next)=>{
+    res.status(404).render("error");
+})  
   
 app.listen(PORT,()=>{
     console.log(`Server on http://localhost:${PORT}`);

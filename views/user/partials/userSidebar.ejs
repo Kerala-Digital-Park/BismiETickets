@@ -28,7 +28,7 @@
                         <!-- Avatar -->
                         <div class="avatar avatar-xl mb-2">
                             <img class="avatar-img rounded-circle border border-2 border-white"
-                                src="assets/images/avatar/01.jpg" alt="">
+                            src="<%= user.image ? user.image : '/assets/images/avatar/default.png' %>" alt="">
                         </div>
                         <h6 class="mb-0"><%= user.name %></h6>
                         <a href="#"

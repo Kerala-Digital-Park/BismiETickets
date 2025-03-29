@@ -56,9 +56,12 @@ userRouter.post("/sign-up", userController.signup);
 userRouter.post("/sign-in", userController.signin);
 userRouter.post("/flight-list", userController.findTicket);
 userRouter.post("/flight-detail", userController.getFlightDetail);
+userRouter.get("/flights", userController.getFlights);
 userRouter.post("/forgot-password",isLogin, userController.forgotPassword);
 userRouter.post("/reset-password",isLogin, userController.resetPassword);
 userRouter.post("/flight-booking",isLogin, userController.flightBooking);
 userRouter.post("/update-profile",isLogin, upload.single("image"), userController.updateProfile);
+userRouter.post("/update-email",isLogin, userController.updateEmail);
+userRouter.post("/update-password",isLogin, userController.updatePassword);
 
 module.exports = userRouter;
