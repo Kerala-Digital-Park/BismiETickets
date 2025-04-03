@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const Flights = require("../models/flightModel");
 const Users = require("../models/userModel");
 const Bookings = require("../models/bookingModel");
+// const Subscriptions = require('../models/subscriptionModel');
 const nodemailer = require("nodemailer");
 const path = require("path");
 const fs = require("fs");
@@ -102,10 +103,13 @@ const viewContact = async (req, res) => {
 
 const viewSignin = async (req, res) => {
   try {
-    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.set('Pragma', 'no-cache');
-    res.set('Expires', '0');
-    
+    res.set(
+      "Cache-Control",
+      "no-store, no-cache, must-revalidate, proxy-revalidate"
+    );
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+
     res.render("user/sign-in", { message: "" });
   } catch (error) {
     console.error(error);
@@ -209,8 +213,15 @@ const findTicket = async (req, res) => {
       dateTypeCheckbox,
     } = req.body;
 
-    console.log(from, to, departure, departureDate, returnDate,dateTypeCheckbox);
-    
+    console.log(
+      from,
+      to,
+      departure,
+      departureDate,
+      returnDate,
+      dateTypeCheckbox
+    );
+
     const flexible = dateTypeCheckbox === "on";
     console.log(flexible);
 
@@ -284,8 +295,8 @@ const findTicket = async (req, res) => {
       ? formatDateToStandard(returnDate)
       : null;
 
-      console.log( formattedDepartureDate, formattedReturnDate);
-      
+    console.log(formattedDepartureDate, formattedReturnDate);
+
     // Function to check if a date falls within a range
     const isDateInRange = (dateStr, startDateStr, endDateStr) => {
       const date = new Date(dateStr);
@@ -371,23 +382,48 @@ const viewFlightDetail = async (req, res) => {
 
 const getFlights = async (req, res) => {
   try {
-    res.render("user/flights", {requestDetails: ""});
+    res.render("user/flights", { requestDetails: "" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({error: "Internal Server Error"})
+    res.status(500).json({ error: "Internal Server Error" });
   }
-}
+};
+
+const viewManageBooking = async (req, res) => {
+  try {
+    res.render("user/manage-booking", { requestDetails: "" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 const signup = async (req, res) => {
   try {
     const { name, email, pan, password, confirmPassword } = req.body;
     if (password != confirmPassword) {
-      return res.render("user/sign-up", { message: "Password does not match", messageType: "danger" });
+      return res.render("user/sign-up", {
+        message: "Password does not match",
+        messageType: "danger",
+      });
     }
 
-    const existingUser = await Users.findOne({ email });
-    if (existingUser) {
-      return res.render("user/sign-up", { message: "User already exists", messageType: "danger" });
+    // Check if the email already exists
+    const existingUserByEmail = await Users.findOne({ email });
+    if (existingUserByEmail) {
+      return res.render("user/sign-up", {
+        message: "User with this email already exists",
+        messageType: "danger",
+      });
+    }
+
+    // Check if the PAN already exists
+    const existingUserByPAN = await Users.findOne({ pan });
+    if (existingUserByPAN) {
+      return res.render("user/sign-up", {
+        message: "User with this PAN already exists",
+        messageType: "danger",
+      });
     }
 
     const newUser = new Users({
@@ -396,9 +432,9 @@ const signup = async (req, res) => {
       pan: pan,
       password: password,
     });
-    
+
     await newUser.save();
-    
+
     const token = jwt.sign({ id: newUser._id }, process.env.SECRET_KEY, {
       expiresIn: "7d",
     });
@@ -414,11 +450,17 @@ const signin = async (req, res) => {
     const { email, password } = req.body;
     const user = await Users.findOne({ email });
     if (!user)
-      return res.render("user/sign-in", { message: "Invalid credentials", messageType: "danger"  });
+      return res.render("user/sign-in", {
+        message: "Invalid credentials",
+        messageType: "danger",
+      });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
-      return res.render("user/sign-in", { message: "Invalid credentials", messageType: "danger"  });
+      return res.render("user/sign-in", {
+        message: "Invalid credentials",
+        messageType: "danger",
+      });
 
     const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
       expiresIn: "7d",
@@ -427,9 +469,9 @@ const signin = async (req, res) => {
     req.session.token = token;
     req.session.userId = user._id;
 
-     const redirectUrl = req.session?.originalUrl || "/";
-     if (req.session) delete req.session.originalUrl;
-     res.redirect(redirectUrl);
+    const redirectUrl = req.session?.originalUrl || "/";
+    if (req.session) delete req.session.originalUrl;
+    res.redirect(redirectUrl);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -441,7 +483,10 @@ const forgotPassword = async (req, res) => {
     const { email } = req.body;
     const user = await Users.findOne({ email });
     if (!user) {
-      return res.render("user/forgot-password", { message: "User not found", messageType: "danger" });
+      return res.render("user/forgot-password", {
+        message: "User not found",
+        messageType: "danger",
+      });
     }
     const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
       expiresIn: "10m",
@@ -451,7 +496,7 @@ const forgotPassword = async (req, res) => {
     await user.save();
 
     const resetLink = `${process.env.BASE_URL}/reset-password?token=${token}`;
-   
+
     const mailOptions = {
       from: `"Support Team" <${process.env.EMAIL}>`,
       to: email,
@@ -476,8 +521,15 @@ const forgotPassword = async (req, res) => {
     };
 
     transporter.sendMail(mailOptions, (err, info) => {
-      if (err) return  res.render("user/forgot-password", { message: "Error sending email", messageType: "danger" });
-      return res.render("user/forgot-password", { message: "Reset email sent!", messageType: "success" });
+      if (err)
+        return res.render("user/forgot-password", {
+          message: "Error sending email",
+          messageType: "danger",
+        });
+      return res.render("user/forgot-password", {
+        message: "Reset email sent!",
+        messageType: "success",
+      });
     });
     // Send email with token
   } catch (error) {
@@ -487,12 +539,18 @@ const forgotPassword = async (req, res) => {
 };
 
 const resetPassword = async (req, res) => {
-  const token  = req.query.token;
+  const token = req.query.token;
   const { password, confirmPassword } = req.body;
   console.log(token);
 
   if (password != confirmPassword) {
-    return res.status(400).render("user/reset-password", { message: "Passwords do not match", messageType: "danger", token });
+    return res
+      .status(400)
+      .render("user/reset-password", {
+        message: "Passwords do not match",
+        messageType: "danger",
+        token,
+      });
   }
 
   try {
@@ -502,7 +560,13 @@ const resetPassword = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).render("user/reset-password", { message: "Invalid or expired token", messageType: "danger", token });
+      return res
+        .status(400)
+        .render("user/reset-password", {
+          message: "Invalid or expired token",
+          messageType: "danger",
+          token,
+        });
     }
 
     user.password = password;
@@ -510,7 +574,10 @@ const resetPassword = async (req, res) => {
     user.resetTokenExpiry = null;
     await user.save();
 
-    res.render("user/sign-in", { message: "Password reset successful. Login here", messageType: "success" });
+    res.render("user/sign-in", {
+      message: "Password reset successful. Login here",
+      messageType: "success",
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -518,9 +585,9 @@ const resetPassword = async (req, res) => {
 };
 
 const viewResetPassword = async (req, res) => {
-  const token  = req.query.token;
+  const token = req.query.token;
   console.log(token);
-  
+
   try {
     res.render("user/reset-password", { token, message: "" });
   } catch (error) {
@@ -537,27 +604,27 @@ const signOut = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-}
+};
 
 const viewProfile = async (req, res) => {
   const userId = req.session.userId;
   try {
     const userDetails = await Users.findById(userId);
-    res.render("user/profile", {userDetails});
+    res.render("user/profile", { userDetails });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
   }
-}
+};
 
 const viewBookings = async (req, res) => {
   try {
     const userId = req.session.userId;
     console.log(userId);
-    
-    const bookings = await Bookings.find({userId: userId});
+
+    const bookings = await Bookings.find({ userId: userId });
     console.log(bookings);
-    
+
     const bookingsWithFlights = await Promise.all(
       bookings.map(async (booking) => {
         const flightDetails = await Flights.findById(booking.flight);
@@ -574,8 +641,11 @@ const viewBookings = async (req, res) => {
     const completedBookings = [];
 
     bookingsWithFlights.forEach((booking) => {
-      if (booking.flightDetails && booking.flightDetails.arrivalDate && booking.flightDetails.arrivalTime) {
-        
+      if (
+        booking.flightDetails &&
+        booking.flightDetails.arrivalDate &&
+        booking.flightDetails.arrivalTime
+      ) {
         const formattedDateStr = booking.flightDetails.arrivalDate + " 20:00"; // Adding a default time for parsing
         const arrivalDate = new Date(Date.parse(formattedDateStr));
         console.log(arrivalDate);
@@ -596,14 +666,18 @@ const viewBookings = async (req, res) => {
     });
 
     console.log({ upcomingBookings, completedBookings });
-    
+
     console.log(bookingsWithFlights);
-    res.render("user/bookings", { upcomingBookings, completedBookings, user: userDetails});
+    res.render("user/bookings", {
+      upcomingBookings,
+      completedBookings,
+      user: userDetails,
+    });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
   }
-}  
+};
 
 const viewTravelers = async (req, res) => {
   try {
@@ -612,7 +686,7 @@ const viewTravelers = async (req, res) => {
     console.error(error);
     res.render("error", { error });
   }
-}
+};
 
 const viewPaymentDetails = async (req, res) => {
   try {
@@ -621,7 +695,7 @@ const viewPaymentDetails = async (req, res) => {
     console.error(error);
     res.render("error", { error });
   }
-}
+};
 
 const viewWishlist = async (req, res) => {
   try {
@@ -630,7 +704,7 @@ const viewWishlist = async (req, res) => {
     console.error(error);
     res.render("error", { error });
   }
-}
+};
 
 const viewSettings = async (req, res) => {
   try {
@@ -639,7 +713,7 @@ const viewSettings = async (req, res) => {
     console.error(error);
     res.render("error", { error });
   }
-}
+};
 
 const viewDeleteProfile = async (req, res) => {
   try {
@@ -648,21 +722,46 @@ const viewDeleteProfile = async (req, res) => {
     console.error(error);
     res.render("error", { error });
   }
+};
+
+const viewKyc = async (req, res) => {
+  const userId = req.session.userId;
+  try{
+    const userDetails = await Users.findById(userId).populate('subscription');;
+    res.render("user/kyc", { userDetails });
+  } catch (error) {
+    console.error(error);
+    res.render("error", { error });
+  }
 }
 
 const flightBooking = async (req, res) => {
-  
   try {
-    const { razorpay_payment_id, travelers, mobile_number, email, totalFare, flightDetails } = req.body;
+    const {
+      razorpay_payment_id,
+      travelers,
+      mobile_number,
+      email,
+      totalFare,
+      flightDetails,
+    } = req.body;
 
     // Validate request data
-    if (!travelers || travelers.length === 0 || !mobile_number || !email || !razorpay_payment_id || !totalFare || !flightDetails) {
+    if (
+      !travelers ||
+      travelers.length === 0 ||
+      !mobile_number ||
+      !email ||
+      !razorpay_payment_id ||
+      !totalFare ||
+      !flightDetails
+    ) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
     let paid;
-    razorpay_payment_id ? paid = true : paid = false;
-    
+    razorpay_payment_id ? (paid = true) : (paid = false);
+
     const newBooking = new Bookings({
       userId: req.session.userId,
       flight: flightDetails,
@@ -676,119 +775,140 @@ const flightBooking = async (req, res) => {
     await newBooking.save();
 
     console.log(newBooking);
-    
-    return res.status(201).json({ message: "Booking successful", bookingId: newBooking._id });
+
+    return res
+      .status(201)
+      .json({ message: "Booking successful", bookingId: newBooking._id });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
-}
+};
 
 const updateProfile = async (req, res) => {
   const { name, email, mobile, nationality, gender, address } = req.body;
   console.log(req.body);
   try {
-      const userId = req.session.userId; // Get logged-in user ID
-      if (!userId) {
-          return res.status(401).json({ success: false, message: "Unauthorized" });
+    const userId = req.session.userId; // Get logged-in user ID
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    // Fetch user from database
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Prepare updated data
+    const updatedData = {
+      name: name,
+      email: email,
+      mobile: mobile,
+      nationality: nationality,
+      gender: gender,
+      address: address,
+    };
+
+    // Handle profile image upload
+    if (req.file) {
+      // Delete old image if exists
+      if (user.image && user.image !== "/assets/images/avatar/default.png") {
+        const oldImagePath = path.join(__dirname, "..", "public", user.image);
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+        }
       }
 
-      // Fetch user from database
-      const user = await Users.findById(userId);
-      if (!user) {
-          return res.status(404).json({ success: false, message: "User not found" });
-      }
+      // Save new image path
+      updatedData.image = "/uploads/" + req.file.filename;
+    }
 
-      // Prepare updated data
-      const updatedData = {
-          name: name,
-          email: email,
-          mobile: mobile,
-          nationality: nationality,
-          gender: gender,
-          address: address,
-      };
+    // Update user in the database
+    const updatedUser = await Users.findByIdAndUpdate(userId, updatedData, {
+      new: true,
+    });
+    console.log(updatedUser);
 
-      // Handle profile image upload
-      if (req.file) {
-          // Delete old image if exists
-          if (user.image && user.image !== "/assets/images/avatar/default.png") {
-              const oldImagePath = path.join(__dirname, "..", "public", user.image);
-              if (fs.existsSync(oldImagePath)) {
-                  fs.unlinkSync(oldImagePath);
-              }
-          }
-
-          // Save new image path
-          updatedData.image = "/uploads/" + req.file.filename;
-      }
-
-      // Update user in the database
-      const updatedUser = await Users.findByIdAndUpdate(userId, updatedData, { new: true });
-      console.log(updatedUser);
-      
-      res.json({ success: true, user: updatedUser });
+    res.json({ success: true, user: updatedUser });
   } catch (error) {
-      console.error("Error updating profile:", error);
-      res.status(500).json({ success: false, message: "Server error" });
+    console.error("Error updating profile:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
 const updateEmail = async (req, res) => {
   const { email } = req.body;
   console.log(req.body);
-  
+
   try {
-      const userId = req.session.userId; // Get logged-in user ID
-      if (!userId) {
-          return res.status(401).json({ success: false, message: "Unauthorized" });
-      }
-         // Check if the new email already exists
+    const userId = req.session.userId; // Get logged-in user ID
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+    // Check if the new email already exists
     const existingUser = await Users.findOne({ email: email });
-    if (existingUser && existingUser._id.toString() !== userId) { // Ensure it's not the current user's email
-      return res.status(400).json({ success: false, message: "Email already exists" });
+    if (existingUser && existingUser._id.toString() !== userId) {
+      // Ensure it's not the current user's email
+      return res
+        .status(400)
+        .json({ success: false, message: "Email already exists" });
     }
 
     // Fetch user from database
     const user = await Users.findById(userId);
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     // Update user in the database
-    const updatedUser = await Users.findByIdAndUpdate(userId, { email: email }, { new: true });
+    const updatedUser = await Users.findByIdAndUpdate(
+      userId,
+      { email: email },
+      { new: true }
+    );
     res.json({ success: true, user: updatedUser });
   } catch (error) {
-      console.error("Error updating email:", error);
-      res.status(500).json({ success: false, message: "Server error" });
+    console.error("Error updating email:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
-}
+};
 
 const updatePassword = async (req, res) => {
   const { currentPassword, newPassword, confirmPassword } = req.body;
   console.log(req.body);
 
-  try{
+  try {
     const userId = req.session.userId; // Get logged-in user ID
     if (!userId) {
-        return res.status(401).json({ success: false, message: "Unauthorized" });
+      return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
     // Fetch user from database
     const user = await Users.findById(userId);
     if (!user) {
-        return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     // Check if current password is correct
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
-        return res.status(400).json({ success: false, message: "Incorrect current password" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Incorrect current password" });
     }
 
     // Check if new password matches confirm password
     if (newPassword !== confirmPassword) {
-        return res.status(400).json({ success: false, message: "Passwords do not match" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Passwords do not match" });
     }
 
     // Update password
@@ -799,10 +919,143 @@ const updatePassword = async (req, res) => {
 
     res.json({ success: true, message: "Password updated successfully" });
   } catch (error) {
-      console.error("Error updating password:", error);
-      res.status(500).json({ success: false, message: "Server error" });
+    console.error("Error updating password:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
-}
+};
+
+const verifyCard = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    let updatedData = {};
+
+    if (req.file) {
+      updatedData.visitingCard = "/uploads/" + req.file.filename;
+
+      if (user.subscription.subscription === "Null") {
+        updatedData["subscription.subscription"] = "Free"; // Update only the subscription field
+        updatedData["subscription.kyc"] = "Initial"; // update kyc
+        updatedData["subscription.transactions"] = 0; //reset transaction
+        updatedData["subscription.transactionLimit"] = 10; // set limit
+        updatedData["subscription.maxTransactionAmount"] = 100000; //set max amount
+      }
+    }
+
+    const updatedUser = await Users.findByIdAndUpdate(userId, updatedData, {
+      new: true,
+    });
+
+    res.json({ success: true, user: updatedUser, message: "Visiting card uploaded successfully!" });
+  } catch (error) {
+    console.error("Error verifying card:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const verifyAadhaar = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    let updatedData = {};
+
+    if (req.file) {
+      updatedData.aadhaarCard = "/uploads/" + req.file.filename;
+
+      if (user.subscription.subscription === "Free") {
+        updatedData["subscription.subscription"] = "Pro"; // Update only the subscription field
+        updatedData["subscription.kyc"] = "Completed"; //update kyc
+        updatedData["subscription.transactions"] = 0; //reset transaction
+        updatedData["subscription.transactionLimit"] = 1000; //set limit
+        updatedData["subscription.maxTransactionAmount"] = 10000000; //set max amount
+      } 
+    }
+
+    const updatedUser = await Users.findByIdAndUpdate(userId, updatedData, {
+      new: true,
+    });
+
+    res.json({ success: true, user: updatedUser, message: "Aadhaar card uploaded successfully!" });
+  } catch (error) {
+    console.error("Error verifying aadhaar:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// const verifyCard = async (req, res) => {
+//   try {
+//     const userId = req.session.userId;
+//     if (!userId) {
+//       return res.status(401).json({ success: false, message: "Unauthorized" });
+//     }
+
+//     const user = await Users.findById(userId).populate("subscription");
+//     if (!user) {
+//       return res.status(404).json({ success: false, message: "User not found" });
+//     }
+
+//     let updatedData = {};
+//     if (req.file) {
+//       updatedData.visitingCard = "/uploads/" + req.file.filename;
+//     }
+
+//     if (user.subscription && user.subscription.kyc === "Pending") {
+//       await Subscriptions.findByIdAndUpdate(user.subscription._id, { kyc: "Initial" });
+//     }
+
+//     const updatedUser = await Users.findByIdAndUpdate(userId, updatedData, { new: true });
+//     res.json({ success: true, user: updatedUser, message: "Visiting card uploaded successfully!" });
+//   } catch (error) {
+//     console.error("Error verifying card:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
+// const verifyAadhaar = async (req, res) => {
+//   try {
+//     const userId = req.session.userId;
+//     if (!userId) {
+//       return res.status(401).json({ success: false, message: "Unauthorized" });
+//     }
+
+//     const user = await Users.findById(userId).populate("subscription");
+//     if (!user) {
+//       return res.status(404).json({ success: false, message: "User not found" });
+//     }
+
+//     let updatedData = {};
+//     if (req.file) {
+//       updatedData.aadhaarCard = "/uploads/" + req.file.filename;
+//     }
+
+//     if (user.subscription && user.subscription.kyc === "Initial") {
+//       await Subscriptions.findByIdAndUpdate(user.subscription._id, { kyc: "Completed" });
+//     }
+
+//     const updatedUser = await Users.findByIdAndUpdate(userId, updatedData, { new: true });
+//     res.json({ success: true, user: updatedUser, message: "Aadhaar card uploaded successfully!" });
+//   } catch (error) {
+//     console.error("Error verifying aadhaar:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
 
 module.exports = {
   viewHomepage,
@@ -837,9 +1090,13 @@ module.exports = {
   viewWishlist,
   viewSettings,
   viewDeleteProfile,
+  viewKyc,
   flightBooking,
   updateProfile,
   updateEmail,
   updatePassword,
-
+  verifyCard,
+  verifyAadhaar,
+  viewManageBooking,
+  
 };

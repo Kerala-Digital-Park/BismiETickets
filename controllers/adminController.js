@@ -70,6 +70,14 @@ const viewSettings = async (req, res) => {
     }
 }
 
+const viewAddFlight  = async (req, res) => {
+    try{
+        res.render("admin/addFlight", {});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal Server error" });
+    }
+}
 module.exports = {
     viewDashboard,
     viewBookings,
@@ -79,5 +87,6 @@ module.exports = {
     viewAgents,
     viewAgentDetail,
     viewSettings, 
+    viewAddFlight,
     
 }

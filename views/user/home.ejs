@@ -1,28 +1,31 @@
-<%- include('./partials/header') %> <%- include('./partials/userHeader') %>
+<%- include('./partials/header') %> 
+<%- include('./partials/homeHeader') %>
 
 <!-- **************** MAIN CONTENT START **************** -->
 <main>
   <!-- =======================
     Main Banner START -->
-  <section class="py-0">
-    <div class="container">
-      <!-- Background image -->
-      <div
-        class="rounded-3 p-3 p-sm-5"
-        style="
-          background-image: url(/assets/images/bg/01.jpg);
-          background-position: center center;
-          background-repeat: no-repeat;
-          background-size: cover;
-        "
-      >
-        <!-- Banner title -->
-        <div class="row">
-          <div class="col-md-10 mx-auto text-center">
-            <h1 class="text-dark display-3 pt-sm-5 my-5">Ready to take off?</h1>
-          </div>
-        </div>
-
+  <section class="position-relative py-8 py-lg-9"
+    style="background-image:url(assets/images/bg/20.jpg); background-position: center left; background-size: cover;">
+    <% if (userId) { %>
+      <p class="alert alert-info text-center mx-auto shadow-sm rounded" style="max-width: 80%;  z-index: 10;">
+        <a href="/kyc"><strong>Complete your KYC</strong></a> to enable transactions securely.
+      </p>
+    <% } else { %>
+      <p class="alert alert-warning text-center mx-auto shadow-sm rounded" style="max-width: 80%;">
+        <a href="/sign-in"><strong>Sign in</strong></a> and complete your KYC to enable transactions.
+      </p>
+    <% } %>
+    
+       <!-- Background dark overlay -->
+       <div class="bg-overlay bg-dark opacity-7"></div>
+       <div class="container z-index-9 position-relative"> <!-- Banner title -->
+           <div class="row">
+               <div class="col-md-10 mx-auto text-center">
+                   <h1 class="text-white display-3 pt-sm-5 my5">Ready to take off?</h1>
+               </div>
+           </div>
+           
         <!-- Booking from START -->
         <form class="bg-mode position-relative px-3 px-sm-4 pt-4 mb-4 mb-sm-0" action="/flight-list" method="post">
           <!-- Svg decoration -->
@@ -473,7 +476,7 @@
         </form>
         <!-- Booking from END -->
       </div>
-    </div>
+    
   </section>
 
   <!-- =======================

@@ -11,5 +11,6 @@ adminRouter.get("/user-detail", adminController.viewUserDetail);
 adminRouter.get("/agents", adminController.viewAgents);
 adminRouter.get("/agent-detail", adminController.viewAgentDetail);
 adminRouter.get("/settings", adminController.viewSettings);
+adminRouter.get("/add-flight", adminController.viewAddFlight);
 
 module.exports = adminRouter;
