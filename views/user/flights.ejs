@@ -121,7 +121,7 @@
                                                 </div>
 
                                                 <div class="col-sm-4 col-md-3">
-                                                    <a href="flight-detail.html" class="btn btn-dark">Book Now</a>
+                                                    <button class="btn btn-dark" onclick="bookNow('<%= id %>')">Book Now</button>
                                                 </div>
 
                                             </div>
@@ -141,21 +141,15 @@
 
             <script>
                 async function bookNow(id) {
-                    console.log("Booking flight with ID:", id);
-
-                    const requestDetails = {
-                        adults: "<%= requestDetails.adults %>",
-                        children: "<%= requestDetails.children %>",
-                        infants: "<%= requestDetails.infants %>",
-                    };
-
+                    console.log(id);
+                    
                     try {
                         const response = await fetch("/flight-detail", {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
                             },
-                            body: JSON.stringify({ id, requestDetails }),
+                            body: JSON.stringify({ id })
                         });
 
                         if (!response.ok) {
@@ -165,6 +159,8 @@
 
                         // Extract redirect URL and navigate
                         const data = await response.json();
+                        console.log(data.redirectUrl);
+                        
                         window.location.href = data.redirectUrl;
                     } catch (error) {
                         console.error("Error booking flight:", error);

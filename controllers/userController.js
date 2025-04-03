@@ -340,7 +340,36 @@ const findTicket = async (req, res) => {
 
 const flightRequests = new Map(); // Temporary in-memory storage
 
+// const getFlightDetail = async (req, res) => {
+//   const { id, requestDetails } = req.body;
+
+//   try {
+//     // Store requestDetails temporarily in memory
+//     flightRequests.set(id, requestDetails);
+
+//     // Send redirect URL to frontend
+//     res.status(200).json({ redirectUrl: `/flight-detail?id=${id}` });
+//   } catch (error) {
+//     console.error("Error fetching flight details:", error);
+//     res.status(400).json({ error: "Invalid flight data" });
+//   }
+// };
+
 const getFlightDetail = async (req, res) => {
+  const { id } = req.body;
+  try {
+    // Store requestDetails temporarily in memory
+    // flightRequests.set(id, requestDetails);
+
+    // Send redirect URL to frontend
+    res.status(200).json({ redirectUrl: `/flight-detail?id=${id}` });
+  } catch (error) {
+    console.error("Error fetching flight details:", error);
+    res.status(400).json({ error: "Invalid flight data" });
+  }
+};
+
+const getSellerList = async (req, res) => {
   const { id, requestDetails } = req.body;
 
   try {
@@ -348,9 +377,9 @@ const getFlightDetail = async (req, res) => {
     flightRequests.set(id, requestDetails);
 
     // Send redirect URL to frontend
-    res.status(200).json({ redirectUrl: `/flight-detail?id=${id}` });
+    res.status(200).json({ redirectUrl: `/flights?id=${id}` });
   } catch (error) {
-    console.error("Error fetching flight details:", error);
+    console.error("Error fetching sellers:", error);
     res.status(400).json({ error: "Invalid flight data" });
   }
 };
@@ -381,8 +410,9 @@ const viewFlightDetail = async (req, res) => {
 };
 
 const getFlights = async (req, res) => {
+  const { id } = req.query;
   try {
-    res.render("user/flights", { requestDetails: "" });
+    res.render("user/flights", { id, requestDetails: "" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -643,19 +673,19 @@ const viewBookings = async (req, res) => {
     bookingsWithFlights.forEach((booking) => {
       if (
         booking.flightDetails &&
-        booking.flightDetails.arrivalDate &&
-        booking.flightDetails.arrivalTime
+        booking.flightDetails.departureDate &&
+        booking.flightDetails.departureTime
       ) {
-        const formattedDateStr = booking.flightDetails.arrivalDate + " 20:00"; // Adding a default time for parsing
-        const arrivalDate = new Date(Date.parse(formattedDateStr));
-        console.log(arrivalDate);
+        const formattedDateStr = booking.flightDetails.departureDate + " 20:00"; // Adding a default time for parsing
+        const departureDate = new Date(Date.parse(formattedDateStr));
+        console.log(departureDate);
         // If the arrival time is given separately, merge it
-        if (booking.flightDetails.arrivalTime) {
-          const [hours, minutes] = booking.flightDetails.arrivalTime.split(":");
-          arrivalDate.setHours(parseInt(hours), parseInt(minutes));
+        if (booking.flightDetails.departureTime) {
+          const [hours, minutes] = booking.flightDetails.departureTime.split(":");
+          departureDate.setHours(parseInt(hours), parseInt(minutes));
         }
 
-        if (arrivalDate <= today) {
+        if (departureDate <= today) {
           completedBookings.push(booking);
         } else {
           upcomingBookings.push(booking);
@@ -1098,5 +1128,6 @@ module.exports = {
   verifyCard,
   verifyAadhaar,
   viewManageBooking,
-  
+  getSellerList,
+
 };

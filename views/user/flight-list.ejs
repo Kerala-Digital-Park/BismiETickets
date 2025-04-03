@@ -596,12 +596,12 @@
                         <!-- Price -->
                         <h4>₹ <%= flight.price %>
                         </h4>
-                        <!-- <button class="btn btn-dark mb-0 mb-sm-2 book-now-btn" onclick="bookNow('<%= flight._id%>')">
+                        <button class="btn btn-dark mb-0 mb-sm-2 book-now-btn" onclick="bookNow('<%= flight._id%>')">
                           Select
-                        </button> -->
-                        <a href="/flights" class="btn btn-dark mb-0 mb-sm-2 book-now-btn" >
+                        </button>
+                        <!-- <a href="/flights" class="btn btn-dark mb-0 mb-sm-2 book-now-btn" >
                           Select
-                        </a>
+                        </a> -->
                         <button class="btn btn-link text-decoration-underline p-0 mb-0 flight-detail-btn"
                           data-bs-toggle="modal" data-bs-target="#flightdetail"
                           data-flight='<%= JSON.stringify(flight) %>'>
@@ -653,7 +653,7 @@ async function bookNow(id) {
   };
 
   try {
-    const response = await fetch("/flight-detail", {
+    const response = await fetch("/seller-list", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
