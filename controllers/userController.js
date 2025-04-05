@@ -357,11 +357,13 @@ const flightRequests = new Map(); // Temporary in-memory storage
 
 const getFlightDetail = async (req, res) => {
   const { id } = req.body;
+  const userId = req.session.userId;
   try {
-    // Store requestDetails temporarily in memory
-    // flightRequests.set(id, requestDetails);
+    const user = await Users.findById(userId);
+    if(user.subscription.transactions >= user.subscription.transactionLimit || user.subscription.transactionAmount >= user.subscription.maxTransactionAmount){
+      return res.status(400).json({ message: "Transaction limit exceeded or amount too high. Upgrade Now", redirectUrl: "/subscription" });
+    }     
 
-    // Send redirect URL to frontend
     res.status(200).json({ redirectUrl: `/flight-detail?id=${id}` });
   } catch (error) {
     console.error("Error fetching flight details:", error);
@@ -757,8 +759,19 @@ const viewDeleteProfile = async (req, res) => {
 const viewKyc = async (req, res) => {
   const userId = req.session.userId;
   try{
-    const userDetails = await Users.findById(userId).populate('subscription');;
+    const userDetails = await Users.findById(userId);
     res.render("user/kyc", { userDetails });
+  } catch (error) {
+    console.error(error);
+    res.render("error", { error });
+  }
+}
+
+const viewSubscription = async (req, res) => {
+  const userId = req.session.userId;
+  try{
+    const userDetails = await Users.findById(userId);
+    res.render("user/subscription", { userDetails });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
@@ -804,6 +817,11 @@ const flightBooking = async (req, res) => {
 
     await newBooking.save();
 
+    await Users.findByIdAndUpdate(req.session.userId,{
+      $inc: { "subscription.transactions": 1 },
+      $inc: { "subscription.transactionAmount": totalFare },
+    })
+    
     console.log(newBooking);
 
     return res
@@ -965,26 +983,37 @@ const verifyCard = async (req, res) => {
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
-
+    console.log(req.files);
     let updatedData = {};
 
-    if (req.file) {
-      updatedData.visitingCard = "/uploads/" + req.file.filename;
+    if (req.files && req.files.visitingCard && req.files.panCard) {
+      // Assuming the first file is visitingCard and the second is panCard
+      const visitingCardFile = req.files.visitingCard[0];
+      const panCardFile = req.files.panCard[0];
+
+      if (!visitingCardFile || !panCardFile) {
+        return res.status(400).json({ success: false, message: "Visiting Card and PAN Card are required." });
+      }
+
+      updatedData.visitingCard = "/uploads/" + visitingCardFile.filename;
+      updatedData.panCard = "/uploads/" + panCardFile.filename;
 
       if (user.subscription.subscription === "Null") {
-        updatedData["subscription.subscription"] = "Free"; // Update only the subscription field
-        updatedData["subscription.kyc"] = "Initial"; // update kyc
-        updatedData["subscription.transactions"] = 0; //reset transaction
-        updatedData["subscription.transactionLimit"] = 10; // set limit
-        updatedData["subscription.maxTransactionAmount"] = 100000; //set max amount
+        updatedData["subscription.subscription"] = "Free";
+        updatedData["subscription.kyc"] = "Initial";
+        updatedData["subscription.transactions"] = 0;
+        updatedData["subscription.transactionLimit"] = 10;
+        updatedData["subscription.maxTransactionAmount"] = 100000;
       }
-    }
 
     const updatedUser = await Users.findByIdAndUpdate(userId, updatedData, {
       new: true,
     });
 
-    res.json({ success: true, user: updatedUser, message: "Visiting card uploaded successfully!" });
+    res.json({ success: true, user: updatedUser, message: "Visiting card and PAN card uploaded successfully!" });
+    }else {
+      return res.status(400).json({ success: false, message: "Visiting Card and Pan Card are required." });
+    }
   } catch (error) {
     console.error("Error verifying card:", error);
     res.status(500).json({ success: false, message: "Server error" });
@@ -1005,87 +1034,107 @@ const verifyAadhaar = async (req, res) => {
 
     let updatedData = {};
 
-    if (req.file) {
-      updatedData.aadhaarCard = "/uploads/" + req.file.filename;
+    if (req.files && req.files.aadhaar1 && req.files.aadhaar2) {
+      // Access files using req.files.fieldname
+      const aadhaarCard1File = req.files.aadhaar1[0];
+      const aadhaarCard2File = req.files.aadhaar2[0];
+
+      if (!aadhaarCard1File || !aadhaarCard2File) {
+        return res.status(400).json({ success: false, message: "Aadhaar Card are required." });
+      }
+
+      updatedData.aadhaarCardFront = "/uploads/" + aadhaarCard1File.filename;
+      updatedData.aadhaarCardBack = "/uploads/" + aadhaarCard2File.filename;
 
       if (user.subscription.subscription === "Free") {
-        updatedData["subscription.subscription"] = "Pro"; // Update only the subscription field
-        updatedData["subscription.kyc"] = "Completed"; //update kyc
-        updatedData["subscription.transactions"] = 0; //reset transaction
-        updatedData["subscription.transactionLimit"] = 1000; //set limit
-        updatedData["subscription.maxTransactionAmount"] = 10000000; //set max amount
-      } 
+        updatedData["subscription.kyc"] = "Completed";
+        updatedData["subscription.transactions"] = 0;
+        updatedData["subscription.transactionLimit"] = 1000;
+        updatedData["subscription.maxTransactionAmount"] = 10000000;
+      }
+      const updatedUser = await Users.findByIdAndUpdate(userId, updatedData, {
+        new: true,
+      });
+
+      res.json({ success: true, user: updatedUser, message: "Aadhaar card uploaded successfully!" });
+    } else {
+      return res.status(400).json({ success: false, message: "Aadhaar Card Front and Back are required." });
     }
 
-    const updatedUser = await Users.findByIdAndUpdate(userId, updatedData, {
-      new: true,
-    });
-
-    res.json({ success: true, user: updatedUser, message: "Aadhaar card uploaded successfully!" });
   } catch (error) {
     console.error("Error verifying aadhaar:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-// const verifyCard = async (req, res) => {
-//   try {
-//     const userId = req.session.userId;
-//     if (!userId) {
-//       return res.status(401).json({ success: false, message: "Unauthorized" });
-//     }
+const subscription = async (req, res) => {
+  const { subscription } = req.body;
+  const userId = req.session.userId;
+  try {
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
 
-//     const user = await Users.findById(userId).populate("subscription");
-//     if (!user) {
-//       return res.status(404).json({ success: false, message: "User not found" });
-//     }
+    if(subscription === "Pro"){
+      if(user.subscription.kyc !== "Completed"){
+        return res.json({ redirectUrl: "/kyc", message:"Complete kyc for pro subscription" });
+      }
+      else{
+        res.status(200).json({ redirectUrl: `/subscription-payment?subscription=${subscription}` });
+      }
+    }
+    else if(subscription === "Enterprise"){
+      if(user.subscription.kyc !== "Completed"){
+        return res.json({ redirectUrl: "/kyc", message:"Complete kyc for enterprise" });
+      } else{
+        res.status(200).json({ redirectUrl: `/subscription-payment?subscription=${subscription}` });
+      }
+    }else {
+      res.status(201).json({ redirectUrl: "/subscription", message:"Invalid subscription" });
+    }
+  } catch (error) {
+    console.error("Error fetching payment details:", error);
+    res.status(400).json({ error: "Invalid subscription detail" });
+  }
+};
 
-//     let updatedData = {};
-//     if (req.file) {
-//       updatedData.visitingCard = "/uploads/" + req.file.filename;
-//     }
+const viewSubscriptionPayment = async (req, res) => {
+  const { subscription } = req.query;
+  const userId = req.session.userId;
+  try{
+    const userDetails = await Users.findById(userId);
+    res.render("user/subscription-payment", { userDetails, subscription });
+  } catch (error) {
+    console.error(error);
+    res.render("error", { error });
+  }
+}
 
-//     if (user.subscription && user.subscription.kyc === "Pending") {
-//       await Subscriptions.findByIdAndUpdate(user.subscription._id, { kyc: "Initial" });
-//     }
+const subscriptionPayment = async (req, res) => {
+  const userId = req.session.userId;
+  const {razorpay_payment_id, email, price, subscription} = req.body;
+  try{
+    const user = await Users.findById(userId);
+    if(razorpay_payment_id){
+      user.subscription.subscription = subscription;
+      await user.save(); 
 
-//     const updatedUser = await Users.findByIdAndUpdate(userId, updatedData, { new: true });
-//     res.json({ success: true, user: updatedUser, message: "Visiting card uploaded successfully!" });
-//   } catch (error) {
-//     console.error("Error verifying card:", error);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
+      res.json({ success: true, message: "Subscription updated successfully." });
+    } else {
+      console.error("Payment failed: razorpay_payment_id missing.");
+      res.status(400).json({ success: false, message: "Payment failed." });
+      return; 
+    }
 
-// const verifyAadhaar = async (req, res) => {
-//   try {
-//     const userId = req.session.userId;
-//     if (!userId) {
-//       return res.status(401).json({ success: false, message: "Unauthorized" });
-//     }
-
-//     const user = await Users.findById(userId).populate("subscription");
-//     if (!user) {
-//       return res.status(404).json({ success: false, message: "User not found" });
-//     }
-
-//     let updatedData = {};
-//     if (req.file) {
-//       updatedData.aadhaarCard = "/uploads/" + req.file.filename;
-//     }
-
-//     if (user.subscription && user.subscription.kyc === "Initial") {
-//       await Subscriptions.findByIdAndUpdate(user.subscription._id, { kyc: "Completed" });
-//     }
-
-//     const updatedUser = await Users.findByIdAndUpdate(userId, updatedData, { new: true });
-//     res.json({ success: true, user: updatedUser, message: "Aadhaar card uploaded successfully!" });
-//   } catch (error) {
-//     console.error("Error verifying aadhaar:", error);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
-
+  } catch (error) {
+    console.error(error);
+    res.render("error", { error });
+  }
+}
 
 module.exports = {
   viewHomepage,
@@ -1121,6 +1170,7 @@ module.exports = {
   viewSettings,
   viewDeleteProfile,
   viewKyc,
+  viewSubscription,
   flightBooking,
   updateProfile,
   updateEmail,
@@ -1129,5 +1179,8 @@ module.exports = {
   verifyAadhaar,
   viewManageBooking,
   getSellerList,
+  subscription,
+  viewSubscriptionPayment,
+  subscriptionPayment,
 
 };

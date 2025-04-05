@@ -11,10 +11,6 @@
       <p class="alert alert-info text-center mx-auto shadow-sm rounded" style="max-width: 80%;  z-index: 10;">
         <a href="/kyc"><strong>Complete your KYC</strong></a> to enable transactions securely.
       </p>
-    <% } else { %>
-      <p class="alert alert-warning text-center mx-auto shadow-sm rounded" style="max-width: 80%; z-index: 10;">
-        <a href="/sign-in"><strong>Sign in</strong></a> and complete your KYC to enable transactions.
-      </p>
     <% } %>
     
        <!-- Background dark overlay -->
@@ -106,8 +102,8 @@
 
             <!-- Ticket Travelers -->
             <div class="col-lg-4 ms-auto">
-              <div class="form-control-bg-light form-fs-md position-relative">
-                <div
+              <div class="form-control-bg-light form-fs-md d-flex">
+                <!-- <div
                   id="selectTravellersClass"
                   class="travellers-class-select form-control"
                   name="travellers-class"
@@ -245,7 +241,63 @@
                       Done
                     </button>
                   </div>
-                </div>
+                </div> -->
+                <div class="w-100">
+                  <div class="dropdown guest-selector me-2">
+                      <input type="text" class="form-guest-selector form-control flight-result"
+                          value="1 Passengers" data-bs-auto-close="outside" data-bs-toggle="dropdown">
+                      <ul class="dropdown-menu guest-selector-dropdown">
+                          <li class="d-flex justify-content-between">
+                              <div>
+                                  <h6 class="mb-0">Adults</h6>
+                                  <small>Ages 13 or above</small>
+                              </div>
+                              <div class="hstack gap-1 align-items-center">
+                                  <button type="button" class="btn btn-link adult-remove p-0 mb-0"><i
+                                          class="bi bi-dash-circle fs-5 fa-fw"></i></button>
+                                  <h6 class="guest-selector-count mb-0 adults" id="adults">1</h6>
+                                  <button type="button" class="btn btn-link adult-add p-0 mb-0"><i
+                                          class="bi bi-plus-circle fs-5 fa-fw"></i></button>
+                              </div>
+                          </li>
+              
+                          <li class="dropdown-divider"></li>
+              
+                          <li class="d-flex justify-content-between">
+                              <div>
+                                  <h6 class="mb-0">Children</h6>
+                                  <small>Ages 13 below</small>
+                              </div>
+              
+                              <div class="hstack gap-1 align-items-center">
+                                  <button type="button" class="btn btn-link child-remove p-0 mb-0"><i
+                                          class="bi bi-dash-circle fs-5 fa-fw"></i></button>
+                                  <h6 class="guest-selector-count mb-0 child" id="children">0</h6>
+                                  <button type="button" class="btn btn-link child-add p-0 mb-0"><i
+                                          class="bi bi-plus-circle fs-5 fa-fw"></i></button>
+                              </div>
+                          </li>
+              
+                          <li class="dropdown-divider"></li>
+              
+                          <li class="d-flex justify-content-between">
+                              <div>
+                                  <h6 class="mb-0">Infants</h6>
+                                  <small>Ages 2 below</small>
+                              </div>
+              
+                              <div class="hstack gap-1 align-items-center">
+                                  <button type="button" class="btn btn-link infant-remove p-0 mb-0"><i
+                                          class="bi bi-dash-circle fs-5 fa-fw"></i></button>
+                                  <h6 class="guest-selector-count mb-0 infant" id="infants">0</h6>
+                                  <button type="button" class="btn btn-link infant-add p-0 mb-0"><i
+                                          class="bi bi-plus-circle fs-5 fa-fw"></i></button>
+                              </div>
+                          </li>
+              
+                      </ul>
+                  </div>
+              </div>
               </div>
             </div>
 
@@ -498,8 +550,7 @@
 
       }
       </script>
-      
-    
+        
   <script>
     document.addEventListener("DOMContentLoaded", function () {
     const today = new Date();
@@ -545,7 +596,7 @@
 
   </script>
 
-  <script>
+  <!-- <script>
     document.addEventListener("DOMContentLoaded", function () {
       const selectTravellers = document.getElementById("selectTravellersClass");
       const dropdown = document.getElementById("travellersDropdown");
@@ -606,7 +657,71 @@
       // Initialize summary on load
       updateTravellersSummary();
     });
-  </script>
+  </script> -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const adultsCountElement = document.querySelector(".adults");
+        const childrenCountElement = document.querySelector(".child");
+        const infantsCountElement = document.querySelector(".infant");
+        const adultAddButton = document.querySelector(".adult-add");
+        const adultRemoveButton = document.querySelector(".adult-remove");
+        const childAddButton = document.querySelector(".child-add");
+        const childRemoveButton = document.querySelector(".child-remove");
+        const infantAddButton = document.querySelector(".infant-add");
+        const infantRemoveButton = document.querySelector(".infant-remove");
+        const guestSelectorInput = document.querySelector(".form-guest-selector");
+
+        let adults = parseInt(adultsCountElement.textContent);
+        let children = parseInt(childrenCountElement.textContent);
+        let infants = parseInt(infantsCountElement.textContent);
+
+        function updateGuestCount() {
+            adultsCountElement.textContent = adults;
+            childrenCountElement.textContent = children;
+            infantsCountElement.textContent = infants;
+            const totalPassengers = adults + children + infants;
+            guestSelectorInput.value = `${totalPassengers} Passengers`;
+        }
+
+        adultAddButton.addEventListener("click", function () {
+            adults++;
+            updateGuestCount();
+        });
+
+        adultRemoveButton.addEventListener("click", function () {
+            // if (adults > 1) { // Ensure at least 1 adult
+                adults--;
+                updateGuestCount();
+            // }
+        });
+
+        childAddButton.addEventListener("click", function () {
+            children++;
+            updateGuestCount();
+        });
+
+        childRemoveButton.addEventListener("click", function () {
+            if (children > 0) {
+                children--;
+                updateGuestCount();
+            }
+        });
+
+        infantAddButton.addEventListener("click", function () {
+            infants++;
+            updateGuestCount();
+        });
+
+        infantRemoveButton.addEventListener("click", function () {
+            if (infants > 0) {
+                infants--;
+                updateGuestCount();
+            }
+        });
+
+        updateGuestCount(); // Initialize count on load
+    });
+</script>
 
   <script>
     async function findTicket(e) {

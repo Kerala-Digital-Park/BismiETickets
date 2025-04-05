@@ -89,22 +89,6 @@
             </li>
             <!-- Dark mode options END -->
   
-            <!-- Search -->
-            <!-- <li class="nav-item dropdown nav-search me-2">
-              <a class="nav-link mb-0 py-0" role="button" href="#" id="navSearch" data-bs-toggle="dropdown"
-                aria-expanded="false" data-bs-auto-close="outside" data-bs-display="static">
-                <i class="bi bi-search fs-5"> </i>
-              </a>
-              <div class="dropdown-menu dropdown-menu-end shadow rounded p-2" aria-labelledby="navSearch">
-                <form class="input-group">
-                  <input class="form-control border-primary" type="search" placeholder="Search..." aria-label="Search" />
-                  <button class="btn btn-primary m-0" type="submit">
-                    Search
-                  </button>
-                </form>
-              </div>
-            </li> -->
-  
             <!-- Sign In / Profile Button -->
             <% if (userId) { %>
               <!-- Profile dropdown START -->
@@ -141,6 +125,7 @@
                   <li><a class="dropdown-item" href="/profile"><i class="bi bi-person fa-fw me-2"></i>My Profile</a></li>
                   <li><a class="dropdown-item" href="/bookings"><i class="bi bi-bookmark-check fa-fw me-2"></i>My Bookings</a></li>
                   <li><a class="dropdown-item" href="/wishlist"><i class="bi bi-heart fa-fw me-2"></i>My Wishlist</a></li>
+                  <li><a class="dropdown-item" href="/kyc"><i class="fas fa-id-card fa-fw me-2"></i>KYC</a></li>
                   <li><a class="dropdown-item" href="/settings"><i class="bi bi-gear fa-fw me-2"></i>Settings</a></li>
                   <li><a class="dropdown-item" href="/help"><i class="bi bi-info-circle fa-fw me-2"></i>Help Center</a></li>
                   <li><a class="dropdown-item bg-danger-soft-hover" href="/sign-out"><i class="bi bi-power fa-fw me-2"></i>Sign
@@ -182,7 +167,7 @@
               <% } else { %>
                 <li class="nav-item ms-2 d-sm-block">
                   <!-- Show Sign Up button if no session -->
-                  <a href="/sign-up" class="btn btn-sm btn-primary-soft mb-0">
+                  <a href="/sign-up" class="btn btn-sm btn-primary-soft mb-0 text-light">
                     <i class="fa-solid fa-right-to-bracket me-2"></i>Sign Up
                   </a>
                 </li>

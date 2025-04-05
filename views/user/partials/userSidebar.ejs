@@ -59,6 +59,12 @@
                             <a class="nav-link" href="/kyc"><i
                                     class="fas fa-id-card fa-fw me-2"></i>KYC</a>
                         </li>
+                        <% if (user.subscription.kyc === "Initial" || "Completed") { %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/subscription"><i 
+                                    class="fa-solid fa-crown fa-fw me-2"></i>Subscription</a>
+                        </li>
+                        <% } %>
                         <li class="nav-item">
                             <a class="nav-link" href="/wishlist"><i
                                     class="bi bi-heart fa-fw me-2"></i>Wishlist</a>
@@ -100,3 +106,4 @@
         });
     });
 </script>
+

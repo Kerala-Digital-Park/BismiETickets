@@ -55,13 +55,19 @@
                         <div class="bg-body rounded p-3 mt-3">
                             <ul class="list-inline hstack flex-wrap gap-2 justify-content-between mb-0">
                                 <li class="list-inline-item h6 fw-normal mb-0">
-                                    <a href="#">
+                                    <a href="#initialKyc">
                                         <i class="bi <%= userDetails.subscription.kyc === 'Initial' || userDetails.subscription.kyc === 'Completed'  ? 'bi-check-circle-fill text-success' : 'bi-plus-circle-fill text-primary' %> me-2"></i>
                                         Verify Visiting Card
                                     </a>
                                 </li>
                                 <li class="list-inline-item h6 fw-normal mb-0">
-                                    <a href="#">
+                                    <a href="#initialKyc">
+                                        <i class="bi <%= userDetails.subscription.kyc === 'Initial' || userDetails.subscription.kyc === 'Completed'  ? 'bi-check-circle-fill text-success' : 'bi-plus-circle-fill text-primary' %> me-2"></i>
+                                        Verify PAN Card
+                                    </a>
+                                </li>
+                                <li class="list-inline-item h6 fw-normal mb-0">
+                                    <a href="#finalKyc">
                                         <i class="bi <%=  userDetails.subscription.kyc === 'Completed' ? 'bi-check-circle-fill text-success' : 'bi-plus-circle-fill text-primary' %> me-2"></i>
                                         Verify Aadhaar
                                     </a>
@@ -71,30 +77,45 @@
                     </div>
 
                                     <!-- Initial KYC START -->
-                                    <div class="card border">
+                                    <div class="card border" id="initialKyc">
                                         <!-- Card header -->
                                         <div class="card-header border-bottom">
                                             <h4 class="card-header-title">Initial KYC</h4>
-                                            <p class="mb-0 mt-1">Complete this step to get a Free Subscription. Enjoy up to 10 transactions with transaction limit of ₹100,000.</p>
+                                            <p class="mb-0 mt-1">Complete this step to get a Free Subscription. </p>
                                         </div>
 
                                         <!-- Card body START -->
                                         <div class="card-body">
-                                            <form class="row g-3" id="kycForm" enctype="multipart/form-data">
-                                                <div class="col-12">
+                                            <form class="row g-3" id="initialKycForm" enctype="multipart/form-data">
+                                                <div class="col-6">
                                                     <label class="form-label">Upload Visiting Card <span class="text-danger">*</span></label>
                                                     <div class="d-flex align-items-center">
-                                                        <label class="position-relative me-4" for="uploadfile-1">
+                                                        <label class="position-relative me-4" for="upload-card">
                                                             <span class="avatar avatar-xl" style="height: 200px; width: 350px;">
-                                                                <img id="uploadfile-1-preview"
+                                                                <img id="upload-card-preview"
                                                                     class="avatar-img border border-white border-3 shadow"
                                                                     src="<%= userDetails.visitingCard ? userDetails.visitingCard : '/assets/images/avatar/default-card.jpg' %>"
                                                                     alt="visiting-card" style=" object-fit: cover; border-radius: 8px;">
                                                             </span>                                                            
                                                         </label>
-                                                        <label class="btn btn-sm btn-primary-soft mb-0" for="uploadfile-1">Upload</label>
-                                                        <input id="uploadfile-1" class="form-control d-none" type="file"
+                                                        <input id="upload-card" class="form-control d-none" type="file"
                                                             accept="image/*" name="visitingCard">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-6">
+                                                    <label class="form-label">Upload PAN Card <span class="text-danger">*</span></label>
+                                                    <div class="d-flex align-items-center">
+                                                        <label class="position-relative me-4" for="upload-pan">
+                                                            <span class="avatar avatar-xl" style="height: 200px; width: 350px;">
+                                                                <img id="upload-pan-preview"
+                                                                    class="avatar-img border border-white border-3 shadow"
+                                                                    src="<%= userDetails.panCard ? userDetails.panCard : '/assets/images/avatar/default-pan.jpeg' %>"
+                                                                    alt="pan-card" style=" object-fit: cover; border-radius: 8px;">
+                                                            </span>                                                            
+                                                        </label>
+                                                        <input id="upload-pan" class="form-control d-none" type="file"
+                                                            accept="image/*" name="panCard">
                                                     </div>
                                                 </div>
                 
@@ -108,29 +129,43 @@
                                     <!-- Initial KYC END -->
 
                                     <!-- Final KYC START -->
-                                    <div class="card border">
+                                    <div class="card border" id="finalKyc" style="<%= userDetails.subscription && userDetails.subscription.kyc != 'Pending' ? 'display: block;' : 'display: none;' %>">
                                         <!-- Card header -->
                                         <div class="card-header border-bottom">
                                             <h4 class="card-header-title">Final KYC</h4>
-                                            <p class="mb-0 mt-1">Complete this step to upgrade to a Pro Subscription. Enjoy unlimited transactions.</p>
                                         </div>
 
                                         <!-- Card body START -->
                                         <div class="card-body">
-                                            <form class="row g-3" id="kycForm" enctype="multipart/form-data">
-                                                <div class="col-12">
-                                                    <label class="form-label">Upload Aadhaar Card <span class="text-danger">*</span></label>
+                                            <form class="row g-3" id="finalKycForm" enctype="multipart/form-data">
+                                                <div class="col-6">
+                                                    <label class="form-label">Upload Aadhaar Card (Front-side) <span class="text-danger">*</span></label>
                                                     <div class="d-flex align-items-center">
-                                                        <label class="position-relative me-4" for="uploadfile-2">
+                                                        <label class="position-relative me-4" for="upload-aadhaar-1">
                                                             <span class="avatar avatar-xl" style="height: 200px; width: 350px;">
-                                                                <img id="uploadfile-2-preview"
+                                                                <img id="upload-aadhaar-1-preview"
                                                                     class="avatar-img border border-white border-3 shadow"
-                                                                    src="<%= userDetails.aadhaarCard ? userDetails.aadhaarCard : '/assets/images/avatar/default-aadhaar.png' %>"
+                                                                    src="<%= userDetails.aadhaarCardFront ? userDetails.aadhaarCardFront : '/assets/images/avatar/default-aadhaar.png' %>"
                                                                     alt="aadhaar-card" style=" object-fit: cover; border-radius: 8px;">
                                                             </span>                                                            
                                                         </label>
-                                                        <label class="btn btn-sm btn-primary-soft mb-0" for="uploadfile-2">Upload</label>
-                                                        <input id="uploadfile-2" class="form-control d-none" type="file"
+                                                        <input id="upload-aadhaar-1" class="form-control d-none" type="file"
+                                                            accept="image/*" name="aadhaarCard">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-6">
+                                                    <label class="form-label">Upload Aadhaar Card (Back-side) <span class="text-danger">*</span></label>
+                                                    <div class="d-flex align-items-center">
+                                                        <label class="position-relative me-4" for="upload-aadhaar-2">
+                                                            <span class="avatar avatar-xl" style="height: 200px; width: 350px;">
+                                                                <img id="upload-aadhaar-2-preview"
+                                                                    class="avatar-img border border-white border-3 shadow"
+                                                                    src="<%= userDetails.aadhaarCardBack ? userDetails.aadhaarCardBack : '/assets/images/avatar/default-aadhaar.png' %>"
+                                                                    alt="aadhaar-card" style=" object-fit: cover; border-radius: 8px;">
+                                                            </span>                                                            
+                                                        </label>
+                                                        <input id="upload-aadhaar-2" class="form-control d-none" type="file"
                                                             accept="image/*" name="aadhaarCard">
                                                     </div>
                                                 </div>
@@ -154,29 +189,70 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-    const uploadVisitingCard = document.getElementById("uploadfile-1");
-    const uploadAadhaarCard = document.getElementById("uploadfile-2");
+    const uploadVisitingCard = document.getElementById("upload-card");
+    const uploadPanCard = document.getElementById("upload-pan");
+    const uploadAadhaarCard1 = document.getElementById("upload-aadhaar-1");
+    const uploadAadhaarCard2 = document.getElementById("upload-aadhaar-2");
     const verifyCardBtn = document.getElementById("verifyCard");
     const verifyAadhaarBtn = document.getElementById("verifyAadhaar");
+    const kycStatus = '<%= userDetails.subscription ? userDetails.subscription.kyc : null %>';
+    
+    function handleKycStatus(kycStatus) {
+            if (kycStatus === 'Initial' || kycStatus === 'Completed') {
+                uploadVisitingCard.disabled = true;
+                uploadPanCard.disabled = true;
+                verifyCardBtn.textContent = "Completed";
+                verifyCardBtn.classList.remove("btn-primary");
+                verifyCardBtn.classList.add("btn-success");
+            }
+            if (kycStatus === 'Completed') {
+                uploadAadhaarCard1.disabled = true;
+                uploadAadhaarCard2.disabled = true;
+                verifyAadhaarBtn.textContent = "Completed";
+                verifyAadhaarBtn.classList.remove("btn-primary");
+                verifyAadhaarBtn.classList.add("btn-success");
+            }
+        }
+        handleKycStatus(kycStatus);
 
     uploadVisitingCard.addEventListener("change", function (event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    document.getElementById("uploadfile-1-preview").src = e.target.result;
+                    document.getElementById("upload-card-preview").src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-
-    uploadAadhaarCard.addEventListener("change", function (event) {
+        uploadPanCard.addEventListener("change", function (event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    document.getElementById("uploadfile-2-preview").src = e.target.result;
+                    document.getElementById("upload-pan-preview").src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+    uploadAadhaarCard1.addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById("upload-aadhaar-1-preview").src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    uploadAadhaarCard2.addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById("upload-aadhaar-2-preview").src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
@@ -186,48 +262,41 @@
     verifyCardBtn.disabled = true;
     verifyAadhaarBtn.disabled = true;
 
-    // Enable the Visiting Card verify button only when an image is uploaded
-    uploadVisitingCard.addEventListener("change", function (event) {
-        if (event.target.files.length > 0) {
-            verifyCardBtn.disabled = false;
+    function checkCardUploads() {
+            if (uploadVisitingCard.files.length > 0 && uploadPanCard.files.length > 0) {
+                verifyCardBtn.disabled = false;
+            } else {
+                verifyCardBtn.disabled = true;
+            }
         }
-    });
 
-    // Enable Aadhaar verification only if KYC is "Pending" or "Completed"
-    function updateAadhaarButton() {
-        const kycStatus = "<%= userDetails.subscription.kyc %>"; // Fetch KYC status from server-side
-        console.log(kycStatus);
-        
-        if (kycStatus === "Pending" || kycStatus === "Completed") {
-            verifyAadhaarBtn.disabled = true;
-
-            uploadAadhaarCard.addEventListener("change", function (event) {
-                verifyAadhaarBtn.disabled = event.target.files.length === 0;
-            });
-        } else {
-            verifyAadhaarBtn.disabled = false;
-        }
-    }
-
-    updateAadhaarButton(); // Call function to update Aadhaar button state
+        // Add event listeners to both file inputs
+        uploadVisitingCard.addEventListener("change", checkCardUploads);
+        uploadPanCard.addEventListener("change", checkCardUploads);
 
     // Handle Visiting Card form submission
     verifyCardBtn.addEventListener("click", async function (event) {
         event.preventDefault();
         const formData = new FormData();
         if (uploadVisitingCard.files.length > 0) {
-            formData.append("image", uploadVisitingCard.files[0]);
-        } else {
-        alert("Please select an image to verify your Visiting card.");
-        return; // Exit the function if no image is selected
-        }
+                formData.append("visitingCard", uploadVisitingCard.files[0]);
+            } else {
+                alert("Please select a Visiting card image.");
+                return;
+            }
+             if (uploadPanCard.files.length > 0) {
+                formData.append("panCard", uploadPanCard.files[0]);
+            } else {
+                alert("Please select a PAN card image.");
+                return;
+            }
 
         try {
             const response = await fetch("/verify-card", { method: "POST", body: formData });
             const data = await response.json();
 
             if (data.success) {
-                alert("Visiting card verified successfully!");
+                alert("Card verified successfully!");
                 location.reload();
             } else {
                 alert("Error verifying card: " + data.message);
@@ -238,14 +307,33 @@
         }
     });
 
+    function checkAadhaarUploads() {
+            if (uploadAadhaarCard1.files.length > 0 && uploadAadhaarCard2.files.length > 0) {
+                verifyAadhaarBtn.disabled = false;
+            } else {
+                verifyAadhaarBtn.disabled = true;
+            }
+        }
+
+        // Add event listeners to both file inputs
+        uploadAadhaarCard1.addEventListener("change", checkAadhaarUploads);
+        uploadAadhaarCard2.addEventListener("change", checkAadhaarUploads);
+
     // Handle Aadhaar form submission
     verifyAadhaarBtn.addEventListener("click", async function (event) {
         event.preventDefault();
         const formData = new FormData();
-        if (uploadAadhaarCard.files.length > 0) {
-            formData.append("image", uploadAadhaarCard.files[0]);
+        if (uploadAadhaarCard1.files.length > 0) {
+            formData.append("aadhaar1", uploadAadhaarCard1.files[0]);
         } else {
-        alert("Please select an image to verify your Aadhaar card.");
+        alert("Please select Aadhaar card frontside to verify.");
+        return; // Exit the function if no image is selected
+        }
+
+        if (uploadAadhaarCard2.files.length > 0) {
+            formData.append("aadhaar2", uploadAadhaarCard2.files[0]);
+        } else {
+        alert("Please select Aadhaar card backside to verify.");
         return; // Exit the function if no image is selected
         }
 

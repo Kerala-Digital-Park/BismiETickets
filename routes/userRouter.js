@@ -4,6 +4,7 @@ const userController = require("../controllers/userController");
 const session = require('express-session')
 const {isLogin,isLogout} = require("../middleware/userAuth");
 const upload = require("../multer/multer");
+const Users = require("../models/userModel");
 
 const preventCache = (req, res, next) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
@@ -16,6 +17,22 @@ userRouter.use((req, res, next) => {
     res.locals.userId = req.session.userId; 
     next();
   });
+
+userRouter.use(async(req, res, next) => {
+      
+      if (req.session.userId) {
+          try {
+            res.locals.user = await Users.findById(req.session.userId); 
+          } catch (error) {
+              console.error('Error fetching user details:', error);
+              res.locals.user = null;
+          }
+      } else {
+          res.locals.user = null;
+      }
+      next();
+  });
+  
 
   userRouter.use((req, res, next)=> {
     const currentUrl = req.originalUrl;
@@ -54,6 +71,8 @@ userRouter.get("/delete-profile",isLogin, userController.viewDeleteProfile);
 userRouter.get("/kyc",isLogin, userController.viewKyc);
 userRouter.get("/flights", isLogin, userController.getFlights);
 userRouter.get("/manage-booking", isLogin, userController.viewManageBooking);
+userRouter.get("/subscription", isLogin, userController.viewSubscription);
+userRouter.get("/subscription-payment", isLogin, userController.viewSubscriptionPayment);
 
 userRouter.post("/sign-up", userController.signup);
 userRouter.post("/sign-in", userController.signin);
@@ -66,7 +85,21 @@ userRouter.post("/flight-booking",isLogin, userController.flightBooking);
 userRouter.post("/update-profile",isLogin, upload.single("image"), userController.updateProfile);
 userRouter.post("/update-email",isLogin, userController.updateEmail);
 userRouter.post("/update-password",isLogin, userController.updatePassword);
-userRouter.post("/verify-card",isLogin, upload.single("image"), userController.verifyCard);
-userRouter.post("/verify-aadhaar",isLogin, upload.single("image"), userController.verifyAadhaar);
+userRouter.post("/verify-card",isLogin,
+  upload.fields([
+  { name: "visitingCard", maxCount: 1 },
+  { name: "panCard", maxCount: 1 },
+]), userController.verifyCard);
+userRouter.post(
+  "/verify-aadhaar",
+  isLogin,
+  upload.fields([
+    { name: "aadhaar1", maxCount: 1 },
+    { name: "aadhaar2", maxCount: 1 },
+  ]),
+  userController.verifyAadhaar
+);
+userRouter.post("/subscription", isLogin, userController.subscription);
+userRouter.post("/subscription-payment", isLogin, userController.subscriptionPayment);
 
 module.exports = userRouter;

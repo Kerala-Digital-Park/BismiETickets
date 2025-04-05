@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const cron = require("node-cron"); // For resetting limits monthly
+const cron = require("node-cron"); 
 
 const userSchema = mongoose.Schema(
   {
@@ -19,37 +19,37 @@ const userSchema = mongoose.Schema(
     address: { type: String, default: null },
     image:{type:String,default:null},
     visitingCard: { type: String, default: null }, 
-    aadhaarCard: { type: String, default: null }, 
+    panCard: {type:String,default:null},
+    aadhaarCardFront: { type: String, default: null },
+    aadhaarCardBack: { type: String, default: null }, 
     subscription: {
       subscription: {
         type: String,
-        enum: ["Pro", "Free", "Null"],
+        enum: ["Enterprise", "Pro", "Free", "Null"],
         default: "Null",
       },
       kyc: {
         type: String,
         enum: ["Completed", "Initial", "Pending"],
-        default: function () {
-          if (this.subscription === "Pro") return "Completed";
-          if (this.subscription === "Free") return "Initial";
-          return "Pending";
-        },
+        default: "Pending",
       },
       transactions: { type: Number, default: 0},
       transactionLimit: {
           type: Number,
           default: function () {
-            if (this.subscription === "Pro") return 1000;
-            if (this.subscription === "Free") return 10;
+            if (this.subscription === "Enterprise") return 100000;
+            if (this.subscription === "Pro") return 100;
+            if (this.subscription === "Free") return 20;
             return 3;
           },
         },
+        transactionAmount: { type: Number, default: 0},
         maxTransactionAmount: {
           type: Number,
           default: function () {
-            if (this.subscription === "Pro") return 10000000;
-            if (this.subscription === "Free") return 100000;
-            return 10000;
+            if (this.subscription === "Enterprise") return 10000000;
+            if (this.subscription === "Pro") return 2000000;
+            return 200000;
           },
         },
     } 
@@ -66,10 +66,10 @@ userSchema.pre("save", async function (next) {
 });
 
 // Method to decrease transaction count
-userSchema.methods.decreaseTransaction = async function (amount) {
+userSchema.methods.decreaseTransaction = async function () {
   if (
     this.subscription.transactions >= this.subscription.transactionLimit ||
-    amount > this.subscription.maxTransactionAmount
+    transactionAmount > this.subscription.maxTransactionAmount
   ) {
     throw new Error("Transaction limit exceeded or amount too high.");
   }
@@ -83,7 +83,9 @@ cron.schedule("0 0 1 * *", async () => {
   console.log("Resetting transactions for all users...");
   await mongoose.model("Users").updateMany(
     {},
-    { "subscription.transactions": 0 }
+    { "subscription.transactions": 0,
+      "subscription.transactionAmount": 0,
+     }
   );
 });
 

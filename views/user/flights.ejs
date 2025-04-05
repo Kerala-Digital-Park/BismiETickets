@@ -141,7 +141,6 @@
 
             <script>
                 async function bookNow(id) {
-                    console.log(id);
                     
                     try {
                         const response = await fetch("/flight-detail", {
@@ -152,13 +151,15 @@
                             body: JSON.stringify({ id })
                         });
 
+                        const data = await response.json();
+                        console.log(data);
+                        
                         if (!response.ok) {
-                            alert("Failed to fetch flight details");
-                            return;
+                            alert(data.message || "Failed to fetch flight details");
+                            window.location.href = data.redirectUrl;
                         }
 
                         // Extract redirect URL and navigate
-                        const data = await response.json();
                         console.log(data.redirectUrl);
                         
                         window.location.href = data.redirectUrl;

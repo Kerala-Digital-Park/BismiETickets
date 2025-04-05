@@ -6,7 +6,7 @@ const PORT = 3000;
 const path = require('path')
 const nocache = require('nocache')
 const session = require('express-session')
-const fetchUserDetails = require('./middleware/user'); 
+// const fetchUserDetails = require('./middleware/user'); 
 
 const preventCache = (req, res, next) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
@@ -55,7 +55,7 @@ app.use(
   app.use("/", express.static("public/"));
   app.use(express.static('uploads'))
  
-  app.use(fetchUserDetails);
+  // app.use(fetchUserDetails);
   app.use('/',preventCache,userRouter); 
   app.use('/admin',adminRouter);
   app.use('/agent',agentRouter);

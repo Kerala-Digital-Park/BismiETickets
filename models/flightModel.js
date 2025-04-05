@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const flightSchema = mongoose.Schema({
+  // seller_id:{}
   inventoryName: { type: String, required: true },
   airline: { type: String, required: true },
   flightNumber: { type: String, required: true },
