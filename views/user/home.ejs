@@ -321,20 +321,13 @@
                         ><i class="bi bi-geo-alt me-2"></i>From</label
                       >
                       <select
-                        class="form-select js-choice"
+                        class="form-select"
                         data-search-enabled="true"
                         id="fixedFrom"
                         name="fixedFrom"
                       >
 
                       <option value="">Select location</option>
-                      <option value="San Jacinto, USA">San Jacinto, USA</option>
-                      <option value="North Dakota, Canada">North Dakota, Canada</option>
-                      <option value="West Virginia, Paris">West Virginia, Paris</option>
-                      <option value="Doha International Airport">Doha International Airport</option>
-                      <option value="Calicut Airport">Calicut Airport</option>
-                      <option value="Delhi">Delhi</option>
-                      <option value="Ahmedabad">Ahmedabad</option>
                       </select>
                     </div>
 
@@ -357,19 +350,13 @@
                         ><i class="bi bi-send me-2"></i>To</label
                       >
                       <select
-                        class="form-select js-choice"
+                        class="form-select"
                         data-search-enabled="true"
                         id="fixedTo"
                         name="fixedTo"
                       >
                         <option value="">Select location</option>
-                        <option value="San Jacinto, USA">San Jacinto, USA</option>
-                        <option value="North Dakota, Canada">North Dakota, Canada</option>
-                        <option value="West Virginia, Paris">West Virginia, Paris</option>
-                        <option value="Doha International Airport">Doha International Airport</option>
-                        <option value="Calicut Airport">Calicut Airport</option>
-                        <option value="Delhi">Delhi</option>
-                      <option value="Ahmedabad">Ahmedabad</option>
+                        
                       </select>
                     </div>
                   </div>
@@ -429,13 +416,7 @@
                         name="from"
                       >
                       <option value="">Select location</option>
-                      <option value="San Jacinto, USA">San Jacinto, USA</option>
-                      <option value="North Dakota, Canada">North Dakota, Canada</option>
-                      <option value="West Virginia, Paris">West Virginia, Paris</option>
-                      <option value="Doha International Airport">Doha International Airport</option>
-                      <option value="Calicut Airport">Calicut Airport</option>
-                      <option value="Delhi">Delhi</option>
-                      <option value="Ahmedabad">Ahmedabad</option>
+                     
                       </select>
                     </div>
 
@@ -463,14 +444,8 @@
                         name="to"
                       >
                       <option value="">Select location</option>
-                      <option value="San Jacinto, USA">San Jacinto, USA</option>
-                      <option value="North Dakota, Canada">North Dakota, Canada</option>
-                      <option value="West Virginia, Paris">West Virginia, Paris</option>
-                      <option value="Doha International Airport">Doha International Airport</option>
-                      <option value="Calicut Airport">Calicut Airport</option>
-                      <option value="Delhi">Delhi</option>
-                      <option value="Ahmedabad">Ahmedabad</option>
-                      </select>
+                      
+                    </select>
                     </div>
                   </div>
 
@@ -595,6 +570,82 @@
 });
 
   </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const fromSelect = document.getElementById('from');
+    const toSelect = document.getElementById('to');
+    const fixedFromSelect = document.getElementById('fixedFrom');
+    const fixedToSelect = document.getElementById('fixedTo')
+
+    fetch('https://raw.githubusercontent.com/jbrooksuk/JSON-Airports/master/airports.json')
+      .then(response => response.json())
+      .then(data => {
+        
+        // Filter airports with valid IATA codes
+        const airports = data.filter(airport => airport.iata && airport.name && airport.iata.length === 3);
+
+        const createOption = (airport) => {
+          const option = document.createElement('option');
+          option.value = airport.iata;
+          option.textContent = `${airport.name} (${airport.iata})`;
+          return option;
+        };
+
+        airports.forEach(airport => {
+          fromSelect.appendChild(createOption(airport));
+          toSelect.appendChild(createOption(airport));
+          fixedFromSelect.appendChild(createOption(airport));
+          fixedToSelect.appendChild(createOption(airport));
+        });
+
+        // Initialize Choices AFTER population
+        if (!fromSelect.classList.contains('choices__input')) {
+          new Choices(fromSelect, {
+            searchEnabled: true,
+            shouldSort: false,
+            placeholder: true,
+            placeholderValue: 'Select From Airport',
+            allowHTML: true
+          });
+        }
+
+        if (!toSelect.classList.contains('choices__input')) {
+          new Choices(toSelect, {
+            searchEnabled: true,
+            shouldSort: false,
+            placeholder: true,
+            placeholderValue: 'Select To Airport',
+            allowHTML: true
+          });
+        }
+
+        if (!fixedFromSelect.classList.contains('choices__input')) {
+          new Choices(fixedFromSelect, {
+            searchEnabled: true,
+            shouldSort: false,
+            placeholder: true,
+            placeholderValue: 'Select From Airport',
+            allowHTML: true
+          });
+        }
+
+        if (!fixedToSelect.classList.contains('choices__input')) {
+          new Choices(fixedToSelect, {
+            searchEnabled: true,
+            shouldSort: false,
+            placeholder: true,
+            placeholderValue: 'Select To Airport',
+            allowHTML: true
+          });
+        }
+
+      })
+      .catch(error => {
+        console.error('Error fetching airports:', error);
+      });
+  });
+</script>
 
   <!-- <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -776,8 +827,9 @@
       if (isFlexible) {
         requestData.returnDate = returnDate;
       }
-
+      
       // sessionStorage.setItem("requestData", JSON.stringify(requestData)); 
+      console.log(requestData)
 
       try {
         // Send POST request to the API

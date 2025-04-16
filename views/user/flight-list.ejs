@@ -157,15 +157,15 @@
                       <label class="mb-1"
                         ><i class="bi bi-geo-alt me-2"></i>From</label
                       >
-                      <select class="form-select" data-search-enabled="true" id="fixedFrom" name="fixedFrom">
+                      <select class="form-select" id="fixedFrom" name="fixedFrom" data-selected="<%= requestDetails.fixedFrom %>">
                         <option value="">Select location</option>
-                        <option value="San Jacinto, USA" <%= requestDetails.fixedFrom === 'San Jacinto, USA' ? 'selected' : '' %> >San Jacinto, USA</option>
+                        <!-- <option value="San Jacinto, USA" <%= requestDetails.fixedFrom === 'San Jacinto, USA' ? 'selected' : '' %> >San Jacinto, USA</option>
                         <option value="North Dakota, Canada" <%= requestDetails.fixedFrom === 'North Dakota, Canada' ? 'selected' : '' %>>North Dakota, Canada</option>
                         <option value="West Virginia, Paris" <%= requestDetails.fixedFrom === 'West Virginia, Paris' ? 'selected' : '' %>>West Virginia, Paris</option>
                         <option value="Doha International Airport" <%= requestDetails.fixedFrom === 'Doha International Airport' ? 'selected' : '' %>>Doha International Airport</option>
                         <option value="Calicut Airport" <%= requestDetails.fixedFrom === 'Calicut Airport' ? 'selected' : '' %>>Calicut Airport</option>
                         <option value="Delhi" <%= requestDetails.fixedFrom === 'Delhi' ? 'selected' : '' %>>Delhi</option>
-                        <option value="Ahmedabad" <%= requestDetails.fixedFrom === 'Ahmedabad' ? 'selected' : '' %>>Ahmedabad</option>
+                        <option value="Ahmedabad" <%= requestDetails.fixedFrom === 'Ahmedabad' ? 'selected' : '' %>>Ahmedabad</option> -->
                       </select>
                       
                     </div>
@@ -187,15 +187,15 @@
                       <label class="mb-1"
                         ><i class="bi bi-send me-2"></i>To</label
                       >
-                      <select class="form-select" data-search-enabled="true" id="fixedTo" name="fixedTo">
+                      <select class="form-select" id="fixedTo" name="fixedTo" data-selected="<%= requestDetails.fixedTo %>">
                         <option value="">Select location</option>
-                        <option value="San Jacinto, USA" <%= requestDetails.fixedTo === 'San Jacinto, USA' ? 'selected' : '' %>>San Jacinto, USA</option>
+                        <!-- <option value="San Jacinto, USA" <%= requestDetails.fixedTo === 'San Jacinto, USA' ? 'selected' : '' %>>San Jacinto, USA</option>
                         <option value="North Dakota, Canada" <%= requestDetails.fixedTo === 'North Dakota, Canada' ? 'selected' : '' %>>North Dakota, Canada</option>
                         <option value="West Virginia, Paris" <%= requestDetails.fixedTo === 'West Virginia, Paris' ? 'selected' : '' %>>West Virginia, Paris</option>
                         <option value="Doha International Airport" <%= requestDetails.fixedTo === 'Doha International Airport' ? 'selected' : '' %>>Doha International Airport</option>
                         <option value="Calicut Airport" <%= requestDetails.fixedTo === 'Calicut Airport' ? 'selected' : '' %>>Calicut Airport</option>
                         <option value="Delhi" <%= requestDetails.fixedTo === 'Delhi' ? 'selected' : '' %>>Delhi</option>
-                        <option value="Ahmedabad" <%= requestDetails.fixedTo === 'Ahmedabad' ? 'selected' : '' %>>Ahmedabad</option>
+                        <option value="Ahmedabad" <%= requestDetails.fixedTo === 'Ahmedabad' ? 'selected' : '' %>>Ahmedabad</option> -->
                       </select>
                     </div>
                   </div>
@@ -248,13 +248,13 @@
                       >
                       <select class="form-select" data-search-enabled="true" id="from" name="from">
                         <option value="">Select location</option>
-                        <option value="San Jacinto, USA" <%= requestDetails.from === "San Jacinto, USA" ? "selected" : "" %>>San Jacinto, USA</option>
+                        <!-- <option value="San Jacinto, USA" <%= requestDetails.from === "San Jacinto, USA" ? "selected" : "" %>>San Jacinto, USA</option>
                         <option value="North Dakota, Canada" <%= requestDetails.from === "North Dakota, Canada" ? "selected" : "" %>>North Dakota, Canada</option>
                         <option value="West Virginia, Paris" <%= requestDetails.from === "West Virginia, Paris" ? "selected" : "" %>>West Virginia, Paris</option>
                         <option value="Doha International Airport" <%= requestDetails.from === "Doha International Airport" ? "selected" : "" %>>Doha International Airport</option>
                         <option value="Calicut Airport" <%= requestDetails.from === "Calicut Airport" ? "selected" : "" %>>Calicut Airport</option>
                         <option value="Delhi" <%= requestDetails.from === 'Delhi' ? 'selected' : '' %>>Delhi</option>
-                        <option value="Ahmedabad" <%= requestDetails.from === 'Ahmedabad' ? 'selected' : '' %>>Ahmedabad</option>
+                        <option value="Ahmedabad" <%= requestDetails.from === 'Ahmedabad' ? 'selected' : '' %>>Ahmedabad</option> -->
                       </select>
                     </div>
 
@@ -277,13 +277,13 @@
                       >
                       <select class="form-select" data-search-enabled="true" id="to" name="to">
                         <option value="">Select location</option>
-                        <option value="San Jacinto, USA" <%= requestDetails.to === "San Jacinto, USA" ? "selected" : "" %>>San Jacinto, USA</option>
+                        <!-- <option value="San Jacinto, USA" <%= requestDetails.to === "San Jacinto, USA" ? "selected" : "" %>>San Jacinto, USA</option>
                         <option value="North Dakota, Canada" <%= requestDetails.to === "North Dakota, Canada" ? "selected" : "" %>>North Dakota, Canada</option>
                         <option value="West Virginia, Paris" <%= requestDetails.to === "West Virginia, Paris" ? "selected" : "" %>>West Virginia, Paris</option>
                         <option value="Doha International Airport" <%= requestDetails.to === "Doha International Airport" ? "selected" : "" %>>Doha International Airport</option>
                         <option value="Calicut Airport" <%= requestDetails.to === "Calicut Airport" ? "selected" : "" %>>Calicut Airport</option>
                         <option value="Delhi" <%= requestDetails.to === 'Delhi' ? 'selected' : '' %>>Delhi</option>
-                        <option value="Ahmedabad" <%= requestDetails.to === 'Ahmedabad' ? 'selected' : '' %>>Ahmedabad</option>
+                        <option value="Ahmedabad" <%= requestDetails.to === 'Ahmedabad' ? 'selected' : '' %>>Ahmedabad</option> -->
                       </select>
                     </div>
                   </div>
@@ -524,10 +524,10 @@
           <div class="vstack gap-4">
             <div id="flight-list">
               <% if (flights.length > 0) { %>
-              <% flights.forEach((flight)=> { %>
-  
+                <% flights.forEach((flight)=> { %>
+
                 <!-- Ticket item START -->
-                <div class="card border">
+                <div class="card border mb-3">
                   <!-- Card header -->
                   <div class="card-header d-sm-flex justify-content-sm-between align-items-center">
                     <!-- Airline Name -->
@@ -621,25 +621,27 @@
                         <li class="list-inline-item text-success">Refundable</li>
                       </ul>
                     </div>
+
                   </div>
                   <!-- Ticket item END -->
-  
-                  <% }) %>
-                  <% } else { %>
-                    <!-- No flights available message -->
-                    <div class="text-center py-5">
-                      <h4 class="text-muted">No flights are available</h4>
-                    </div>
-                  <% } %>
-  
                 </div>
+  
+                <% }) %>
+              <% } else { %>
+                <!-- No flights available message -->
+                <div class="text-center py-5">
+                  <h4 class="text-muted">No flights are available</h4>
+                </div>
+              <% } %>
   
             </div>
           </div>
-          <!-- Main content END -->
         </div>
-        <!-- Row END -->
+        <!-- Main content END -->
+
       </div>
+      <!-- Row END -->
+    </div>
   </section>
   
   <script>
@@ -1095,6 +1097,89 @@ function generateFlightSegment(from, depTime, depDate, to, arrTime, arrDate, dur
 });
 
   </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const fromSelect = document.getElementById('from');
+    const toSelect = document.getElementById('to');
+    const fixedFromSelect = document.getElementById('fixedFrom');
+    const fixedToSelect = document.getElementById('fixedTo');
+
+
+  const selectedFixedFrom = fixedFromSelect?.dataset.selected || "";
+  const selectedFixedTo = fixedToSelect?.dataset.selected || "";
+
+    fetch('https://raw.githubusercontent.com/jbrooksuk/JSON-Airports/master/airports.json')
+      .then(response => response.json())
+      .then(data => {
+        
+        // Filter airports with valid IATA codes
+        const airports = data.filter(airport => airport.iata && airport.name && airport.iata.length === 3);
+
+        const createOption = (airport, selectedValue) => {
+          const option = document.createElement('option');
+          option.value = airport.iata;
+          option.textContent = `${airport.name} (${airport.iata})`;
+          if (airport.iata === selectedValue) {
+            option.selected = true;
+        }
+          return option;
+        };
+
+        airports.forEach(airport => {
+          fromSelect.appendChild(createOption(airport));
+          toSelect.appendChild(createOption(airport));
+          fixedFromSelect.appendChild(createOption(airport));
+          fixedToSelect.appendChild(createOption(airport));
+        });
+
+        // Initialize Choices AFTER population
+        if (!fromSelect.classList.contains('choices__input')) {
+          new Choices(fromSelect, {
+            searchEnabled: true,
+            shouldSort: false,
+            placeholder: true,
+            placeholderValue: 'Select From Airport',
+            allowHTML: true
+          });
+        }
+
+        if (!toSelect.classList.contains('choices__input')) {
+          new Choices(toSelect, {
+            searchEnabled: true,
+            shouldSort: false,
+            placeholder: true,
+            placeholderValue: 'Select To Airport',
+            allowHTML: true
+          });
+        }
+
+        if (!fixedFromSelect.classList.contains('choices__input')) {
+          new Choices(fixedFromSelect, {
+            searchEnabled: true,
+            shouldSort: false,
+            placeholder: true,
+            placeholderValue: 'Select From Airport',
+            allowHTML: true
+          });
+        }
+
+        if (!fixedToSelect.classList.contains('choices__input')) {
+          new Choices(fixedToSelect, {
+            searchEnabled: true,
+            shouldSort: false,
+            placeholder: true,
+            placeholderValue: 'Select To Airport',
+            allowHTML: true
+          });
+        }
+
+      })
+      .catch(error => {
+        console.error('Error fetching airports:', error);
+      });
+  });
+</script>
 
 <script>
   window.history.replaceState(null, "", window.location.href)

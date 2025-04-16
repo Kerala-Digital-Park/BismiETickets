@@ -1,0 +1,194 @@
+<%- include('./partials/header') %>
+    <%- include('./partials/userHeader') %>
+
+        <!-- **************** MAIN CONTENT START **************** -->
+        <main>
+
+            <!-- ======================= Content START -->
+            <section class="pt-3">
+                <div class="container">
+                    <div class="row">
+
+                        <%- include('./partials/userSidebar') %>
+
+                            <!-- Main content START -->
+                            <div class="col-lg-8 col-xl-9">
+
+                                <!-- Offcanvas menu button -->
+                                <div class="d-grid mb-0 d-lg-none w-100">
+                                    <button class="btn btn-primary mb-4" type="button" data-bs-toggle="offcanvas"
+                                        data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
+                                        <i class="fas fa-sliders-h"></i> Menu
+                                    </button>
+                                </div>
+                                <!-- Offcanvas menu button END -->
+
+                                <div class="row g-4">
+                                    <div class="d-flex flex-wrap justify-content-between">
+                                        <div class="header">
+                                            <h4>My Subscriptions</h4>
+                                            <p>Here is list of package/product that you have subscribed.</p>
+                                        </div>
+                                        <div class="mt-4">
+                                            <a href="/subscription" class="btn rounded-0 btn-border border-primary" style="background: transparent;">View Pricing</a>
+                                        </div>
+                                    </div>
+                                    <% if(userDetails) { %>
+                                    <div class="card border-1 rounded-0 d-flex flex-row p-0">
+                                        <div class="col-lg-8 p-2">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <div>
+                                                    <h5><%= userDetails.subscription.subscription %> Plan 
+                                                        <% 
+                                                            const today = new Date();
+                                                            const expiryDate = new Date(userDetails.subscription.expiryDate); 
+                                                            if (expiryDate < today) { 
+                                                        %>
+                                                        <span class="badge bg-danger rounded-3" style="font-size: x-small;">Expired</span>
+                                                        <% } else { %>
+                                                            <span class="badge bg-success rounded-3" style="font-size: x-small;">Active</span>
+                                                    <% } %></h5>
+                                                    <!-- <small class="mb-0">Subscription ID: 100394949</small> -->
+                                                </div>
+                                                <div>
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox" id="autoRenew" checked>
+                                                        <small class="ms-2"><label class="form-check-label" for="autoRenew">Auto Renew</label></small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row d-flex justify-content-between align-items-center">
+                                                <div class="col-md-auto mb-3 mb-md-0 d-flex flex-column">
+                                                    <p>Started On</p>
+                                                    <% 
+                                                        const date = new Date(userDetails.subscription.subscriptionDate);
+                                                        const options = { month: 'short', day: 'numeric', year: 'numeric' };
+                                                        const formattedDate = date.toLocaleDateString('en-US', options);
+                                                    %>
+                                                    <%= formattedDate %> 
+                                                </div>
+                                                <div class="col-md-auto mb-3 mb-md-0">
+                                                    <p>Recurring</p>
+                                                    Yes
+                                                </div>
+                                                <div class="col-md-auto mb-3 mb-md-0">
+                                                    <p>Price</p>
+                                                    ₹ <%= userDetails.subscription.price %>
+                                                </div>
+                                                <div class="col-md-auto mb-3 mb-md-0">
+                                                    <p>Access</p>
+                                                    <% if(userDetails.subscription.subscription === "Enterprise") { %>
+                                                    <span>Unlimited</span>
+                                                    <% } else if(userDetails.subscription.subscription === "Pro") { %>
+                                                    <span>Limited</span>
+                                                    <% } else { %>
+                                                    <span>No Access</span>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 bg-light p-2 ">
+                                            <div class="col-md-auto ms-auto text-center">
+                                                <a href="/subscription" class="btn btn-primary">Change Plan</a>
+                                            </div>
+                                            <div class="col-md-auto ms-auto text-center">
+                                                <button id="renewBtn" class="btn btn-border border-primary">Renew Plan</button>
+                                            </div>
+                                            <div class="mt-3 text-center">
+                                                <small>
+                                                    <% 
+                                                        const expiryOptions = { month: 'short', day: 'numeric', year: 'numeric' };
+                                                        const formattedExpiryDate = expiryDate.toLocaleDateString('en-US', expiryOptions);
+                                                    %>
+                                                    Next Billing on <%= formattedExpiryDate %> </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } else { %>
+                                    <div class="card border-1 rounded-0 d-flex flex-row p-0">
+                                        <div class="col-lg-8 p-2">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <div>
+                                                    <h5>No Subscription Found</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 bg-light p-2 ">
+                                            <div class="col-md-auto ms-auto text-center">
+                                                <a href="/subscription" class="btn btn-primary">Subscribe Now</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } %>                                            
+                                </div>
+                                
+
+                            </div>
+                            <!-- Main content END -->
+                    </div>
+                </div>
+            </section>
+            <!-- ======================= Content END -->
+
+            <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("renewBtn").addEventListener("click", function () {
+        
+            let amount = "<%= userDetails.subscription.price %>";
+            const subscription = "<%= userDetails.subscription.subscription %>";
+            const userEmail = "<%= userDetails.email %>";
+           
+            // Convert totalFare to paise (Razorpay uses INR in paise)
+            const amountInPaise = parseFloat(amount.replace(/[^0-9.]/g, "")) * 100;
+            console.log(amountInPaise);
+        
+                // Razorpay Options
+                var options = {
+                    "key": "rzp_test_1ziG9HjgAv6f6j",  // Replace with your Razorpay API Key
+                    "amount": amountInPaise,  // Amount in paise (₹1000 = 100000 paise)
+                    "currency": "INR",
+                    "name": "Bismi",
+                    "description": "UPI Payment",
+                    "image": "https://your-logo-url.com/logo.png",  
+                    "prefill": {
+                        "email": userEmail,
+                    },
+                    "handler": function (response) {
+                            const paymentDetails = {
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                email: userEmail,
+                                price: amountInPaise / 100,
+                                subscription: subscription,
+                            };
+        
+                            // Send data to backend via POST request
+                            fetch("/renewal", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(paymentDetails)
+                            })
+                                .then(res => res.json())
+                                .then(data => {
+                                    console.log("Server Response:", data);
+                                    alert("Renewal completed! Redirecting...");
+                                    window.location.href = "/profile";
+                                })
+                                .catch(error => console.error("Error:", error));
+                },
+                    "theme": {
+                        "color": "#3399cc"
+                    }
+                };
+            
+                var razorpayInstance = new Razorpay(options);
+                razorpayInstance.open();
+            });
+        
+        });
+        </script>
+        </main>
+        <!-- **************** MAIN CONTENT END **************** -->
+
+        <%- include('./partials/footer') %>

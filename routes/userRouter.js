@@ -44,7 +44,7 @@ userRouter.use(async(req, res, next) => {
   });
 
 userRouter.get("/", userController.viewHomepage);
-userRouter.get("/flight-list", userController.viewFlightList);
+userRouter.get("/dashboard", isLogin, userController.viewDashboard);
 userRouter.get("/flight-detail", isLogin, userController.viewFlightDetail);
 userRouter.get("/flight-booking",isLogin, userController.viewFlightBooking);
 userRouter.get("/about", userController.viewAbout);
@@ -52,7 +52,8 @@ userRouter.get("/contact", userController.viewContact);
 userRouter.get("/sign-in", isLogout, userController.viewSignin);
 userRouter.get("/sign-up", isLogout, userController.viewSignup);
 userRouter.get("/sign-out", userController.signOut);
-userRouter.get("/forgot-password",isLogin, userController.viewForgotPassword);
+userRouter.get("/forgot-password", userController.viewForgotPassword);
+userRouter.get("/reset-password", userController.viewResetPassword);
 userRouter.get("/blog", userController.viewBlog);
 userRouter.get("/blog-detail", userController.viewBlogDetail);
 userRouter.get("/help", userController.viewHelp);
@@ -60,7 +61,6 @@ userRouter.get("/help-detail", userController.viewHelpDetail);
 userRouter.get("/faq", userController.viewFAQ);
 userRouter.get("/privacy-policy", userController.viewPrivacy);
 userRouter.get("/terms-of-service", userController.viewTerms);
-userRouter.get("/reset-password",isLogin, userController.viewResetPassword);
 userRouter.get("/profile",isLogin, userController.viewProfile);
 userRouter.get("/bookings",isLogin, userController.viewBookings);
 userRouter.get("/travelers",isLogin, userController.viewTravelers);
@@ -71,16 +71,20 @@ userRouter.get("/delete-profile",isLogin, userController.viewDeleteProfile);
 userRouter.get("/kyc",isLogin, userController.viewKyc);
 userRouter.get("/flights", isLogin, userController.getFlights);
 userRouter.get("/manage-booking", isLogin, userController.viewManageBooking);
-userRouter.get("/subscription", isLogin, userController.viewSubscription);
+userRouter.get("/manage-subscription", isLogin, userController.viewManageSubscription);
 userRouter.get("/subscription-payment", isLogin, userController.viewSubscriptionPayment);
+userRouter.get("/subscription", userController.viewPricing);
+userRouter.get("/earnings", isLogin, userController.viewEarnings);
+userRouter.get("/listings", isLogin, userController.viewListings);
+userRouter.get("/add-listing", isLogin, userController.viewAddListing);
 
 userRouter.post("/sign-up", userController.signup);
 userRouter.post("/sign-in", userController.signin);
+userRouter.post("/forgot-password", userController.forgotPassword);
+userRouter.post("/reset-password", userController.resetPassword);
 userRouter.post("/flight-list", userController.findTicket);
 userRouter.post("/flight-detail", userController.getFlightDetail);
 userRouter.post("/seller-list", userController.getSellerList)
-userRouter.post("/forgot-password",isLogin, userController.forgotPassword);
-userRouter.post("/reset-password",isLogin, userController.resetPassword);
 userRouter.post("/flight-booking",isLogin, userController.flightBooking);
 userRouter.post("/update-profile",isLogin, upload.single("image"), userController.updateProfile);
 userRouter.post("/update-email",isLogin, userController.updateEmail);
@@ -101,5 +105,10 @@ userRouter.post(
 );
 userRouter.post("/subscription", isLogin, userController.subscription);
 userRouter.post("/subscription-payment", isLogin, userController.subscriptionPayment);
+userRouter.post("/renewal", isLogin, userController.renewal);
+userRouter.post("/add-flight", isLogin, userController.addFlight)
+userRouter.post("/api/flights", isLogin, userController.getApiFlights)
+userRouter.post("/add-connecting-flight", isLogin, userController.addConnectingFlight)
+
 
 module.exports = userRouter;

@@ -47,6 +47,19 @@
                                     class="bi bi-ticket-perforated fa-fw me-2"></i>My
                                 Bookings</a>
                         </li>
+                        <% if(user.userRole === "Agent") { %>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/listings"><i
+                                        class="bi bi-journal fa-fw me-2"></i>My
+                                    Listings</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="/earnings"><i
+                                        class="bi bi-graph-up-arrow fa-fw me-2"></i>My
+                                    Earnings</a>
+                            </li>
+                        <% } %>
                         <li class="nav-item">
                             <a class="nav-link" href="/travelers"><i
                                     class="bi bi-people fa-fw me-2"></i>Travelers</a>
@@ -59,9 +72,9 @@
                             <a class="nav-link" href="/kyc"><i
                                     class="fas fa-id-card fa-fw me-2"></i>KYC</a>
                         </li>
-                        <% if (user.subscription.kyc === "Initial" || "Completed") { %>
+                        <% if (user.subscription.kyc !== "Pending") { %>
                         <li class="nav-item">
-                            <a class="nav-link" href="/subscription"><i 
+                            <a class="nav-link" href="/manage-subscription"><i 
                                     class="fa-solid fa-crown fa-fw me-2"></i>Subscription</a>
                         </li>
                         <% } %>

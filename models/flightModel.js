@@ -1,53 +1,69 @@
 const mongoose = require("mongoose");
 
 const flightSchema = mongoose.Schema({
-  // seller_id:{}
   inventoryName: { type: String, required: true },
-  airline: { type: String, required: true },
-  flightNumber: { type: String, required: true },
   from: { type: String, required: true },
   to: { type: String, required: true },
+  fromCode: { type: String, required: true },
+  toCode: { type: String, required: true },
+  fromCity: { type: String, required: true },
+  toCity: { type: String, required: true },
+  fromCountry: { type: String, required: true },
+  toCountry: { type: String, required: true },
   departureTime: { type: String, required: true },
   departureDate: { type: String, required: true },
   arrivalTime: { type: String, required: true },
   arrivalDate: { type: String, required: true },
-  arrivalDay: { type: String },
   duration: { type: String, required: true },
-
+  disableBeforeDays: { type: Number, required: true },
   stops: [
     {
-      location: { type: String, required: true },
-      arrivalTime: { type: String, required: true },
-      arrivalDate: { type: String, required: true },
+      from: { type: String, required: true },
+      to: { type: String, required: true },
+      fromCode: { type: String, required: true },
+      toCode: { type: String, required: true },
+      fromTerminal: { type: String, required: false },
+      toTerminal: { type: String, required: false },
+      airline: { type: String, required: true },
+      flightNumber: { type: String, required: true },
       departureTime: { type: String, required: true },
-      departureDate: { type: String, required: true },
+      arrivalTime: { type: String, required: true },
+      arrivalDay: { type: String, required: true },
+      departureDay: { type: String, required: false },
       stopDuration: { type: String, required: true },
+      airlineCode: { type: String, required: true },
+      departureCity: { type: String, required: true },
+      arrivalCity: { type: String, required: true },
+      airlineLogo: { type: String, required: true },
     },
   ],
 
   baggage: {
     adult: {
-      checkIn: { type: String, required: true },
+      checkIn: {
       numberOfPieces: { type: Number, required: true },
       weightPerPiece: { type: Number, required: true },
+      },
       cabin: {
         pieces: { type: Number, required: true },
         weightPerPiece: { type: Number, required: true },
       },
     },
     child: {
-      checkIn: { type: String, required: true },
+      checkIn: { 
       numberOfPieces: { type: Number, required: true },
       weightPerPiece: { type: Number, required: true },
+      },
       cabin: {
         pieces: { type: Number, required: true },
         weightPerPiece: { type: Number, required: true },
       },
     },
     infant: {
-      checkIn: { type: String, required: true },
+      checkIn: { 
       numberOfPieces: { type: Number, required: true },
       weightPerPiece: { type: Number, required: true },
+      },
       cabin: {
         pieces: { type: Number, required: true },
         weightPerPiece: { type: Number, required: true },
@@ -63,8 +79,7 @@ const flightSchema = mongoose.Schema({
       infants: { type: Number, required: true },
     },
   }],
-  price: { type: Number, required: true },
-  seatsLeft: { type: Number, required: true },
+
   refundable: { type: Boolean, required: true, default: false },
 });
 

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const cron = require("node-cron");
 
-const userSchema = mongoose.Schema(
+const agentSchema = mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -22,11 +22,6 @@ const userSchema = mongoose.Schema(
     panCard: { type: String, default: null },
     aadhaarCardFront: { type: String, default: null },
     aadhaarCardBack: { type: String, default: null },
-    userRole : {
-      type: String,
-      enum: ["Agent", "User"],
-      default: "User",
-    },
     subscription: {
       subscription: {
         type: String,
@@ -57,7 +52,7 @@ const userSchema = mongoose.Schema(
 );
 
 // Hash password before saving
-userSchema.pre("save", async function (next) {
+agentSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
@@ -65,7 +60,7 @@ userSchema.pre("save", async function (next) {
 });
 
 // Method to decrease transaction count
-userSchema.methods.decreaseTransaction = async function () {
+agentSchema.methods.decreaseTransaction = async function () {
   if (
     this.subscription.transactions >= this.subscription.transactionLimit ||
     transactionAmount > this.subscription.maxTransactionAmount
@@ -88,4 +83,4 @@ userSchema.methods.decreaseTransaction = async function () {
 //     );
 // });
 
-module.exports = mongoose.model("Users", userSchema);
+module.exports = mongoose.model("Agents", agentSchema);

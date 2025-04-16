@@ -647,6 +647,75 @@
  
 </section>
 
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+<!-- <script>
+	document.addEventListener("DOMContentLoaded", function () {
+	  fetch('https://restcountries.com/v2/all')
+		.then(response => response.json())
+		.then(data => {
+		  const select = document.getElementById('countrySelect');
+		  const countries = data.map(c => c.name).sort();
+  
+		  countries.forEach(country => {
+			const option = document.createElement('option');
+			option.value = country;
+			option.textContent = country;
+			select.appendChild(option);
+		  });
+  
+		  // ✅ Initialize Choices.js AFTER countries are added
+		  if (window.Choices) {
+			new Choices('#countrySelect', {
+			  searchEnabled: true,
+			  shouldSort: false,
+			  placeholder: true,
+			  placeholderValue: 'Select From'
+			});
+		  }
+		})
+		.catch(error => console.error('Error loading countries:', error));
+	});
+  </script> -->
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      fetch('https://restcountries.com/v2/all')
+        .then(response => response.json())
+        .then(data => {
+          const countries = data.map(c => c.name).sort();
+  
+          // Get both selects
+          const nationalitySelect = document.getElementById('nationalitySelect');
+          const countrySelect = document.getElementById('countrySelect');
+  
+          // Function to populate a select element
+          const populateSelect = (select) => {
+            countries.forEach(country => {
+              const option = document.createElement('option');
+              option.value = country;
+              option.textContent = country;
+              select.appendChild(option);
+            });
+  
+            // Initialize Choices.js
+            if (window.Choices) {
+              new Choices(select, {
+                searchEnabled: true,
+                shouldSort: false,
+                placeholder: true,
+                placeholderValue: 'Select Country'
+              });
+            }
+          };
+  
+          populateSelect(nationalitySelect);
+          populateSelect(countrySelect);
+        })
+        .catch(error => console.error('Error loading countries:', error));
+    });
+  </script>
+  
   <script>
     document.addEventListener("DOMContentLoaded", function () {
     const travelerAccordion = document.getElementById("travelerAccordion");
@@ -738,13 +807,9 @@
 
                             <div class="col-md-6">
                                 <label class="form-label">Nationality</label>
-                                <select class="form-select" name="nationality">
-                                    <option>Select Nationality</option>
-                                    <option>Indian</option>
-                                    <option>Mali</option>
-                                    <option>Japan</option>
-                                    <option>Jordan</option>
-                                </select>
+                                <select class="form-select js-choice" id="nationalitySelect" data-search-enabled="true">
+									                <option value="">Select Nationality</option>
+									              </select>
                             </div>
 
                             <div class="col-md-6">
@@ -754,13 +819,9 @@
 
                             <div class="col-md-6">
                                 <label class="form-label">Passport Issuing Country</label>
-                                <select class="form-select" name="passport_country">
-                                    <option>Select Country</option>
-                                    <option>India</option>
-                                    <option>Canada</option>
-                                    <option>Japan</option>
-                                    <option>China</option>
-                                </select>
+                                <select class="form-select js-choice" id="countrySelect" data-search-enabled="true">
+									                <option value="">Select Country</option>
+									              </select>
                             </div>
 
                             <div class="col-md-6">

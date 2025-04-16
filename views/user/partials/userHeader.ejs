@@ -39,14 +39,33 @@
         <!-- Main navbar START -->
         <div class="navbar-collapse collapse" id="navbarCollapse">
           <!-- Nav main menu START -->
-          <ul class="navbar-nav navbar-nav-scroll me-auto mx-auto">
-            <li class="nav-item dropdown"><a class="nav-link" href="/about">About</a></li>
-            <li class="nav-item dropdown"><a class="nav-link" href="/contact">Contact</a></li>
-            <li class="nav-item dropdown"><a class="nav-link" href="/blog">Blog</a></li>
-            <li class="nav-item dropdown"><a class="nav-link" href="/help">Help</a></li>
-            <li class="nav-item dropdown"><a class="nav-link" href="/pricing">Pricing</a></li>
-            <li class="nav-item dropdown"><a class="nav-link" href="/faq">FAQs</a></li>
-          </ul>
+          <% if(user) { %>
+            <% if(user.userRole === "User") { %>
+              <ul class="navbar-nav navbar-nav-scroll me-auto mx-auto">
+                <li class="nav-item dropdown"><a class="nav-link" href="/about">About</a></li>
+                <li class="nav-item dropdown"><a class="nav-link" href="/contact">Contact</a></li>
+                <li class="nav-item dropdown"><a class="nav-link" href="/blog">Blog</a></li>
+                <li class="nav-item dropdown"><a class="nav-link" href="/help">Help</a></li>
+                <li class="nav-item dropdown"><a class="nav-link" href="/subscription">Pricing</a></li>
+                <li class="nav-item dropdown"><a class="nav-link" href="/faq">FAQs</a></li>
+              </ul>
+            <% } else { %>
+              <ul class="navbar-nav navbar-nav-scroll me-auto mx-auto">
+                <li class="nav-item dropdown"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                <li class="nav-item dropdown"><a class="nav-link" href="/subscription">Pricing</a></li> 
+                <li class="nav-item dropdown"><a href="/add-listing" class="nav-link btn btn-sm btn-primary-soft" style="height: min-content; "><i class="bi bi-plus-lg fa-fw me-2"></i>Add New Listing</a>
+              </ul>
+              <% } %>
+          <% } else { %>
+              <ul class="navbar-nav navbar-nav-scroll me-auto mx-auto">
+                <li class="nav-item dropdown"><a class="nav-link" href="/about">About</a></li>
+                <li class="nav-item dropdown"><a class="nav-link" href="/contact">Contact</a></li>
+                <li class="nav-item dropdown"><a class="nav-link" href="/blog">Blog</a></li>
+                <li class="nav-item dropdown"><a class="nav-link" href="/help">Help</a></li>
+                <li class="nav-item dropdown"><a class="nav-link" href="/subscription">Pricing</a></li>
+                <li class="nav-item dropdown"><a class="nav-link" href="/faq">FAQs</a></li>
+              </ul>
+          <% } %>
           <!-- Nav main menu END -->
         </div>
         <!-- Main navbar END -->
@@ -155,6 +174,10 @@
                 <li><a class="dropdown-item" href="/profile"><i class="bi bi-person fa-fw me-2"></i>My Profile</a></li>
                 <li><a class="dropdown-item" href="/bookings"><i class="bi bi-bookmark-check fa-fw me-2"></i>My Bookings</a></li>
                 <li><a class="dropdown-item" href="/wishlist"><i class="bi bi-heart fa-fw me-2"></i>My Wishlist</a></li>
+                <% if(user.userRole === "Agent") { %>
+                  <li><a class="dropdown-item" href="/listings"><i class="bi bi-journals fa-fw me-2"></i>My Listings</a></li>
+                <li><a class="dropdown-item" href="/earnings"><i class="bi bi-graph-up-arrow fa-fw me-2"></i>My Earnings</a></li>
+                <% } %>
                 <li><a class="dropdown-item" href="/kyc"><i class="fas fa-id-card fa-fw me-2"></i>KYC</a></li>
                 <li><a class="dropdown-item" href="/settings"><i class="bi bi-gear fa-fw me-2"></i>Settings</a></li>
                 <li><a class="dropdown-item" href="/help"><i class="bi bi-info-circle fa-fw me-2"></i>Help Center</a></li>
@@ -197,8 +220,8 @@
             <% } else { %>
               <li class="nav-item ms-2 d-sm-block">
                 <!-- Show Sign Up button if no session -->
-                <a href="/sign-up" class="btn btn-sm btn-primary-soft mb-0">
-                  <i class="fa-solid fa-right-to-bracket me-2"></i>Sign Up
+                <a href="/sign-in" class="btn btn-sm btn-primary-soft mb-0">
+                  <i class="fa-solid fa-right-to-bracket me-2"></i>Sign In
                 </a>
               </li>
               <% } %>

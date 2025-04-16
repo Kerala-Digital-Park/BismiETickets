@@ -3,7 +3,6 @@ const bcrypt = require("bcryptjs");
 const Flights = require("../models/flightModel");
 const Users = require("../models/userModel");
 const Bookings = require("../models/bookingModel");
-// const Subscriptions = require('../models/subscriptionModel');
 const nodemailer = require("nodemailer");
 const path = require("path");
 const fs = require("fs");
@@ -31,6 +30,15 @@ const viewHomepage = async (req, res) => {
     res.render("error", { error });
   }
 };
+
+const viewDashboard = async (req, res) => {
+    try {
+        res.render("user/dashboard", {});
+    } catch (error) {
+        console.log(error);
+      res.status(500).json({ success: false, message: "Internal Server error" });
+    }
+}
 
 const viewFlightList = async (req, res) => {
   try {
@@ -295,7 +303,7 @@ const findTicket = async (req, res) => {
       ? formatDateToStandard(returnDate)
       : null;
 
-    console.log(formattedDepartureDate, formattedReturnDate);
+    console.log("formattedDeparture",formattedDeparture);
 
     // Function to check if a date falls within a range
     const isDateInRange = (dateStr, startDateStr, endDateStr) => {
@@ -360,6 +368,7 @@ const getFlightDetail = async (req, res) => {
   const userId = req.session.userId;
   try {
     const user = await Users.findById(userId);
+    console.log(user)
     if(user.subscription.transactions >= user.subscription.transactionLimit || user.subscription.transactionAmount >= user.subscription.maxTransactionAmount){
       return res.status(400).json({ message: "Transaction limit exceeded or amount too high. Upgrade Now", redirectUrl: "/subscription" });
     }     
@@ -430,10 +439,59 @@ const viewManageBooking = async (req, res) => {
   }
 };
 
+// const signup = async (req, res) => {
+//   try {
+//     const { name, email, pan, password, confirmPassword } = req.body;
+//     if (password !== confirmPassword) {
+//       return res.render("user/sign-up", {
+//         message: "Password does not match",
+//         messageType: "danger",
+//       });
+//     }
+
+//     // Check if the email already exists
+//     const existingUserByEmail = await Users.findOne({ email });
+//     if (existingUserByEmail) {
+//       return res.render("user/sign-up", {
+//         message: "User with this email already exists",
+//         messageType: "danger",
+//       });
+//     }
+
+//     // Check if the PAN already exists
+//     const existingUserByPAN = await Users.findOne({ pan });
+//     if (existingUserByPAN) {
+//       return res.render("user/sign-up", {
+//         message: "User with this PAN already exists",
+//         messageType: "danger",
+//       });
+//     }
+
+//     const expiry_date = new Date(30-12-2500);
+
+//     const newUser = new Users({
+//       name: name,
+//       email: email,
+//       pan: pan,
+//       password: password,
+//       subscription.expiryDate: expiry_date
+//     });
+
+//     await newUser.save();
+
+//     const token = jwt.sign({ id: newUser._id }, process.env.SECRET_KEY, {
+//       expiresIn: "7d",
+//     });
+
+//     return res.redirect("/sign-in");
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 const signup = async (req, res) => {
   try {
     const { name, email, pan, password, confirmPassword } = req.body;
-    if (password != confirmPassword) {
+    if (password !== confirmPassword) { // Use strict equality ===
       return res.render("user/sign-up", {
         message: "Password does not match",
         messageType: "danger",
@@ -458,11 +516,18 @@ const signup = async (req, res) => {
       });
     }
 
+    // Correct date creation.
+    const expiry_date = new Date(2500, 11, 30); // Year, Month (0-11), Day
+
     const newUser = new Users({
       name: name,
       email: email,
       pan: pan,
       password: password,
+      userRole: "User",
+      "subscription.expiryDate": expiry_date, 
+      "subscription.transactionLimit": 1,
+      "subscription.maxTransactionAmount": 100000,
     });
 
     await newUser.save();
@@ -474,6 +539,10 @@ const signup = async (req, res) => {
     return res.redirect("/sign-in");
   } catch (error) {
     console.error(error);
+    return res.render("user/sign-up", {
+      message: "An error occurred during signup.",
+      messageType: "danger",
+    }); // Send error to user.
   }
 };
 
@@ -504,6 +573,16 @@ const signin = async (req, res) => {
     const redirectUrl = req.session?.originalUrl || "/";
     if (req.session) delete req.session.originalUrl;
     res.redirect(redirectUrl);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const signOut = async (req, res) => {
+  try {
+    req.session.destroy();
+    res.redirect("/");
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -625,16 +704,6 @@ const viewResetPassword = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.render("error", { error });
-  }
-};
-
-const signOut = async (req, res) => {
-  try {
-    req.session.destroy();
-    res.redirect("/");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -767,11 +836,11 @@ const viewKyc = async (req, res) => {
   }
 }
 
-const viewSubscription = async (req, res) => {
+const viewManageSubscription = async (req, res) => {
   const userId = req.session.userId;
   try{
     const userDetails = await Users.findById(userId);
-    res.render("user/subscription", { userDetails });
+    res.render("user/manage-subscription", { userDetails });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
@@ -818,8 +887,10 @@ const flightBooking = async (req, res) => {
     await newBooking.save();
 
     await Users.findByIdAndUpdate(req.session.userId,{
-      $inc: { "subscription.transactions": 1 },
-      $inc: { "subscription.transactionAmount": totalFare },
+      $inc: {
+        "subscription.transactions": 1,
+        "subscription.transactionAmount": totalFare,
+      },
     })
     
     console.log(newBooking);
@@ -1067,8 +1138,58 @@ const verifyAadhaar = async (req, res) => {
   }
 };
 
-const subscription = async (req, res) => {
+// const subscription = async (req, res) => {
+//   const { subscription } = req.body;
+//   const userId = req.session.userId;
+//   try {
+//     if (!userId) {
+//       return res.status(401).json({ success: false, message: "Unauthorized" });
+//     }
+//     const user = await Users.findById(userId);
+//     if (!user) {
+//       return res.status(404).json({ success: false, message: "User not found" });
+//     }
+
+//     if(subscription === "Free") {
+//       if(user.subscription.subscription === "Free"){
+//         return res.json({ redirectUrl: "/subscription-payment?subscription=Free", message:"Free subscription already taken" });
+//       }
+//       else if (user.subscription.kyc === "Pending"){
+//         return res.json({ redirectUrl: "/kyc", message:"Complete Initial kyc for free subscription" });
+//       }
+//     }
+//     else if(subscription === "Pro"){
+//       if(user.subscription.subscription === "Pro"){
+//         return res.json({ redirectUrl: "/subscription-payment?subscription=Pro", message:"Pro subscription already taken" });
+//       }
+//       else if(user.subscription.kyc !== "Completed"){
+//         return res.json({ redirectUrl: "/kyc", message:"Complete kyc for pro subscription" });
+//       }
+//       else{
+//         res.status(200).json({ redirectUrl: `/subscription-payment?subscription=${subscription}` });
+//       }
+//     }
+//     else if(subscription === "Enterprise"){
+//       if(user.subscription.subscription === "Enterprise"){
+//         return res.json({ redirectUrl: "/subscription-payment?subscription=Enterprise", message:"Enterprise subscription already taken" });
+//       }
+//       else if(user.subscription.kyc !== "Completed"){
+//         return res.json({ redirectUrl: "/kyc", message:"Complete kyc for enterprise" });
+//       } else{
+//         res.status(200).json({ redirectUrl: `/subscription-payment?subscription=${subscription}` });
+//       }
+//     }else {
+//       res.status(201).json({ redirectUrl: "/subscription", message:"Invalid subscription" });
+//     }
+//   } catch (error) {
+//     console.error("Error fetching payment details:", error);
+//     res.status(400).json({ error: "Invalid subscription detail" });
+//   }
+// };
+
+const subscription = async (req, res) => {  
   const { subscription } = req.body;
+  console.log(subscription)
   const userId = req.session.userId;
   try {
     if (!userId) {
@@ -1079,26 +1200,52 @@ const subscription = async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    if(subscription === "Pro"){
-      if(user.subscription.kyc !== "Completed"){
-        return res.json({ redirectUrl: "/kyc", message:"Complete kyc for pro subscription" });
-      }
-      else{
+    if (subscription === "Free") {
+      if (user.subscription.subscription === "Free") {
+        return res.json({
+          redirectUrl: "/subscription",
+          message: "Free subscription already active. Choose another plan", 
+        });
+      } else if (user.subscription.kyc === "Pending") { 
+        return res.json({
+          redirectUrl: "/kyc",
+          message: "Complete Initial KYC for free subscription",
+        });
+      } 
+    } else if (subscription === "Pro") {
+      if (user.subscription.subscription === "Pro") { 
+        return res.json({
+          redirectUrl: "/subscription-payment?subscription=Pro",
+          message: "Pro subscription already active", 
+        });
+      } else if (user.subscription.kyc !== "Completed") {
+        return res.json({
+          redirectUrl: "/kyc",
+          message: "Complete KYC for Pro subscription",
+        });
+      } else {
         res.status(200).json({ redirectUrl: `/subscription-payment?subscription=${subscription}` });
       }
-    }
-    else if(subscription === "Enterprise"){
-      if(user.subscription.kyc !== "Completed"){
-        return res.json({ redirectUrl: "/kyc", message:"Complete kyc for enterprise" });
-      } else{
+    } else if (subscription === "Enterprise") {
+      if (user.subscription.subscription === "Enterprise") { 
+        return res.json({
+          redirectUrl: "/subscription-payment?subscription=Enterprise",
+          message: "Enterprise subscription already active", 
+        });
+      } else if (user.subscription.kyc !== "Completed") {
+        return res.json({
+          redirectUrl: "/kyc",
+          message: "Complete KYC for Enterprise subscription",
+        });
+      } else {
         res.status(200).json({ redirectUrl: `/subscription-payment?subscription=${subscription}` });
       }
-    }else {
-      res.status(201).json({ redirectUrl: "/subscription", message:"Invalid subscription" });
+    } else {
+      res.status(400).json({ message: "Invalid subscription" }); 
     }
   } catch (error) {
     console.error("Error fetching payment details:", error);
-    res.status(400).json({ error: "Invalid subscription detail" });
+    res.status(500).json({ error: "Internal Server Error" }); 
   }
 };
 
@@ -1119,8 +1266,23 @@ const subscriptionPayment = async (req, res) => {
   const {razorpay_payment_id, email, price, subscription} = req.body;
   try{
     const user = await Users.findById(userId);
+    const today = new Date();
+
+    // Format today's date to YYYY-MM-DD
+    const todayFormatted = today.toISOString().split("T")[0];
+  
+    // Calculate the expiry date (30 days from today)
+    const subscriptionDate = new Date(today); // Create a copy of today's date
+    subscriptionDate.setDate(subscriptionDate.getDate() + 30);
+  
+    // Format expiry date to YYYY-MM-DD
+    const expiryDate = subscriptionDate.toISOString().split("T")[0];
+
     if(razorpay_payment_id){
       user.subscription.subscription = subscription;
+      user.subscription.price = price;
+      user.subscription.subscriptionDate = todayFormatted;
+      user.subscription.expiryDate = expiryDate;
       await user.save(); 
 
       res.json({ success: true, message: "Subscription updated successfully." });
@@ -1136,8 +1298,417 @@ const subscriptionPayment = async (req, res) => {
   }
 }
 
+const viewPricing = async (req, res) => {
+  try {
+    res.render("user/pricing", {});
+  } catch (error) {
+    console.error(error);
+    res.render("error", { error });
+  }
+};
+
+const renewal = async (req, res) => {
+  const userId = req.session.userId;
+  const { razorpay_payment_id, email, price, subscription } = req.body;
+  try {
+    const user = await Users.findById(userId);
+    const today = new Date();
+    let newExpiryDate;
+
+    if (razorpay_payment_id) {
+      const currentExpiryDate = new Date(user.subscription.expiryDate);
+
+      if (today < currentExpiryDate) {
+        const startDate = new Date(user.subscription.expiryDate);
+        startDate.setDate(startDate.getDate() + 30);
+        newExpiryDate = startDate.toISOString().split("T")[0];
+      } else {
+        const startDate = new Date(today);
+        startDate.setDate(startDate.getDate() + 30);
+        newExpiryDate = startDate.toISOString().split("T")[0];
+      }
+
+      user.subscription.subscription = subscription;
+      user.subscription.price = price;
+      user.subscription.expiryDate = newExpiryDate;
+      await user.save();
+
+      res.json({ success: true, message: "Subscription renewed successfully." });
+    } else {
+      console.error("Payment failed: razorpay_payment_id missing.");
+      res.status(400).json({ success: false, message: "Payment failed." });
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+    res.render("error", { error });
+  }
+};
+
+const viewEarnings = async (req, res) => {
+  try {
+      res.render("user/earnings", {});
+  } catch (error) {
+      console.log(error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+}
+
+const viewListings = async (req, res) => {
+  try {
+      res.render("user/listings", {});
+  } catch (error) {
+      console.log(error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+}
+
+const viewAddListing = async (req, res) => {
+  try {
+      res.render("user/add-listings", {});
+  } catch (error) {
+      console.log(error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+}
+
+const addFlight = async (req, res) => {
+  console.log("Adding flights")
+  const oneWayFlight = req.body
+  console.log(oneWayFlight);
+  
+  try{
+    const formatDateString = (dateStr) => {
+      if (!dateStr || typeof dateStr !== "string") {
+        throw new Error("Invalid date string",dateStr);
+      }
+    
+      // If date format is "10 Apr 25", parse it manually
+      const parts = dateStr.trim().split(" ");
+      if (parts.length !== 3) {
+        throw new Error("Date format must be 'DD MMM YY'");
+      }
+    
+      const [day, monthStr, year] = parts;
+      const monthMap = {
+        Jan: "01", Feb: "02", Mar: "03", Apr: "04", May: "05", Jun: "06",
+        Jul: "07", Aug: "08", Sep: "09", Oct: "10", Nov: "11", Dec: "12"
+      };
+    
+      const month = monthMap[monthStr];
+      if (!month) throw new Error("Invalid month in date");
+    
+      return `20${year}-${month}-${day.padStart(2, "0")}`; // Returns YYYY-MM-DD
+    };
+    
+   
+
+// const departureDateTimeStr = `${formatDateString(oneWayFlight.departureDate)}T${firstStop.departureTime}`;
+// const arrivalDateTimeStr = `${formatDateString(lastStop.arrivalDay)}T${lastStop.arrivalTime}`;
+
+// const departure = new Date(departureDateTimeStr);
+// const arrival = new Date(arrivalDateTimeStr);
+
+// if (isNaN(departure) || isNaN(arrival)) {
+//   throw new Error("Invalid departure or arrival date/time");
+// }
+
+// Calculate duration in milliseconds
+// const durationMs = arrival - departure;
+
+// if (durationMs < 0) {
+//   throw new Error("Arrival time cannot be before departure time");
+// }
+
+// Convert to hours and minutes
+// const totalMinutes = Math.floor(durationMs / 60000);
+// const hours = Math.floor(totalMinutes / 60);
+// const minutes = totalMinutes % 60;
+// const durationFormatted = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+
+    const newFlight = new Flights({
+      inventoryName: oneWayFlight.inventoryName,
+      from: oneWayFlight.from,
+      to: oneWayFlight.to,
+      departureTime: oneWayFlight.departureTime,
+      departureDate: oneWayFlight.departureDate,
+      arrivalTime: oneWayFlight.arrivalTime,
+      arrivalDate: oneWayFlight.arrivalDate,
+      duration: oneWayFlight.totalDuration,
+      disableBeforeDays: oneWayFlight.disableBeforeDays,
+      // airline: oneWayFlight.airline,
+      // flightNumber: oneWayFlight.flightNumber,
+      stops: oneWayFlight.stops,
+      baggage: {
+        adult: {
+          checkIn: {
+            numberOfPieces: oneWayFlight.adultCheckinNumber,
+            weightPerPiece: oneWayFlight.adultCheckinWeight
+          },
+          cabin:{
+            pieces: oneWayFlight.adultCabinNumber,
+            weightPerPiece: oneWayFlight.adultCabinWeight
+          }
+        },
+        child: {
+          checkIn: {
+            numberOfPieces: oneWayFlight.childCheckinNumber,
+            weightPerPiece: oneWayFlight.childCheckinWeight
+          },
+          cabin:{
+            pieces: oneWayFlight.childCabinNumber,
+            weightPerPiece: oneWayFlight.childCabinWeight
+          }
+        },
+        infant: {
+          checkIn: {
+            numberOfPieces: oneWayFlight.infantCheckinNumber,
+            weightPerPiece: oneWayFlight.infantCheckinWeight
+          },
+          cabin:{
+            pieces: oneWayFlight.infantCabinNumber,
+            weightPerPiece: oneWayFlight.infantCabinWeight,
+          }
+        }
+      },
+      inventoryDates: [{
+        date: oneWayFlight.inventoryDates[0]?.date,
+        pnr: oneWayFlight.inventoryDates[0]?.pnr,
+        seats: oneWayFlight.inventoryDates[0]?.seats,
+        fare: {
+          adults: oneWayFlight.inventoryDates[0]?.fare.adults,
+          infants: oneWayFlight.inventoryDates[0]?.fare.infants
+        }
+      }],
+      refundable: oneWayFlight.refundable,
+    });
+
+    await newFlight.save();
+    return res.json({message: "Flight added successfully", success: true, redirectUrl: "/listings"})
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal Server error" })
+  }
+}
+
+const addConnectingFlight = async (req, res) => {
+  console.log("Adding flights")
+  const oneWayFlight = req.body
+  console.log(oneWayFlight);
+  
+  try{
+    const formatDateString = (dateStr) => {
+      if (!dateStr || typeof dateStr !== "string") {
+        throw new Error("Invalid date string",dateStr);
+      }
+    
+      // If date format is "10 Apr 25", parse it manually
+      const parts = dateStr.trim().split(" ");
+      if (parts.length !== 3) {
+        throw new Error("Date format must be 'DD MMM YY'");
+      }
+    
+      const [day, monthStr, year] = parts;
+      const monthMap = {
+        Jan: "01", Feb: "02", Mar: "03", Apr: "04", May: "05", Jun: "06",
+        Jul: "07", Aug: "08", Sep: "09", Oct: "10", Nov: "11", Dec: "12"
+      };
+    
+      const month = monthMap[monthStr];
+      if (!month) throw new Error("Invalid month in date");
+    
+      return `20${year}-${month}-${day.padStart(2, "0")}`; // Returns YYYY-MM-DD
+    };
+    
+    const firstStop = oneWayFlight.stops[0];
+const lastStop = oneWayFlight.stops[oneWayFlight.stops.length - 1];
+
+if (!firstStop?.departureTime || !lastStop?.arrivalDay || !lastStop?.arrivalTime) {
+  throw new Error("Missing required time info in stops");
+}
+
+const departureDateTimeStr = `${formatDateString(oneWayFlight.departureDate)}T${firstStop.departureTime}`;
+const arrivalDateTimeStr = `${formatDateString(lastStop.arrivalDay)}T${lastStop.arrivalTime}`;
+
+const departure = new Date(departureDateTimeStr);
+const arrival = new Date(arrivalDateTimeStr);
+
+if (isNaN(departure) || isNaN(arrival)) {
+  throw new Error("Invalid departure or arrival date/time");
+}
+
+// Calculate duration in milliseconds
+const durationMs = arrival - departure;
+
+if (durationMs < 0) {
+  throw new Error("Arrival time cannot be before departure time");
+}
+
+// Convert to hours and minutes
+const totalMinutes = Math.floor(durationMs / 60000);
+const hours = Math.floor(totalMinutes / 60);
+const minutes = totalMinutes % 60;
+const durationFormatted = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+
+    const newFlight = new Flights({
+      inventoryName: oneWayFlight.inventoryName,
+      departureDate: oneWayFlight.departureDate,
+      disableBeforeDays: oneWayFlight.disableBeforeDays,
+      from: oneWayFlight.from,
+      to: oneWayFlight.to,
+      airline: oneWayFlight.airline,
+      flightNumber: oneWayFlight.flightNumber,
+      departureTime: oneWayFlight.departureTime,
+      arrivalTime: oneWayFlight.arrivalTime,
+      arrivalDay: oneWayFlight.arrivalDay,
+      baggage: {
+        adult: {
+          checkIn: {
+            numberOfPieces: oneWayFlight.adultCheckinNumber,
+            weightPerPiece: oneWayFlight.adultCheckinWeight
+          },
+          cabin:{
+            pieces: oneWayFlight.adultCabinNumber,
+            weightPerPiece: oneWayFlight.adultCabinWeight
+          }
+        },
+        child: {
+          checkIn: {
+            numberOfPieces: oneWayFlight.childCheckinNumber,
+            weightPerPiece: oneWayFlight.childCheckinWeight
+          },
+          cabin:{
+            pieces: oneWayFlight.childCabinNumber,
+            weightPerPiece: oneWayFlight.childCabinWeight
+          }
+        },
+        infant: {
+          checkIn: {
+            numberOfPieces: oneWayFlight.infantCheckinNumber,
+            weightPerPiece: oneWayFlight.infantCheckinWeight
+          },
+          cabin:{
+            pieces: oneWayFlight.infantCabinNumber,
+            weightPerPiece: oneWayFlight.infantCabinWeight,
+          }
+        }
+      },
+      inventoryDates: [{
+        date: oneWayFlight.inventoryDates[0]?.date,
+        pnr: oneWayFlight.inventoryDates[0]?.pnr,
+        seats: oneWayFlight.inventoryDates[0]?.seats,
+        fare: {
+          adults: oneWayFlight.inventoryDates[0]?.fare.adults,
+          infants: oneWayFlight.inventoryDates[0]?.fare.infants
+        }
+      }],
+      refundable: oneWayFlight.refundable,
+      duration: durationFormatted,
+    });
+
+    await newFlight.save();
+    return res.json({message: "Flight added successfully", success: true, redirectUrl: "/listings"})
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal Server error" })
+  }
+}
+
+const getApiFlights = async (req, res) => {
+  const { from, to, departureDate, airlines = [], flightNumbers = [] } = req.body;
+
+  const formatDate = (dateString) => {
+    if (!dateString) return null;
+
+    const parts = dateString.trim().split(' ');
+    if (parts.length !== 3) return null;
+
+    const day = parts[0].padStart(2, '0');
+    const monthMap = {
+      Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
+      Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12'
+    };
+
+    const month = monthMap[parts[1]];
+    const year = `20${parts[2]}`;
+
+    return month ? `${year}-${month}-${day}` : null;
+  };
+
+  const formattedDate = formatDate(departureDate);
+  if (!from || !to || !formattedDate) {
+    return res.status(400).json({ error: "Missing or invalid parameters" });
+  }
+
+  const apiUrl = `https://flights.booking.com/api/flights/?type=ONEWAY&from=${from}.AIRPORT&to=${to}.AIRPORT&cabinClass=ECONOMY&sort=BEST&depart=${formattedDate}&adults=1&locale=en-us&salesCurrency=INR&customerCurrency=INR&aid=2215350&salesChannel=gfsapi&salesIdentifier=24323047&salesCountry=in&enableVI=1`;
+
+  try {
+    const response = await fetch(apiUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0', 
+        'Accept': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: `Booking API error: ${response.statusText}` });
+    }
+
+    const data = await response.json();
+    const flightOffers = data.flightOffers;
+
+    const filteredFlights = [];
+
+    flightOffers.forEach(offer => {
+      offer.segments.forEach(segment => {
+        const legs = segment.legs;
+
+        if (airlines.length === legs.length && flightNumbers.length === legs.length) {
+          let allMatch = true;
+
+          for (let i = 0; i < legs.length; i++) {
+            const leg = legs[i];
+            const flightInfo = leg.flightInfo;
+            const carrierData = leg.carriersData;
+
+            if (
+              flightInfo.flightNumber !== parseInt(flightNumbers[i]) ||
+              carrierData[0].name.toLowerCase() !== airlines[i].toLowerCase()
+            ) {
+              allMatch = false;
+              break;
+            }
+          }
+
+          if (allMatch) {
+            filteredFlights.push({
+              legs,
+              checkedLuggage: segment.travellerCheckedLuggage || [],
+              cabinLuggage: segment.travellerCabinLuggage || [],
+              totalTime: segment.totalTime || "",
+              departureTime: segment.departureTime || "",
+              arrivalTime: segment.arrivalTime || "",
+            });
+          }
+          
+        }
+      });
+    });
+
+    console.log("filteredFlights", filteredFlights)
+
+    res.json({ total: filteredFlights.length, flights: filteredFlights });
+  } catch (err) {
+    console.error("Fetch error:", err.message);
+    res.status(500).json({ error: "Failed to fetch flights" });
+  }
+};
+
 module.exports = {
   viewHomepage,
+  viewDashboard,
   viewFlightList,
   viewFlightDetail,
   viewFlightBooking,
@@ -1170,7 +1741,7 @@ module.exports = {
   viewSettings,
   viewDeleteProfile,
   viewKyc,
-  viewSubscription,
+  viewManageSubscription,
   flightBooking,
   updateProfile,
   updateEmail,
@@ -1182,5 +1753,13 @@ module.exports = {
   subscription,
   viewSubscriptionPayment,
   subscriptionPayment,
-
+  viewPricing,
+  renewal,
+  viewEarnings,
+  viewListings,
+  viewAddListing,
+  addFlight,
+  getApiFlights,
+  addConnectingFlight,
+  
 };
