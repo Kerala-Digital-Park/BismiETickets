@@ -113,7 +113,7 @@ var e = {
         e.autoTabinput(),
         e.trafficstatsChart(),
         e.trafficChart(),
-        e.guestSelector(),
+        // e.guestSelector(),
         e.parallaxBG(),
         e.overlayScrollbars(),
         e.trafficsplineChart(),
@@ -830,103 +830,103 @@ var e = {
     // END: Auto tab input
 
     // START: 22 Guest Selector
-    guestSelector: function () {
-      if (e.isVariableDefined(e.select('.guest-selector'))) {
+    // guestSelector: function () {
+    //   if (e.isVariableDefined(e.select('.guest-selector'))) {
 
-      let adults = 2;
-      let child = 0;
-      let rooms =1;
-      let totalAdults = 2;
+    //   let adults = 2;
+    //   let child = 0;
+    //   let rooms =1;
+    //   let totalAdults = 2;
     
-      let selectionResult = document.querySelector('.selection-result');
+    //   let selectionResult = document.querySelector('.selection-result');
     
-      let adultValue = document.querySelector('.adults');
-      let adultAdd = document.querySelector('.adult-add');
-      let adultRemove = document.querySelector('.adult-remove');
+    //   let adultValue = document.querySelector('.adults');
+    //   let adultAdd = document.querySelector('.adult-add');
+    //   let adultRemove = document.querySelector('.adult-remove');
     
-      let childValue = document.querySelector('.child');
-      let childAdd = document.querySelector('.child-add');
-      let childRemove = document.querySelector('.child-remove');
+    //   let childValue = document.querySelector('.child');
+    //   let childAdd = document.querySelector('.child-add');
+    //   let childRemove = document.querySelector('.child-remove');
     
-      let roomValue = document.querySelector('.rooms');
-      let roomAdd = document.querySelector('.room-add');
-      let roomRemove = document.querySelector('.room-remove');
+    //   let roomValue = document.querySelector('.rooms');
+    //   let roomAdd = document.querySelector('.room-add');
+    //   let roomRemove = document.querySelector('.room-remove');
     
-      function addElement(type){
-        if(type == 'adult'){
-          adults++;
-          totalAdults = adults + child;
+    //   function addElement(type){
+    //     if(type == 'adult'){
+    //       adults++;
+    //       totalAdults = adults + child;
     
-          showElements();
-        }else if(type == 'child'){
-          child = child + 1;
-          console.log(child);
-          totalAdults = adults + child;
+    //       showElements();
+    //     }else if(type == 'child'){
+    //       child = child + 1;
+    //       console.log(child);
+    //       totalAdults = adults + child;
     
-          showElements();
-        }else if(type == 'room'){
-          rooms++;
+    //       showElements();
+    //     }else if(type == 'room'){
+    //       rooms++;
           
-          showElements();
-        }
-      }
+    //       showElements();
+    //     }
+    //   }
     
-      function showElements(){
-        adultValue.innerText = adults;
-        childValue.innerText = child;
-        roomValue.innerText = rooms;
+    //   function showElements(){
+    //     adultValue.innerText = adults;
+    //     childValue.innerText = child;
+    //     roomValue.innerText = rooms;
     
-        let roomText = rooms > 1 ? 'Rooms' : 'Room';
-        let guestText = totalAdults > 1 ? 'Guests': 'Guest';
+    //     let roomText = rooms > 1 ? 'Rooms' : 'Room';
+    //     let guestText = totalAdults > 1 ? 'Guests': 'Guest';
     
-        let resultText = totalAdults+' '+guestText+' '+rooms+' '+roomText;
+    //     let resultText = totalAdults+' '+guestText+' '+rooms+' '+roomText;
     
-        selectionResult.setAttribute('value', resultText);
-      }
+    //     selectionResult.setAttribute('value', resultText);
+    //   }
     
-      function removeElement(type){
-        if(type == 'adult'){
-          adults = adults > 0 ?  adults - 1 : adults;
-          totalAdults = adults + child;
+    //   function removeElement(type){
+    //     if(type == 'adult'){
+    //       adults = adults > 0 ?  adults - 1 : adults;
+    //       totalAdults = adults + child;
     
-          showElements();
-        }else if(type == 'child'){
-          child = child > 0 ? child - 1 : child;
-          totalAdults = adults + child;
+    //       showElements();
+    //     }else if(type == 'child'){
+    //       child = child > 0 ? child - 1 : child;
+    //       totalAdults = adults + child;
     
-          showElements();
-        }else if(type == 'room'){
-          rooms = rooms > 0 ? rooms - 1 : rooms;
+    //       showElements();
+    //     }else if(type == 'room'){
+    //       rooms = rooms > 0 ? rooms - 1 : rooms;
           
-          showElements();
-        }
-      }
+    //       showElements();
+    //     }
+    //   }
     
-      adultAdd.addEventListener('click',function(){
-        addElement('adult');
-      });
+    //   adultAdd.addEventListener('click',function(){
+    //     addElement('adult');
+    //   });
     
-      adultRemove.addEventListener('click',function(){
-        removeElement('adult');
-      });
+    //   adultRemove.addEventListener('click',function(){
+    //     removeElement('adult');
+    //   });
     
-      childAdd.addEventListener('click',function(){
-        addElement('child');
-      });
+    //   childAdd.addEventListener('click',function(){
+    //     addElement('child');
+    //   });
     
-      childRemove.addEventListener('click',function(){
-        removeElement('child');
-      });
+    //   childRemove.addEventListener('click',function(){
+    //     removeElement('child');
+    //   });
     
-      roomAdd.addEventListener('click',function(){
-        addElement('room');
-      });
+    //   roomAdd.addEventListener('click',function(){
+    //     addElement('room');
+    //   });
     
-      roomRemove.addEventListener('click',function(){
-        removeElement('room');
-      });
-      }
-    },
+    //   roomRemove.addEventListener('click',function(){
+    //     removeElement('room');
+    //   });
+    //   }
+    // },
      // END: Guest Selector
 
      // START: 23 Parallax Background

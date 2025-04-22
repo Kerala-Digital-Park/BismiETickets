@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const cron = require("node-cron");
+// const cron = require("node-cron");
 
 const userSchema = mongoose.Schema(
   {
+    userId: { type: String, unique: true },
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     pan: { type: String, required: true, unique: true },
@@ -22,42 +23,41 @@ const userSchema = mongoose.Schema(
     panCard: { type: String, default: null },
     aadhaarCardFront: { type: String, default: null },
     aadhaarCardBack: { type: String, default: null },
-    userRole : {
+    userRole: {
       type: String,
       enum: ["Agent", "User"],
       default: "User",
     },
     subscription: {
-      subscription: {
-        type: String,
-        enum: ["Enterprise", "Pro", "Free", "Null"],
-        default: "Null",
-      },
-      kyc: {
-        type: String,
-        enum: ["Completed", "Initial", "Pending"],
-        default: "Pending",
-      },
-      transactions: { type: Number, default: 0 },
-      transactionLimit: {
-        type: Number,
-        default: 0,
-      },
-      transactionAmount: { type: Number, default: 0 },
-      maxTransactionAmount: {
-        type: Number,
-        default: 0,
-      },
-      subscriptionDate: { type: Date, default: null },
-      expiryDate: { type: Date, default: null },
-      price: { type: Number, default: 0 },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Subscriptions",
+      required: true,
     },
+    kyc: {
+      type: String,
+      enum: ["Completed", "Initial", "Pending"],
+      default: "Pending",
+    },
+    transactions: { type: Number, default: 0 },
+    transactionAmount: { type: Number, default: 0 },
+    subscriptionDate: { type: Date, default: null },
+    expiryDate: { type: Date, default: null },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
-// Hash password before saving
 userSchema.pre("save", async function (next) {
+  // Only generate userId if not already set
+  if (!this.userId) {
+    const randomLetters = Math.random()
+      .toString(36)
+      .substring(2, 6)
+      .toUpperCase();
+    const randomNumbers = Math.floor(1000 + Math.random() * 9000); // Ensures a 4-digit number
+    this.userId = `${randomLetters}-${randomNumbers}`;
+  }
+
+  // Only hash password if it was modified
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
@@ -65,15 +65,16 @@ userSchema.pre("save", async function (next) {
 });
 
 // Method to decrease transaction count
-userSchema.methods.decreaseTransaction = async function () {
+userSchema.methods.decreaseTransaction = async function (amount) {
   if (
-    this.subscription.transactions >= this.subscription.transactionLimit ||
-    transactionAmount > this.subscription.maxTransactionAmount
+    this.transactions >= this.subscription.transactionLimit ||
+    amount > this.subscription.maxTransactionAmount
   ) {
     throw new Error("Transaction limit exceeded or amount too high.");
   }
 
-  this.subscription.transactions += 1;
+  this.transactions += 1;
+  this.transactionAmount += amount;
   await this.save();
 };
 

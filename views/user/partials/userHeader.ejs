@@ -53,7 +53,7 @@
               <ul class="navbar-nav navbar-nav-scroll me-auto mx-auto">
                 <li class="nav-item dropdown"><a class="nav-link" href="/dashboard">Dashboard</a></li>
                 <li class="nav-item dropdown"><a class="nav-link" href="/subscription">Pricing</a></li> 
-                <li class="nav-item dropdown"><a href="/add-listing" class="nav-link btn btn-sm btn-primary-soft" style="height: min-content; "><i class="bi bi-plus-lg fa-fw me-2"></i>Add New Listing</a>
+                <li class="nav-item dropdown"><a class="nav-link" href="/join-us">Join Us</a>
               </ul>
               <% } %>
           <% } else { %>
@@ -171,12 +171,12 @@
                 <li>
                   <hr class="dropdown-divider">
                 </li>
-                <li><a class="dropdown-item" href="/profile"><i class="bi bi-person fa-fw me-2"></i>My Profile</a></li>
-                <li><a class="dropdown-item" href="/bookings"><i class="bi bi-bookmark-check fa-fw me-2"></i>My Bookings</a></li>
-                <li><a class="dropdown-item" href="/wishlist"><i class="bi bi-heart fa-fw me-2"></i>My Wishlist</a></li>
+                <li><a class="dropdown-item" href="/profile"><i class="bi bi-person fa-fw me-2"></i>Profile</a></li>
+                <li><a class="dropdown-item" href="/bookings"><i class="bi bi-bookmark-check fa-fw me-2"></i>Bookings</a></li>
+                <li><a class="dropdown-item" href="/wishlist"><i class="bi bi-heart fa-fw me-2"></i>Wishlist</a></li>
                 <% if(user.userRole === "Agent") { %>
-                  <li><a class="dropdown-item" href="/listings"><i class="bi bi-journals fa-fw me-2"></i>My Listings</a></li>
-                <li><a class="dropdown-item" href="/earnings"><i class="bi bi-graph-up-arrow fa-fw me-2"></i>My Earnings</a></li>
+                  <li><a class="dropdown-item" href="/listings"><i class="bi bi-journals fa-fw me-2"></i>Listings</a></li>
+                <li><a class="dropdown-item" href="/earnings"><i class="bi bi-graph-up-arrow fa-fw me-2"></i>Earnings</a></li>
                 <% } %>
                 <li><a class="dropdown-item" href="/kyc"><i class="fas fa-id-card fa-fw me-2"></i>KYC</a></li>
                 <li><a class="dropdown-item" href="/settings"><i class="bi bi-gear fa-fw me-2"></i>Settings</a></li>

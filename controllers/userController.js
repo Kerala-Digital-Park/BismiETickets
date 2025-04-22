@@ -3,6 +3,8 @@ const bcrypt = require("bcryptjs");
 const Flights = require("../models/flightModel");
 const Users = require("../models/userModel");
 const Bookings = require("../models/bookingModel");
+const Subscriptions = require("../models/subscriptionModel");
+const { countries } = require('countries-list');
 const nodemailer = require("nodemailer");
 const path = require("path");
 const fs = require("fs");
@@ -32,17 +34,16 @@ const viewHomepage = async (req, res) => {
 };
 
 const viewDashboard = async (req, res) => {
-    try {
-        res.render("user/dashboard", {});
-    } catch (error) {
-        console.log(error);
-      res.status(500).json({ success: false, message: "Internal Server error" });
-    }
-}
+  try {
+    res.render("user/dashboard", {});
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+};
 
 const viewFlightList = async (req, res) => {
   try {
-    // Extract request details from query parameters
     const {
       from,
       to,
@@ -53,6 +54,7 @@ const viewFlightList = async (req, res) => {
       infants,
       flexible,
     } = req.query;
+    console.log(req.body)
 
     // Convert numeric values back from query string
     const requestDetails = {
@@ -66,7 +68,8 @@ const viewFlightList = async (req, res) => {
       infants: parseInt(infants) || 0,
     };
 
-    res.render("user/flight-list", { flights: [], requestDetails });
+    console.log(requestDetails)
+    res.render("user/flight-list", { flights: [],refilteredFlights:[], requestDetails });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
@@ -206,6 +209,7 @@ const viewPrivacy = async (req, res) => {
 };
 
 const findTicket = async (req, res) => {
+  console.log("Find flights");
   try {
     const {
       fixedFrom,
@@ -220,16 +224,9 @@ const findTicket = async (req, res) => {
       infants,
       dateTypeCheckbox,
     } = req.body;
+console.log(req.body);
 
-    console.log(
-      from,
-      to,
-      departure,
-      departureDate,
-      returnDate,
-      dateTypeCheckbox
-    );
-
+    console.log(adults, children, infants)
     const flexible = dateTypeCheckbox === "on";
     console.log(flexible);
 
@@ -250,60 +247,13 @@ const findTicket = async (req, res) => {
       returnDate,
       departureDate,
       flexible: flexible === true, // Convert back to boolean
-      adults: parseInt(adults) || 1,
+      adults: (adults) || 1,
       children: parseInt(children) || 0,
       infants: parseInt(infants) || 0,
     };
 
     const flights = await Flights.find();
-
-    const formatDateToStandard = (dateStr) => {
-      if (!dateStr || typeof dateStr !== "string") {
-        console.error("Invalid date format received:", dateStr);
-        return null; // Handle cases where dateStr is not a valid string
-      }
-
-      // Split date manually to ensure it's parsed correctly
-      const [day, month, year] = dateStr.split(" ");
-      const monthMap = {
-        Jan: "01",
-        Feb: "02",
-        Mar: "03",
-        Apr: "04",
-        May: "05",
-        Jun: "06",
-        Jul: "07",
-        Aug: "08",
-        Sep: "09",
-        Oct: "10",
-        Nov: "11",
-        Dec: "12",
-      };
-
-      if (!monthMap[month]) {
-        console.error("Invalid month format:", month);
-        return null;
-      }
-
-      const formattedDateStr = `${year}-${monthMap[month]}-${day.padStart(
-        2,
-        "0"
-      )}`;
-      return formattedDateStr;
-    };
-
-    // Convert frontend departureDate & returnDate to standard format
-    const formattedDeparture = departure
-      ? formatDateToStandard(departure)
-      : null;
-    const formattedDepartureDate = departureDate
-      ? formatDateToStandard(departureDate)
-      : null;
-    const formattedReturnDate = returnDate
-      ? formatDateToStandard(returnDate)
-      : null;
-
-    console.log("formattedDeparture",formattedDeparture);
+    console.log("flights", flights[0].inventoryDates[0].date);
 
     // Function to check if a date falls within a range
     const isDateInRange = (dateStr, startDateStr, endDateStr) => {
@@ -319,34 +269,53 @@ const findTicket = async (req, res) => {
         return (
           isDateInRange(
             flight.inventoryDates[0].date,
-            formattedDepartureDate || departureDate,
-            formattedReturnDate || returnDate
+            departureDate,
+            returnDate
           ) &&
-          flight.from === from &&
-          flight.to === to
+          flight.from.toUpperCase() === from &&
+          flight.to.toUpperCase() === to
         );
       } else {
         return (
-          flight.inventoryDates[0].date === formattedDeparture &&
-          fixedFrom === flight.from &&
-          fixedTo === flight.to
+          flight.inventoryDates[0].date === departure &&
+          flight.from.toUpperCase() === fixedFrom &&
+          flight.to.toUpperCase() === fixedTo
         );
       }
     });
     console.log(filteredFlights);
     console.log(requestDetails);
 
-    res.render("user/flight-list", {
-      flights: filteredFlights,
-      requestDetails,
-    });
+    // Create a map to track the lowest fare per airline
+const airlineMap = new Map();
+
+filteredFlights.forEach(flight => {
+  // Assuming the airline name is inside first stop (you can adjust if needed)
+  const airline = flight.stops?.[0]?.airline || "Unknown";
+
+  const fare = flight.inventoryDates?.[0]?.fare?.adults || Infinity;
+
+  if (!airlineMap.has(airline) || fare < airlineMap.get(airline).fare) {
+    airlineMap.set(airline, { flight, fare });
+  }
+});
+
+// Extract the best fare flight for each airline
+const refilteredFlights = Array.from(airlineMap.values()).map(entry => entry.flight);
+
+res.render("user/flight-list", {
+  flights: filteredFlights,          
+  refilteredFlights,                 
+  requestDetails,
+});
+
   } catch (error) {
     console.error(error);
     res.render("error", { error });
   }
 };
 
-const flightRequests = new Map(); // Temporary in-memory storage
+let flightRequests  // Temporary in-memory storage
 
 // const getFlightDetail = async (req, res) => {
 //   const { id, requestDetails } = req.body;
@@ -364,16 +333,24 @@ const flightRequests = new Map(); // Temporary in-memory storage
 // };
 
 const getFlightDetail = async (req, res) => {
-  const { id } = req.body;
+  const { flightId, agentId } = req.body;
   const userId = req.session.userId;
   try {
-    const user = await Users.findById(userId);
-    console.log(user)
-    if(user.subscription.transactions >= user.subscription.transactionLimit || user.subscription.transactionAmount >= user.subscription.maxTransactionAmount){
-      return res.status(400).json({ message: "Transaction limit exceeded or amount too high. Upgrade Now", redirectUrl: "/subscription" });
-    }     
+    const user = await Users.findById(userId).populate("subscription");
+    console.log(user);
+    if (
+      user.transactions >= user.subscription.transactionLimit ||
+      user.transactionAmount >= user.subscription.maxTransactionAmount
+    ) {
+      return res
+        .status(400)
+        .json({
+          message: "Transaction limit exceeded or amount too high. Upgrade Now",
+          redirectUrl: "/subscription",
+        });
+    }
 
-    res.status(200).json({ redirectUrl: `/flight-detail?id=${id}` });
+    res.status(200).json({ redirectUrl: `/flight-detail?fId=${flightId}&aId=${agentId}` });
   } catch (error) {
     console.error("Error fetching flight details:", error);
     res.status(400).json({ error: "Invalid flight data" });
@@ -385,7 +362,8 @@ const getSellerList = async (req, res) => {
 
   try {
     // Store requestDetails temporarily in memory
-    flightRequests.set(id, requestDetails);
+    flightRequests = requestDetails;
+    console.log(flightRequests)
 
     // Send redirect URL to frontend
     res.status(200).json({ redirectUrl: `/flights?id=${id}` });
@@ -397,22 +375,57 @@ const getSellerList = async (req, res) => {
 
 // Handle GET request to retrieve data after redirect
 const viewFlightDetail = async (req, res) => {
-  const { id } = req.query;
+  const { fId, aId } = req.query;
 
   try {
-    const flightDetails = await Flights.findById(id);
+    const flightDetails = await Flights.findById(fId);
     if (!flightDetails) {
       return res.status(404).send("Flight not found");
     }
 
+    const { from, to, departureDate, stops } = flightDetails;
+    const airline = stops[0]?.airline;
+    const flightNumber = stops[0]?.flightNumber;
+    console.log(from, to, airline, departureDate, flightNumber)
+
+    const matchingFlights = await Flights.find({
+      from: flightDetails.from,
+      to: flightDetails.to,
+      "stops.0.airline": flightDetails.stops[0].airline,
+      "stops.0.flightNumber": flightDetails.stops[0].flightNumber,
+      departureDate: flightDetails.departureDate,
+    });
+    console.log(matchingFlights)
+
+    const matchedFlight = matchingFlights.find(
+      (flight) => flight.sellerId.toString() === aId.toString()
+    );
+
+    console.log(matchedFlight);
+
+    if (!matchedFlight) {
+      return res.status(404).send("Matching flight by this agent not found");
+    }
+
+    const agentDetails = await Users.findById(aId);
+    if (!agentDetails) {
+      return res.status(404).send("Agent not found")
+    }
+
+    const subscriptionId = agentDetails.subscription;
+    const subscription = await Subscriptions.findById(subscriptionId);
+
     // Retrieve requestDetails from memory and remove it
-    const requestDetails = flightRequests.get(id) || {};
+    const requestDetails = flightRequests;
+    // const request = flightRequests.get(requestDetails)
     // flightRequests.delete(id);
-    console.log(requestDetails);
+    console.log("requestDetails",requestDetails);
 
     res.render("user/flight-detail", {
-      flightDetails,
+      flightDetails: matchedFlight,
       requestDetails: requestDetails,
+      subscription,
+
     });
   } catch (error) {
     console.error("Error fetching flight details:", error);
@@ -423,7 +436,33 @@ const viewFlightDetail = async (req, res) => {
 const getFlights = async (req, res) => {
   const { id } = req.query;
   try {
-    res.render("user/flights", { id, requestDetails: "" });
+    const flight = await Flights.findById(id);
+    if (!flight) {
+      return res.status(404).send("Flight not found");
+    }
+
+    const { from, to, departureDate, stops } = flight;
+    const airline = stops[0]?.airline;
+    const flightNumber = stops[0]?.flightNumber;
+
+    const matchingFlights = await Flights.find({
+      from: flight.from,
+      to: flight.to,
+      "stops.0.airline": flight.stops[0].airline,
+      "stops.0.flightNumber": flight.stops[0].flightNumber,
+      departureDate: flight.departureDate,
+    });
+
+    const sellerIds = matchingFlights.map(f => f.sellerId);
+
+    const agentsData = await Users.find({ _id: { $in: sellerIds } });
+
+    const agentsWithFlights = matchingFlights.map(f => {
+  const agent = agentsData.find(a => a._id.toString() === f.sellerId.toString());
+  return { agent, flight: f };
+});
+
+    res.render("user/flights", { id, flight,   agentsWithFlights, requestDetails: "" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -431,8 +470,11 @@ const getFlights = async (req, res) => {
 };
 
 const viewManageBooking = async (req, res) => {
+  const bookingId = req.query.id;
+
   try {
-    res.render("user/manage-booking", { requestDetails: "" });
+    const bookings = await Bookings.findById(bookingId).populate("userId").populate("flight")
+    res.render("user/manage-booking", { requestDetails: "" , bookings});
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -488,10 +530,11 @@ const viewManageBooking = async (req, res) => {
 //     console.error(error);
 //   }
 // };
+
 const signup = async (req, res) => {
   try {
     const { name, email, pan, password, confirmPassword } = req.body;
-    if (password !== confirmPassword) { // Use strict equality ===
+    if (password !== confirmPassword) {
       return res.render("user/sign-up", {
         message: "Password does not match",
         messageType: "danger",
@@ -516,20 +559,34 @@ const signup = async (req, res) => {
       });
     }
 
+    let defaultPlanName = "Null"; 
+
+    const subscriptionPlan = await Subscriptions.findOne({
+      subscription: defaultPlanName,
+      role: "User",
+    });
+
+    if (!subscriptionPlan) {
+      return res.render("user/sign-up", {
+        message: "No subscription plan found for role",
+        messageType: "danger",
+      });
+    }
+
     // Correct date creation.
     const expiry_date = new Date(2500, 11, 30); // Year, Month (0-11), Day
 
+    // Step 2: Create the user and reference the subscription
     const newUser = new Users({
       name: name,
       email: email,
       pan: pan,
       password: password,
-      userRole: "User",
-      "subscription.expiryDate": expiry_date, 
-      "subscription.transactionLimit": 1,
-      "subscription.maxTransactionAmount": 100000,
-    });
+      subscription: subscriptionPlan._id,
+      expiryDate: expiry_date,
 
+    });
+    
     await newUser.save();
 
     const token = jwt.sign({ id: newUser._id }, process.env.SECRET_KEY, {
@@ -655,13 +712,11 @@ const resetPassword = async (req, res) => {
   console.log(token);
 
   if (password != confirmPassword) {
-    return res
-      .status(400)
-      .render("user/reset-password", {
-        message: "Passwords do not match",
-        messageType: "danger",
-        token,
-      });
+    return res.status(400).render("user/reset-password", {
+      message: "Passwords do not match",
+      messageType: "danger",
+      token,
+    });
   }
 
   try {
@@ -671,13 +726,11 @@ const resetPassword = async (req, res) => {
     });
 
     if (!user) {
-      return res
-        .status(400)
-        .render("user/reset-password", {
-          message: "Invalid or expired token",
-          messageType: "danger",
-          token,
-        });
+      return res.status(400).render("user/reset-password", {
+        message: "Invalid or expired token",
+        messageType: "danger",
+        token,
+      });
     }
 
     user.password = password;
@@ -710,7 +763,7 @@ const viewResetPassword = async (req, res) => {
 const viewProfile = async (req, res) => {
   const userId = req.session.userId;
   try {
-    const userDetails = await Users.findById(userId);
+    const userDetails = await Users.findById(userId).populate("subscription");
     res.render("user/profile", { userDetails });
   } catch (error) {
     console.error(error);
@@ -752,7 +805,8 @@ const viewBookings = async (req, res) => {
         console.log(departureDate);
         // If the arrival time is given separately, merge it
         if (booking.flightDetails.departureTime) {
-          const [hours, minutes] = booking.flightDetails.departureTime.split(":");
+          const [hours, minutes] =
+            booking.flightDetails.departureTime.split(":");
           departureDate.setHours(parseInt(hours), parseInt(minutes));
         }
 
@@ -827,25 +881,25 @@ const viewDeleteProfile = async (req, res) => {
 
 const viewKyc = async (req, res) => {
   const userId = req.session.userId;
-  try{
-    const userDetails = await Users.findById(userId);
+  try {
+    const userDetails = await Users.findById(userId).populate('subscription');
     res.render("user/kyc", { userDetails });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
   }
-}
+};
 
 const viewManageSubscription = async (req, res) => {
   const userId = req.session.userId;
-  try{
-    const userDetails = await Users.findById(userId);
+  try {
+    const userDetails = await Users.findById(userId).populate('subscription');
     res.render("user/manage-subscription", { userDetails });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
   }
-}
+};
 
 const flightBooking = async (req, res) => {
   try {
@@ -856,6 +910,9 @@ const flightBooking = async (req, res) => {
       email,
       totalFare,
       flightDetails,
+      baseFare,
+      otherServices, 
+      discount
     } = req.body;
 
     // Validate request data
@@ -866,7 +923,10 @@ const flightBooking = async (req, res) => {
       !email ||
       !razorpay_payment_id ||
       !totalFare ||
-      !flightDetails
+      !flightDetails || 
+      !baseFare ||
+      !otherServices ||
+      !discount
     ) {
       return res.status(400).json({ message: "Missing required fields" });
     }
@@ -881,18 +941,21 @@ const flightBooking = async (req, res) => {
       mobile_number,
       email,
       amount: totalFare,
+      baseFare,
+      tax: otherServices,
+      discount,
       payment_status: paid,
     });
 
     await newBooking.save();
 
-    await Users.findByIdAndUpdate(req.session.userId,{
+    await Users.findByIdAndUpdate(req.session.userId, {
       $inc: {
         "subscription.transactions": 1,
         "subscription.transactionAmount": totalFare,
       },
-    })
-    
+    });
+
     console.log(newBooking);
 
     return res
@@ -1044,46 +1107,87 @@ const updatePassword = async (req, res) => {
 };
 
 const verifyCard = async (req, res) => {
+  console.log("Verify card")
   try {
     const userId = req.session.userId;
     if (!userId) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
-    const user = await Users.findById(userId);
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+    const user = await Users.findById(userId).populate('subscription');
+    const subscription = user.subscription;
+    console.log(subscription)
+    
+    if (!subscription) {
+      return res.status(400).json({ success: false, message: "Subscription not found" });
     }
+
     console.log(req.files);
-    let updatedData = {};
+
+    const today = new Date();
+
+    // Format today's date to YYYY-MM-DD
+    const todayFormatted = today.toISOString().split("T")[0];
+
+    // Calculate the expiry date (30 days from today)
+    const subscriptionDate = new Date(today); // Create a copy of today's date
+    subscriptionDate.setDate(subscriptionDate.getDate() + 30);
+
+    // Format expiry date to YYYY-MM-DD
+    const expiryDate = subscriptionDate.toISOString().split("T")[0];
 
     if (req.files && req.files.visitingCard && req.files.panCard) {
-      // Assuming the first file is visitingCard and the second is panCard
       const visitingCardFile = req.files.visitingCard[0];
       const panCardFile = req.files.panCard[0];
-
+    
       if (!visitingCardFile || !panCardFile) {
-        return res.status(400).json({ success: false, message: "Visiting Card and PAN Card are required." });
+        return res
+          .status(400)
+          .json({
+            success: false,
+            message: "Visiting Card and PAN Card are required.",
+          });
       }
 
-      updatedData.visitingCard = "/uploads/" + visitingCardFile.filename;
-      updatedData.panCard = "/uploads/" + panCardFile.filename;
+      user.visitingCard = "/uploads/" + visitingCardFile.filename;
+      user.panCard = "/uploads/" + panCardFile.filename;
 
-      if (user.subscription.subscription === "Null") {
-        updatedData["subscription.subscription"] = "Free";
-        updatedData["subscription.kyc"] = "Initial";
-        updatedData["subscription.transactions"] = 0;
-        updatedData["subscription.transactionLimit"] = 10;
-        updatedData["subscription.maxTransactionAmount"] = 100000;
-      }
-
-    const updatedUser = await Users.findByIdAndUpdate(userId, updatedData, {
-      new: true,
+  if (subscription.subscription === "Null") {
+    const defaultPlan = await Subscriptions.findOne({
+      subscription: "Free",
+      role: user.userRole,
     });
 
-    res.json({ success: true, user: updatedUser, message: "Visiting card and PAN card uploaded successfully!" });
-    }else {
-      return res.status(400).json({ success: false, message: "Visiting Card and Pan Card are required." });
+    if (!defaultPlan) {
+      return res.status(400).json({
+        success: false,
+        message: "Default subscription plan not found",
+      });
+    }
+
+    user.subscription = defaultPlan._id;
+  }
+
+  user.subscriptionDate = todayFormatted;
+  user.expiryDate = expiryDate;
+  user.kyc = "Initial";
+  user.transactions = 0;
+  user.transactionAmount = 0;
+
+  await user.save();
+
+      res.json({
+        success: true,
+        user,
+        message: "Visiting card and PAN card uploaded successfully!",
+      });
+    } else {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Visiting Card and Pan Card are required.",
+        });
     }
   } catch (error) {
     console.error("Error verifying card:", error);
@@ -1098,12 +1202,12 @@ const verifyAadhaar = async (req, res) => {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
-    const user = await Users.findById(userId);
+    const user = await Users.findById(userId).populate("subscription");
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
-
-    let updatedData = {};
 
     if (req.files && req.files.aadhaar1 && req.files.aadhaar2) {
       // Access files using req.files.fieldname
@@ -1111,27 +1215,34 @@ const verifyAadhaar = async (req, res) => {
       const aadhaarCard2File = req.files.aadhaar2[0];
 
       if (!aadhaarCard1File || !aadhaarCard2File) {
-        return res.status(400).json({ success: false, message: "Aadhaar Card are required." });
+        return res
+          .status(400)
+          .json({ success: false, message: "Both Aadhaar Card front and back are required." });
       }
 
-      updatedData.aadhaarCardFront = "/uploads/" + aadhaarCard1File.filename;
-      updatedData.aadhaarCardBack = "/uploads/" + aadhaarCard2File.filename;
+      user.aadhaarCardFront = "/uploads/" + aadhaarCard1File.filename;
+      user.aadhaarCardBack = "/uploads/" + aadhaarCard2File.filename;
 
-      if (user.subscription.subscription === "Free") {
-        updatedData["subscription.kyc"] = "Completed";
-        updatedData["subscription.transactions"] = 0;
-        updatedData["subscription.transactionLimit"] = 1000;
-        updatedData["subscription.maxTransactionAmount"] = 10000000;
+      if (user.subscription && user.subscription.subscription === "Free") {
+        user.kyc = "Completed";
+        user.transactions = 0;
+        user.transactionAmount = 0;
       }
-      const updatedUser = await Users.findByIdAndUpdate(userId, updatedData, {
-        new: true,
+      await user.save();
+
+      res.json({
+        success: true,
+        user,
+        message: "Aadhaar card uploaded successfully!",
       });
-
-      res.json({ success: true, user: updatedUser, message: "Aadhaar card uploaded successfully!" });
     } else {
-      return res.status(400).json({ success: false, message: "Aadhaar Card Front and Back are required." });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Aadhaar Card Front and Back are required.",
+        });
     }
-
   } catch (error) {
     console.error("Error verifying aadhaar:", error);
     res.status(500).json({ success: false, message: "Server error" });
@@ -1187,9 +1298,9 @@ const verifyAadhaar = async (req, res) => {
 //   }
 // };
 
-const subscription = async (req, res) => {  
+const subscription = async (req, res) => {
   const { subscription } = req.body;
-  console.log(subscription)
+  console.log(subscription);
   const userId = req.session.userId;
   try {
     if (!userId) {
@@ -1197,106 +1308,189 @@ const subscription = async (req, res) => {
     }
     const user = await Users.findById(userId);
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     if (subscription === "Free") {
       if (user.subscription.subscription === "Free") {
         return res.json({
           redirectUrl: "/subscription",
-          message: "Free subscription already active. Choose another plan", 
+          message: "Free subscription already active. Choose another plan",
         });
-      } else if (user.subscription.kyc === "Pending") { 
+      } else if (user.kyc === "Pending") {
         return res.json({
           redirectUrl: "/kyc",
           message: "Complete Initial KYC for free subscription",
         });
-      } 
+      }
     } else if (subscription === "Pro") {
-      if (user.subscription.subscription === "Pro") { 
+      if (user.subscription.subscription === "Pro") {
         return res.json({
           redirectUrl: "/subscription-payment?subscription=Pro",
-          message: "Pro subscription already active", 
+          message: "Pro subscription already active",
         });
-      } else if (user.subscription.kyc !== "Completed") {
+      } else if (user.kyc !== "Completed") {
         return res.json({
           redirectUrl: "/kyc",
           message: "Complete KYC for Pro subscription",
         });
       } else {
-        res.status(200).json({ redirectUrl: `/subscription-payment?subscription=${subscription}` });
+        res
+          .status(200)
+          .json({
+            redirectUrl: `/subscription-payment?subscription=${subscription}`,
+          });
       }
     } else if (subscription === "Enterprise") {
-      if (user.subscription.subscription === "Enterprise") { 
+      if (user.subscription.subscription === "Enterprise") {
         return res.json({
           redirectUrl: "/subscription-payment?subscription=Enterprise",
-          message: "Enterprise subscription already active", 
+          message: "Enterprise subscription already active",
         });
-      } else if (user.subscription.kyc !== "Completed") {
+      } else if (user.kyc !== "Completed") {
         return res.json({
           redirectUrl: "/kyc",
           message: "Complete KYC for Enterprise subscription",
         });
       } else {
-        res.status(200).json({ redirectUrl: `/subscription-payment?subscription=${subscription}` });
+        res
+          .status(200)
+          .json({
+            redirectUrl: `/subscription-payment?subscription=${subscription}`,
+          });
       }
     } else {
-      res.status(400).json({ message: "Invalid subscription" }); 
+      res.status(400).json({ message: "Invalid subscription" });
     }
   } catch (error) {
     console.error("Error fetching payment details:", error);
-    res.status(500).json({ error: "Internal Server Error" }); 
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
 const viewSubscriptionPayment = async (req, res) => {
   const { subscription } = req.query;
   const userId = req.session.userId;
-  try{
+  try {
     const userDetails = await Users.findById(userId);
     res.render("user/subscription-payment", { userDetails, subscription });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
   }
-}
+};
 
 const subscriptionPayment = async (req, res) => {
   const userId = req.session.userId;
-  const {razorpay_payment_id, email, price, subscription} = req.body;
-  try{
+  const { razorpay_payment_id, email, price, subscription } = req.body;
+  try {
     const user = await Users.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (!razorpay_payment_id) {
+      console.error("Payment failed: razorpay_payment_id missing.");
+      return res.status(400).json({ success: false, message: "Payment failed." });
+    }
+
+    const subscriptionPlan = await Subscriptions.findOne({
+      subscription: subscription,
+      role: user.userRole, // Match role-specific plans
+    });
+
+    if (!subscriptionPlan) {
+      return res.status(400).json({ success: false, message: "Invalid subscription plan." });
+    }
+
     const today = new Date();
 
     // Format today's date to YYYY-MM-DD
     const todayFormatted = today.toISOString().split("T")[0];
-  
+
     // Calculate the expiry date (30 days from today)
     const subscriptionDate = new Date(today); // Create a copy of today's date
     subscriptionDate.setDate(subscriptionDate.getDate() + 30);
-  
+
     // Format expiry date to YYYY-MM-DD
     const expiryDate = subscriptionDate.toISOString().split("T")[0];
 
-    if(razorpay_payment_id){
-      user.subscription.subscription = subscription;
-      user.subscription.price = price;
-      user.subscription.subscriptionDate = todayFormatted;
-      user.subscription.expiryDate = expiryDate;
-      await user.save(); 
+    user.subscription = subscriptionPlan._id;
+    user.subscriptionDate = today;
+    user.expiryDate = expiryDate;
+    user.transactions = 0;
+    user.transactionAmount = 0;
 
-      res.json({ success: true, message: "Subscription updated successfully." });
-    } else {
-      console.error("Payment failed: razorpay_payment_id missing.");
-      res.status(400).json({ success: false, message: "Payment failed." });
-      return; 
-    }
+    await user.save();
 
+    res.json({
+        success: true,
+        message: "Subscription updated successfully.",
+      });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
   }
-}
+};
+
+const freeSubscription = async (req, res) => {
+  const userId = req.session.userId;
+  const { subscription } = req.body;
+  try {
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+    
+    const freePlan = await Subscriptions.findOne({
+      subscription: "Free",
+      role: user.userRole,
+    });
+    
+        if (!freePlan) {
+          return res.status(400).json({ success: false, message: "Free plan not found." });
+        }
+    
+    const today = new Date();
+
+    // Format today's date to YYYY-MM-DD
+    const todayFormatted = today.toISOString().split("T")[0];
+
+    // Calculate the expiry date (30 days from today)
+    const subscriptionDate = new Date(today); // Create a copy of today's date
+    subscriptionDate.setDate(subscriptionDate.getDate() + 30);
+
+    // Format expiry date to YYYY-MM-DD
+    const expiryDate = subscriptionDate.toISOString().split("T")[0];
+
+    user.subscription = freePlan._id;
+    user.subscriptionDate = todayFormatted;
+    user.expiryDate = expiryDate;
+    user.transactions = 0;
+    user.transactionAmount = 0;
+
+    await user.save();
+
+    res.json({
+      success: true,
+      user,
+      message: "Downgraded to Free successfully!",
+      redirectUrl: "/subscription",
+    });
+  } catch (error) {
+    console.error("Error verifying card:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
 const viewPricing = async (req, res) => {
   try {
@@ -1317,11 +1511,19 @@ const renewal = async (req, res) => {
 
     if (razorpay_payment_id) {
       const currentExpiryDate = new Date(user.subscription.expiryDate);
-
+      let transactions = 0;
+      let transactionAmount = 0;
       if (today < currentExpiryDate) {
         const startDate = new Date(user.subscription.expiryDate);
         startDate.setDate(startDate.getDate() + 30);
         newExpiryDate = startDate.toISOString().split("T")[0];
+        const balanceTransactions =
+          user.subscription.transactionLimit - user.subscription.transactions;
+        transactions = -balanceTransactions;
+        const balanceTransactionAmount =
+          user.subscription.maxTransactionAmount -
+          user.subscription.transactionAmount;
+        transactionAmount = -balanceTransactionAmount;
       } else {
         const startDate = new Date(today);
         startDate.setDate(startDate.getDate() + 30);
@@ -1331,9 +1533,15 @@ const renewal = async (req, res) => {
       user.subscription.subscription = subscription;
       user.subscription.price = price;
       user.subscription.expiryDate = newExpiryDate;
+      user.subscription.transactionAmount = 0;
+      user.subscription.transactions = transactions;
+      user.subscription.transactionAmount = transactionAmount;
       await user.save();
 
-      res.json({ success: true, message: "Subscription renewed successfully." });
+      res.json({
+        success: true,
+        message: "Subscription renewed successfully.",
+      });
     } else {
       console.error("Payment failed: razorpay_payment_id missing.");
       res.status(400).json({ success: false, message: "Payment failed." });
@@ -1345,294 +1553,207 @@ const renewal = async (req, res) => {
   }
 };
 
+const freeRenewal = async (req, res) => {
+  const userId = req.session.userId;
+  const { subscription } = req.body;
+  try {
+    const user = await Users.findById(userId);
+    const today = new Date();
+    let transactions = 0;
+    let transactionAmount = 0;
+    const startDate = new Date(today);
+    startDate.setDate(startDate.getDate() + 30);
+    const newExpiryDate = startDate.toISOString().split("T")[0];
+    const balanceTransactions =
+      user.subscription.transactionLimit - user.subscription.transactions;
+    transactions = -balanceTransactions;
+    const balanceTransactionAmount =
+      user.subscription.maxTransactionAmount -
+      user.subscription.transactionAmount;
+    transactionAmount = -balanceTransactionAmount;
+
+    user.subscription.subscription = subscription;
+    user.subscription.expiryDate = newExpiryDate;
+    user.subscription.transactionAmount = 0;
+    user.subscription.transactions = transactions;
+    user.subscription.transactionAmount = transactionAmount;
+    await user.save();
+
+    res.json({ success: true, message: "Subscription renewed successfully.", redirectUrl: "/manage-subscription", });
+  } catch (error) {
+    console.error(error);
+    res.render("error", { error });
+  }
+};
+
 const viewEarnings = async (req, res) => {
   try {
-      res.render("user/earnings", {});
+    res.render("user/earnings", {});
   } catch (error) {
-      console.log(error);
+    console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
   }
-}
+};
 
 const viewListings = async (req, res) => {
   try {
-      res.render("user/listings", {});
+    res.render("user/listings", {});
   } catch (error) {
-      console.log(error);
+    console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
   }
-}
+};
 
 const viewAddListing = async (req, res) => {
   try {
-      res.render("user/add-listings", {});
+    res.render("user/add-listings", {});
   } catch (error) {
-      console.log(error);
+    console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
   }
-}
+};
+
+const viewJoinUs = async (req, res) => {
+  try {
+    res.render("user/join-us", {});
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+};
+
+const viewUserBookings = async (req, res) => {
+  const userId = req.session.userId;
+  try {
+    const allBookings = await Bookings.find().populate("flight");
+
+    const sellerBookings = allBookings.filter(booking => {
+      const sellerId = booking.flight?.sellerId?.toString(); 
+      return sellerId === userId;
+    });
+
+    res.render("user/user-booking", { bookings: sellerBookings });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+};
 
 const addFlight = async (req, res) => {
-  console.log("Adding flights")
-  const oneWayFlight = req.body
+  console.log("Adding flights");
+  const oneWayFlight = req.body;
   console.log(oneWayFlight);
-  
-  try{
-    const formatDateString = (dateStr) => {
-      if (!dateStr || typeof dateStr !== "string") {
-        throw new Error("Invalid date string",dateStr);
-      }
-    
-      // If date format is "10 Apr 25", parse it manually
-      const parts = dateStr.trim().split(" ");
-      if (parts.length !== 3) {
-        throw new Error("Date format must be 'DD MMM YY'");
-      }
-    
-      const [day, monthStr, year] = parts;
-      const monthMap = {
-        Jan: "01", Feb: "02", Mar: "03", Apr: "04", May: "05", Jun: "06",
-        Jul: "07", Aug: "08", Sep: "09", Oct: "10", Nov: "11", Dec: "12"
-      };
-    
-      const month = monthMap[monthStr];
-      if (!month) throw new Error("Invalid month in date");
-    
-      return `20${year}-${month}-${day.padStart(2, "0")}`; // Returns YYYY-MM-DD
-    };
-    
-   
 
-// const departureDateTimeStr = `${formatDateString(oneWayFlight.departureDate)}T${firstStop.departureTime}`;
-// const arrivalDateTimeStr = `${formatDateString(lastStop.arrivalDay)}T${lastStop.arrivalTime}`;
-
-// const departure = new Date(departureDateTimeStr);
-// const arrival = new Date(arrivalDateTimeStr);
-
-// if (isNaN(departure) || isNaN(arrival)) {
-//   throw new Error("Invalid departure or arrival date/time");
-// }
-
-// Calculate duration in milliseconds
-// const durationMs = arrival - departure;
-
-// if (durationMs < 0) {
-//   throw new Error("Arrival time cannot be before departure time");
-// }
-
-// Convert to hours and minutes
-// const totalMinutes = Math.floor(durationMs / 60000);
-// const hours = Math.floor(totalMinutes / 60);
-// const minutes = totalMinutes % 60;
-// const durationFormatted = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-
+  try {
     const newFlight = new Flights({
+      sellerId: oneWayFlight.sellerId,
       inventoryName: oneWayFlight.inventoryName,
       from: oneWayFlight.from,
       to: oneWayFlight.to,
+      departureName: oneWayFlight.departureName,
+      arrivalName: oneWayFlight.arrivalName,
+      fromCity: oneWayFlight.fromCity,
+      toCity: oneWayFlight.toCity,
+      fromCountry: oneWayFlight.fromCountry,
+      toCountry: oneWayFlight.toCountry,
       departureTime: oneWayFlight.departureTime,
       departureDate: oneWayFlight.departureDate,
       arrivalTime: oneWayFlight.arrivalTime,
       arrivalDate: oneWayFlight.arrivalDate,
       duration: oneWayFlight.totalDuration,
       disableBeforeDays: oneWayFlight.disableBeforeDays,
-      // airline: oneWayFlight.airline,
-      // flightNumber: oneWayFlight.flightNumber,
       stops: oneWayFlight.stops,
       baggage: {
         adult: {
           checkIn: {
             numberOfPieces: oneWayFlight.adultCheckinNumber,
-            weightPerPiece: oneWayFlight.adultCheckinWeight
+            weightPerPiece: oneWayFlight.adultCheckinWeight,
           },
-          cabin:{
+          cabin: {
             pieces: oneWayFlight.adultCabinNumber,
-            weightPerPiece: oneWayFlight.adultCabinWeight
-          }
+            weightPerPiece: oneWayFlight.adultCabinWeight,
+          },
         },
         child: {
           checkIn: {
             numberOfPieces: oneWayFlight.childCheckinNumber,
-            weightPerPiece: oneWayFlight.childCheckinWeight
+            weightPerPiece: oneWayFlight.childCheckinWeight,
           },
-          cabin:{
+          cabin: {
             pieces: oneWayFlight.childCabinNumber,
-            weightPerPiece: oneWayFlight.childCabinWeight
-          }
+            weightPerPiece: oneWayFlight.childCabinWeight,
+          },
         },
         infant: {
           checkIn: {
             numberOfPieces: oneWayFlight.infantCheckinNumber,
-            weightPerPiece: oneWayFlight.infantCheckinWeight
+            weightPerPiece: oneWayFlight.infantCheckinWeight,
           },
-          cabin:{
+          cabin: {
             pieces: oneWayFlight.infantCabinNumber,
             weightPerPiece: oneWayFlight.infantCabinWeight,
-          }
-        }
+          },
+        },
       },
-      inventoryDates: [{
-        date: oneWayFlight.inventoryDates[0]?.date,
-        pnr: oneWayFlight.inventoryDates[0]?.pnr,
-        seats: oneWayFlight.inventoryDates[0]?.seats,
-        fare: {
-          adults: oneWayFlight.inventoryDates[0]?.fare.adults,
-          infants: oneWayFlight.inventoryDates[0]?.fare.infants
-        }
-      }],
+      inventoryDates: [
+        {
+          date: oneWayFlight.inventoryDates[0]?.date,
+          pnr: oneWayFlight.inventoryDates[0]?.pnr,
+          seats: oneWayFlight.inventoryDates[0]?.seats,
+          fare: {
+            adults: oneWayFlight.inventoryDates[0]?.fare.adults,
+            infants: oneWayFlight.inventoryDates[0]?.fare.infants,
+          },
+        },
+      ],
       refundable: oneWayFlight.refundable,
     });
 
     await newFlight.save();
-    return res.json({message: "Flight added successfully", success: true, redirectUrl: "/listings"})
-
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal Server error" })
-  }
-}
-
-const addConnectingFlight = async (req, res) => {
-  console.log("Adding flights")
-  const oneWayFlight = req.body
-  console.log(oneWayFlight);
-  
-  try{
-    const formatDateString = (dateStr) => {
-      if (!dateStr || typeof dateStr !== "string") {
-        throw new Error("Invalid date string",dateStr);
-      }
-    
-      // If date format is "10 Apr 25", parse it manually
-      const parts = dateStr.trim().split(" ");
-      if (parts.length !== 3) {
-        throw new Error("Date format must be 'DD MMM YY'");
-      }
-    
-      const [day, monthStr, year] = parts;
-      const monthMap = {
-        Jan: "01", Feb: "02", Mar: "03", Apr: "04", May: "05", Jun: "06",
-        Jul: "07", Aug: "08", Sep: "09", Oct: "10", Nov: "11", Dec: "12"
-      };
-    
-      const month = monthMap[monthStr];
-      if (!month) throw new Error("Invalid month in date");
-    
-      return `20${year}-${month}-${day.padStart(2, "0")}`; // Returns YYYY-MM-DD
-    };
-    
-    const firstStop = oneWayFlight.stops[0];
-const lastStop = oneWayFlight.stops[oneWayFlight.stops.length - 1];
-
-if (!firstStop?.departureTime || !lastStop?.arrivalDay || !lastStop?.arrivalTime) {
-  throw new Error("Missing required time info in stops");
-}
-
-const departureDateTimeStr = `${formatDateString(oneWayFlight.departureDate)}T${firstStop.departureTime}`;
-const arrivalDateTimeStr = `${formatDateString(lastStop.arrivalDay)}T${lastStop.arrivalTime}`;
-
-const departure = new Date(departureDateTimeStr);
-const arrival = new Date(arrivalDateTimeStr);
-
-if (isNaN(departure) || isNaN(arrival)) {
-  throw new Error("Invalid departure or arrival date/time");
-}
-
-// Calculate duration in milliseconds
-const durationMs = arrival - departure;
-
-if (durationMs < 0) {
-  throw new Error("Arrival time cannot be before departure time");
-}
-
-// Convert to hours and minutes
-const totalMinutes = Math.floor(durationMs / 60000);
-const hours = Math.floor(totalMinutes / 60);
-const minutes = totalMinutes % 60;
-const durationFormatted = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-
-    const newFlight = new Flights({
-      inventoryName: oneWayFlight.inventoryName,
-      departureDate: oneWayFlight.departureDate,
-      disableBeforeDays: oneWayFlight.disableBeforeDays,
-      from: oneWayFlight.from,
-      to: oneWayFlight.to,
-      airline: oneWayFlight.airline,
-      flightNumber: oneWayFlight.flightNumber,
-      departureTime: oneWayFlight.departureTime,
-      arrivalTime: oneWayFlight.arrivalTime,
-      arrivalDay: oneWayFlight.arrivalDay,
-      baggage: {
-        adult: {
-          checkIn: {
-            numberOfPieces: oneWayFlight.adultCheckinNumber,
-            weightPerPiece: oneWayFlight.adultCheckinWeight
-          },
-          cabin:{
-            pieces: oneWayFlight.adultCabinNumber,
-            weightPerPiece: oneWayFlight.adultCabinWeight
-          }
-        },
-        child: {
-          checkIn: {
-            numberOfPieces: oneWayFlight.childCheckinNumber,
-            weightPerPiece: oneWayFlight.childCheckinWeight
-          },
-          cabin:{
-            pieces: oneWayFlight.childCabinNumber,
-            weightPerPiece: oneWayFlight.childCabinWeight
-          }
-        },
-        infant: {
-          checkIn: {
-            numberOfPieces: oneWayFlight.infantCheckinNumber,
-            weightPerPiece: oneWayFlight.infantCheckinWeight
-          },
-          cabin:{
-            pieces: oneWayFlight.infantCabinNumber,
-            weightPerPiece: oneWayFlight.infantCabinWeight,
-          }
-        }
-      },
-      inventoryDates: [{
-        date: oneWayFlight.inventoryDates[0]?.date,
-        pnr: oneWayFlight.inventoryDates[0]?.pnr,
-        seats: oneWayFlight.inventoryDates[0]?.seats,
-        fare: {
-          adults: oneWayFlight.inventoryDates[0]?.fare.adults,
-          infants: oneWayFlight.inventoryDates[0]?.fare.infants
-        }
-      }],
-      refundable: oneWayFlight.refundable,
-      duration: durationFormatted,
+    return res.json({
+      message: "Flight added successfully",
+      success: true,
+      redirectUrl: "/listings",
     });
-
-    await newFlight.save();
-    return res.json({message: "Flight added successfully", success: true, redirectUrl: "/listings"})
-
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "Internal Server error" })
+    res.status(500).json({ success: false, message: "Internal Server error" });
   }
-}
+};
 
 const getApiFlights = async (req, res) => {
-  const { from, to, departureDate, airlines = [], flightNumbers = [] } = req.body;
+  const {
+    from,
+    to,
+    departureDate,
+    airlines = [],
+    flightNumbers = [],
+  } = req.body;
 
   const formatDate = (dateString) => {
     if (!dateString) return null;
 
-    const parts = dateString.trim().split(' ');
+    const parts = dateString.trim().split(" ");
     if (parts.length !== 3) return null;
 
-    const day = parts[0].padStart(2, '0');
+    const day = parts[0].padStart(2, "0");
     const monthMap = {
-      Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
-      Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12'
+      Jan: "01",
+      Feb: "02",
+      Mar: "03",
+      Apr: "04",
+      May: "05",
+      Jun: "06",
+      Jul: "07",
+      Aug: "08",
+      Sep: "09",
+      Oct: "10",
+      Nov: "11",
+      Dec: "12",
     };
 
     const month = monthMap[parts[1]];
-    const year = `20${parts[2]}`;
+    const year = parts[2];
 
     return month ? `${year}-${month}-${day}` : null;
   };
@@ -1647,13 +1768,15 @@ const getApiFlights = async (req, res) => {
   try {
     const response = await fetch(apiUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0', 
-        'Accept': 'application/json'
-      }
+        "User-Agent": "Mozilla/5.0",
+        Accept: "application/json",
+      },
     });
 
     if (!response.ok) {
-      return res.status(response.status).json({ error: `Booking API error: ${response.statusText}` });
+      return res
+        .status(response.status)
+        .json({ error: `Booking API error: ${response.statusText}` });
     }
 
     const data = await response.json();
@@ -1661,11 +1784,14 @@ const getApiFlights = async (req, res) => {
 
     const filteredFlights = [];
 
-    flightOffers.forEach(offer => {
-      offer.segments.forEach(segment => {
+    flightOffers.forEach((offer) => {
+      offer.segments.forEach((segment) => {
         const legs = segment.legs;
 
-        if (airlines.length === legs.length && flightNumbers.length === legs.length) {
+        if (
+          airlines.length === legs.length &&
+          flightNumbers.length === legs.length
+        ) {
           let allMatch = true;
 
           for (let i = 0; i < legs.length; i++) {
@@ -1690,20 +1816,26 @@ const getApiFlights = async (req, res) => {
               totalTime: segment.totalTime || "",
               departureTime: segment.departureTime || "",
               arrivalTime: segment.arrivalTime || "",
+              departureAirport: segment.departureAirport || {},
+              arrivalAirport: segment.arrivalAirport || {},
             });
           }
-          
         }
       });
     });
 
-    console.log("filteredFlights", filteredFlights)
+    console.log("filteredFlights", filteredFlights);
 
     res.json({ total: filteredFlights.length, flights: filteredFlights });
   } catch (err) {
     console.error("Fetch error:", err.message);
     res.status(500).json({ error: "Failed to fetch flights" });
   }
+};
+
+const getApiCountries = async (req, res) => {
+  const countryList = Object.values(countries).map(c => c.name).sort();
+  res.json(countryList);
 };
 
 module.exports = {
@@ -1753,13 +1885,17 @@ module.exports = {
   subscription,
   viewSubscriptionPayment,
   subscriptionPayment,
+  freeSubscription,
   viewPricing,
   renewal,
+  freeRenewal,
   viewEarnings,
   viewListings,
   viewAddListing,
+  viewJoinUs,
+  viewUserBookings,
   addFlight,
   getApiFlights,
-  addConnectingFlight,
-  
+  getApiCountries,
+
 };

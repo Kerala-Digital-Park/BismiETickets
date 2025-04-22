@@ -52,61 +52,67 @@
                   <!-- Ticket Passenger -->
                   <div class="col-lg-4 ms-auto">
                     <div class="form-control-bg-light form-fs-md position-relative">
-                      
-                      <div class="w-100">
-                        <div class="dropdown guest-selector me-2">
-                            <input type="text" class="form-guest-selector form-control flight-result"
-                                value="1 Passengers" data-bs-auto-close="outside" data-bs-toggle="dropdown">
-                            <ul class="dropdown-menu guest-selector-dropdown">
-                                <li class="d-flex justify-content-between">
-                                    <div>
-                                        <h6 class="mb-0">Adults</h6>
-                                        <small>Ages 13 or above</small>
-                                    </div>
-                                    <div class="hstack gap-1 align-items-center">
-                                        <button type="button" class="btn btn-link adult-remove p-0 mb-0"><i
-                                                class="bi bi-dash-circle fs-5 fa-fw"></i></button>
-                                        <h6 class="guest-selector-count mb-0 adults" id="adults" value="<%= requestDetails.adults %>" >1</h6>
-                                        <button type="button" class="btn btn-link adult-add p-0 mb-0"><i
-                                                class="bi bi-plus-circle fs-5 fa-fw"></i></button>
-                                    </div>
-                                </li>
-                    
-                                <li class="dropdown-divider"></li>
-                    
-                                <li class="d-flex justify-content-between">
-                                    <div>
-                                        <h6 class="mb-0">Children</h6>
-                                        <small>Ages 13 below</small>
-                                    </div>
-                    
-                                    <div class="hstack gap-1 align-items-center">
-                                        <button type="button" class="btn btn-link child-remove p-0 mb-0"><i
-                                                class="bi bi-dash-circle fs-5 fa-fw"></i></button>
-                                        <h6 class="guest-selector-count mb-0 child" id="children" value="<%= requestDetails.children %>">0</h6>
-                                        <button type="button" class="btn btn-link child-add p-0 mb-0"><i
-                                                class="bi bi-plus-circle fs-5 fa-fw"></i></button>
-                                    </div>
-                                </li>
-                    
-                                <li class="dropdown-divider"></li>
-                    
-                                <li class="d-flex justify-content-between">
-                                    <div>
-                                        <h6 class="mb-0">Infants</h6>
-                                        <small>Ages 2 below</small>
-                                    </div>
-                    
-                                    <div class="hstack gap-1 align-items-center">
-                                        <button type="button" class="btn btn-link infant-remove p-0 mb-0"><i
-                                                class="bi bi-dash-circle fs-5 fa-fw"></i></button>
-                                        <h6 class="guest-selector-count mb-0 infant" id="infants" value="<%= requestDetails.infants %>">0</h6>
-                                        <button type="button" class="btn btn-link infant-add p-0 mb-0"><i
-                                                class="bi bi-plus-circle fs-5 fa-fw"></i></button>
-                                    </div>
-                                </li>
-                    
-                            </ul>
+                      <div id="selectTravellersClass" class="travellers-class-select form-control"
+                        name="travellers-class">
+                      </div>
+
+                      <div class="travellers-dropdown" id="travellersDropdown" style="
+                      display: none;
+                      position: absolute;
+                      width: 100%;
+                      background: #fff;
+                      border: 1px solid #ddd;
+                      padding: 10px;
+                      z-index: 1000;
+                    ">
+                        <div class="row d-flex align-items-center justify-content-between">
+                          <div class="col-auto d-flex justify-content-between">
+                            <div class="qty input-group d-flex align-items-center">
+                              <p class="mb-0">Adults <small class="text-muted">(12+ yrs)</small></p>
+                              <button type="button" class="btn bg-light-4 decrease" data-target="#adults">-</button>
+                              <input type="text" name="adults" id="adults" class="qty-spinner form-control text-center"
+                                value="<%= requestDetails.adults %>" readonly style="max-width: 50px;">
+                              <button type="button" class="btn bg-light-4 increase" data-target="#adults">+</button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <hr class="my-2" />
+
+                        <div class="row d-flex align-items-center justify-content-between">
+                          <div class="col-auto">
+                            <div class="qty input-group d-flex align-items-center">
+                              <p class="mb-0">Children <small class="text-muted">(2-12 yrs)</small></p>
+                              <button type="button" class="btn bg-light-4 decrease" data-target="#children">-</button>
+                              <input type="text" name="children" id="children"
+                                class="qty-spinner form-control text-center" value="<%= requestDetails.children %>"
+                                readonly style="max-width: 50px;">
+                              <button type="button" class="btn bg-light-4 increase" data-target="#children">+</button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <hr class="my-2" />
+
+                        <div class="row d-flex align-items-center justify-content-between">
+                          <div class="col-auto">
+                            <div class="qty input-group d-flex align-items-center">
+                              <p class="mb-0">Infants <small class="text-muted">(< 2 yrs)</small>
+                              </p>
+                              <button type="button" class="btn bg-light-4 decrease" data-target="#infants">-</button>
+                              <input type="text" name="infants" id="infants"
+                                class="qty-spinner form-control text-center" value="<%= requestDetails.infants %>"
+                                readonly style="max-width: 50px;">
+                              <button type="button" class="btn bg-light-4 increase" data-target="#infants">+</button>
+                            </div>
+                          </div>
+                        </div>
+
+
+                        <div class="d-grid mt-3">
+                          <button class="btn btn-primary submit-done" type="button" id="closeDropdown">
+                            Done
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -266,81 +272,65 @@
       </section>
       <!-- =======================
     Search START -->
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const selectTravellers = document.getElementById("selectTravellersClass");
+          const dropdown = document.getElementById("travellersDropdown");
+          const closeDropdown = document.getElementById("closeDropdown");
 
-    <script>
-      const requestDetails = {
-        adults: "<%= requestDetails.adults %>",
-        children: "<%= requestDetails.children %>",
-        infants: "<%= requestDetails.infants %>"
-      };
-      console.log(requestDetails)
-    </script>
-    
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-      const adultsCountElement = document.querySelector(".adults");
-      const childrenCountElement = document.querySelector(".child");
-      const infantsCountElement = document.querySelector(".infant");
-      const adultAddButton = document.querySelector(".adult-add");
-      const adultRemoveButton = document.querySelector(".adult-remove");
-      const childAddButton = document.querySelector(".child-add");
-      const childRemoveButton = document.querySelector(".child-remove");
-      const infantAddButton = document.querySelector(".infant-add");
-      const infantRemoveButton = document.querySelector(".infant-remove");
-      const guestSelectorInput = document.querySelector(".form-guest-selector");
+          selectTravellers.addEventListener("click", function () {
+            dropdown.style.display =
+              dropdown.style.display === "none" ? "block" : "none";
+          });
 
-      let adults = parseInt(requestDetails.adults || 1);
-      let children = parseInt(requestDetails.children || 0);
-      let infants = parseInt(requestDetails.infants || 0);
+          closeDropdown.addEventListener("click", function () {
+            dropdown.style.display = "none";
+            updateTravellersSummary(); // Update the displayed travellers count
+          });
 
-      function updateGuestCount() {
-          adultsCountElement.textContent = adults;
-          childrenCountElement.textContent = children;
-          infantsCountElement.textContent = infants;
+          // Hide dropdown when clicking outside
+          document.addEventListener("click", function (event) {
+            if (
+              !selectTravellers.contains(event.target) &&
+              !dropdown.contains(event.target)
+            ) {
+              dropdown.style.display = "none";
+              updateTravellersSummary();
+            }
+          });
 
-          const totalPassengers = adults + children + infants;
-          guestSelectorInput.value = `${totalPassengers} Passenger${totalPassengers > 1 ? "s" : ""}`;
-      }
+          // Increase / Decrease Functionality
+          document.querySelectorAll(".increase, .decrease").forEach((button) => {
+            button.addEventListener("click", function () {
+              const targetId = this.getAttribute("data-target");
+              const inputField = document.querySelector(targetId);
+              let currentValue = parseInt(inputField.value);
 
-      adultAddButton.addEventListener("click", function () {
-          adults++;
-          updateGuestCount();
-      });
+              if (this.classList.contains("increase")) {
+                inputField.value = currentValue + 1;
+              } else if (this.classList.contains("decrease") && currentValue > 0) {
+                inputField.value = currentValue - 1;
+              }
 
-      adultRemoveButton.addEventListener("click", function () {
-          if (adults > 0) { // Ensure at least 1 adult
-              adults--;
-              updateGuestCount();
+              updateTravellersSummary(); // Update the travellers text after each change
+            });
+          });
+
+          // Update Travellers Summary in the Input Field
+          function updateTravellersSummary() {
+            const adults = parseInt(document.getElementById("adults").value);
+            const children = parseInt(document.getElementById("children").value);
+            const infants = parseInt(document.getElementById("infants").value);
+
+            const totalTravellers = adults + children + infants;
+            selectTravellers.textContent = totalTravellers === 0 ? "Select Travellers" : `${totalTravellers} Travellers`
+            //selectTravellers.textContent = `${adults} Adults, ${children} Children, ${infants} Infants`;
           }
-      });
 
-      childAddButton.addEventListener("click", function () {
-          children++;
-          updateGuestCount();
-      });
-
-      childRemoveButton.addEventListener("click", function () {
-          if (children > 0) {
-              children--;
-              updateGuestCount();
-          }
-      });
-
-      infantAddButton.addEventListener("click", function () {
-          infants++;
-          updateGuestCount();
-      });
-
-      infantRemoveButton.addEventListener("click", function () {
-          if (infants > 0) {
-              infants--;
-              updateGuestCount();
-          }
-      });
-
-      updateGuestCount(); // Initialize count on load
-  });
-</script>
+          // Initialize summary on load
+          updateTravellersSummary();
+        });
+      </script>
 
       <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -414,7 +404,7 @@
                 <!-- Title -->
                 <div class="mb-3 mb-sm-0">
                   <h1 class="fs-3">
-                    <%= refilteredFlights.length %> Flight Available
+                    <%= flights.length %> Flight Available
                   </h1>
                   <ul class="nav nav-divider h6 mb-0">
                     <li>
@@ -451,8 +441,8 @@
             <div class="col-xl-12 col-xxl-12">
               <div class="vstack gap-4">
                 <div id="flight-list">
-                  <% if (refilteredFlights.length> 0) { %>
-                    <% refilteredFlights.forEach((flight)=> { %>
+                  <% if (flights.length> 0) { %>
+                    <% flights.forEach((flight)=> { %>
 
                       <!-- Ticket item START -->
                       <div class="card border mb-3">
@@ -547,13 +537,13 @@
                               <!-- <a href="/flights" class="btn btn-dark mb-0 mb-sm-2 book-now-btn" >
                           Select
                         </a> -->
-                              <!-- <button class="btn btn-link text-decoration-underline p-0 mb-0 flight-detail-btn"
+                              <button class="btn btn-link text-decoration-underline p-0 mb-0 flight-detail-btn"
                                 data-bs-toggle="modal" data-bs-target="#flightdetail"
                                 data-flight='<%= JSON.stringify(flight) %>'
                                 data-user='<%= JSON.stringify(user || null) %>'
                               >
                                 <i class="bi bi-eye-fill me-1"></i>Flight Details
-                              </button> -->
+                              </button>
 
                             </div>
                             <!-- Price END -->

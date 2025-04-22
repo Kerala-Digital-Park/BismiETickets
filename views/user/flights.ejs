@@ -11,6 +11,7 @@
                         <div class="col-xl-12 col-xxl-12">
                             <div class="vstack gap-4">
                                 <div id="flight-list">
+                                    <% if(flight){ %>
                                     <!-- Ticket item START -->
                                     <div class="card border">
                                         <!-- card-body START -->
@@ -19,35 +20,55 @@
                                                 <!-- Air line name -->
                                                 <div class="col-md-3">
                                                     <!-- Image -->
-                                                    <img src="/assets/images/element/09.svg" class="w-80px mb-3" alt="">
+                                                    <img src="<%= flight.stops[0].airlineLogo %>" class="w-80px mb-3" alt="">
                                                     <!-- Title -->
-                                                    <h6 class="fw-normal mb-0">Phillippines Airline</h6>
-                                                    <h6 class="fw-normal mb-0">PA - 5620</h6>
+                                                    <h6 class="fw-normal mb-0"><%= flight.stops[0].airline.toUpperCase() %></h6>
+                                                    <h6 class="fw-normal mb-0"><%= flight.stops[0].airlineCode %></h6>
                                                 </div>
+
+                                                <% const hasStops = flight.stops && flight.stops.length > 0; %>
+                                                <% const firstStop = hasStops ? flight.stops[0] : null; %>
 
                                                 <!-- Airport detail -->
                                                 <div class="col-sm-4 col-md-3">
                                                     <!-- Title -->
-                                                    <h4>14:50</h4>
-                                                    <h6 class="mb-0">Sun, 29 Jan 2023</h6>
-                                                    <p class="mb-0">BOM - Terminal 2 Mumbai, India</p>
+                                                    <h4><%= flight.departureTime %></h4>
+                                                    <h6 class="mb-0"><%= flight.departureDate %></h6>
+                                                    <p class="mb-0">
+                                                        <%= flight.from.toUpperCase() %> -
+                                                        <% if (hasStops && firstStop.fromTerminal) { %>
+                                                            Terminal <%= firstStop.fromTerminal %>
+                                                        <% } %>
+                                                        <%= flight.fromCity %>, <%= flight.fromCountry %>
+                                                      </p>
                                                 </div>
+
+                                                <% const lastStop = hasStops ? flight.stops[flight.stops.length - 1] : null; %>
 
                                                 <!-- Airport detail -->
                                                 <div class="col-sm-4 col-md-3">
                                                     <!-- Title -->
-                                                    <h4>07:35</h4>
-                                                    <h6 class="mb-0">Sun, 30 Jan 2023</h6>
-                                                    <p class="mb-0">JFK - Terminal 2 New York, USA</p>
+                                                    <h4><%= flight.arrivalTime %></h4>
+                                                    <h6 class="mb-0"><%= flight.arrivalDate %></h6>
+                                                    <p class="mb-0">
+                                                        <%= flight.to.toUpperCase() %> -
+                                                        <% if (hasStops && lastStop.toTerminal) { %>
+                                                           Terminal <%= lastStop.toTerminal %>
+                                                        <% } %>
+                                                        <%= flight.toCity %>, <%= flight.toCountry %>
+                                                      </p>
                                                 </div>
 
                                                 <!-- Price -->
                                                 <div class="col-sm-4 col-md-3 text-end" >
                                                     <!-- Price -->
-                                                    <button class="btn btn-link text-decoration-underline p-0 mb-0"
-                                                        data-bs-toggle="modal" data-bs-target="#flightdetail">
-                                                        <i class="bi bi-eye-fill me-1"></i>Flight Details
-                                                    </button>
+                                                    <button class="btn btn-link text-decoration-underline p-0 mb-0 flight-detail-btn"
+                                data-bs-toggle="modal" data-bs-target="#flightdetail"
+                                data-flight='<%= JSON.stringify(flight) %>'
+                              >
+                                <i class="bi bi-eye-fill me-1"></i>Flight Details
+                              </button>
+                                                    
                                                 </div>
 
                                             </div>
@@ -65,6 +86,8 @@
                                             </div> -->
                                         </div>
                                     </div>
+                                    <% } %>
+                                    
                                     <!-- Ticket item END -->
                                 </div>
                             </div>
@@ -89,47 +112,56 @@
                         <div class="col-xl-12 col-xxl-12">
                             <div class="vstack gap-4">
                                 <div id="flight-list">
-                                    <!-- Ticket item START -->
-                                    <div class="card border">
-                                        <!-- card-body START -->
-                                        <div class="card-body p-4 pb-0">
-                                            <div class="row g-4 align-items-center">
-                                                <!-- Air line name -->
-                                                <div class="col-md-3 d-flex align-items-center gap-3" >
-                                                    <!-- Image -->
-                                                    <img src="/assets/images/avatar/default.png" class="w-80px mb-3" alt="" style="position: relative; ">
-                                                    <!-- Title -->
-                                                    <h6 class="fw-normal mb-0">ABCD-1234</h6>
-                                                </div>
-
-                                                <div class="col-md-3 d-flex flex-column">
-                                                    <div class="col-4 d-flex justify-content-between">
-                                                        <i class="fa-solid fa-briefcase"></i>
-                                                        <i class="fa-solid fa-suitcase-rolling"></i>
-                                                        <img src="/assets/images/element/seat.png" alt="" height="15px" width="15px">
-                                                        </div>
-
-                                                    <div style="margin-top: 10px;">
-                                                        <li class="list-inline-item text-success">Refundable</li>
+                                    <% if (agentsWithFlights && agentsWithFlights.length > 0) { %>
+                                        <% agentsWithFlights.forEach(({ agent, flight }) => { %>
+                                       <!-- Ticket item START -->
+                                        <div class="card border mb-3">
+                                            <!-- card-body START -->
+                                            <div class="card-body p-4 pb-0">
+                                                <div class="row g-4 align-items-center">
+                                                    <!-- Air line name -->
+                                                    <div class="col-md-3 d-flex align-items-center gap-3" >
+                                                        <!-- Image -->
+                                                        <img src="<%= agent.image ? agent.image : '/assets/images/avatar/default.png' %>" 
+                                                        class="w-80px mb-3" alt="" style="position: relative; ">
+                                                        <!-- Title -->
+                                                        <h6 class="fw-normal mb-0"><%= agent.userId %></h6>
                                                     </div>
-                                                </div>
-
-                                                <!-- Price -->
-                                                <div class="col-sm-4 col-md-3">
+    
+                                                    <div class="col-md-3 d-flex flex-column">
+                                                        <div class="col-4 d-flex justify-content-between">
+                                                            <i class="fa-solid fa-briefcase"></i>
+                                                            <i class="fa-solid fa-suitcase-rolling"></i>
+                                                            <img src="/assets/images/element/seat.png" alt="" height="15px" width="15px">
+                                                            </div>
+    
+                                                        <div style="margin-top: 10px;">
+                                                            <li class="list-inline-item text-success">
+                                                                <%= flight.refundable ? 'Refundable' : 'Non-refundable' %>
+                                                            </li>
+                                                        </div>
+                                                    </div>
+    
                                                     <!-- Price -->
-                                                    <h4>$18,500</h4>
+                                                    <div class="col-sm-4 col-md-3">
+                                                        <!-- Price -->
+                                                        <h4>₹ <%= flight.inventoryDates[0].fare.adults %></h4>
+                                                    </div>
+    
+                                                    <div class="col-sm-4 col-md-3">
+                                                        <button class="btn btn-dark" onclick='bookNow("<%= agent._id %>", "<%= flight._id %>")'>Book Now</button>
+                                                    </div>
+    
                                                 </div>
-
-                                                <div class="col-sm-4 col-md-3">
-                                                    <button class="btn btn-dark" onclick="bookNow('<%= id %>')">Book Now</button>
-                                                </div>
-
                                             </div>
+                                            <!-- card-body END -->
+    
                                         </div>
-                                        <!-- card-body END -->
-
-                                    </div>
-                                    <!-- Ticket item END -->
+                                        <!-- Ticket item END -->
+                                    <% }) %>
+                                    <% } else { %>
+                                        <p>No agents available.</p>
+                                     <% } %>
 
                                 </div>
                             </div>
@@ -140,7 +172,7 @@
             </section>
 
             <script>
-                async function bookNow(id) {
+                async function bookNow(agentId, flightId) {
                     
                     try {
                         const response = await fetch("/flight-detail", {
@@ -148,7 +180,7 @@
                             headers: {
                                 "Content-Type": "application/json",
                             },
-                            body: JSON.stringify({ id })
+                            body: JSON.stringify({ agentId, flightId })
                         });
 
                         const data = await response.json();
@@ -170,251 +202,277 @@
 
             </script>
 
-            <!-- Flight detail modal START -->
-            <div class="modal fade" id="flightdetail" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <!-- Title -->
-                        <div class="modal-header">
-                            <h5 class="modal-title">Flight Details</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-
-                        <!-- Body -->
-                        <div class="modal-body p-3">
-                            
-
-                            <!-- Tab content START -->
-                            <div class="tab-content mb-0" id="flight-pills-tabContent">
-
-                                <!-- Content item START -->
-									<div class="tab-pane fade show active" id="flightlist-tab1" role="tabpanel" aria-labelledby="flightlist-tab-1">
-										<div class="card border">
-
-											<!-- Card header -->
-											<div class="card-header d-flex align-items-center pb-0">
-												<img src="/assets/images/element/12.svg" class="w-30px me-2" alt="">
-												<h6 class="fw-normal mb-0">Wizixo Airline (SA - 1254)</h6>
-											</div>
-
-											<!-- Card body START -->
-											<div class="card-body p-4">
-												<!-- Ticket item START -->
-												<div class="row g-4">
-													<!-- Airport detail -->
-													<div class="col-sm-4">
-														<!-- Title -->
-														<h4>BOM</h4>
-														<h6 class="mb-0">14:50</h6>
-														<p class="mb-0">Chhatrapati Shivaji International Airport</p>
-													</div>
-
-													<!-- Time -->
-													<div class="col-sm-4 my-sm-auto text-center">
-														<!-- Time -->
-														<h5>9hr 50min</h5>
-
-														<div class="position-relative my-4">
-															<!-- Line -->
-															<hr class="bg-primary opacity-5 position-relative">
-															<!-- Icon -->
-															<div class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
-																<i class="fa-solid fa-fw fa-plane rtl-flip"></i>
-															</div>
-														</div>
-													</div>
-
-													<!-- Airport detail -->
-													<div class="col-sm-4">
-														<!-- Title -->
-														<h4>CDG</h4>
-														<h6 class="mb-0">11:50</h6>
-														<p class="mb-0">Ch. De Gaulle, Paris, France</p>
-													</div>
-												</div>
-												<!-- Ticket item END -->
-
-												<!-- Divider -->
-												<div class="bg-light text-center fw-normal rounded-2 mt-3 mb-4 p-2">
-													Change of planes: 3h 15m Layover in France
-												</div>
-
-												<!-- Ticket item START -->
-												<div class="row g-4">
-													<!-- Airport detail -->
-													<div class="col-sm-4">
-														<!-- Title -->
-														<h4>CDG</h4>
-														<h6 class="mb-0">2:50</h6>
-														<p class="mb-0">Ch. De Gaulle, Paris, France</p>
-													</div>
-
-													<!-- Time -->
-													<div class="col-sm-4 my-sm-auto text-center">
-														<!-- Time -->
-														<h5>5hr 50min</h5>
-
-														<div class="position-relative my-4">
-															<!-- Line -->
-															<hr class="bg-primary opacity-5 position-relative">
-															<!-- Icon -->
-															<div class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
-																<i class="fa-solid fa-fw fa-plane rtl-flip"></i>
-															</div>
-														</div>
-													</div>
-
-													<!-- Airport detail -->
-													<div class="col-sm-4">
-														<!-- Title -->
-														<h4>JFK</h4>
-														<h6 class="mb-0">7:35</h6>
-														<p class="mb-0">John F Kennedy Intl-NY</p>
-													</div>
-												</div>
-												<!-- Ticket item END -->
-											</div>  
-											<!-- Card body END -->
-										</div>
-									</div>		
-									<!-- Content item END -->
-                            </div>
-                            <!-- Tab content END -->
-                        </div>
-                    </div>
-                </div>
+      <!-- Flight detail modal START -->
+      <div class="modal fade" id="flightdetail" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <!-- Title -->
+            <div class="modal-header">
+              <h5 class="modal-title">Flight Details</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <!-- Flight detail modal END -->
+
+            <!-- Body -->
+            <div class="modal-body p-3">
+              <!-- Tab content START -->
+              <div class="tab-content mb-0" id="flight-pills-tabContent">
+
+                <!-- Content item START -->
+                <div class="tab-pane fade show active" id="flight-info-tab" role="tabpanel"
+                  aria-labelledby="flight-info">
+                  <div class="card border">
+
+                    <!-- Card header -->
+                    <div class="card-header">
+                      <div class="d-sm-flex justify-content-sm-between align-items-center">
+                        <!-- Airline Name -->
+                        <div class="d-flex mb-2 mb-sm-0">
+                          <img src="assets/images/element/09.svg" class="w-40px me-2" alt="">
+                          <h6 class="fw-normal mb-0">Phillippines Airline (PA - 5620)</h6>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Card body START -->
+                    <div class="card-body p-4">
+                      <!-- Ticket item START -->
+                      <div class="row g-4">
+                        <!-- Airport detail -->
+                        <div class="col-sm-4">
+                          <!-- Title -->
+                          <h4>BOM</h4>
+                          <h6 class="mb-0">14:50</h6>
+                          <p class="mb-0">Chhatrapati Shivaji International Airport</p>
+                        </div>
+
+                        <!-- Time -->
+                        <div class="col-sm-4 my-sm-auto text-center">
+                          <!-- Time -->
+                          <h5>9hr 50min</h5>
+
+                          <div class="position-relative my-4">
+                            <!-- Line -->
+                            <hr class="bg-primary opacity-5 position-relative">
+                            <!-- Icon -->
+                            <div
+                              class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
+                              <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Airport detail -->
+                        <div class="col-sm-4">
+                          <!-- Title -->
+                          <h4>CDG</h4>
+                          <h6 class="mb-0">11:50</h6>
+                          <p class="mb-0">Ch. De Gaulle, Paris, France</p>
+                        </div>
+                      </div>
+                      <!-- Ticket item END -->
+
+                      <!-- Divider -->
+                      <div class="bg-light text-center fw-normal rounded-2 mt-3 mb-4 p-2">
+                        Change of planes: 3h 15m Layover in France
+                      </div>
+
+                      <!-- Ticket item START -->
+                      <div class="row g-4">
+                        <!-- Airport detail -->
+                        <div class="col-sm-4">
+                          <!-- Title -->
+                          <h4>CDG</h4>
+                          <h6 class="mb-0">2:50</h6>
+                          <p class="mb-0">Ch. De Gaulle, Paris, France</p>
+                        </div>
+
+                        <!-- Time -->
+                        <div class="col-sm-4 my-sm-auto text-center">
+                          <!-- Time -->
+                          <h5>5hr 50min</h5>
+
+                          <div class="position-relative my-4">
+                            <!-- Line -->
+                            <hr class="bg-primary opacity-5 position-relative">
+                            <!-- Icon -->
+                            <div
+                              class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
+                              <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Airport detail -->
+                        <div class="col-sm-4">
+                          <!-- Title -->
+                          <h4>JFK</h4>
+                          <h6 class="mb-0">7:35</h6>
+                          <p class="mb-0">John F Kennedy Intl-NY</p>
+                        </div>
+                      </div>
+                      <!-- Ticket item END -->
+                    </div>
+                    <!-- Card body END -->
+                  </div>
+                </div>
+                <!-- Content item END -->
+
+              </div>
+              <!-- Tab content END -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Flight detail modal END -->
 
             <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    const flightDetailButtons = document.querySelectorAll(".flight-detail-btn");
-
-                    flightDetailButtons.forEach(button => {
-                        button.addEventListener("click", function () {
-                            const flightData = JSON.parse(this.getAttribute("data-flight"));
-
-                            // Update modal title
-                            document.querySelector(".heading").innerText = `${flightData.airline} (${flightData.flightNumber})`;
-
-                            document.querySelectorAll(".card-title").forEach(title => {
-                                title.innerText = `${flightData.from} - ${flightData.to}`;
-                            });
-
-                            // Update flight schedule dynamically
-                            const flightInfoTab = document.querySelector("#flight-info-tab .card-body");
-
-                            // Clear previous details
-                            flightInfoTab.innerHTML = "";
-
-                            let flightSegments = "";
-
-                            if (flightData.stops.length > 0) {
-                                // First segment: from -> first stop
-                                flightSegments += generateFlightSegment(
-                                    flightData.from,
-                                    flightData.departureTime,
-                                    flightData.departureDate,
-                                    flightData.stops[0].location,
-                                    flightData.stops[0].arrivalTime,
-                                    flightData.stops[0].arrivalDate,
-                                    flightData.stops[0].stopDuration
-                                );
-
-                                // Intermediate stops
-                                for (let i = 0; i < flightData.stops.length - 1; i++) {
-                                    flightSegments += generateFlightSegment(
-                                        flightData.stops[i].location,
-                                        flightData.stops[i].departureTime,
-                                        flightData.stops[i].departureDate,
-                                        flightData.stops[i + 1].location,
-                                        flightData.stops[i + 1].arrivalTime,
-                                        flightData.stops[i + 1].arrivalDate,
-                                        flightData.stops[i + 1].stopDuration
-                                    );
-                                }
-
-                                // Final segment: last stop -> destination
-                                let lastStop = flightData.stops[flightData.stops.length - 1];
-                                flightSegments += generateFlightSegment(
-                                    lastStop.location,
-                                    lastStop.departureTime,
-                                    lastStop.departureDate,
-                                    flightData.to,
-                                    flightData.arrivalTime,
-                                    flightData.arrivalDate,
-                                    flightData.duration
-                                );
-                            } else {
-                                // Direct flight: from -> to
-                                flightSegments = generateFlightSegment(
-                                    flightData.from,
-                                    flightData.departureTime,
-                                    flightData.departureDate,
-                                    flightData.to,
-                                    flightData.arrivalTime,
-                                    flightData.arrivalDate,
-                                    flightData.duration
-                                );
-                            }
-
-                            // Inject the updated flight segments into the modal
-                            flightInfoTab.innerHTML = flightSegments;
-
-                            // Update fare details
-                            document.querySelector("#flight-fare-tab tbody tr td:nth-child(1)").innerText = flightData.price ? `$${flightData.price}` : "N/A";
-                            document.querySelector("#flight-fare-tab tbody tr td:nth-child(2)").innerText = flightData.taxes ? `$${flightData.taxes}` : "N/A";
-                            document.querySelector("#flight-fare-tab tbody tr td:nth-child(3) h5").innerText = flightData.totalFare ? `$${flightData.totalFare}` : "N/A";
-
-                            // Update baggage details
-                            document.querySelector("#flight-baggage-tab tbody tr:nth-child(1) td:nth-child(2)").innerText = flightData.baggage?.adult?.numberOfPieces ? `${flightData.baggage.adult.numberOfPieces} PC` : "N/A";
-                            document.querySelector("#flight-baggage-tab tbody tr:nth-child(1) td:nth-child(3)").innerText = flightData.baggage?.adult?.cabin?.weightPerPiece ? `${flightData.baggage.adult.cabin.weightPerPiece} Kg` : "N/A";
-
-                            document.querySelector("#flight-baggage-tab tbody tr:nth-child(2) td:nth-child(2)").innerText = flightData.baggage?.child?.numberOfPieces ? `${flightData.baggage.child.numberOfPieces} PC` : "N/A";
-                            document.querySelector("#flight-baggage-tab tbody tr:nth-child(2) td:nth-child(3)").innerText = flightData.baggage?.child?.cabin?.weightPerPiece ? `${flightData.baggage.child.cabin.weightPerPiece} Kg` : "N/A";
-
-                            document.querySelector("#flight-baggage-tab tbody tr:nth-child(3) td:nth-child(2)").innerText = flightData.baggage?.infant?.numberOfPieces ? `${flightData.baggage.infant.numberOfPieces} PC` : "N/A";
-                            document.querySelector("#flight-baggage-tab tbody tr:nth-child(3) td:nth-child(3)").innerText = flightData.baggage?.infant?.cabin?.weightPerPiece ? `${flightData.baggage.infant.cabin.weightPerPiece} Kg` : "N/A";
-
-                            // Update cancellation policy
-                            document.querySelector("#flight-policy-tab tbody tr:nth-child(1) td:nth-child(2)").innerText = flightData.cancellation?.["0-24 hours"] || "N/A";
-                            document.querySelector("#flight-policy-tab tbody tr:nth-child(2) td:nth-child(2)").innerText = flightData.cancellation?.["24+ hours"] || "N/A";
-
-                            // Show the modal
-                            let modal = new bootstrap.Modal(document.getElementById("flightdetail"));
-                            modal.show();
-                        });
+                document.addEventListener('DOMContentLoaded', function () {
+                  const flightDetailButtons = document.querySelectorAll('.flight-detail-btn');
+        
+                  flightDetailButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                      const flightData = JSON.parse(this.getAttribute('data-flight'));
+                     
+                      const stops = flightData.stops || [];
+        
+                      // ========= Flight Info Tab =========
+                      const flightInfoTab = document.getElementById('flight-info-tab');
+        
+                      // Clear previous content
+                      flightInfoTab.innerHTML = '';
+        
+                      // Create card wrapper
+                      const card = document.createElement('div');
+                      card.className = 'card border';
+        
+                      // Card header
+                      const cardHeader = document.createElement('div');
+                      cardHeader.className = 'card-header';
+        
+                      const headerFlex = document.createElement('div');
+                      headerFlex.className = 'd-sm-flex justify-content-sm-between align-items-center';
+        
+                      const airlineDiv = document.createElement('div');
+                      airlineDiv.className = 'd-flex mb-2 mb-sm-0';
+        
+                      const airlineImg = document.createElement('img');
+                      airlineImg.src = stops[0]?.airlineLogo || 'assets/images/element/09.svg';
+                      airlineImg.className = 'w-40px me-2';
+                      airlineImg.alt = '';
+        
+                      const airlineText = document.createElement('h6');
+                      airlineText.className = 'fw-normal mb-0';
+                      airlineText.textContent = `${stops[0]?.airline.toUpperCase() || 'Airline'} (${stops[0]?.airlineCode} - ${stops[0]?.flightNumber})`;
+        
+                      airlineDiv.appendChild(airlineImg);
+                      airlineDiv.appendChild(airlineText);
+        
+                      const travelClass = document.createElement('h6');
+                      travelClass.className = 'fw-normal mb-0';
+        
+                      headerFlex.appendChild(airlineDiv);
+                      headerFlex.appendChild(travelClass);
+                      cardHeader.appendChild(headerFlex);
+                      card.appendChild(cardHeader);
+        
+                      // Card body
+                      const cardBody = document.createElement('div');
+                      cardBody.className = 'card-body p-4';
+        
+                      // Loop through stops and render each segment
+                      for (let i = 0; i < stops.length; i++) {
+                        const stop = stops[i];
+                        const nextStop = stops[i + 1];
+        
+                        const row = document.createElement('div');
+                        row.className = 'row g-4';
+        
+                        // From Airport
+                        const fromCol = document.createElement('div');
+                        fromCol.className = 'col-sm-4';
+                        fromCol.innerHTML = `
+                        <h4>${stop.fromCode.toUpperCase()}</h4>
+                        <h6 class="mb-0">${stop.departureTime}</h6>
+                        <p class="mb-0">${stop.departureCity}, ${stop.from}</p>
+                        `;
+        
+                        const totalSeconds = parseInt(stop.stopDuration) || 0;
+                        const hours = Math.floor(totalSeconds / 3600);
+                        const minutes = Math.floor((totalSeconds % 3600) / 60);
+                        const durationDisplay = `${hours}hr ${minutes}min`;
+        
+                        // Flight Duration
+                        const midCol = document.createElement('div');
+                        midCol.className = 'col-sm-4 my-sm-auto text-center';
+                        midCol.innerHTML = `
+                        <h5>${durationDisplay}</h5>
+                        <div class="position-relative my-4">
+                        <hr class="bg-primary opacity-5 position-relative">
+                        <div class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
+                          <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
+                        </div>
+                        </div>
+                        `;
+        
+                        // To Airport
+                        const toCol = document.createElement('div');
+                        toCol.className = 'col-sm-4';
+                        toCol.innerHTML = `
+                        <h4>${stop.toCode.toUpperCase()}</h4>
+                        <h6 class="mb-0">${stop.arrivalTime}</h6>
+                        <p class="mb-0">${stop.arrivalCity}, ${stop.to}</p>
+                        `;
+        
+                        row.appendChild(fromCol);
+                        row.appendChild(midCol);
+                        row.appendChild(toCol);
+        
+                        cardBody.appendChild(row);
+        
+                        // Add Layover if not last stop
+                        
+                        if (nextStop) {
+                          // Parse arrival time of current stop and departure time of next stop
+                          const arrivalTime = stop.arrivalTime; // e.g., "17:25"
+                          const nextDepartureTime = nextStop.departureTime; // e.g., "18:40"
+        
+                          // Convert both to minutes
+                          const [arrHr, arrMin] = arrivalTime.split(':').map(Number);
+                          const [depHr, depMin] = nextDepartureTime.split(':').map(Number);
+        
+                          const arrivalInMinutes = arrHr * 60 + arrMin;
+                          const departureInMinutes = depHr * 60 + depMin;
+        
+                          let layoverMin = departureInMinutes - arrivalInMinutes;
+        
+                          // Handle overnight flights (e.g., arrival at 23:30, departure at 01:15 next day)
+                          if (layoverMin < 0) layoverMin += 24 * 60;
+        
+                          // Convert to hrs and mins
+                          const layoverHr = Math.floor(layoverMin / 60);
+                          const layoverMins = layoverMin % 60;
+        
+                          // Create layover text
+                          let layoverText = 'Layover: ';
+                          if (layoverHr > 0) layoverText += `${layoverHr} hr `;
+                          if (layoverMins > 0 || layoverHr === 0) layoverText += `${layoverMins} min `;
+                          layoverText += `in ${stop.arrivalCity}`;
+        
+                          const layoverDiv = document.createElement('div');
+                          layoverDiv.className = 'bg-light text-center fw-normal rounded-2 mt-3 mb-4 p-2 text-danger';
+                          layoverDiv.textContent = layoverText;
+        
+                          cardBody.appendChild(layoverDiv);
+                        }
+        
+                      }
+        
+                      card.appendChild(cardBody);
+                      flightInfoTab.appendChild(card);       
                     });
+                  });
                 });
-
-                // Helper function to generate HTML for flight segments
-                function generateFlightSegment(from, depTime, depDate, to, arrTime, arrDate, duration) {
-                    return `
-        <div class="row">
-            <div class="col-sm-4">
-                <h4>${depTime}</h4>
-                <h6 class="mb-0 fw-normal">${depDate}</h6>
-                <p class="mb-0">${from}</p>
-            </div>
-            <div class="col-sm-4 my-sm-auto text-center">
-                <h5>${duration}</h5>
-                <div class="position-relative my-4">
-                    <hr class="bg-primary opacity-5 position-relative">
-                    <div class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
-                        <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <h4>${arrTime}</h4>
-                <h6 class="mb-0 fw-normal">${arrDate}</h6>
-                <p class="mb-0">${to}</p>
-            </div>
-            <hr class="my-4">
-    `;
-                }
-
-            </script>
+              </script>
 
             <script>
                 document.addEventListener("DOMContentLoaded", function () {

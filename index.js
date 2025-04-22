@@ -6,18 +6,22 @@ const PORT = 3000;
 const path = require('path')
 const nocache = require('nocache')
 const session = require('express-session')
-// const fetchUserDetails = require('./middleware/user'); 
 
-const preventCache = (req, res, next) => {
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.set('Pragma', 'no-cache');
-  res.set('Expires', '0');
+// Only apply preventCache to routes, NOT static files
+app.use((req, res, next) => {
+  const isStaticAsset = req.url.startsWith('/assets') || req.url.startsWith('/uploads');
+  if (!isStaticAsset) {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+  }
   next();
-};
-app.use(preventCache);
+});
+
 const userRouter = require('./routes/userRouter')
 const adminRouter = require('./routes/adminRouter')
 const agentRouter = require('./routes/agentRouter')
+const countryRoutes = require('./routes/userRouter');
 
 const mongoose = require("mongoose");
 const connect = mongoose.connect(process.env.MONGODB)
@@ -49,14 +53,22 @@ app.use(
     })
   ); 
 
-  app.use('/uploads', express.static('public/uploads'));
-  app.use("/agent", express.static("public/"));
-  app.use("/admin", express.static("public/"));
-  app.use("/", express.static("public/"));
-  app.use(express.static('uploads'))
+  app.use(countryRoutes);
+
+  // app.use('/uploads', express.static('public/uploads'));
+  // app.use("/agent", express.static("public/"));
+  // app.use("/admin", express.static("public/"));
+  // app.use("/", express.static("public/"));
+  // app.use(express.static('uploads'))
  
-  // app.use(fetchUserDetails);
-  app.use('/',preventCache,userRouter); 
+
+  app.use('/uploads', express.static(path.join(__dirname, "public")));
+  app.use("/agent", express.static(path.join(__dirname, "public")));
+  app.use("/admin", express.static(path.join(__dirname, "public")));
+  app.use("/", express.static(path.join(__dirname, "public")));
+  app.use(express.static(path.join(__dirname, "uploads")));
+
+  app.use('/',userRouter); 
   app.use('/admin',adminRouter);
   app.use('/agent',agentRouter);
   app.use((req,res,next)=>{

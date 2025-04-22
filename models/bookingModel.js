@@ -67,6 +67,18 @@ const bookingSchema = mongoose.Schema(
       type: Number,
       required: true,
     },
+    baseFare: {
+      type: Number,
+      required: true,
+    },
+    tax: {
+      type: Number,
+      required: true,
+    },
+    discount: {
+      type: Number,
+      required: true,
+    },
     payment_status: {
       type: Boolean,
       required: true,

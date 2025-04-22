@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
 
 const flightSchema = mongoose.Schema({
+  sellerId: { type: String, required: true },
   inventoryName: { type: String, required: true },
   from: { type: String, required: true },
   to: { type: String, required: true },
-  fromCode: { type: String, required: true },
-  toCode: { type: String, required: true },
+  departureName: { type: String, required: true },
+  arrivalName: { type: String, required: true },
   fromCity: { type: String, required: true },
   toCity: { type: String, required: true },
   fromCountry: { type: String, required: true },
@@ -79,7 +80,6 @@ const flightSchema = mongoose.Schema({
       infants: { type: Number, required: true },
     },
   }],
-
   refundable: { type: Boolean, required: true, default: false },
 });
 

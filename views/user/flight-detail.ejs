@@ -24,13 +24,13 @@
                 <!-- Title -->
                 <ul class="list-inline mb-2">
                   <li class="list-inline-item me-2">
-                    <h3 class="mb-0"><%= flightDetails.from %></h3>
+                    <h3 class="mb-0"><%= flightDetails.fromCity %> (<%= flightDetails.from.toUpperCase() %>)</h3>
                   </li>
                   <li class="list-inline-item me-2">
                     <h3 class="mb-0"><i class="bi bi-arrow-right"></i></h3>
                   </li>
                   <li class="list-inline-item me-0">
-                    <h3 class="mb-0"><%= flightDetails.to %></h3>
+                    <h3 class="mb-0"><%= flightDetails.toCity %> (<%= flightDetails.to.toUpperCase() %>)</h3>
                   </li>
                 </ul>
 
@@ -38,7 +38,14 @@
                 <ul class="nav nav-divider h6 fw-normal text-body mb-0">
                   <li class="nav-item"><%= flightDetails.departureDate %></li>
                   <li class="nav-item"><%= flightDetails.stops.length %> stops</li>
-                  <li class="nav-item"><%= flightDetails.duration %></li>
+                  <% 
+                  const totalSeconds = parseInt(flightDetails.duration) || 0;
+                  const hours = Math.floor(totalSeconds / 3600);
+                  const minutes = Math.floor((totalSeconds % 3600) / 60);
+                %>
+                <li class="nav-item">
+                  <%= hours %>hr <%= minutes %>min
+                </li>
                 </ul>
               </div>
               <!-- Title and content END -->
@@ -58,134 +65,121 @@
                   <i class="bi bi-eye-fill me-1"></i>Baggage & Fare Rules
                 </a>
               </div>
-              <% if (flightDetails.stops.length >= 1) { %>
-                <!-- Card body START -->
+              
+              <% if (flightDetails.stops && flightDetails.stops.length > 1) { %>
+                <!-- Multi-stop Flight Layout -->
                 <div class="card-body p-4">
-                  <% for (let i = 0; i <= flightDetails.stops.length; i++) { %>
-                    <!-- Ticket item START -->
+                  <% for (let i = 0; i < flightDetails.stops.length; i++) { %>
                     <div class="row g-4">
-                      <!-- Air line name -->
+                      <!-- Airline Info -->
                       <div class="col-md-3">
-                        <!-- Image -->
-                        <img src="/assets/images/element/09.svg" class="w-80px mb-3" alt="" />
-                        <!-- Title -->
-                        <h6 class="fw-normal mb-0"><%= flightDetails.airline %></h6>
-                        <h6 class="fw-normal mb-0"><%= flightDetails.flightNumber %></h6>
+                        <img src="<%= flightDetails.stops[i].airlineLogo %>" class="w-80px mb-3" alt="" />
+                        <h6 class="fw-normal mb-0"><%= flightDetails.stops[i].airline.toUpperCase() %></h6>
+                        <h6 class="fw-normal mb-0"><%= flightDetails.stops[i].airlineCode %> - <%= flightDetails.stops[i].flightNumber %></h6>
                       </div>
               
-                      <!-- Airport detail -->
+                      <!-- From Airport -->
                       <div class="col-sm-4 col-md-3">
-                        <!-- Title -->
-                        <h4>
-                          <%= i === 0 ? flightDetails.from : flightDetails.stops[i - 1].location %>
-                        </h4>
-                        <h6><%= i === 0 ? flightDetails.departureTime : flightDetails.stops[i - 1].departureTime %></h6>
-                        <!-- Address -->
-                        <p class="mb-2">
-                          <%= i === 0 ? flightDetails.departureDate : flightDetails.stops[i - 1].departureDate %>
-                        </p>
-                        <p class="mb-2">
-                          <%= i === 0 ? flightDetails.fromAirport : flightDetails.stops[i - 1].airport %>
-                        </p>
-                        <p class="mb-0">Terminal - 2, Gate - 25</p>
+                        <h4><%= flightDetails.stops[i].fromCode.toUpperCase() %></h4>
+                        <h6><%= flightDetails.stops[i].departureTime %></h6>
+                        <p class="mb-2"><%= flightDetails.stops[i].departureDay %></p>
+                        <p class="mb-2"><%= flightDetails.stops[i].from %></p>
+                        <% if (flightDetails.stops[i].fromTerminal) { %>
+                          <p class="mb-0">Terminal - <%= flightDetails.stops[i].fromTerminal %></p>
+                        <% } %>
                       </div>
               
-                      <!-- Time -->
+                      <!-- Duration Between Stops -->
                       <div class="col-sm-4 col-md-3 text-center my-sm-auto">
-                        <!-- Time -->
-                        <h5>
-                          <%= i < flightDetails.stops.length ? flightDetails.stops[i].stopDuration : flightDetails.duration %>
-                        </h5>
-              
+                        <% 
+                          const duration = parseInt(flightDetails.stops[i].stopDuration || 0);
+                          const hrs = Math.floor(duration / 3600);
+                          const mins = Math.floor((duration % 3600) / 60);
+                        %>
+                        <h5><%= hrs %>hr <%= mins %>min</h5>
                         <div class="position-relative my-4">
-                          <!-- Line -->
                           <hr class="bg-primary opacity-5 position-relative" />
-                          <!-- Icon -->
-                          <div
-                            class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle"
-                          >
+                          <div class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
                             <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
                           </div>
                         </div>
                       </div>
               
-                      <!-- Airport detail -->
+                      <!-- To Airport -->
                       <div class="col-sm-4 col-md-3">
-                        <!-- Title -->
-                        <h4>
-                          <%= i < flightDetails.stops.length ? flightDetails.stops[i].location : flightDetails.to %>
-                        </h4>
-                        <h6>
-                          <%= i < flightDetails.stops.length ? flightDetails.stops[i].arrivalTime : flightDetails.arrivalTime %>
-                        </h6>
-                        <!-- Address -->
-                        <p class="mb-2">
-                          <%= i < flightDetails.stops.length ? flightDetails.stops[i].arrivalDate : flightDetails.arrivalDate %>
-                        </p>
-                        <p class="mb-2">
-                          <%= i < flightDetails.stops.length ? flightDetails.stops[i].airport : flightDetails.toAirport %>
-                        </p>
-                        <p class="mb-0">Terminal - 4, Gate - 08</p>
+                        <h4><%= flightDetails.stops[i].toCode.toUpperCase() %></h4>
+                        <h6><%= flightDetails.stops[i].arrivalTime %></h6>
+                        <p class="mb-2"><%= flightDetails.stops[i].arrivalDay %></p>
+                        <p class="mb-2"><%= flightDetails.stops[i].to %></p>
+                        <% if (flightDetails.stops[i].toTerminal) { %>
+                          <p class="mb-0">Terminal - <%= flightDetails.stops[i].toTerminal %></p>
+                        <% } %>
                       </div>
                     </div>
-                    <!-- Ticket item END -->
               
-                    <% if (i < flightDetails.stops.length) { %>
-                      <!-- Divider -->
-                      <div class="bg-light rounded-2 text-center text-danger p-2 my-4">
-                        Change of planes: <%= flightDetails.stops[i].stopDuration %> Layover in <%= flightDetails.stops[i].location %>
-                      </div>
-                    <% } %>
-              
+                    <% if (i < flightDetails.stops.length - 1) { 
+                      const stopSec = parseInt(flightDetails.stops[i + 1].stopDuration || 0);
+                      const layoverHr = Math.floor(stopSec / 3600);
+                      const layoverMin = Math.floor((stopSec % 3600) / 60);
+                  %>
+                    <!-- Layover Info -->
+                    <div class="bg-light rounded-2 text-center text-danger p-2 my-4">
+                      Layover: 
+                      <% if (layoverHr > 0) { %><%= layoverHr %> hr <% } %>
+                      <% if (layoverMin > 0 || layoverHr === 0) { %><%= layoverMin %> min<% } %>
+                      in <%= flightDetails.stops[i + 1].departureCity %>
+                    </div>
+                  <% } %>
+                  
                   <% } %>
                 </div>
-                <!-- Card body END -->
-                <% } else { %>
-                  <!-- Direct Flight Case -->
-                  <div class="card-body p-4">
-                    <div class="row g-4">
-                      <!-- Air line name -->
-                      <div class="col-md-3">
-                        <!-- Image -->
-                        <img src="/assets/images/element/09.svg" class="w-80px mb-3" alt="" />
-                        <!-- Title -->
-                        <h6 class="fw-normal mb-0"><%= flightDetails.airline %></h6>
-                        <h6 class="fw-normal mb-0"><%= flightDetails.flightNumber %></h6>
-                      </div>
-                
-                      <!-- Departure Airport -->
-                      <div class="col-sm-4 col-md-3">
-                        <h4><%= flightDetails.from %></h4>
-                        <h6><%= flightDetails.departureTime %></h6>
-                        <p class="mb-2"><%= flightDetails.departureDate %></p>
-                        <p class="mb-2"><%= flightDetails.fromAirport %></p>
-                        <p class="mb-0">Terminal - 2, Gate - 25</p>
-                      </div>
-                
-                      <!-- Duration -->
-                      <div class="col-sm-4 col-md-3 text-center my-sm-auto">
-                        <h5><%= flightDetails.duration %></h5>
-                        <div class="position-relative my-4">
-                          <hr class="bg-primary opacity-5 position-relative" />
-                          <div
-                            class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle"
-                          >
-                            <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
-                          </div>
+              <% } else { %>
+                <!-- One-stop / Direct Flight Layout -->
+                <div class="card-body p-4">
+                  <div class="row g-4">
+                    <div class="col-md-3">
+                      <img src="<%= flightDetails.stops[0]?.airlineLogo || '/assets/images/element/09.svg' %>" class="w-80px mb-3" alt="" />
+                      <h6 class="fw-normal mb-0"><%= flightDetails.stops[0]?.airline?.toUpperCase() || flightDetails.airline?.toUpperCase() %></h6>
+                      <h6 class="fw-normal mb-0"><%= flightDetails.stops[0]?.airlineCode || flightDetails.airlineCode %> - <%= flightDetails.stops[0]?.flightNumber || flightDetails.flightNumber %></h6>
+                    </div>
+              
+                    <div class="col-sm-4 col-md-3">
+                      <h4><%= flightDetails.stops[0]?.fromCode.toUpperCase() %></h4>
+                      <h6><%= flightDetails.stops[0]?.departureTime %></h6>
+                      <p class="mb-2"><%= flightDetails.stops[0]?.departureDay || "-" %></p>
+                      <p class="mb-2"><%= flightDetails.stops[0]?.from %></p>
+                      <% if (flightDetails.stops[0]?.fromTerminal) { %>
+                        <p class="mb-0">Terminal - <%= flightDetails.stops[0].fromTerminal %></p>
+                      <% } %>
+                    </div>
+              
+                    <div class="col-sm-4 col-md-3 text-center my-sm-auto">
+                      <% 
+                        const secs = parseInt(flightDetails.duration || 0);
+                        const h = Math.floor(secs / 3600);
+                        const m = Math.floor((secs % 3600) / 60);
+                      %>
+                      <h5><%= h %>hr <%= m %>min</h5>
+                      <div class="position-relative my-4">
+                        <hr class="bg-primary opacity-5 position-relative" />
+                        <div class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
+                          <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
                         </div>
                       </div>
-                
-                      <!-- Arrival Airport -->
-                      <div class="col-sm-4 col-md-3">
-                        <h4><%= flightDetails.to %></h4>
-                        <h6><%= flightDetails.arrivalTime %></h6>
-                        <p class="mb-2"><%= flightDetails.arrivalDate %></p>
-                        <p class="mb-2"><%= flightDetails.toAirport %></p>
-                        <p class="mb-0">Terminal - 4, Gate - 08</p>
-                      </div>
+                    </div>
+              
+                    <div class="col-sm-4 col-md-3">
+                      <h4><%= flightDetails.stops[0]?.toCode.toUpperCase() %></h4>
+                      <h6><%= flightDetails.stops[0]?.arrivalTime %></h6>
+                      <p class="mb-2"><%= flightDetails.stops[0]?.arrivalDay || flightDetails.arrivalDate %></p>
+                      <p class="mb-2"><%= flightDetails.stops[0]?.to %></p>
+                      <% if (flightDetails.stops[0]?.toTerminal) { %>
+                        <p class="mb-0">Terminal - <%= flightDetails.stops[0].toTerminal %></p>
+                      <% } %>
                     </div>
                   </div>
-                <% } %>                
+                </div>
+              <% } %>
               
             </div>
             <!-- Ticket END -->
@@ -360,8 +354,8 @@
                       <li
                         class="list-group-item d-flex justify-content-between align-items-center"
                       >
-                        <span class="h6 fw-normal mb-0">Other Services</span>
-                        <span class="fs-5" id="other-services">₹0</span>
+                        <span class="h6 fw-normal mb-0">Taxes & Services</span>
+                        <span class="fs-5" id="other-services">₹<%= ((subscription.serviceCharge * 18)/100) + subscription.serviceCharge %></span>
                       </li>
                     </ul>
                   </div>
@@ -679,40 +673,34 @@
   </script> -->
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      fetch('https://restcountries.com/v2/all')
-        .then(response => response.json())
-        .then(data => {
-          const countries = data.map(c => c.name).sort();
+    async function populateCountryDropdowns() {
+      try {
+        const response = await fetch("/api/countries");
+        const countries = await response.json();
   
-          // Get both selects
-          const nationalitySelect = document.getElementById('nationalitySelect');
-          const countrySelect = document.getElementById('countrySelect');
+        const nationalitySelects = document.querySelectorAll("#nationalitySelect");
+        const countrySelects = document.querySelectorAll("#countrySelect");
   
-          // Function to populate a select element
-          const populateSelect = (select) => {
-            countries.forEach(country => {
-              const option = document.createElement('option');
-              option.value = country;
-              option.textContent = country;
-              select.appendChild(option);
-            });
+        countries.forEach(country => {
+          const option = document.createElement("option");
+          option.value = country;
+          option.textContent = country;
   
-            // Initialize Choices.js
-            if (window.Choices) {
-              new Choices(select, {
-                searchEnabled: true,
-                shouldSort: false,
-                placeholder: true,
-                placeholderValue: 'Select Country'
-              });
-            }
-          };
+          nationalitySelects.forEach(select => {
+            select.appendChild(option.cloneNode(true));
+          });
   
-          populateSelect(nationalitySelect);
-          populateSelect(countrySelect);
-        })
-        .catch(error => console.error('Error loading countries:', error));
+          countrySelects.forEach(select => {
+            select.appendChild(option.cloneNode(true));
+          });
+        });
+      } catch (err) {
+        console.error("Error fetching country list:", err);
+      }
+    }
+  
+    document.addEventListener("DOMContentLoaded", () => {
+      setTimeout(populateCountryDropdowns, 200); // Slight delay to ensure DOM is built
     });
   </script>
   
@@ -807,7 +795,7 @@
 
                             <div class="col-md-6">
                                 <label class="form-label">Nationality</label>
-                                <select class="form-select js-choice" id="nationalitySelect" data-search-enabled="true">
+                                <select class="form-select js-choice" id="nationalitySelect" data-search-enabled="true" name="nationality">
 									                <option value="">Select Nationality</option>
 									              </select>
                             </div>
@@ -819,7 +807,7 @@
 
                             <div class="col-md-6">
                                 <label class="form-label">Passport Issuing Country</label>
-                                <select class="form-select js-choice" id="countrySelect" data-search-enabled="true">
+                                <select class="form-select js-choice" id="countrySelect" data-search-enabled="true" name="passport_country">
 									                <option value="">Select Country</option>
 									              </select>
                             </div>
@@ -899,19 +887,20 @@
 
         let travelerValid = true;
 
-        Object.keys(fields).forEach(key => {
-            const field = fields[key];
-            if (!field.value.trim()) {
-                field.classList.add("border", "border-danger");
-                travelerValid = false;
-                isValid = false;
-            } else {
-                field.classList.remove("border", "border-danger");
-            }
-        });
+        for (const key in fields) {
+          const field = fields[key];
+          if (!field || !field.value.trim()) {
+            field?.classList.add("border", "border-danger");
+            travelerValid = false;
+            isValid = false;
+          } else {
+            field?.classList.remove("border", "border-danger");
+          }
+        }
 
         if (travelerValid) {
-          const type = item.querySelector(".accordion-button").textContent.trim().split(" ")[0]; // Fixed issue
+          const typeText = item.querySelector(".accordion-button")?.textContent.trim() || "";
+          const type = typeText.split(" ")[0];
 
             const traveler = {
                 type: type,
@@ -939,17 +928,17 @@
     // Collect other form data
     const mobile_number = document.querySelector("input[placeholder='Enter your mobile number']").value;
     const email = document.querySelector("input[placeholder='Enter your email address']").value;
+    
+    if (!mobile_number || !email) {
+        alert("Please provide both mobile number and email.");
+        return;
+    }
+
     const totalFare = document.getElementById("total-fare").innerText;
     const baseFare = document.getElementById("base-fare").innerText;
     const discount = document.getElementById("discount").innerText;
     const otherServices = document.getElementById("other-services").innerText;
-
     const flightDetails = <%- JSON.stringify(flightDetails) %>;
-
-    if (!mobile_number || !email) {
-        alert("Please enter your mobile number and email.");
-        return;
-    }
 
     // Prepare request payload
     const requestData = {

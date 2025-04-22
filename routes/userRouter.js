@@ -5,24 +5,27 @@ const session = require('express-session')
 const {isLogin,isLogout} = require("../middleware/userAuth");
 const upload = require("../multer/multer");
 const Users = require("../models/userModel");
-
-const preventCache = (req, res, next) => {
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.set('Pragma', 'no-cache');
-  res.set('Expires', '0');
-  next();
-};
-userRouter.use(preventCache);
+// Only apply preventCache to routes, NOT static files
 userRouter.use((req, res, next) => {
-    res.locals.userId = req.session.userId; 
-    next();
-  });
+  const isStaticAsset = req.url.startsWith('/assets') || req.url.startsWith('/uploads');
+  if (!isStaticAsset) {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+  }
+  next();
+});
+
+userRouter.use((req, res, next) => {
+  res.locals.userId = req.session.userId; 
+  next();
+});
 
 userRouter.use(async(req, res, next) => {
       
       if (req.session.userId) {
           try {
-            res.locals.user = await Users.findById(req.session.userId); 
+            res.locals.user = await Users.findById(req.session.userId).populate("subscription"); 
           } catch (error) {
               console.error('Error fetching user details:', error);
               res.locals.user = null;
@@ -32,19 +35,30 @@ userRouter.use(async(req, res, next) => {
       }
       next();
   });
-  
 
-  userRouter.use((req, res, next)=> {
+  userRouter.use((req, res, next) => {
     const currentUrl = req.originalUrl;
+  
     res.locals.pathname = req.path;
-    if (!req.session.user_id && req.method === 'GET' &&  !['/sign-in', '/sign-up'].includes(currentUrl)) {
-      req.session.originalUrl = req.originalUrl; 
+  
+    const isStaticAsset = currentUrl.startsWith('/assets');
+  
+    if (
+      !req.session.user_id &&
+      req.method === 'GET' &&
+      !['/sign-in', '/sign-up'].includes(currentUrl) &&
+      !isStaticAsset
+    ) {
+      req.session.originalUrl = currentUrl;
     }
+  
     next();
   });
+  
 
 userRouter.get("/", userController.viewHomepage);
 userRouter.get("/dashboard", isLogin, userController.viewDashboard);
+userRouter.get("/flight-list", userController.viewFlightList)
 userRouter.get("/flight-detail", isLogin, userController.viewFlightDetail);
 userRouter.get("/flight-booking",isLogin, userController.viewFlightBooking);
 userRouter.get("/about", userController.viewAbout);
@@ -77,6 +91,11 @@ userRouter.get("/subscription", userController.viewPricing);
 userRouter.get("/earnings", isLogin, userController.viewEarnings);
 userRouter.get("/listings", isLogin, userController.viewListings);
 userRouter.get("/add-listing", isLogin, userController.viewAddListing);
+userRouter.get("/join-us", userController.viewJoinUs);
+userRouter.get("/user-bookings", isLogin, userController.viewUserBookings);
+userRouter.get("/api/countries", userController.getApiCountries);
+
+
 
 userRouter.post("/sign-up", userController.signup);
 userRouter.post("/sign-in", userController.signin);
@@ -104,11 +123,11 @@ userRouter.post(
   userController.verifyAadhaar
 );
 userRouter.post("/subscription", isLogin, userController.subscription);
+userRouter.post("/subscription-free", isLogin, userController.freeSubscription);
 userRouter.post("/subscription-payment", isLogin, userController.subscriptionPayment);
 userRouter.post("/renewal", isLogin, userController.renewal);
-userRouter.post("/add-flight", isLogin, userController.addFlight)
-userRouter.post("/api/flights", isLogin, userController.getApiFlights)
-userRouter.post("/add-connecting-flight", isLogin, userController.addConnectingFlight)
-
+userRouter.post("/renewal-free", isLogin, userController.freeRenewal);
+userRouter.post("/add-flight", isLogin, userController.addFlight);
+userRouter.post("/api/flights", isLogin, userController.getApiFlights);
 
 module.exports = userRouter;

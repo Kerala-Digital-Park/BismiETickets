@@ -51,7 +51,8 @@
                                                     <!-- Pancard -->
                                                     <div class="mb-3">
                                                         <label class="form-label">Enter PAN </label>
-                                                        <input type="text" class="form-control" name="pan" maxlength="10">
+                                                        <input type="text" class="form-control" name="pan"
+                                                            maxlength="10">
                                                     </div>
                                                     <!-- Password -->
                                                     <div class="mb-3 position-relative">
@@ -74,9 +75,9 @@
                                                             <i
                                                                 class="fakepasswordicon fas fa-eye-slash cursor-pointer p-2"></i>
                                                         </span>
-                                                        
+
                                                     </div>
-                                                   
+
                                                     <!-- Button -->
                                                     <div><button type="submit" class="btn btn-primary w-100 mb-0">Sign
                                                             up</button></div>
@@ -102,7 +103,7 @@
                 // Select all password fields and their corresponding icons
                 const passwordFields = document.querySelectorAll(".fakepassword");
                 const toggleIcons = document.querySelectorAll(".fakepasswordicon");
-            
+
                 toggleIcons.forEach((icon, index) => {
                     icon.addEventListener("click", function () {
                         if (passwordFields[index].type === "password") {
@@ -117,8 +118,8 @@
                     });
                 });
             });
-            </script>
-            
+        </script>
+
 
         <!-- =======================
     Main Content END -->

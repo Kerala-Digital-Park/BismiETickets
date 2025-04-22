@@ -13,6 +13,7 @@
 								<div class="col-xl-12 col-xxl-12">
 									<div class="vstack gap-4">
 										<div id="flight-list">
+											<% if(bookings) { %>
 											<!-- Ticket item START -->
 											<div class="card border">
 												<!-- Card header -->
@@ -20,12 +21,11 @@
 													<div class="d-md-flex justify-content-md-between">
 														<!-- Airline Name -->
 														<div class="d-flex align-items-center mb-2 mb-md-0">
-															<img src="assets/images/element/14.svg" class="w-30px me-2"
+															<img src="<%= bookings.flight.stops[0].airlineLogo %>" class="w-30px me-2"
 																alt="">
-															<h6 class="fw-normal mb-0">Folio Airline (CCE - 2158)</h6>
+															<h6 class="fw-normal mb-0"><%= bookings.flight.stops[0].airline.toUpperCase() %> (<%= bookings.flight.stops[0].flightNumber %>)</h6>
 														</div>
-														<h6 class="fw-normal mb-0"><span class="text-body">Travel
-																Class:</span> Economy</h6>
+														
 													</div>
 												</div>
 
@@ -38,14 +38,23 @@
 															<div class="row g-4">
 																<!-- Airport detail -->
 																<div class="col-sm-4">
-																	<h4>14:50</h4>
-																	<h6 class="mb-0 fw-normal">Sun, 29 Jan 2023</h6>
-																	<p class="mb-0">BOM - Terminal 2 Mumbai, India</p>
+																	<h4><%= bookings.flight.
+																		departureTime %></h4>
+																	<h6 class="mb-0 fw-normal"><%= bookings.flight.
+																		departureDate %></h6>
+																	<p class="mb-0">
+																		<%= bookings.flight.from.toUpperCase() %> 
+																		- Terminal <%= bookings.flight.stops[0].fromTerminal %> 
+																		<%= bookings.flight.fromCity %>, 
+																		<%= bookings.flight.fromCountry %>
+																	</p>
 																</div>
 
 																<!-- Time -->
 																<div class="col-sm-4 my-sm-auto text-center">
-																	<h5>9hr 50min</h5>
+																	<% const totalSeconds=parseInt(bookings.flight.duration) || 0; const hours=Math.floor(totalSeconds
+                                									/ 3600); const minutes=Math.floor((totalSeconds % 3600) / 60); %>
+																	<h5><%= hours %>hr <%= minutes %>min</h5>
 																	<div class="position-relative my-4">
 																		<!-- Line -->
 																		<hr
@@ -61,62 +70,42 @@
 
 																<!-- Airport detail -->
 																<div class="col-sm-4">
-																	<h4>07:35</h4>
-																	<h6 class="mb-0 fw-normal">Sun, 30 Jan 2023</h6>
-																	<p class="mb-0">JFK - Terminal 2 New York, USA</p>
+																	<h4><%= bookings.flight.
+																		arrivalTime %></h4>
+																	<h6 class="mb-0 fw-normal"><%= bookings.flight.
+																		arrivalDate %></h6>
+																	<p class="mb-0">
+																		<% const lastStop = bookings.flight.stops[bookings.flight.stops.length - 1]; %>
+																		<%= bookings.flight.to.toUpperCase() %>
+																		<% if (lastStop?.toTerminal) { %>
+																			- Terminal <%= lastStop.toTerminal %>
+																		<% } %>
+																		<%= bookings.flight.toCity %>, 
+																		<%= bookings.flight.toCountry %>
+																	</p>
 																</div>
 															</div>
 															<!-- Ticket detail END -->
 
-															<!-- Divider -->
-															<hr class="my-4">
-
-															<!-- Ticket detail START -->
-															<div class="row g-4">
-																<!-- Airport detail -->
-																<div class="col-sm-4">
-																	<h4>04:50</h4>
-																	<h6 class="mb-0 fw-normal">Sun, 19 Feb 2023</h6>
-																	<p class="mb-0">JFK - Terminal 2 New York, USA</p>
-																</div>
-
-																<!-- Time -->
-																<div class="col-sm-4 my-sm-auto text-center">
-																	<h5>10hr 35min</h5>
-																	<div class="position-relative my-4">
-																		<!-- Line -->
-																		<hr
-																			class="bg-primary opacity-5 position-relative">
-																		<!-- Icon -->
-																		<div
-																			class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
-																			<i
-																				class="fa-solid fa-fw fa-plane rtl-flip"></i>
-																		</div>
-																	</div>
-																</div>
-
-																<!-- Airport detail -->
-																<div class="col-sm-4">
-																	<h4>15:48</h4>
-																	<h6 class="mb-0 fw-normal">Sun, 19 Feb 2023</h6>
-																	<p class="mb-0">BOM - Terminal 2 Mumbai, India</p>
-																</div>
-															</div>
-															<!-- Ticket detail END -->
 														</div>
 														<!-- Ticket END -->
 
 														<!-- Price START -->
 														<div class="col-md-3 text-md-end">
 															<!-- Price -->
-															<h4>$18,500</h4>
-															<button
-																class="btn btn-link text-decoration-underline p-0 mb-0"
-																data-bs-toggle="modal" data-bs-target="#flightdetail">
-																<i class="bi bi-eye-fill me-1"></i>Flight Details
-															</button>
-															<p class="text-success">Refundable</p>
+															<h4>₹ <%= bookings.flight.inventoryDates[0].fare.adults %></h4>
+															<button class="btn btn-link text-decoration-underline p-0 mb-0 flight-detail-btn"
+                                								data-bs-toggle="modal" data-bs-target="#flightdetail"
+                                								data-flight='<%= JSON.stringify(bookings.flight) %>'
+                                								data-user='<%= JSON.stringify(bookings.userId || null) %>'
+                              								>
+                                								<i class="bi bi-eye-fill me-1"></i>Flight Details
+                              								</button>
+															<% if (bookings.flight.refundable===true) { %>
+																<p class="text-success">Refundable</p>
+																<% } else { %>
+																	<p class="text-danger">Non-Refundable</p>
+																	<% } %>
 														</div>
 														<!-- Price END -->
 													</div> <!-- Row END -->
@@ -137,21 +126,27 @@
 																</tr>
 															</thead>
 															<tbody>
-																<tr>
-																	<td>Olivia</td>
-																	<td>Not generated</td>
-																	<td>Not Issued</td>
-																	<td>Not available</td>
-																	<td>TKT Used <i
-																			class="fa-solid fa-fw fa-plane rtl-flip text-primary"></i>
-																	</td>
-																</tr>
+																<% bookings.travelers.forEach(traveler => { %>
+																	<tr>
+																	  <td><%= traveler.first_name %> <%= traveler.last_name %></td>
+																	  <td>Not generated</td>
+																	  <td>Not Issued</td>
+																	  <td>Not available</td>
+																	  <td>TKT Used <i class="fa-solid fa-fw fa-plane rtl-flip text-primary"></i></td>
+																	</tr>
+																  <% }) %>													  
 															</tbody>
 														</table>
 													</div>
 												</div>
 											</div>
 											<!-- Ticket item END -->
+											<% } else { %>
+											<div class="alert alert-warning mb-0" role="alert">
+												<i class="fa-solid fa-exclamation-triangle me-2"></i>
+												No bookings found
+											</div>
+											<% } %>
 										</div>
 									</div>
 								</div>
@@ -190,19 +185,19 @@
 										<ul class="list-unstyled mb-0">
 											<li class="d-flex justify-content-between align-items-center">
 												<span>Sub Total</span>
-												<span>₹18703</span>
+												<span>₹ <%= bookings.baseFare %></span>
 											</li>
 											<hr class="my-0 mb-1 mt-1"> <!-- Divider -->
 
 											<li class="d-flex justify-content-between align-items-center">
 												<span>Convenience Fee</span>
-												<span>₹900</span>
+												<span>₹ <%= bookings.tax %></span>
 											</li>
 											<hr class="my-0 mb-1 mt-1"> <!-- Divider -->
 
 											<li class="d-flex justify-content-between align-items-center">
 												<span><strong>Total Amount</strong></span>
-												<span><strong>₹19603</strong></span>
+												<span><strong>₹ <%= bookings.amount %></strong></span>
 											</li>
 										</ul>
 									</div>
@@ -225,7 +220,8 @@
 												<hr class="my-0 mb-1 mt-1"> <!-- Divider -->
 												<li class="d-flex justify-content-between align-items-center">
 													<span>
-														<i class="fa-solid fa-phone fa-fw me-2"></i><%= user.mobile %>
+														<i class="fa-solid fa-phone fa-fw me-2"></i>
+														<%= user.mobile ? user.mobile : bookings.mobile_number %>
 													</span>
 												</li>
 											</ul>
@@ -548,7 +544,235 @@
 			</div>
 			<!-- Flight detail modal END -->
 
-
+			<script>
+				document.addEventListener('DOMContentLoaded', function () {
+				  const flightDetailButtons = document.querySelectorAll('.flight-detail-btn');
+		
+				  flightDetailButtons.forEach(button => {
+					button.addEventListener('click', function () {
+					  const flightData = JSON.parse(this.getAttribute('data-flight'));
+					  const userData = JSON.parse(this.getAttribute('data-user'));
+					  
+					  const stops = flightData.stops || [];
+		
+					  // ========= Flight Info Tab =========
+					  const flightInfoTab = document.getElementById('flight-info-tab');
+		
+					  // Clear previous content
+					  flightInfoTab.innerHTML = '';
+		
+					  // Create card wrapper
+					  const card = document.createElement('div');
+					  card.className = 'card border';
+		
+					  // Card header
+					  const cardHeader = document.createElement('div');
+					  cardHeader.className = 'card-header';
+		
+					  const headerFlex = document.createElement('div');
+					  headerFlex.className = 'd-sm-flex justify-content-sm-between align-items-center';
+		
+					  const airlineDiv = document.createElement('div');
+					  airlineDiv.className = 'd-flex mb-2 mb-sm-0';
+		
+					  const airlineImg = document.createElement('img');
+					  airlineImg.src = stops[0]?.airlineLogo || 'assets/images/element/09.svg';
+					  airlineImg.className = 'w-40px me-2';
+					  airlineImg.alt = '';
+		
+					  const airlineText = document.createElement('h6');
+					  airlineText.className = 'fw-normal mb-0';
+					  airlineText.textContent = `${stops[0]?.airline.toUpperCase() || 'Airline'} (${stops[0]?.airlineCode} - ${stops[0]?.flightNumber})`;
+		
+					  airlineDiv.appendChild(airlineImg);
+					  airlineDiv.appendChild(airlineText);
+		
+					  const travelClass = document.createElement('h6');
+					  travelClass.className = 'fw-normal mb-0';
+		
+					  headerFlex.appendChild(airlineDiv);
+					  headerFlex.appendChild(travelClass);
+					  cardHeader.appendChild(headerFlex);
+					  card.appendChild(cardHeader);
+		
+					  // Card body
+					  const cardBody = document.createElement('div');
+					  cardBody.className = 'card-body p-4';
+		
+					  // Loop through stops and render each segment
+					  for (let i = 0; i < stops.length; i++) {
+						const stop = stops[i];
+						const nextStop = stops[i + 1];
+		
+						const row = document.createElement('div');
+						row.className = 'row g-4';
+		
+						// From Airport
+						const fromCol = document.createElement('div');
+						fromCol.className = 'col-sm-4';
+						fromCol.innerHTML = `
+						<h4>${stop.fromCode.toUpperCase()}</h4>
+						<h6 class="mb-0">${stop.departureTime}</h6>
+						<p class="mb-0">${stop.departureCity}, ${stop.from}</p>
+						`;
+		
+						const totalSeconds = parseInt(stop.stopDuration) || 0;
+						const hours = Math.floor(totalSeconds / 3600);
+						const minutes = Math.floor((totalSeconds % 3600) / 60);
+						const durationDisplay = `${hours}hr ${minutes}min`;
+		
+						// Flight Duration
+						const midCol = document.createElement('div');
+						midCol.className = 'col-sm-4 my-sm-auto text-center';
+						midCol.innerHTML = `
+						<h5>${durationDisplay}</h5>
+						<div class="position-relative my-4">
+						<hr class="bg-primary opacity-5 position-relative">
+						<div class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
+						  <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
+						</div>
+						</div>
+						`;
+		
+						// To Airport
+						const toCol = document.createElement('div');
+						toCol.className = 'col-sm-4';
+						toCol.innerHTML = `
+						<h4>${stop.toCode.toUpperCase()}</h4>
+						<h6 class="mb-0">${stop.arrivalTime}</h6>
+						<p class="mb-0">${stop.arrivalCity}, ${stop.to}</p>
+						`;
+		
+						row.appendChild(fromCol);
+						row.appendChild(midCol);
+						row.appendChild(toCol);
+		
+						cardBody.appendChild(row);
+		
+						// Add Layover if not last stop
+						
+						if (nextStop) {
+						  // Parse arrival time of current stop and departure time of next stop
+						  const arrivalTime = stop.arrivalTime; // e.g., "17:25"
+						  const nextDepartureTime = nextStop.departureTime; // e.g., "18:40"
+		
+						  // Convert both to minutes
+						  const [arrHr, arrMin] = arrivalTime.split(':').map(Number);
+						  const [depHr, depMin] = nextDepartureTime.split(':').map(Number);
+		
+						  const arrivalInMinutes = arrHr * 60 + arrMin;
+						  const departureInMinutes = depHr * 60 + depMin;
+		
+						  let layoverMin = departureInMinutes - arrivalInMinutes;
+		
+						  // Handle overnight flights (e.g., arrival at 23:30, departure at 01:15 next day)
+						  if (layoverMin < 0) layoverMin += 24 * 60;
+		
+						  // Convert to hrs and mins
+						  const layoverHr = Math.floor(layoverMin / 60);
+						  const layoverMins = layoverMin % 60;
+		
+						  // Create layover text
+						  let layoverText = 'Layover: ';
+						  if (layoverHr > 0) layoverText += `${layoverHr} hr `;
+						  if (layoverMins > 0 || layoverHr === 0) layoverText += `${layoverMins} min `;
+						  layoverText += `in ${stop.arrivalCity}`;
+		
+						  const layoverDiv = document.createElement('div');
+						  layoverDiv.className = 'bg-light text-center fw-normal rounded-2 mt-3 mb-4 p-2 text-danger';
+						  layoverDiv.textContent = layoverText;
+		
+						  cardBody.appendChild(layoverDiv);
+						}
+		
+					  }
+		
+					  card.appendChild(cardBody);
+					  flightInfoTab.appendChild(card);
+		
+		// ========= Baggage Tab =========
+		const baggageTab = document.getElementById('flight-baggage-tab');
+				baggageTab.innerHTML = ''; // Clear previous
+		
+				const baggage = flightData.baggage || {};
+				const baggageCard = document.createElement('div');
+				baggageCard.className = 'card border';
+		
+				const baggageHeader = document.createElement('div');
+				baggageHeader.className = 'card-header d-flex align-items-center border-bottom';
+				baggageHeader.innerHTML = `
+				  <img src="assets/images/element/09.svg" class="h-20px me-1" alt="">
+				  <h5 class="card-title mb-0">${stops[0]?.fromCode.toUpperCase()} - ${stops[stops.length - 1]?.toCode.toUpperCase()}</h5>
+				`;
+				baggageCard.appendChild(baggageHeader);
+		
+				const baggageBody = document.createElement('div');
+				baggageBody.className = 'card-body';
+				baggageBody.innerHTML = `
+				  <div class="table-responsive-lg">
+					<table class="table caption-bottom mb-0">
+					  <caption class="pb-0">*1PC = 30KG</caption>
+					  <thead class="table-dark">
+						<tr>
+						  <th scope="col" class="border-0 rounded-start">Baggage Type</th>
+						  <th scope="col" class="border-0">Check In</th>
+						  <th scope="col" class="border-0 rounded-end">Cabin</th>
+						</tr>
+					  </thead>
+					  <tbody class="border-top-0">
+						${baggage.adult ? `
+						  <tr>
+							<td>Adult</td>
+							<td>${baggage.adult.checkIn.numberOfPieces} PC </td>
+							<td>${baggage.adult.cabin.weightPerPiece} Kg</td>
+						  </tr>` : ''
+						}
+						${baggage.child ? `
+						  <tr>
+							<td>Child</td>
+							<td>${baggage.child.checkIn.numberOfPieces} PC</td>
+							<td>${baggage.child.cabin.weightPerPiece} Kg</td>
+						  </tr>` : ''
+						}
+						${baggage.infant ? `
+						  <tr>
+							<td>Infant</td>
+							<td>${baggage.infant.checkIn.numberOfPieces} PC </td>
+							<td>${baggage.infant.cabin.weightPerPiece} Kg</td>
+						  </tr>` : ''
+						}
+					  </tbody>
+					</table>
+				  </div>
+				`;
+				baggageCard.appendChild(baggageBody);
+				baggageTab.appendChild(baggageCard);
+		
+		// fare
+				const fare = flightData.inventoryDates?.[0]?.fare?.adults || 0;
+				
+				let serviceCharge = 400; // default
+		
+		if (userData?.subscription?.serviceCharge) {
+		  serviceCharge = userData.subscription.serviceCharge;
+		}
+				const taxPercent = (serviceCharge * 18)/100
+				const taxAndFees = serviceCharge + taxPercent;
+				const totalFees = fare + taxAndFees;
+		
+				// Fill the fare table
+				document.querySelector("#flight-fare-tab tbody").innerHTML = `
+				  <tr>
+					<td>₹${fare}</td>
+					<td>₹${taxAndFees.toFixed(2)}</td>
+					<td><h5 class="mb-0">₹${totalFees.toFixed(2)}</h5></td>
+				  </tr>
+				`;
+		
+					});
+				  });
+				});
+			</script>
 
 			<!-- =======================
     Flight list END -->

@@ -31,8 +31,8 @@
                                             <h6>Complete Your KYC</h6>
                 
                                             <% let progress = 0, progressColor = "bg-danger"; %>
-                                            <% if ( userDetails.subscription.kyc === "Completed") { progress = 100; progressColor = "bg-success"; } %>
-                                            <% if ( userDetails.subscription.kyc === "Initial") { progress = 50; progressColor = "bg-warning"; } %>
+                                            <% if (userDetails.kyc === "Completed") { progress = 100; progressColor = "bg-success"; } %>
+                                            <% if (userDetails.kyc === "Initial") { progress = 50; progressColor = "bg-warning"; } %>
                 
                                             <div class="progress progress-sm bg-opacity-10">
                                                 <div class="progress-bar <%= progressColor %> aos" role="progressbar"
@@ -44,7 +44,7 @@
                                                 </div>
                                             </div>
                 
-                                            <% if ( userDetails.subscription.kyc === "Completed") { %>
+                                            <% if ( userDetails.kyc === "Completed") { %>
                                                 <p class="mb-0 text-success">You're all set! Your KYC is fully verified.</p>
                                             <% } else { %>
                                                 <p class="mb-0">Get the best out of booking by adding the remaining details!</p>
@@ -52,28 +52,29 @@
                                         </div>
                 
                                         <!-- Verification Steps -->
-                        <div class="bg-body rounded p-3 mt-3">
-                            <ul class="list-inline hstack flex-wrap gap-2 justify-content-between mb-0">
-                                <li class="list-inline-item h6 fw-normal mb-0">
-                                    <a href="#initialKyc">
-                                        <i class="bi <%= userDetails.subscription.kyc === 'Initial' || userDetails.subscription.kyc === 'Completed'  ? 'bi-check-circle-fill text-success' : 'bi-plus-circle-fill text-primary' %> me-2"></i>
-                                        Verify Visiting Card
-                                    </a>
-                                </li>
-                                <li class="list-inline-item h6 fw-normal mb-0">
-                                    <a href="#initialKyc">
-                                        <i class="bi <%= userDetails.subscription.kyc === 'Initial' || userDetails.subscription.kyc === 'Completed'  ? 'bi-check-circle-fill text-success' : 'bi-plus-circle-fill text-primary' %> me-2"></i>
-                                        Verify PAN Card
-                                    </a>
-                                </li>
-                                <li class="list-inline-item h6 fw-normal mb-0">
-                                    <a href="#finalKyc">
-                                        <i class="bi <%=  userDetails.subscription.kyc === 'Completed' ? 'bi-check-circle-fill text-success' : 'bi-plus-circle-fill text-primary' %> me-2"></i>
-                                        Verify Aadhaar
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+                                        <div class="bg-body rounded p-3 mt-3">
+                                            <ul class="list-inline hstack flex-wrap gap-2 justify-content-between mb-0">
+                                                <li class="list-inline-item h6 fw-normal mb-0">
+                                                    <a href="#initialKyc">
+                                                        <i class="bi <%= userDetails.kyc === 'Initial' || userDetails.kyc === 'Completed' ? 'bi-check-circle-fill text-success' : 'bi-plus-circle-fill text-primary' %> me-2"></i>
+                                                        Verify Visiting Card
+                                                    </a>
+                                                </li>
+                                                <li class="list-inline-item h6 fw-normal mb-0">
+                                                    <a href="#initialKyc">
+                                                        <i class="bi <%= userDetails.kyc === 'Initial' || userDetails.kyc === 'Completed' ? 'bi-check-circle-fill text-success' : 'bi-plus-circle-fill text-primary' %> me-2"></i>
+                                                        Verify PAN Card
+                                                    </a>
+                                                </li>
+                                                <li class="list-inline-item h6 fw-normal mb-0">
+                                                    <a href="#finalKyc">
+                                                        <i class="bi <%= userDetails.kyc === 'Completed' ? 'bi-check-circle-fill text-success' : 'bi-plus-circle-fill text-primary' %> me-2"></i>
+                                                        Verify Aadhaar
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        
                     </div>
 
                                     <!-- Initial KYC START -->
@@ -126,7 +127,7 @@
                                         </div>
                                         <!-- Card body END -->
                                     </div>
-                                    <!-- Initial KYC END -->
+                                    <!-- Initial KYC END -->/payment-details
 
                                     <!-- Final KYC START -->
                                     <div class="card border" id="finalKyc" style="<%= userDetails.subscription && userDetails.subscription.kyc != 'Pending' ? 'display: block;' : 'display: none;' %>">

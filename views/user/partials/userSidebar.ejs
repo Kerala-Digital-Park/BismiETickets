@@ -44,20 +44,22 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/bookings"><i
-                                    class="bi bi-ticket-perforated fa-fw me-2"></i>My
-                                Bookings</a>
+                                    class="bi bi-ticket-perforated fa-fw me-2"></i>Bookings</a>
                         </li>
                         <% if(user.userRole === "Agent") { %>
                             <li class="nav-item">
                                 <a class="nav-link" href="/listings"><i
-                                        class="bi bi-journal fa-fw me-2"></i>My
-                                    Listings</a>
+                                        class="bi bi-journal fa-fw me-2"></i>Listings</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="/user-bookings"><i
+                                        class="bi bi-bookmark-heart fa-fw me-2"></i>User Bookings</a>
                             </li>
 
                             <li class="nav-item">
                                 <a class="nav-link" href="/earnings"><i
-                                        class="bi bi-graph-up-arrow fa-fw me-2"></i>My
-                                    Earnings</a>
+                                        class="bi bi-graph-up-arrow fa-fw me-2"></i>Earnings</a>
                             </li>
                         <% } %>
                         <li class="nav-item">
@@ -72,12 +74,12 @@
                             <a class="nav-link" href="/kyc"><i
                                     class="fas fa-id-card fa-fw me-2"></i>KYC</a>
                         </li>
-                        <% if (user.subscription.kyc !== "Pending") { %>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/manage-subscription"><i 
-                                    class="fa-solid fa-crown fa-fw me-2"></i>Subscription</a>
-                        </li>
-                        <% } %>
+                        <% if (user.kyc !== "Pending") { %>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/manage-subscription"><i 
+                                        class="fa-solid fa-crown fa-fw me-2"></i>Subscription</a>
+                            </li>
+                        <% } %>                        
                         <li class="nav-item">
                             <a class="nav-link" href="/wishlist"><i
                                     class="bi bi-heart fa-fw me-2"></i>Wishlist</a>

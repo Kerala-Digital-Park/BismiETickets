@@ -29,39 +29,71 @@
                                         <!-- Progress bar -->
                                         <div class="overflow-hidden">
                                             <h6>Complete Your Profile</h6>
+                                    
+                                            <% 
+                                                let progress = 0;
+                                                let emailVerified = !!userDetails.email;
+                                                let mobileVerified = !!userDetails.mobile;
+                                    
+                                                if (emailVerified) progress += 30;
+                                                if (mobileVerified) progress += 30;
+                                    
+                                                const basicInfoComplete = userDetails.name && userDetails.email && userDetails.mobile &&
+                                                                          userDetails.nationality && userDetails.gender && userDetails.address && userDetails.image;
+                                    
+                                                if (basicInfoComplete) progress = 100;
+                                    
+                                                let progressColor = "bg-danger";
+                                                if (progress === 100) progressColor = "bg-success";
+                                                else if (progress >= 60) progressColor = "bg-warning";
+                                                else if (progress >= 30) progressColor = "bg-info";
+                                            %>
+                                    
                                             <div class="progress progress-sm bg-success bg-opacity-10">
-                                                <div class="progress-bar bg-success aos" role="progressbar"
+                                                <div class="progress-bar <%= progressColor %> aos" role="progressbar"
                                                     data-aos="slide-right" data-aos-delay="200" data-aos-duration="1000"
-                                                    data-aos-easing="ease-in-out" style="width: 85%" aria-valuenow="85"
+                                                    data-aos-easing="ease-in-out" style="width: <%= progress %>%;" aria-valuenow="<%= progress %>"
                                                     aria-valuemin="0" aria-valuemax="100">
-                                                    <span class="progress-percent-simple h6 fw-light ms-auto">85%</span>
+                                                    <span class="progress-percent-simple h6 fw-light ms-auto"><%= progress %>%</span>
                                                 </div>
                                             </div>
-                                            <p class="mb-0">Get the best out of booking by adding the remaining details!
-                                            </p>
+                                            <% if ( progress === 100) { %>
+                                                <p class="mb-0 text-success">You're all set!</p>
+                                                <% } else { %>
+                                                <p class="mb-0">Get the best out of booking by adding the remaining details!</p>
+                                            <% } %>
                                         </div>
+                                    
                                         <!-- Content -->
                                         <div class="bg-body rounded p-3 mt-3">
                                             <ul class="list-inline hstack flex-wrap gap-2 justify-content-between mb-0">
-                                                <li class="list-inline-item h6 fw-normal mb-0"><a href="#"><i
-                                                            class="bi bi-check-circle-fill text-success me-2"></i>Verified
-                                                        Email</a></li>
-                                                <li class="list-inline-item h6 fw-normal mb-0"><a href="#"><i
-                                                            class="bi bi-check-circle-fill text-success me-2"></i>Verified
-                                                        Mobile Number</a></li>
-                                                <li class="list-inline-item h6 fw-normal mb-0"><a href="#"
-                                                        class="text-primary"><i
-                                                            class="bi bi-plus-circle-fill me-2"></i>Complete Basic
-                                                        Info</a>
+                                                <li class="list-inline-item h6 fw-normal mb-0">
+                                                    <a href="#profile" class="<%= emailVerified ? 'text-success' : 'text-primary' %>">
+                                                        <i class="bi <%= emailVerified ? 'bi-check-circle-fill' : 'bi-plus-circle-fill' %> me-2"></i>
+                                                        <%= emailVerified ? 'Verified Email' : 'Add Email' %>
+                                                    </a>
+                                                </li>
+                                                <li class="list-inline-item h6 fw-normal mb-0">
+                                                    <a href="#profile" class="<%= mobileVerified ? 'text-success' : 'text-primary' %>">
+                                                        <i class="bi <%= mobileVerified ? 'bi-check-circle-fill' : 'bi-plus-circle-fill' %> me-2"></i>
+                                                        <%= mobileVerified ? 'Verified Mobile Number' : 'Add Mobile Number' %>
+                                                    </a>
+                                                </li>
+                                                <li class="list-inline-item h6 fw-normal mb-0">
+                                                    <a href="#profile" class="<%= basicInfoComplete ? 'text-success' : 'text-primary' %>">
+                                                        <i class="bi <%= basicInfoComplete ? 'bi-check-circle-fill' : 'bi-plus-circle-fill' %> me-2"></i>
+                                                        <%= basicInfoComplete ? 'Basic Info Completed' : 'Complete Basic Info' %>
+                                                    </a>
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
+                                    
 
                                     <!-- Personal info START -->
                                     <div class="card border">
                                         <!-- Card header -->
-                                        <div class="card-header border-bottom">
+                                        <div class="card-header border-bottom" id="profile">
                                             <h4 class="card-header-title">Personal Information</h4>
                                         </div>
 
@@ -120,18 +152,12 @@
 
                                                 <!-- Nationality -->
                                                 <div class="col-md-6">
-                                                    <label class="form-label">Nationality<span
-                                                            class="text-danger">*</span></label>
-                                                    <select class="form-select js-choice" id="nationality"
-                                                        value=<%=userDetails.nationality %> >
-                                                        <option value="">Select your country</option>
-                                                        <option>USA</option>
-                                                        <option>Paris</option>
-                                                        <option>India</option>
-                                                        <option>UK</option>
+                                                    <label class="form-label">Nationality <span class="text-danger">*</span></label>
+                                                    <select class="form-select" id="nationality">
+                                                      <option value="">Select your country</option>
                                                     </select>
-                                                </div>
-
+                                                  </div>                                                  
+                                                
                                                 <!-- Gender -->
                                                 <div class="col-md-6">
                                                     <label class="form-label">Select Gender<span
@@ -414,6 +440,36 @@
     });
 </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const nationalitySelect = document.getElementById("nationality");
+      const userSelectedNationality = "<%= userDetails.nationality || '' %>";
+  
+      try {
+        const response = await fetch("/api/countries");
+        const countries = await response.json();
+  
+        // Optional debug
+        console.log("Fetched countries:", countries);
+  
+        countries.forEach(country => {
+          const option = document.createElement("option");
+          option.value = country;
+          option.textContent = country;
+  
+          if (country === userSelectedNationality) {
+            option.selected = true;
+          }
+  
+          nationalitySelect.appendChild(option);
+        });
+      } catch (err) {
+        console.error("Error fetching countries:", err);
+      }
+    });
+</script>
+  
+  
         </main>
         <!-- **************** MAIN CONTENT END **************** -->
 
