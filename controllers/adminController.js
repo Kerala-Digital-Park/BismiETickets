@@ -1,3 +1,36 @@
+const viewLogin = async (req, res) => {
+    try {
+        res.render("admin/login", {message: ""});
+    } catch (error) {
+        console.log(error);
+      res.status(500).json({ success: false, message: "Internal Server error" });
+    }
+}
+
+const loginAdmin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (email === "admin@gmail.com" && password === "admin@gmail.com") {
+            req.session.admin = email;
+            res.redirect("/admin");
+        } else {
+            res.render("admin/login", { message: "Invalid email or password",messageType: "error" });
+        }
+    } catch (error) {
+        console.log(error);
+      res.status(500).json({ success: false, message: "Internal Server error" });
+    }
+}
+const logoutAdmin = async (req, res) => {
+    try {
+        req.session.destroy();
+        res.redirect("/admin/login");
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+}
+
 const viewDashboard = async (req, res) => {
     try {
         res.render("admin/dashboard", {});
@@ -79,6 +112,9 @@ const viewAddFlight  = async (req, res) => {
     }
 }
 module.exports = {
+    viewLogin,
+    loginAdmin,
+    logoutAdmin,
     viewDashboard,
     viewBookings,
     viewBookingDetail,
