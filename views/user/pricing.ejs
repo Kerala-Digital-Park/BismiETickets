@@ -58,12 +58,12 @@
                                 <div
                                     class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
                                     <div>
-                                        <h6 class="mb-0">Starter</h6>
-                                        <div class="hstack gap-2">
+                                        <h5 class="mb-0">Free Plan</h5>
+                                        <!-- <div class="hstack gap-2">
                                             <span class="h3 plan-price mb-0" data-monthly-price="$20"
                                                 data-annual-price="$570">$20</span>
                                             <span class="h6 fw-light mb-0">/ per user</span>
-                                        </div>
+                                        </div> -->
                                     </div>
                                     <span class="icon-lg rounded-circle" data-bs-toggle="tooltip"
                                         data-bs-placement="top" title="Most Popular">
@@ -104,18 +104,18 @@
                                         <% } else if (user.subscription && user.subscription.subscription==="Pro" || "Enterprise" ) { %>
                                             <div class="card-footer p-4 pt-0">
                                                 <button class="btn btn-dark w-100 mb-0"
-                                                    onclick="starterDowngrade()">Downgrade</button>
+                                                    onclick="freeDowngrade()">Downgrade</button>
                                             </div>
                                             <% } else { %>
                                                 <div class="card-footer p-4 pt-0">
                                                     <button class="btn btn-dark w-100 mb-0"
-                                                        onclick="starterCheckout()">Get Started</button>
+                                                        onclick="freeCheckout()">Get Started</button>
                                                 </div>
                                                 <% } %>
                                                     <% } else { %>
                                                         <div class="card-footer p-4 pt-0">
                                                             <button class="btn btn-dark w-100 mb-0"
-                                                                onclick="starterCheckout()">Get Started</button>
+                                                                onclick="freeCheckout()">Get Started</button>
                                                         </div>
                                                         <% } %>
 
@@ -262,146 +262,6 @@
                     </div>
                     <!-- Pricing END -->
 
-                    <h6 class="text-primary mt-5 text-center">Agent Pricing</h6>
-                    <!-- Pricing START -->
-                    <div class="row g-4 justify-content-center mt-1">
-                        <!-- Price item START -->
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card shadow">
-                                <!-- Card header -->
-                                <div
-                                    class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
-                                    <div>
-                                        <h6 class="mb-0">Starter</h6>
-                                        <div class="hstack gap-2">
-                                            <span class="h3 plan-price mb-0" data-monthly-price="$20"
-                                                data-annual-price="$570">$20</span>
-                                            <span class="h6 fw-light mb-0">/ per user</span>
-                                        </div>
-                                    </div>
-                                    <span class="icon-lg rounded-circle" data-bs-toggle="tooltip"
-                                        data-bs-placement="top" title="Most Popular">
-                                        <img src="/assets/images/element/plan-s1.svg" alt="Starter Plan"
-                                            class="img-fluid" style="max-width: 100px;">
-                                    </span>
-                                </div>
-
-                                <!-- Card body -->
-                                <div class="card-body p-4">
-                                    <!-- List -->
-                                    <ul class="list-unstyled mb-0">
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>20
-                                            Bookings/Month</li>
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>2 Lakh
-                                            Worth Transactions</li>
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Email
-                                            Support</li>
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Quick
-                                            Purchase</li>
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Exclusive
-                                            Offers</li>
-                                        <li class="mb-2"><i
-                                                class="fas fa-exclamation-triangle text-warning me-2"></i>Minimum KYC
-                                        </li>
-                                        <li class="mb-2"><i class="fas fa-tools text-muted me-2"></i>Limited Action
-                                            Tools</li>
-                                        <li><i class="bi bi-x-circle text-danger me-2"></i>No Special Fares</li>
-                                    </ul>
-                                </div>
-
-                                <!-- Card footer -->
-                                <% if(user) { %>
-                                    <% if(user.subscription.subscription==="Free" ) { %>
-                                        <div class="card-footer p-4 pt-0">
-                                            <button class="btn btn-success w-100 mb-0" disabled>Current Plan</button>
-                                        </div>
-                                        <% } else { %>
-                                            <div class="card-footer p-4 pt-0">
-                                                <button class="btn btn-dark w-100 mb-0" onclick="starterCheckout()">Get
-                                                    Started</button>
-                                            </div>
-                                            <% } %>
-                                                <% } else { %>
-                                                    <div class="card-footer p-4 pt-0">
-                                                        <button class="btn btn-dark w-100 mb-0"
-                                                            onclick="starterCheckout()">Get Started</button>
-                                                    </div>
-                                                    <% } %>
-
-                            </div>
-                        </div>
-                        <!-- Price item END -->
-
-                        <!-- Price item START -->
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card shadow">
-                                <!-- Card header -->
-                                <div
-                                    class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
-                                    <div>
-                                        <h6 class="mb-0">Enterprise Plan</h6>
-                                        <div class="hstack gap-2">
-                                            <span class="h3 plan-price mb-0" data-monthly-price="$99"
-                                                data-annual-price="$999">$99</span>
-                                            <span class="h6 fw-light mb-0">/ per user</span>
-                                        </div>
-                                    </div>
-                                    <span class="icon-lg rounded-circle" data-bs-toggle="tooltip"
-                                        data-bs-placement="top" title="Best Value">
-                                        <img src="/assets/images/element/plan-s3.svg" alt="Starter Plan"
-                                            class="img-fluid" style="max-width: 100px;">
-                                    </span>
-                                </div>
-
-                                <!-- Card body -->
-                                <div class="card-body p-4">
-                                    <!-- List -->
-                                    <ul class="list-unstyled mb-0">
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Unlimited
-                                            Bookings</li>
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Unlimited
-                                            Transactions</li>
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>All Pro
-                                            Plan Features</li>
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Special
-                                            Fares</li>
-                                        <li class="mb-2"><i class="fas fa-gift text-success me-2"></i>Milestone Rewards
-                                        </li>
-                                        <li class="mb-2"><i class="fas fa-user-shield text-success me-2"></i>VIP Support
-                                        </li>
-                                        <li class="mb-2"><i class="fas fa-percent text-success me-2"></i> Reduced
-                                            Charges</li>
-                                        <li class="mb-2"><i class="fas fa-shield-alt text-success me-2"></i>Full KYC
-                                            Badge</li>
-                                        <li><i class="fas fa-money-bill-alt text-success me-2"></i>Reduced Booking Fees
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <!-- Card footer -->
-                                <% if(user) { %>
-                                    <% if(user.subscription.subscription==="Enterprise" ) { %>
-                                        <div class="card-footer p-4 pt-0">
-                                            <button class="btn btn-success w-100 mb-0" disabled>Current Plan</button>
-                                        </div>
-                                        <% } else { %>
-                                            <div class="card-footer p-4 pt-0">
-                                                <button class="btn btn-dark w-100 mb-0"
-                                                    onclick="enterpriseCheckout()">Get Started</button>
-                                            </div>
-                                            <% } %>
-                                                <% } else { %>
-                                                    <div class="card-footer p-4 pt-0">
-                                                        <button class="btn btn-dark w-100 mb-0"
-                                                            onclick="enterpriseCheckout()">Get Started</button>
-                                                    </div>
-                                                    <% } %>
-
-                            </div>
-                        </div>
-                        <!-- Price item END -->
-                    </div>
-                    <!-- Pricing END -->
                 </div>
             </section>
             <!-- =======================
@@ -410,7 +270,7 @@
         </main>
 
         <script>
-            async function starterCheckout() {
+            async function freeCheckout() {
                 const subscription = "Free";
                 try {
                     const response = await fetch("/subscription",
@@ -490,7 +350,7 @@
                 }
             }
 
-            async function starterDowngrade() {
+            async function freeDowngrade() {
                 const subscription = "Free";
                 try {
                     alert("Are you sure you want to downgrade to Free");

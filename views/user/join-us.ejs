@@ -15,7 +15,7 @@
                     <!-- Info -->
                     <p class="mb-4">Speedily say has suitable disposal add boy. On forth doubt miles of child. Exercise joy man children rejoiced.</p>
                     <!-- Button -->
-                    <a href="/add-listing" class="btn btn-primary-soft mb-4">Add Listing <i class="fa-solid fa-arrow-right-long fa-fw"></i></a>
+                    <button onclick="addListing()" class="btn btn-primary-soft mb-4">Add Listing <i class="fa-solid fa-arrow-right-long fa-fw"></i></button>
                     <!-- List -->
                     <h6 class="fw-normal mb-1">Create New Listing</h6>
                     <ul class="list-group list-group-borderless mb-0 small">
@@ -151,87 +151,149 @@
     <!-- =======================
     Testimonials START -->
     <section>
-        <div class="container">
-            <div class="row justify-content-between mb-5">
-                <!-- Title -->
-                <div class="col-md-6">
-                    <h2 class="mb-0">What client say about Booking</h2>
-                </div>
-                <!-- Info -->
-                <div class="col-md-5">
-                    <p class="mb-0">As it so contrasted oh estimating instrument. Size like body some one had. Departure defective arranging rapturous did. Conduct denied adding worthy little.</p>
-                </div>
-            </div>
-    
-            <div class="row">
-    
-                <div class="col-lg-3">
-    
-                </div>
-    
-    
-                <!-- Testimonials START -->
-                <div class="col-lg-9">
-                    <div class="tiny-slider arrow-round arrow-blur arrow-hover">
-                        <div class="tiny-slider-inner" data-autoplay="true" data-arrow="true" data-dots="false" data-items="1">
-                            <!-- Slider item START -->
-                            <div>
-                                <div class="row g-4">
-                                    <!-- Image -->
-                                    <div class="col-md-4">
-                                        <img src="assets/images/team/09.jpg" class="rounded" alt="">
-                                    </div>
-                                    <!-- Content -->
-                                    <div class="col-md-8">
-                                        <div class="d-flex">
-                                            <!-- Quotation -->
-                                            <span class="display-5 opacity-2"><i class="bi bi-quote"></i></span>
-                                            <!-- Content -->
-                                            <div class="ms-3">
-                                                <h5 class="mb-3 text-primary">Fantastic job done by booking</h5>
-                                                <p class="mb-3">Size like body some one had. Departure defective arranging rapturous did. Speedily say has suitable disposal add boy. On forth doubt miles of child. Exercise joy man children rejoiced. Conduct denied adding worthy little.  Departure defective arranging rapturous did. Conduct denied adding worthy little.</p>
-                                                
-                                                <h6 class="mb-0">Lori Stevens</h6>
-                                                <small>CEO of Blogzine</small>
-                                            </div>
+        
+        <div class="container" id="pricing">
+            <h6 class="text-primary text-center">Agent Pricing</h6>
+                    <!-- Pricing START -->
+                    <div class="row g-4 justify-content-center mt-1">
+                        <!-- Price item START -->
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card border">
+                                <!-- Card header -->
+                                <div
+                                    class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
+                                    <div>
+                                        <h6 class="mb-0">Starter Plan</h6>
+                                        <div class="hstack gap-2">
+                                            <span class="h3 plan-price mb-0" data-monthly-price="$59"
+                                                data-annual-price="$840">$59</span>
+                                            <span class="h6 fw-light mb-0">/ per user</span>
                                         </div>
                                     </div>
+                                    <span class="icon-lg bg-opacity-10 rounded-circle text-primary"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Recommended">
+                                        <img src="/assets/images/element/plan-s2.svg" alt="Starter Plan"
+                                            class="img-fluid" style="max-width: 100px;">
+                                    </span>
                                 </div>
-                            </div>	
-                            <!-- Slider item end -->
-    
-                            <!-- Slider item START -->
-                            <div>
-                                <div class="row g-4">
-                                    <!-- Image -->
-                                    <div class="col-md-4">
-                                        <img src="assets/images/team/06.jpg" class="rounded" alt="">
-                                    </div>
-                                    <!-- Content -->
-                                    <div class="col-md-8">
-                                        <div class="d-flex">
-                                            <!-- Quotation -->
-                                            <span class="display-5 opacity-2"><i class="bi bi-quote"></i></span>
-                                            <!-- Content -->
-                                            <div class="ms-3">
-                                                <h5 class="mb-3 text-primary">Fantastic job done by booking</h5>
-                                                <p class="mb-3">Size like body some one had. Departure defective arranging rapturous did. Speedily say has suitable disposal add boy. On forth doubt miles of child. Exercise joy man children rejoiced. Conduct denied adding worthy little.  Departure defective arranging rapturous did. Conduct denied adding worthy little.</p>
-                                                
-                                                <h6 class="mb-0">Dennis Barrett</h6>
-                                                <small>CEO of Wizixo</small>
-                                            </div>
+
+                                <!-- Card body -->
+                                <div class="card-body p-4">
+                                    <!-- List -->
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>100
+                                            Bookings/Month</li>
+                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>20 Lakh
+                                            Transactions</li>
+                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>All Free
+                                            Plan Features</li>
+                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Exclusive
+                                            Offers</li>
+                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Access
+                                            Special Fares</li>
+                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Enhanced
+                                            Support</li>
+                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Special
+                                            Bids Opportunity</li>
+                                        <li class="mb-2"><i class="fas fa-shield-alt text-success me-2"></i>Full KYC
+                                            Badge</li>
+                                        <li><i class="fas fa-tools text-success me-2"></i>Limited Action Tools</li>
+                                    </ul>
+                                </div>
+
+                                <!-- Card footer -->
+                                <% if(user) { %>
+                                    <% if(user.subscription && user.subscription.subscription==="Starter" ) { %>
+                                        <div class="card-footer p-4 pt-0">
+                                            <button class="btn btn-success w-100 mb-0" disabled>Current Plan</button>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>	
-                            <!-- Slider item end -->
-                            
+                                    <% } else { %>
+                                            <div class="card-footer p-4 pt-0">
+                                                <button class="btn btn-dark w-100 mb-0" onclick="starterCheckout()">Get
+                                                    Started</a>
+                                            </div>
+                                    <% } %>
+                                <% } else { %>
+                                                    <div class="card-footer p-4 pt-0">
+                                                        <button class="btn btn-dark w-100 mb-0"
+                                                            onclick="starterCheckout()">Get Started</a>
+                                                    </div>
+                                <% } %>
+
+                            </div>
                         </div>
-                    </div>	
-                </div>
-                <!-- Testimonials END -->
-            </div>
-    
+                        <!-- Price item END -->
+
+                        <!-- Price item START -->
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card shadow">
+                                <!-- Card header -->
+                                <div
+                                    class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
+                                    <div>
+                                        <h6 class="mb-0">Enterprise Plan</h6>
+                                        <div class="hstack gap-2">
+                                            <span class="h3 plan-price mb-0" data-monthly-price="$99"
+                                                data-annual-price="$999">$99</span>
+                                            <span class="h6 fw-light mb-0">/ per user</span>
+                                        </div>
+                                    </div>
+                                    <span class="icon-lg rounded-circle" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" title="Best Value">
+                                        <img src="/assets/images/element/plan-s3.svg" alt="Starter Plan"
+                                            class="img-fluid" style="max-width: 100px;">
+                                    </span>
+                                </div>
+
+                                <!-- Card body -->
+                                <div class="card-body p-4">
+                                    <!-- List -->
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Unlimited
+                                            Bookings</li>
+                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Unlimited
+                                            Transactions</li>
+                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>All Pro
+                                            Plan Features</li>
+                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Special
+                                            Fares</li>
+                                        <li class="mb-2"><i class="fas fa-gift text-success me-2"></i>Milestone Rewards
+                                        </li>
+                                        <li class="mb-2"><i class="fas fa-user-shield text-success me-2"></i>VIP Support
+                                        </li>
+                                        <li class="mb-2"><i class="fas fa-percent text-success me-2"></i> Reduced
+                                            Charges</li>
+                                        <li class="mb-2"><i class="fas fa-shield-alt text-success me-2"></i>Full KYC
+                                            Badge</li>
+                                        <li><i class="fas fa-money-bill-alt text-success me-2"></i>Reduced Booking Fees
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <!-- Card footer -->
+                                <% if(user) { %>
+                                    <% if(user.subscription.subscription==="Enterprise" ) { %>
+                                        <div class="card-footer p-4 pt-0">
+                                            <button class="btn btn-success w-100 mb-0" disabled>Current Plan</button>
+                                        </div>
+                                    <% } else { %>
+                                            <div class="card-footer p-4 pt-0">
+                                                <button class="btn btn-dark w-100 mb-0"
+                                                    onclick="enterpriseCheckout()">Get Started</button>
+                                            </div>
+                                    <% } %>
+                                <% } else { %>
+                                                    <div class="card-footer p-4 pt-0">
+                                                        <button class="btn btn-dark w-100 mb-0"
+                                                            onclick="enterpriseCheckout()">Get Started</button>
+                                                    </div>
+                                <% } %>
+
+                            </div>
+                        </div>
+                        <!-- Price item END -->
+                    </div>
+                    <!-- Pricing END -->
         </div>
     </section>
     <!-- =======================
@@ -271,6 +333,105 @@
     <!-- =======================
     Action box END -->
     
+    <script>
+        async function addListing() {
+          const user = <%- JSON.stringify(user) %>;
+      
+          if (user) {
+            if (user.userRole === 'Agent') {
+              window.location.href = '/add-listing';
+            } else {
+              alert("You must be an agent to access this page.");
+              window.location.href = "#pricing";
+            }
+          } else {
+            window.location.href = "/sign-in";
+          }
+        }
+    </script>
+      
+
+    <script>
+        async function starterCheckout() {
+            const subscription = "Starter";
+            try {
+                const response = await fetch("/agent-subscription",
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ subscription })
+                    });
+
+                if (!response.ok) {
+                    alert("Failed to fetch subscription details");
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.message) {
+                    alert(data.message);
+                }
+                window.location.href = data.redirectUrl;
+            } catch (error) {
+                window.location.href = "/sign-in";
+                console.error("Error:", error);
+            }
+        }
+
+        async function enterpriseCheckout() {
+            const subscription = "Enterprise";
+            try {
+                const response = await fetch("/agent-subscription",
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ subscription })
+                    });
+
+                if (!response.ok) {
+                    alert("Failed to fetch subscription details");
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.message) {
+                    alert(data.message);
+                }
+                window.location.href = data.redirectUrl;
+
+            } catch (error) {
+                console.error("Error:", error);
+                window.location.href = "/sign-in";
+            }
+        }
+
+        async function starterDowngrade() {
+            const subscription = "Free";
+            try {
+                alert("Are you sure you want to downgrade to Free");
+                const response = await fetch("/subscription-free",
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ subscription })
+                    });
+
+                if (!response.ok) {
+                    alert("Failed to fetch subscription details");
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.message) {
+                    alert(data.message);
+                }
+                window.location.href = data.redirectUrl;
+            } catch (error) {
+                window.location.href = "/sign-in";
+                console.error("Error:", error);
+            }
+        }
+    </script>
     </main>
     <!-- **************** MAIN CONTENT END **************** -->
 

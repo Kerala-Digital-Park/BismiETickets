@@ -1,325 +1,508 @@
 <%- include('./partials/header') %>
-<%- include('./partials/userHeader') %>
+	<%- include('./partials/userHeader') %>
 
-<!-- **************** MAIN CONTENT START **************** -->
-<main>
-	
-<!-- =======================
-Content START -->
-<section class="pt-0">
-	<div class="container vstack gap-4">
-		<!-- Title START -->
-		<!-- <div class="row">
-			<div class="col-12">
-				<h1 class="fs-4 mb-0"><i class="bi bi-journals fa-fw me-1"></i>Listings</h1>
-			</div>
-		</div> -->
-		<!-- Title END -->
+		<!-- **************** MAIN CONTENT START **************** -->
+		<main>
 
-		<!-- Counter START -->
-		<div class="row g-4">
-			
-			<!-- Earning item -->
-			<div class="col-md-6 col-xl-4">
-				<div class="card card-body border p-4 h-100">
-					<h6>Earning
-						<a tabindex="0" class="h6 mb-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="top" data-bs-content="After US royalty withholding tax" data-bs-original-title="" title="">
-							<i class="bi bi-info-circle-fill small"></i>
-						</a>
-					</h6>
-					<h2 class="text-success">$25,869</h2>
-					<p class="mb-2"><span class="text-primary me-1">0.20%<i class="bi bi-arrow-up"></i></span>vs last month</p>
-					<div class="mt-auto text-primary-hover"><a href="#" class="text-decoration-underline p-0 mb-0">View statement</a></div>
+			<!-- =======================
+    Content START -->
+			<section class="pt-3">
+				<div class="container">
+
+					<div class="row g-2 g-lg-4">
+
+						<!-- Sidebar START -->
+						<%- include('./partials/userSidebar') %>
+							<!-- Sidebar END -->
+
+							<!-- Main content START -->
+							<div class="col-lg-8 col-xl-9 ps-xl-5">
+
+								<!-- Offcanvas menu button -->
+								<div class="d-grid mb-0 d-lg-none w-100">
+									<button class="btn btn-primary mb-4" type="button" data-bs-toggle="offcanvas"
+										data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
+										<i class="fas fa-sliders-h"></i> Menu
+									</button>
+								</div>
+
+								<div class="card border">
+									<!-- Card header -->
+									<div class="card-header border-bottom">
+										<h4 class="card-header-title">My Listings
+											<!-- <span class="badge bg-primary bg-opacity-10 text-primary ms-2">5 Items</span> -->
+										</h4>
+									</div>
+
+									<!-- Card body START -->
+									<div class="card-body">
+										<div class="table-responsive border-0">
+											<table class="table align-middle p-4 mb-0 table-hover table-shrink">
+												<!-- Table head -->
+												<thead class="table-light">
+													<tr>
+														<th scope="col" class="border-0">Date</th>
+														<th scope="col" class="border-0">ID Details</th>
+														<th scope="col" class="border-0">Airline</th>
+														<th scope="col" class="border-0">Destinations</th>
+														<th scope="col" class="border-0">Travel Date</th>
+														<th scope="col" class="border-0">Amount</th>
+														<th scope="col" class="border-0">Status</th>
+														<th scope="col" class="border-0">Close</th>
+														<th scope="col" class="border-0 rounded-end">Action</th>
+													</tr>
+												</thead>
+
+												<!-- Table body START -->
+												<tbody class="border-top-0">
+													<% if (flights.length===0) { %>
+														<tr>
+															<td colspan="7" class="text-center">No inventories found.
+															</td>
+														</tr>
+														<% } else { %>
+															<% flights.forEach((flight, index)=> { %>
+																<tr class="align-middle border-top">
+																	<td>
+																		<div>
+																			<%= new Date(flight.createdAt).getDate() %>/<%= new Date(flight.createdAt).getMonth() + 1 %>/<%= new Date(flight.createdAt).getFullYear().toString().slice(-2) %>
+																		  </div>
+																		  
+																		<div>
+																			<%= flight.inventoryDates[0].seats %>
+																				Seat<%= flight.inventoryDates[0].seats>
+																					1 ?
+																					's' : '' %>
+																		</div>
+																	</td>
+																	<td>
+																		<%= flight.duration %>
+																	</td>
+																	<td>
+																		<div>
+																			<%= flight.stops[0].airline %>
+																		</div>
+																		<div class="text-muted">
+																			<%= flight.stops[0].airlineCode %>
+																		</div>
+																	</td>
+																	<td>
+																		<% flight.stops.forEach((stop)=> { %>
+																			<%= stop.fromCode.toUpperCase() %> / <%= stop.departureCity %>
+																		<% }) %>
+																	</td>
+																	<td>
+																		<%= new Date(flight.departureDate).getDate() %>/<%= new Date(flight.departureDate).getMonth() + 1 %>/<%= new Date(flight.departureDate).getFullYear().toString().slice(-2) %>
+																	</td>
+																	<td><strong>₹ <%=
+																				flight.inventoryDates[0].fare.adults %>
+																				</strong></td>
+																	<td>
+																		<% if (flight.status==='active' ) { %>
+																			<span
+																			class="badge bg-success bg-opacity-10 text-success">Active</span>
+																			<% } else { %>
+																				<span
+																				class="badge bg-danger bg-opacity-10 text-danger">Inactive</span>
+																				<% } %>
+																			</td>
+																			
+																			<td>Close</td>
+																			<td>
+																		<a href="#" class="btn btn-sm btn-light"
+																			data-bs-toggle="modal"
+																			data-bs-target="#flightModal"
+																			data-flight="<%= JSON.stringify(flight) %>">
+																			<i class="fa-solid fa-pen-to-square"></i>
+																		</a>
+																	</td>
+
+																</tr>
+																<% }); %>
+																	<% } %>
+												</tbody>
+
+												<!-- Table body END -->
+											</table>
+										</div>
+									</div>
+									<!-- Card body END -->
+
+									<!-- Card footer START -->
+									
+									<!-- Card footer END -->
+
+								</div>
+							</div>
+					</div>
+					<!-- Listing table END -->
 				</div>
+			</section>
+			<!-- =======================
+    Content END -->
+
+	<div class="modal fade" id="flightModal" tabindex="-1" aria-labelledby="flightModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title" id="flightModalLabel">Update Flight</h5>
+			  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
+	  
+			<div class="modal-body">
+			  <form id="flightForm">
+				<input type="hidden" name="flightId" id="flightId">
+				<div class="row g-3">
+				  <!-- Row 1 -->
+				  <div class="col-md-3">
+					<label class="form-label">Inventory Name</label>
+					<input type="text" class="form-control" id="inventoryName">
+				  </div>
 
-			<!-- Booked Rooms item -->
-			<div class="col-md-6 col-xl-4">
-				<div class="card card-body border p-4 h-100">
-					<h6>Booked Rooms</h6>
-					<h2 class="text-info">58</h2>
-					<p class="mb-2"><span class="text-danger me-1">102</span>Total Rooms</p>
-					<div class="mt-auto text-primary-hover"><a href="#" class="text-decoration-underline p-0 mb-0">View Bookings</a></div>
-				</div>
-			</div>
+				  <div class="col-md-4">
+					<label class="form-label">From</label>
+					<input type="text" class="form-control" id="from">
+				  </div>
 
-			<!-- Available Rooms item -->
-			<div class="col-md-6 col-xl-4">
-				<div class="card card-body border p-4 h-100">
-					<h6>Available Rooms</h6>
-					<h2 class="text-warning">42</h2>
-					<p class="mb-2"><span class="text-danger me-1">102</span>Total Rooms</p>
-					<div class="mt-auto text-primary-hover"><a href="#" class="text-decoration-underline p-0 mb-0">View Rooms</a></div>
-				</div>
-			</div>
+				  <div class="col-md-4">
+					<label class="form-label">To</label>
+					<input type="text" class="form-control" id="to">
+				  </div>
 
-		</div>
-		<!-- Counter END -->
+				  <div class="col-md-3">
+					<label class="form-label">From Code</label>
+					<input type="text" class="form-control" id="fromCode">
+				  </div>
 
-		<!-- Listing table START -->
-		<div class="row">
-			<div class="col-12">
+				  <div class="col-md-3">
+					<label class="form-label">To Code</label>
+					<input type="text" class="form-control" id="toCode">
+				  </div>
 
-				<div class="card border">
-					<!-- Card header -->
-					<div class="card-header border-bottom">
-						<h5 class="card-header-title">My Listings <span class="badge bg-primary bg-opacity-10 text-primary ms-2">5 Items</span></h5>
+				  <div class="col-md-3">
+					<label class="form-label">Departure Date</label>
+					<input type="text" class="form-control dateInput" id="departureDate">
+				  </div>
+
+				  <div class="col-md-3">
+					<label class="form-label">Arrival Date</label>
+					<input type="text" class="form-control dateInput" id="arrivalDate">
+				  </div>
+
+				  <div class="col-md-3">
+					<label class="form-label">Departure Time</label>
+					<input type="time" class="form-control" id="departureTime">
+				  </div>
+
+				  <div class="col-md-3">
+					<label class="form-label">Arrival Time</label>
+					<input type="time" class="form-control" id="arrivalTime">
+				  </div>
+
+				  <div class="col-md-3">
+					<label class="form-label">Duration(in sec)</label>
+					<input type="text" class="form-control" id="duration">
+				  </div>
+
+				  <div class="col-md-3">
+					<label class="form-label">From City</label>
+					<input type="text" class="form-control" id="fromCity">
+				  </div>
+
+				  <div class="col-md-3">
+					<label class="form-label">To City</label>
+					<input type="text" class="form-control" id="toCity">
+				  </div>
+
+				  <div class="col-md-3">
+					<label class="form-label">From Country</label>
+					<input type="text" class="form-control" id="fromCountry">
+				  </div>
+
+				  <div class="col-md-3">
+					<label class="form-label">To Country</label>
+					<input type="text" class="form-control" id="toCountry">
+				  </div>
+
+				  <!-- Row 2 -->
+
+				  <div id="stopsContainer" class="row g-3 stop-block"></div>
+
+				  <!-- Row 3 -->
+				  <div class="col-md-3">
+					<label class="form-label">PNR</label>
+					<input type="text" class="form-control" id="pnr">
+				  </div>
+
+				  <div class="col-md-3">
+					<label class="form-label">Seats</label>
+					<input type="number" class="form-control" id="seats">
+				  </div>
+	  
+				  <div class="col-md-3">
+					<label class="form-label">Adults ₹</label>
+					<input type="number" class="form-control" id="adults">
+				  </div>
+
+				  <div class="col-md-3">
+					<label class="form-label">Infants ₹</label>
+					<input type="number" class="form-control" id="infants">
+				  </div>
+
+				  <div class="col-md-3">
+					<label class="form-label">Cabin Weight</label>
+					<input type="text" class="form-control" id="cab">
+				  </div>
+	  
+				  <div class="col-md-3">
+					  <label class="form-label">CheckIn Weight</label>
+					  <input type="text" class="form-control" id="checkin">
 					</div>
 
-					<!-- Card body START -->
-					<div class="card-body vstack gap-3">
-						<!-- Listing item START -->
-						<div class="card border p-2">
-							<div class="row g-4">
-								<!-- Card img -->
-								<div class="col-md-3 col-lg-2">
-									<img src="/assets/images/category/hotel/4by3/10.jpg" class="card-img rounded-2" alt="Card image">
-								</div>
-	
-								<!-- Card body -->
-								<div class="col-md-9 col-lg-10">
-									<div class="card-body position-relative d-flex flex-column p-0 h-100">
-	
-										<!-- Buttons -->
-										<div class="list-inline-item dropdown position-absolute top-0 end-0">
-											<!-- Share button -->
-											<a href="#" class="btn btn-sm btn-round btn-light" role="button" id="dropdownAction2" data-bs-toggle="dropdown" aria-expanded="false">
-												<i class="bi bi-three-dots-vertical"></i>
-											</a>
-											<!-- dropdown button -->
-											<ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded" aria-labelledby="dropdownAction2">
-												<li><a class="dropdown-item" href="#"><i class="bi bi-info-circle me-1"></i>Report</a></li>
-												<li><a class="dropdown-item" href="#"><i class="bi bi-slash-circle me-1"></i>Disable</a></li>
-											</ul>
-										</div>
-	
-										<!-- Title -->
-										<h5 class="card-title mb-0 me-5"><a href="hotel-detail.html">Pride moon Village Resort & Spa</a></h5>
-										<small><i class="bi bi-geo-alt me-2"></i>31J W Spark Street, California - 24578</small>
+				  <div class="col-md-3">
+					<label class="form-label">Status</label>
+					<select class="form-select" id="status">
+					  <option value="active">Active</option>
+					  <option value="inactive">Inactive</option>
+					</select>
+				  </div>
 
-										<!-- Price and Button -->
-										<div class="d-sm-flex justify-content-sm-between align-items-center mt-3 mt-md-auto">
-											<!-- Button -->
-											<div class="d-flex align-items-center">
-												<h5 class="fw-bold mb-0 me-1">$1586</h5>
-												<span class="mb-0 me-2">/day</span>
-											</div>
-											<!-- Price -->
-											<div class="hstack gap-2 mt-3 mt-sm-0">
-												<a href="#" class="btn btn-sm btn-primary mb-0"><i class="bi bi-pencil-square fa-fw me-1"></i>Edit</a>    
-												<a href="#" class="btn btn-sm btn-danger mb-0"><i class="bi bi-trash3 fa-fw me-1"></i>Delete</a>    
-											</div>                  
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- Listing item END -->
-
-						<!-- Listing item START -->
-						<div class="card border p-2">
-							<div class="row g-4">
-								<!-- Card img -->
-								<div class="col-md-3 col-lg-2">
-									<img src="/assets/images/category/hotel/4by3/05.jpg" class="card-img rounded-2" alt="Card image">
-								</div>
-	
-								<!-- Card body -->
-								<div class="col-md-9 col-lg-10">
-									<div class="card-body position-relative d-flex flex-column p-0 h-100">
-	
-										<!-- Buttons -->
-										<div class="list-inline-item dropdown position-absolute top-0 end-0">
-											<!-- Share button -->
-											<a href="#" class="btn btn-sm btn-round btn-light" role="button" id="dropdownAction3" data-bs-toggle="dropdown" aria-expanded="false">
-												<i class="bi bi-three-dots-vertical"></i>
-											</a>
-											<!-- dropdown button -->
-											<ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded" aria-labelledby="dropdownAction3">
-												<li><a class="dropdown-item" href="#"><i class="bi bi-info-circle me-1"></i>Report</a></li>
-												<li><a class="dropdown-item" href="#"><i class="bi bi-slash-circle me-1"></i>Disable</a></li>
-											</ul>
-										</div>
-	
-										<!-- Title -->
-										<h5 class="card-title mb-0 me-5"><a href="hotel-detail.html">Royal Beach Resort</a></h5>
-										<small><i class="bi bi-geo-alt me-2"></i>Manhattan street, London - 24578</small>
-
-										<!-- Price and Button -->
-										<div class="d-sm-flex justify-content-sm-between align-items-center mt-3 mt-md-auto">
-											<!-- Button -->
-											<div class="d-flex align-items-center">
-												<h5 class="fw-bold mb-0 me-1">$856</h5>
-												<span class="mb-0 me-2">/day</span>
-											</div>
-											<!-- Price -->
-											<div class="hstack gap-2 mt-3 mt-sm-0">
-												<a href="#" class="btn btn-sm btn-primary mb-0"><i class="bi bi-pencil-square fa-fw me-1"></i>Edit</a>    
-												<a href="#" class="btn btn-sm btn-danger mb-0"><i class="bi bi-trash3 fa-fw me-1"></i>Delete</a>    
-											</div>                  
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- Listing item END -->
-
-						<!-- Listing item START -->
-						<div class="card border p-2">
-							<div class="row g-4">
-								<!-- Card img -->
-								<div class="col-md-3 col-lg-2">
-									<img src="/assets/images/category/hotel/4by3/04.jpg" class="card-img rounded-2" alt="Card image">
-								</div>
-	
-								<!-- Card body -->
-								<div class="col-md-9 col-lg-10">
-									<div class="card-body position-relative d-flex flex-column p-0 h-100">
-	
-										<!-- Buttons -->
-										<div class="list-inline-item dropdown position-absolute top-0 end-0">
-											<!-- Share button -->
-											<a href="#" class="btn btn-sm btn-round btn-light" role="button" id="dropdownAction4" data-bs-toggle="dropdown" aria-expanded="false">
-												<i class="bi bi-three-dots-vertical"></i>
-											</a>
-											<!-- dropdown button -->
-											<ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded" aria-labelledby="dropdownAction4">
-												<li><a class="dropdown-item" href="#"><i class="bi bi-info-circle me-1"></i>Report</a></li>
-												<li><a class="dropdown-item" href="#"><i class="bi bi-slash-circle me-1"></i>Disable</a></li>
-											</ul>
-										</div>
-	
-										<!-- Title -->
-										<h5 class="card-title mb-0 me-5"><a href="hotel-detail.html">Carina Beach Resort</a></h5>
-										<small><i class="bi bi-geo-alt me-2"></i>5855 W Century Blvd, Los Angeles - 90045</small>
-
-										<!-- Price and Button -->
-										<div class="d-sm-flex justify-content-sm-between align-items-center mt-3 mt-md-auto">
-											<!-- Button -->
-											<div class="d-flex align-items-center">
-												<h5 class="fw-bold mb-0 me-1">$1025</h5>
-												<span class="mb-0 me-2">/day</span>
-											</div>
-											<!-- Price -->
-											<div class="hstack gap-2 mt-3 mt-sm-0">
-												<a href="#" class="btn btn-sm btn-primary mb-0"><i class="bi bi-pencil-square fa-fw me-1"></i>Edit</a>    
-												<a href="#" class="btn btn-sm btn-danger mb-0"><i class="bi bi-trash3 fa-fw me-1"></i>Delete</a>    
-											</div>                  
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- Listing item END -->
-
-						<!-- Listing item START -->
-						<div class="card border p-2">
-							<div class="row g-4">
-								<!-- Card img -->
-								<div class="col-md-3 col-lg-2">
-									<img src="/assets/images/category/hotel/4by3/06.jpg" class="card-img rounded-2" alt="Card image">
-								</div>
-	
-								<!-- Card body -->
-								<div class="col-md-9 col-lg-10">
-									<div class="card-body position-relative d-flex flex-column p-0 h-100">
-	
-										<!-- Buttons -->
-										<div class="list-inline-item dropdown position-absolute top-0 end-0">
-											<!-- Share button -->
-											<a href="#" class="btn btn-sm btn-round btn-light" role="button" id="dropdownAction5" data-bs-toggle="dropdown" aria-expanded="false">
-												<i class="bi bi-three-dots-vertical"></i>
-											</a>
-											<!-- dropdown button -->
-											<ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded" aria-labelledby="dropdownAction5">
-												<li><a class="dropdown-item" href="#"><i class="bi bi-info-circle me-1"></i>Report</a></li>
-												<li><a class="dropdown-item" href="#"><i class="bi bi-slash-circle me-1"></i>Disable</a></li>
-											</ul>
-										</div>
-	
-										<!-- Title -->
-										<h5 class="card-title mb-0 me-5"><a href="hotel-detail.html">Courtyard by Marriott New York</a></h5>
-										<small><i class="bi bi-geo-alt me-2"></i>Manhattan street, London - 24578</small>
-
-										<!-- Price and Button -->
-										<div class="d-sm-flex justify-content-sm-between align-items-center mt-3 mt-md-auto">
-											<!-- Button -->
-											<div class="d-flex align-items-center">
-												<h5 class="fw-bold mb-0 me-1">$1125</h5>
-												<span class="mb-0 me-2">/day</span>
-											</div>
-											<!-- Price -->
-											<div class="hstack gap-2 mt-3 mt-sm-0">
-												<a href="#" class="btn btn-sm btn-primary mb-0"><i class="bi bi-pencil-square fa-fw me-1"></i>Edit</a>    
-												<a href="#" class="btn btn-sm btn-danger mb-0"><i class="bi bi-trash3 fa-fw me-1"></i>Delete</a>    
-											</div>                  
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- Listing item END -->
-
-						<!-- Listing item START -->
-						<div class="card border p-2">
-							<div class="row g-4">
-								<!-- Card img -->
-								<div class="col-md-3 col-lg-2">
-									<img src="/assets/images/category/hotel/4by3/08.jpg" class="card-img rounded-2" alt="Card image">
-								</div>
-	
-								<!-- Card body -->
-								<div class="col-md-9 col-lg-10">
-									<div class="card-body position-relative d-flex flex-column p-0 h-100">
-	
-										<!-- Buttons -->
-										<div class="list-inline-item dropdown position-absolute top-0 end-0">
-											<!-- Share button -->
-											<a href="#" class="btn btn-sm btn-round btn-light" role="button" id="dropdownAction6" data-bs-toggle="dropdown" aria-expanded="false">
-												<i class="bi bi-three-dots-vertical"></i>
-											</a>
-											<!-- dropdown button -->
-											<ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded" aria-labelledby="dropdownAction6">
-												<li><a class="dropdown-item" href="#"><i class="bi bi-info-circle me-1"></i>Report</a></li>
-												<li><a class="dropdown-item" href="#"><i class="bi bi-slash-circle me-1"></i>Disable</a></li>
-											</ul>
-										</div>
-	
-										<!-- Title -->
-										<h5 class="card-title mb-0 me-5"><a href="hotel-detail.html">Beverly Hills Marriott</a></h5>
-										<small><i class="bi bi-geo-alt me-2"></i>31J W Spark Street, California - 24578</small>
-
-										<!-- Price and Button -->
-										<div class="d-sm-flex justify-content-sm-between align-items-center mt-3 mt-md-auto">
-											<!-- Button -->
-											<div class="d-flex align-items-center">
-												<h5 class="fw-bold mb-0 me-1">$1005</h5>
-												<span class="mb-0 me-2">/day</span>
-											</div>
-											<!-- Price -->
-											<div class="hstack gap-2 mt-3 mt-sm-0">
-												<a href="#" class="btn btn-sm btn-primary mb-0"><i class="bi bi-pencil-square fa-fw me-1"></i>Edit</a>    
-												<a href="#" class="btn btn-sm btn-danger mb-0"><i class="bi bi-trash3 fa-fw me-1"></i>Delete</a>    
-											</div>                  
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- Listing item END -->
-					</div>
-					<!-- Card body END -->
 				</div>
+			  </form>
 			</div>
+	  
+			<div class="modal-footer">
+			  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+			  <button type="submit" id="updateFlightBtn" class="btn btn-primary">Update</button>
+			</div>
+		  </div>
 		</div>
-		<!-- Listing table END -->
 	</div>
-</section>
-<!-- =======================
-Content END -->
+	  
+	  <script>
+		const flightModal = document.getElementById('flightModal');
+	  
+		flightModal.addEventListener('show.bs.modal', function (event) {
+		  const button = event.relatedTarget;
+		  const flightData = JSON.parse(button.getAttribute('data-flight'));
+	  
+		  // Main flight details
+		  document.getElementById('flightId').value = flightData._id;
+		  document.getElementById('inventoryName').value = flightData.inventoryName || '';
+		  document.getElementById('from').value = flightData.departureName || '';
+		  document.getElementById('to').value = flightData.arrivalName || '';
+		  document.getElementById('fromCode').value = flightData.from || '';
+		  document.getElementById('toCode').value = flightData.to || '';
+		  document.getElementById('departureDate').value = flightData.departureDate || '';
+		  document.getElementById('arrivalDate').value = flightData.arrivalDate || '';
+		  document.getElementById('departureTime').value = flightData.departureTime || '';
+		  document.getElementById('arrivalTime').value = flightData.arrivalTime || '';
+		  document.getElementById('duration').value = flightData.duration || '';
+		  document.getElementById('fromCity').value = flightData.fromCity || '';
+		  document.getElementById('toCity').value = flightData.toCity || '';
+		  document.getElementById('fromCountry').value = flightData.fromCountry || '';
+		  document.getElementById('toCountry').value = flightData.toCountry || '';
+	  
+		  // Clear existing stops if any
+		  const stopsContainer = document.getElementById('stopsContainer');
+		  stopsContainer.innerHTML = '';
+	  
+		  // Add stops dynamically
+		  if (flightData.stops && flightData.stops.length > 0) {
+			flightData.stops.forEach((stop, index) => {
+			  const stopHTML = `
+				<div class="col-12"><hr><strong>Stop ${index}</strong></div>
+				<div class="col-md-4">
+				  <label class="form-label">From</label>
+				  <input type="text" class="form-control stop-from" value="${stop.from || ''}" >
+				</div>
+				<div class="col-md-4">
+				  <label class="form-label">To</label>
+				  <input type="text" class="form-control stop-from" value="${stop.to || ''}" >
+				</div>
+				<div class="col-md-3">
+				  <label class="form-label">From Code</label>
+				  <input type="text" class="form-control stop-from-code" value="${stop.fromCode || ''}" >
+				</div>
+				<div class="col-md-3">
+				  <label class="form-label">To Code</label>
+				  <input type="text" class="form-control stop-to-code" value="${stop.toCode || ''}" >
+				</div>
+				<div class="col-md-3">
+				  <label class="form-label">From Terminal</label>
+				  <input type="text" class="form-control stop-from-terminal" value="${stop.fromTerminal || ''}" >
+				</div>
+				<div class="col-md-3">
+				  <label class="form-label">To Terminal</label>
+				  <input type="text" class="form-control stop-to-terminal" value="${stop.toTerminal || ''}" >
+				</div>
+				<div class="col-md-3">
+				  <label class="form-label">Flight Number</label>
+				  <input type="text" class="form-control stop-flight-number" value="${stop.flightNumber || ''}" >
+				</div>
+				<div class="col-md-3">
+				  <label class="form-label">Airline</label>
+				  <input type="text" class="form-control stop-airline" value="${stop.airline || ''}" >
+				</div>
+				<div class="col-md-3">
+				  <label class="form-label">Departure Date</label>
+				  <input type="text" class="form-control stop-departure-day dateInput" value="${stop.departureDay || ''}" >
+				</div>
+				<div class="col-md-3">
+				  <label class="form-label">Arrival Date</label>
+				  <input type="text" class="form-control stop-arrival-day dateInput" value="${stop.arrivalDay || ''}" >
+				</div>
+				<div class="col-md-3">
+				  <label class="form-label">Departure Time</label>
+				  <input type="time" class="form-control stop-departure-time" value="${stop.departureTime || ''}" >
+				</div>
+				<div class="col-md-3">
+				  <label class="form-label">Arrival Time</label>
+				  <input type="time" class="form-control stop-arrival-time" value="${stop.arrivalTime || ''}" >
+				</div>
+				<div class="col-md-3">
+				  <label class="form-label">Stop Duration (in sec)</label>
+				  <input type="text" class="form-control stop-duration" value="${stop.stopDuration || ''}" >
+				</div>
+				<div class="col-md-3">
+				  <label class="form-label">Departure City</label>
+				  <input type="text" class="form-control stop-departure-city" value="${stop.departureCity || ''}" >
+				</div>
+				<div class="col-md-3">
+				  <label class="form-label">Arrival City</label>
+				  <input type="text" class="form-control stop-arrival-city" value="${stop.arrivalCity || ''}" >
+				</div>
+				<div class="col-md-3">
+				  <label class="form-label">Airline Code</label>
+				  <input type="text" class="form-control stop-airline-code" value="${stop.airlineCode || ''}" >
+				</div>
+				<div class="col-md-3">
+				  <label class="form-label">Airline Logo</label>
+				  <input type="text" class="form-control stop-airline-logo" value="${stop.airlineLogo || ''}" >
+				</div>
+			  `;
+			  stopsContainer.insertAdjacentHTML('beforeend', stopHTML);
+			});
+		  }
+	  
+		  // Pricing and baggage
+		  const invDate = flightData.inventoryDates?.[0] || {};
+		  document.getElementById('pnr').value = invDate.pnr || '';
+		  document.getElementById('seats').value = invDate.seats || '';
+		  document.getElementById('adults').value = invDate.fare?.adults || '';
+		  document.getElementById('infants').value = invDate.fare?.infants || '';
+		  document.getElementById('cab').value = flightData.baggage?.adult?.cabin?.weightPerPiece || '';
+		  document.getElementById('checkin').value = flightData.baggage?.adult?.checkIn?.weightPerPiece || '';
+	  
+		  // Status
+		  document.getElementById('status').value = flightData.status || 'inactive';
+		});
+	  </script>
 
-</main>
-<!-- **************** MAIN CONTENT END **************** -->
+<script>
+	document.getElementById('updateFlightBtn').addEventListener('click', async function () {
+	  const form = document.getElementById('flightForm');
+  
+	  const getValue = (id) => document.getElementById(id)?.value || '';
+	  const flightId = getValue('flightId');
+  
+	  const stopBlocks = document.querySelectorAll('.stop-block');
+	  const stops = [];
+  
+	  stopBlocks.forEach((block, index) => {
+		stops.push({
+		  from: block.querySelector('.stop-from')?.value || '',
+		  to: block.querySelector('.stop-to')?.value || '',
+		  fromCode: block.querySelector('.stop-from-code')?.value || '',
+		  toCode: block.querySelector('.stop-to-code')?.value || '',
+		  fromTerminal: block.querySelector('.stop-from-terminal')?.value || '',
+		  toTerminal: block.querySelector('.stop-to-terminal')?.value || '',
+		  flightNumber: block.querySelector('.stop-flight-number')?.value || '',
+		  airline: block.querySelector('.stop-airline')?.value || '',
+		  departureDay: block.querySelector('.stop-departure-day')?.value || '',
+		  arrivalDay: block.querySelector('.stop-arrival-day')?.value || '',
+		  departureTime: block.querySelector('.stop-departure-time')?.value || '',
+		  arrivalTime: block.querySelector('.stop-arrival-time')?.value || '',
+		  stopDuration: block.querySelector('.stop-duration')?.value || '',
+		  departureCity: block.querySelector('.stop-departure-city')?.value || '',
+		  arrivalCity: block.querySelector('.stop-arrival-city')?.value || '',
+		  airlineCode: block.querySelector('.stop-airline-code')?.value || '',
+		  airlineLogo: block.querySelector('.stop-airline-logo')?.value || ''
+		});
+	  });
+  
+	  const flightData = {
+		flightId: getValue('flightId'),
+		inventoryName: getValue('inventoryName'),
+		from: getValue('fromCode'),
+		to: getValue('toCode'),
+		departureName: getValue('from'),
+		arrivalName: getValue('to'),
+		departureDate: getValue('departureDate'),
+		arrivalDate: getValue('arrivalDate'),
+		departureTime: getValue('departureTime'),
+		arrivalTime: getValue('arrivalTime'),
+		duration: getValue('duration'),
+		fromCity: getValue('fromCity'),
+		toCity: getValue('toCity'),
+		fromCountry: getValue('fromCountry'),
+		toCountry: getValue('toCountry'),
+		stops: stops,
+		inventoryDates: [{
+		  pnr: getValue('pnr'),
+		  seats: getValue('seats'),
+		  fare: {
+			adults: getValue('adults'),
+			infants: getValue('infants'),
+		  }
+		}],
+		baggage: {
+		  adult: {
+			cabin: { weightPerPiece: getValue('cab') },
+			checkIn: { weightPerPiece: getValue('checkin') }
+		  }
+		},
+		status: getValue('status'),
+	  };
+  
+	  try {
+		const response = await fetch(`/update-listing?id=${flightId}`, {
+		  method: 'PUT',
+		  headers: {
+			'Content-Type': 'application/json'
+		  },
+		  body: JSON.stringify(flightData)
+		});
+  
+		if (!response.ok) {
+		  throw new Error('Failed to update flight');
+		}
+  
+		const result = await response.json();
+		alert('Flight updated successfully!');
+		window.location.reload();
+	  } catch (error) {
+		console.error('Error:', error);
+		alert('Error updating flight.');
+	  }
+	});
+  </script>
+  
+  <script>
+	function initFlatpickrOnNewDateInputs(container) {
+  container.querySelectorAll(".dateInput:not(.flatpickr-input)").forEach(input => {
+    flatpickr(input, {
+      dateFormat: "d M Y",
+      defaultDate: "today",
+      allowInput: true
+    });
+  });
+}
 
+  </script>
+	  
 
-<%- include('./partials/footer') %>
+		</main>
+		<!-- **************** MAIN CONTENT END **************** -->
+
+		<%- include('./partials/footer') %>

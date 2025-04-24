@@ -37,8 +37,11 @@
                 <!-- List -->
                 <ul class="nav nav-divider h6 fw-normal text-body mb-0">
                   <li class="nav-item"><%= flightDetails.departureDate %></li>
-                  <li class="nav-item"><%= flightDetails.stops.length %> stops</li>
-                  <% 
+                  <li class="nav-item">
+                    <% const stopCount = flightDetails.stops.length - 1; %>
+                    <%= stopCount === 0 ? 'Non-stop' : stopCount === 1 ? '1 stop' : `${stopCount} stops` %>
+                  </li>
+                <% 
                   const totalSeconds = parseInt(flightDetails.duration) || 0;
                   const hours = Math.floor(totalSeconds / 3600);
                   const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -74,7 +77,7 @@
                       <!-- Airline Info -->
                       <div class="col-md-3">
                         <img src="<%= flightDetails.stops[i].airlineLogo %>" class="w-80px mb-3" alt="" />
-                        <h6 class="fw-normal mb-0"><%= flightDetails.stops[i].airline.toUpperCase() %></h6>
+                        <h6 class="fw-normal mb-0"><%= flightDetails.stops[i].airline %></h6>
                         <h6 class="fw-normal mb-0"><%= flightDetails.stops[i].airlineCode %> - <%= flightDetails.stops[i].flightNumber %></h6>
                       </div>
               
@@ -82,7 +85,8 @@
                       <div class="col-sm-4 col-md-3">
                         <h4><%= flightDetails.stops[i].fromCode.toUpperCase() %></h4>
                         <h6><%= flightDetails.stops[i].departureTime %></h6>
-                        <p class="mb-2"><%= flightDetails.stops[i].departureDay %></p>
+                        
+                        <p class="mb-2"><%= new Date(flightDetails.stops[i].departureDay).toDateString() %></p>
                         <p class="mb-2"><%= flightDetails.stops[i].from %></p>
                         <% if (flightDetails.stops[i].fromTerminal) { %>
                           <p class="mb-0">Terminal - <%= flightDetails.stops[i].fromTerminal %></p>
@@ -109,7 +113,7 @@
                       <div class="col-sm-4 col-md-3">
                         <h4><%= flightDetails.stops[i].toCode.toUpperCase() %></h4>
                         <h6><%= flightDetails.stops[i].arrivalTime %></h6>
-                        <p class="mb-2"><%= flightDetails.stops[i].arrivalDay %></p>
+                        <p class="mb-2"><%= new Date(flightDetails.stops[i].arrivalDay).toDateString() %></p>
                         <p class="mb-2"><%= flightDetails.stops[i].to %></p>
                         <% if (flightDetails.stops[i].toTerminal) { %>
                           <p class="mb-0">Terminal - <%= flightDetails.stops[i].toTerminal %></p>
@@ -733,13 +737,6 @@
     const childMaxDOB = new Date(today.getFullYear() - 2, today.getMonth(), today.getDate());
     const infantMinDOB = new Date(today.getFullYear() - 2, today.getMonth(), today.getDate());
     const infantMaxDOB = today;
-
-    console.log(adultMinDOB);
-    console.log(adultMaxDOB);
-    console.log(childMinDOB);
-    console.log(childMaxDOB);
-    console.log(infantMinDOB);
-    console.log(infantMaxDOB);
     
     function createTravelerSection(type, index) {
         let dobClass = "";
@@ -914,7 +911,6 @@
                 passport_country: fields.passport_country.value,
                 passport_expiry: fields.passport_expiry.value,
               };
-              console.log(traveler.type);
             travelers.push(traveler);
         }
     });

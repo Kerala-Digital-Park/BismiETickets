@@ -24,7 +24,7 @@
                                 <!-- Offcanvas menu button END -->
 
                                 <div class="card shadow p-4">
-                                    <% if( subscription==="Pro" ) { %>
+                                    <% if( subscription==="Pro" && role==="User" ) { %>
                                         <div class="text-center mb-4">
                                             <h2 class="fw-bold">Pro Plan</h2>
                                             <p class="text-muted">Unlock Enhanced Features for Your Business</p>
@@ -49,7 +49,32 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    <% } else { %>
+                                    <% } else if( subscription==="Starter" && role==="Agent" ) { %>
+                                        <div class="text-center mb-4">
+                                            <h2 class="fw-bold">Starter Plan</h2>
+                                            <p class="text-muted">Unlock Enhanced Features for Your Business</p>
+                                            <a href="/join-us" style="float: inline-end;"><i class="fa-solid fa-arrow-left me-2"></i>Change Plan</a>
+                                        </div>
+                                        <div class="row justify-content-center">
+                                            <div class="col-md-8">
+                                                <ul class="list-unstyled text-start mt-4">
+                                                    <li><i class="fas fa-check text-success me-2"></i> <strong>100 Bookings/Month</strong></li>
+                                                    <li><i class="fas fa-check text-success me-2"></i> <strong>20 Lakh Transactions</strong></li>
+                                                    <li><i class="fas fa-check text-success me-2"></i> All Free Plan Features</li>
+                                                    <li><i class="fas fa-check text-success me-2"></i> Exclusive Offers</li>
+                                                    <li><i class="fas fa-check text-success me-2"></i> Access Special Fares</li>
+                                                    <li><i class="fas fa-check text-success me-2"></i> Enhanced Support</li>
+                                                    <li><i class="fas fa-check text-success me-2"></i> Special Bids Opportunity</li>
+                                                    <li><i class="fas fa-shield-alt text-success me-2"></i> Full KYC Badge</li>
+                                                    <li><i class="fas fa-tools text-success me-2"></i> Booking Action Tools</li>
+                                                </ul>
+                                                <div class="text-center mt-4">
+                                                    <p class="mb-1"><strong class="fs-3 text-dark" id="amountStarter">₹ 100</strong> / Month</p>
+                                                    <button class="btn btn-primary btn-lg w-50 mt-3" id="payNowBtn">Pay Now</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% } else if( subscription==="Enterprise" && role==="User" ) { %>
                                         <div class="text-center mb-4">
                                             <h2 class="fw-bold">Enterprise Plan</h2>
                                             <p class="text-muted">Experience Unlimited Power for Your Business Growth</p>
@@ -74,6 +99,33 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <% } else if( subscription==="Enterprise" && role==="Agent" ) { %>
+                                            <div class="text-center mb-4">
+                                                <h2 class="fw-bold">Enterprise Plan (Agent)</h2>
+                                                <p class="text-muted">Experience Unlimited Power for Your Business Growth</p>
+                                                <a href="/join-us" style="float: inline-end;"><i class="fa-solid fa-arrow-left me-2"></i>Change Plan</a>
+                                            </div>
+                                            <div class="row justify-content-center">
+                                                <div class="col-md-8">
+                                                    <ul class="list-unstyled text-start mt-4">
+                                                        <li><i class="fas fa-check text-success me-2"></i> <strong>Unlimited Bookings</strong></li>
+                                                        <li><i class="fas fa-check text-success me-2"></i> <strong>Unlimited Transactions</strong></li>
+                                                        <li><i class="fas fa-check text-success me-2"></i> All Pro Plan Features</li>
+                                                        <li><i class="fas fa-check text-success me-2"></i> Special Fares</li>
+                                                        <li><i class="fas fa-check text-success me-2"></i> Milestone Rewards</li>
+                                                        <li><i class="fas fa-user-shield text-success me-2"></i> VIP Support</li>
+                                                        <li><i class="fas fa-percent text-success me-2"></i> Reduced Charges</li>
+                                                        <li><i class="fas fa-shield-alt text-success me-2"></i> Full KYC Badge</li>
+                                                        <li><i class="fas fa-money-bill-alt text-success me-2"></i> Reduced Booking Fees</li>
+                                                    </ul>
+                                                    <div class="text-center mt-4">
+                                                        <p class="mb-1"><strong class="fs-3 text-dark" id="amountAgentEnterprise">₹ 1000</strong> / Month</p>
+                                                        <button class="btn btn-primary btn-lg w-50 mt-3" id="payNowBtn">Pay Now</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% } else { %>
+                                            <h2>Invalid Plan</h2>
                                         <% } %>
                                         
                                 </div>
@@ -95,13 +147,21 @@
 	document.getElementById("payNowBtn").addEventListener("click", function () {
         const userEmail = "<%= userDetails.email %>";
         const userSubscription = "<%= subscription %>";
+        const role = "<%= role %>";
 
         let amount; // Declare amount outside if/else
 
-            if (userSubscription === "Pro") {
+            if (userSubscription === "Pro" && role === "User") {    
                 amount = document.getElementById("amountPro").innerText;
-            } else {
+            } else if(userSubscription === "Enterprise" && role === "User") {
                 amount = document.getElementById("amountEnterprise").innerText;
+            } else if(userSubscription === "Starter" && role === "Agent") {
+                amount = document.getElementById("amountStarter").innerText;
+            } else if(userSubscription === "Enterprise" && role === "Agent") {
+                amount = document.getElementById("amountAgentEnterprise").innerText;
+            } else {
+                console.error("Invalid subscription type");
+                return; 
             }
    
     // Convert totalFare to paise (Razorpay uses INR in paise)
@@ -125,6 +185,7 @@
                         email: userEmail,
                         price: amountInPaise / 100,
                         subscription: userSubscription,
+                        role: role,
                     };
 
                     // Send data to backend via POST request

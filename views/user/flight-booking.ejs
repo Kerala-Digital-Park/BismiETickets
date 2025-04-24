@@ -177,9 +177,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 email: email,
                 totalFare: amountInPaise / 100,
 				flightDetails: flightDetails,
-				baseFare: bookingData.baseFare,
-				discount: bookingData.discount,	
-				otherServices: bookingData.otherServices,
+				baseFare: bookingData.baseFare.replace(/[^0-9.]/g, ""),
+				discount: bookingData.discount.replace(/[^0-9.]/g, ""),	
+				otherServices: bookingData.otherServices.replace(/[^0-9.]/g, ""),
             };
 
             // Send data to backend via POST request
@@ -325,7 +325,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			document.getElementById("flight-date").textContent = 
 				flightDetails.inventoryDates[0].date || "N/A";
 			document.getElementById("flight-stops").textContent = 
-				flightDetails.stops.length === 0 ? "Non-stop" : `${flightDetails.stops.length} Stop(s)`;
+				flightDetails.stops.length-1 === 0 ? "Non-stop" : `${flightDetails.stops.length - 1} Stop(s)`;
 			document.getElementById("flight-duration").textContent = 
 				flightDetails.duration || "Unknown Duration";
 		}
@@ -333,7 +333,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		if (bookingData && bookingData.travelers.length > 0) {
 			const travelerList = document.getElementById("traveler-list");
 			bookingData.travelers.forEach(traveler => {
-				const gender = traveler.title === "Mr" ? "Male" : "Female"; // Fixed gender check
+				const gender = traveler.title === "Mr" ? "Male" : "Female"; 
 				const travelerHTML = `
 					<h6 class="mb-0 fw-normal mt-2">${traveler.first_name} ${traveler.last_name}</h6>
 					<ul class="nav nav-divider small text-body mt-1 mb-0">

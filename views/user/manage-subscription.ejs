@@ -79,7 +79,7 @@
                                                     <p>Access</p>
                                                     <% if(userDetails.subscription.subscription === "Enterprise") { %>
                                                     <span>Unlimited</span>
-                                                    <% } else if(userDetails.subscription.subscription === "Pro") { %>
+                                                    <% } else if(userDetails.subscription.subscription === "Pro" || "Starter") { %>
                                                     <span>Limited</span>
                                                     <% } else { %>
                                                     <span>No Access</span>

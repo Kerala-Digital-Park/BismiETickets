@@ -127,10 +127,10 @@
                                         </div>
                                         <!-- Card body END -->
                                     </div>
-                                    <!-- Initial KYC END -->/payment-details
+                                    <!-- Initial KYC END -->
 
                                     <!-- Final KYC START -->
-                                    <div class="card border" id="finalKyc" style="<%= userDetails.subscription && userDetails.subscription.kyc != 'Pending' ? 'display: block;' : 'display: none;' %>">
+                                    <div class="card border" id="finalKyc" style="<%= userDetails.kyc != 'Pending' ? 'display: block;' : 'display: none;' %>">
                                         <!-- Card header -->
                                         <div class="card-header border-bottom">
                                             <h4 class="card-header-title">Final KYC</h4>

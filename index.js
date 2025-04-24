@@ -21,7 +21,6 @@ app.use((req, res, next) => {
 const userRouter = require('./routes/userRouter')
 const adminRouter = require('./routes/adminRouter')
 const agentRouter = require('./routes/agentRouter')
-const countryRoutes = require('./routes/userRouter');
 
 const mongoose = require("mongoose");
 const connect = mongoose.connect(process.env.MONGODB)
@@ -52,8 +51,6 @@ app.use(
       saveUninitialized: true,
     })
   ); 
-
-  app.use(countryRoutes);
 
   // app.use('/uploads', express.static('public/uploads'));
   // app.use("/agent", express.static("public/"));

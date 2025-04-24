@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const Flight = require("./flightModel");
 const User = require("./userModel");
+const Counter = require("./counterModel");
 
 const bookingSchema = mongoose.Schema(
   {
@@ -14,7 +15,11 @@ const bookingSchema = mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId, // Reference to Flight model
         ref: "Flights",
         required: true,
-      },
+    },
+    bookingId: {
+      type: String,
+      unique: true,
+    },
     travelers: [
       {
         index: {
@@ -86,5 +91,20 @@ const bookingSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+
+bookingSchema.pre("save", async function (next) {
+  if (!this.bookingId) {
+    const counter = await Counter.findOneAndUpdate(
+      { name: "bookingId" },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+
+    const paddedNumber = String(counter.seq).padStart(5, "0");
+    this.bookingId = `BFL${paddedNumber}`;
+  }
+
+  next();
+});
 
 module.exports = mongoose.model("Bookings", bookingSchema);
