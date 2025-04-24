@@ -462,7 +462,7 @@
                           <div class="d-flex align-items-center mb-2 mb-sm-0">
                             <img src="<%= flight.stops[0].airlineLogo %>" class="w-30px me-2" alt="">
                             <h6 class="fw-normal mb-0">
-                              <%= flight.stops[0].airline.toUpperCase() %> (<%= flight.stops[0].flightNumber %>)
+                              <%= flight.stops[0].airline %> (<%= flight.stops[0].flightNumber %>)
                             </h6>
                           </div>
                         </div>
@@ -477,7 +477,7 @@
                                 <%= flight.departureTime %>
                               </h4>
                               <h6 class="mb-0 fw-normal">
-                                <%= flight.departureDate %>
+                                <%= new Date(flight.departureDate).toDateString() %>
                               </h6>
                               <p class="mb-0">
                                 <%= flight.from.toUpperCase() %>
@@ -521,7 +521,7 @@
                                 <%= flight.arrivalTime %>
                               </h4>
                               <h6 class="mb-0 fw-normal">
-                                <%= flight.arrivalDate %>
+                                <%= new Date(flight.arrivalDate).toDateString() %>
                               </h6>
                               <p class="mb-0">
                                 <%= flight.to.toUpperCase() %>
@@ -561,7 +561,7 @@
 
 
                           <!-- Card footer -->
-                          <div class="card-footer pt-4">
+                          <!-- <div class="card-footer pt-4">
                             <ul
                               class="list-inline bg-light d-sm-flex text-center justify-content-sm-between rounded-2 py-2 px-4 mb-0">
                               <li class="list-inline-item text-danger">Only <%= flight.inventoryDates[0].seats %> Seat
@@ -572,7 +572,7 @@
                                   <li class="list-inline-item text-danger">Non-Refundable</li>
                                   <% } %>
                             </ul>
-                          </div>
+                          </div> -->
 
                         </div>
                         <!-- Ticket item END -->
@@ -938,7 +938,7 @@
 
               const airlineText = document.createElement('h6');
               airlineText.className = 'fw-normal mb-0';
-              airlineText.textContent = `${stops[0]?.airline.toUpperCase() || 'Airline'} (${stops[0]?.airlineCode} - ${stops[0]?.flightNumber})`;
+              airlineText.textContent = `${stops[0]?.airline || 'Airline'} (${stops[0]?.airlineCode} - ${stops[0]?.flightNumber})`;
 
               airlineDiv.appendChild(airlineImg);
               airlineDiv.appendChild(airlineText);

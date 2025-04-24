@@ -286,22 +286,33 @@ console.log(req.body);
     console.log(filteredFlights);
     console.log(requestDetails);
 
-    // Create a map to track the lowest fare per airline
+    // Total passengers
+const totalPassengers =
+parseInt(requestDetails.adults) +
+parseInt(requestDetails.children) +
+parseInt(requestDetails.infants);
+
+// Create a map to track the lowest fare per airline for flights with enough seats
 const airlineMap = new Map();
 
 filteredFlights.forEach(flight => {
-  // Assuming the airline name is inside first stop (you can adjust if needed)
-  const airline = flight.stops?.[0]?.airline || "Unknown";
+const inventory = flight.inventoryDates?.[0];
+const airline = flight.stops?.[0]?.airline || "Unknown";
+const fare = inventory?.fare?.adults || Infinity;
+const seatsAvailable = inventory?.seats || 0;
 
-  const fare = flight.inventoryDates?.[0]?.fare?.adults || Infinity;
-
+if (seatsAvailable >= totalPassengers) {
   if (!airlineMap.has(airline) || fare < airlineMap.get(airline).fare) {
     airlineMap.set(airline, { flight, fare });
   }
+}
 });
+
+console.log(airlineMap);
 
 // Extract the best fare flight for each airline
 const refilteredFlights = Array.from(airlineMap.values()).map(entry => entry.flight);
+console.log(refilteredFlights);
 
 res.render("user/flight-list", {
   flights: filteredFlights,          
@@ -376,6 +387,7 @@ const getSellerList = async (req, res) => {
 // Handle GET request to retrieve data after redirect
 const viewFlightDetail = async (req, res) => {
   const { fId, aId } = req.query;
+  const userId = req.session.userId;
 
   try {
     const flightDetails = await Flights.findById(fId);
@@ -383,46 +395,20 @@ const viewFlightDetail = async (req, res) => {
       return res.status(404).send("Flight not found");
     }
 
-    const { from, to, departureDate, stops } = flightDetails;
-    const airline = stops[0]?.airline;
-    const flightNumber = stops[0]?.flightNumber;
-    console.log(from, to, airline, departureDate, flightNumber)
-
-    const matchingFlights = await Flights.find({
-      from: flightDetails.from,
-      to: flightDetails.to,
-      "stops.0.airline": flightDetails.stops[0].airline,
-      "stops.0.flightNumber": flightDetails.stops[0].flightNumber,
-      departureDate: flightDetails.departureDate,
-    });
-    console.log(matchingFlights)
-
-    const matchedFlight = matchingFlights.find(
-      (flight) => flight.sellerId.toString() === aId.toString()
-    );
-
-    console.log(matchedFlight);
-
-    if (!matchedFlight) {
-      return res.status(404).send("Matching flight by this agent not found");
+    const userDetails = await Users.findById(userId);
+    if (!userDetails) {
+      return res.status(404).send("User not found")
     }
 
-    const agentDetails = await Users.findById(aId);
-    if (!agentDetails) {
-      return res.status(404).send("Agent not found")
-    }
-
-    const subscriptionId = agentDetails.subscription;
+    const subscriptionId = userDetails.subscription;
     const subscription = await Subscriptions.findById(subscriptionId);
 
     // Retrieve requestDetails from memory and remove it
     const requestDetails = flightRequests;
-    // const request = flightRequests.get(requestDetails)
-    // flightRequests.delete(id);
     console.log("requestDetails",requestDetails);
 
     res.render("user/flight-detail", {
-      flightDetails: matchedFlight,
+      flightDetails,
       requestDetails: requestDetails,
       subscription,
 
@@ -445,7 +431,13 @@ const getFlights = async (req, res) => {
     const airline = stops[0]?.airline;
     const flightNumber = stops[0]?.flightNumber;
 
-    const matchingFlights = await Flights.find({
+    const requestDetails = flightRequests;
+    console.log("requestDetails", requestDetails);
+
+    totalPassengers = parseInt(requestDetails.adults) + parseInt(requestDetails.children) + parseInt(requestDetails.infants); 
+    console.log("Total passengers", totalPassengers);
+
+    let matchingFlights = await Flights.find({
       from: flight.from,
       to: flight.to,
       "stops.0.airline": flight.stops[0].airline,
@@ -453,8 +445,10 @@ const getFlights = async (req, res) => {
       departureDate: flight.departureDate,
     });
 
-    const sellerIds = matchingFlights.map(f => f.sellerId);
+    matchingFlights = matchingFlights.filter(f => f.inventoryDates[0].seats >= totalPassengers);
+    console.log("Matching flights", matchingFlights); 
 
+    const sellerIds = matchingFlights.map(f => f.sellerId);
     const agentsData = await Users.find({ _id: { $in: sellerIds } });
 
     const agentsWithFlights = matchingFlights.map(f => {
@@ -1328,7 +1322,7 @@ const subscription = async (req, res) => {
     } else if (subscription === "Pro") {
       if (user.subscription.subscription === "Pro") {
         return res.json({
-          redirectUrl: "/subscription-payment?subscription=Pro",
+          redirectUrl: "/subscription",
           message: "Pro subscription already active",
         });
       } else if (user.kyc !== "Completed") {
@@ -1340,13 +1334,13 @@ const subscription = async (req, res) => {
         res
           .status(200)
           .json({
-            redirectUrl: `/subscription-payment?subscription=${subscription}`,
+            redirectUrl: `/subscription-payment?subscription=${subscription}&role=User`,
           });
       }
     } else if (subscription === "Enterprise") {
       if (user.subscription.subscription === "Enterprise") {
         return res.json({
-          redirectUrl: "/subscription-payment?subscription=Enterprise",
+          redirectUrl: "/subscription",
           message: "Enterprise subscription already active",
         });
       } else if (user.kyc !== "Completed") {
@@ -1358,7 +1352,7 @@ const subscription = async (req, res) => {
         res
           .status(200)
           .json({
-            redirectUrl: `/subscription-payment?subscription=${subscription}`,
+            redirectUrl: `/subscription-payment?subscription=${subscription}&role=User`,
           });
       }
     } else {
@@ -1371,11 +1365,11 @@ const subscription = async (req, res) => {
 };
 
 const viewSubscriptionPayment = async (req, res) => {
-  const { subscription } = req.query;
+  const { subscription, role } = req.query;
   const userId = req.session.userId;
   try {
     const userDetails = await Users.findById(userId);
-    res.render("user/subscription-payment", { userDetails, subscription });
+    res.render("user/subscription-payment", { userDetails, subscription, role });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
@@ -1384,7 +1378,7 @@ const viewSubscriptionPayment = async (req, res) => {
 
 const subscriptionPayment = async (req, res) => {
   const userId = req.session.userId;
-  const { razorpay_payment_id, email, price, subscription } = req.body;
+  const { razorpay_payment_id, email, price, subscription, role } = req.body;
   try {
     const user = await Users.findById(userId);
 
@@ -1399,7 +1393,7 @@ const subscriptionPayment = async (req, res) => {
 
     const subscriptionPlan = await Subscriptions.findOne({
       subscription: subscription,
-      role: user.userRole, // Match role-specific plans
+      role: role, // Match role-specific plans
     });
 
     if (!subscriptionPlan) {
@@ -1423,6 +1417,7 @@ const subscriptionPayment = async (req, res) => {
     user.expiryDate = expiryDate;
     user.transactions = 0;
     user.transactionAmount = 0;
+    user.userRole = role;
 
     await user.save();
 
@@ -1586,6 +1581,66 @@ const freeRenewal = async (req, res) => {
   }
 };
 
+const agentSubscription = async (req, res) => {
+  const { subscription } = req.body;
+  console.log(subscription);
+  const userId = req.session.userId;
+  try {
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+    const user = await Users.findById(userId).populate("subscription");
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    if (subscription === "Starter") {
+      if (user.subscription.subscription === "Starter") {
+        return res.json({
+          redirectUrl: "/join-us",
+          message: "Starter subscription already active",
+        });
+      } else if (user.kyc !== "Completed") {
+        return res.json({
+          redirectUrl: "/kyc",
+          message: "Complete KYC for Starter subscription",
+        });
+      } else {
+        res
+          .status(200)
+          .json({
+            redirectUrl: `/subscription-payment?subscription=${subscription}&role=Agent`,
+          });
+      }
+    } else if (subscription === "Enterprise") {
+      if (user.subscription.subscription === "Enterprise") {
+        return res.json({
+          redirectUrl: "/join-us",
+          message: "Enterprise subscription already active",
+        });
+      } else if (user.kyc !== "Completed") {
+        return res.json({
+          redirectUrl: "/kyc",
+          message: "Complete KYC for Enterprise subscription",
+        });
+      } else {
+        res
+          .status(200)
+          .json({
+            redirectUrl: `/subscription-payment?subscription=${subscription}&role=Agent`,
+          });
+      }
+    } else {
+      res.status(400).json({ message: "Invalid subscription" });
+    }
+  } catch (error) {
+    console.error("Error fetching payment details:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 const viewEarnings = async (req, res) => {
   try {
     res.render("user/earnings", {});
@@ -1596,8 +1651,18 @@ const viewEarnings = async (req, res) => {
 };
 
 const viewListings = async (req, res) => {
+  const userId = req.session.userId;
   try {
-    res.render("user/listings", {});
+    const flights = await Flights.find({ sellerId: userId })
+      .populate("sellerId")
+      .sort({ createdAt: -1 });
+    
+    console.log(flights);
+    if (!flights || flights.length === 0) {
+      return res.status(404).json({ success: false, message: "No flights found" });
+    }
+
+    res.render("user/listings", {flights});
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
@@ -1622,20 +1687,114 @@ const viewJoinUs = async (req, res) => {
   }
 };
 
+// const viewUserBookings = async (req, res) => {
+//   const userId = req.session.userId;
+//   const search = req.query.search || '';
+  
+//   try {
+//     let flightIds = [];
+
+//     if (search) {
+//       const matchingFlights = await Flights.find({
+//         $or: [
+//           { fromCity: { $regex: search, $options: 'i' } },
+//           { toCity: { $regex: search, $options: 'i' } }
+//         ]
+//       }).select('_id');
+  
+//       flightIds = matchingFlights.map(f => f._id);
+//     }
+
+//     // Build query based on search
+//     let query = {};
+//     if (search) {
+//       query = {
+//         $or: [
+//           { bookingId: { $regex: search, $options: 'i' } },
+//           { flight: { $in: flightIds } }
+//         ]
+//       };
+//     }
+
+//     // Fetch bookings and filter by seller (current user)
+//     const allBookings = await Bookings.find(query)
+//       .populate("flight")
+//       .populate("userId")
+//       .sort({ createdAt: -1 });
+
+//     const sellerBookings = allBookings.filter(booking => {
+//       const sellerId = booking.flight?.sellerId?.toString(); 
+//       return sellerId === userId;
+//     });
+
+//     // AJAX request (real-time search)
+//     if (req.xhr) {
+//       return res.render('partials/bookingTableRows', { bookings: sellerBookings });
+//     }
+
+//     // Full page load
+//     res.render("user/user-booking", { bookings: sellerBookings, search });
+
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
 const viewUserBookings = async (req, res) => {
   const userId = req.session.userId;
-  try {
-    const allBookings = await Bookings.find().populate("flight");
+  const search = req.query.search || '';
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
 
-    const sellerBookings = allBookings.filter(booking => {
-      const sellerId = booking.flight?.sellerId?.toString(); 
-      return sellerId === userId;
+  try {
+    let flightIds = [];
+
+    if (search) {
+      const matchingFlights = await Flights.find({
+        $or: [
+          { fromCity: { $regex: search, $options: 'i' } },
+          { toCity: { $regex: search, $options: 'i' } }
+        ]
+      }).select('_id');
+
+      flightIds = matchingFlights.map(f => f._id);
+    }
+
+    let query = {};
+    if (search) {
+      query = {
+        $or: [
+          { bookingId: { $regex: search, $options: 'i' } },
+          { flight: { $in: flightIds } }
+        ]
+      };
+    }
+
+    // Get total for pagination
+    const allMatchingBookings = await Bookings.find(query)
+      .populate("flight")
+      .populate("userId");
+
+    const sellerBookings = allMatchingBookings.filter(booking => {
+      return booking.flight?.sellerId?.toString() === userId;
     });
 
-    res.render("user/user-booking", { bookings: sellerBookings });
+    const paginatedBookings = sellerBookings.slice(skip, skip + limit);
+
+    const totalPages = Math.ceil(sellerBookings.length / limit);
+
+    res.render("user/user-booking", {
+      bookings: paginatedBookings,
+      search,
+      currentPage: page,
+      totalPages,
+    });
+
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal Server error" });
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
@@ -1838,6 +1997,25 @@ const getApiCountries = async (req, res) => {
   res.json(countryList);
 };
 
+const updateListingById = async( req, res ) => {
+  console.log("Update flight")
+  const flightId = req.query.id;
+  const flightData = req.body;
+  console.log(flightId, flightData)
+
+  try {
+    const updatedFlight = await Flights.findByIdAndUpdate(flightId, flightData, { new: true });
+    console.log(updatedFlight);
+    if (!updatedFlight) {
+      return res.status(404).json({ message: "Flight not found" });
+    }
+    res.json({ message: "Flight updated successfully", flight: updatedFlight });
+  } catch (error) {
+    console.error("Error updating flight:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 module.exports = {
   viewHomepage,
   viewDashboard,
@@ -1882,13 +2060,14 @@ module.exports = {
   verifyAadhaar,
   viewManageBooking,
   getSellerList,
+  viewPricing,
   subscription,
   viewSubscriptionPayment,
   subscriptionPayment,
   freeSubscription,
-  viewPricing,
   renewal,
   freeRenewal,
+  agentSubscription,
   viewEarnings,
   viewListings,
   viewAddListing,
@@ -1897,5 +2076,6 @@ module.exports = {
   addFlight,
   getApiFlights,
   getApiCountries,
+  updateListingById,
 
 };

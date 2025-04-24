@@ -452,7 +452,7 @@
                           <div class="d-flex align-items-center mb-2 mb-sm-0">
                             <img src="<%= flight.stops[0].airlineLogo %>" class="w-30px me-2" alt="">
                             <h6 class="fw-normal mb-0">
-                              <%= flight.stops[0].airline.toUpperCase() %> (<%= flight.stops[0].flightNumber %>)
+                              <%= flight.stops[0].airline %> (<%= flight.stops[0].flightNumber %>)
                             </h6>
                           </div>
                         </div>
@@ -928,7 +928,7 @@
 
               const airlineText = document.createElement('h6');
               airlineText.className = 'fw-normal mb-0';
-              airlineText.textContent = `${stops[0]?.airline.toUpperCase() || 'Airline'} (${stops[0]?.airlineCode} - ${stops[0]?.flightNumber})`;
+              airlineText.textContent = `${stops[0]?.airline || 'Airline'} (${stops[0]?.airlineCode} - ${stops[0]?.flightNumber})`;
 
               airlineDiv.appendChild(airlineImg);
               airlineDiv.appendChild(airlineText);

@@ -127,7 +127,11 @@ userRouter.post("/subscription-free", isLogin, userController.freeSubscription);
 userRouter.post("/subscription-payment", isLogin, userController.subscriptionPayment);
 userRouter.post("/renewal", isLogin, userController.renewal);
 userRouter.post("/renewal-free", isLogin, userController.freeRenewal);
+userRouter.post("/agent-subscription", isLogin, userController.agentSubscription);
 userRouter.post("/add-flight", isLogin, userController.addFlight);
 userRouter.post("/api/flights", isLogin, userController.getApiFlights);
+
+
+userRouter.put("/update-listing", isLogin, userController.updateListingById);
 
 module.exports = userRouter;

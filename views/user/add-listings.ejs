@@ -109,8 +109,7 @@ Page Banner END -->
 													<!-- Flight Number -->
 													<div class="col-md-3">
 														<label class="form-label">Flight Number</label>
-														<input type="number" class="form-control searchFlightNumber"
-															placeholder="Flight number">
+														<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control searchFlightNumber" maxlength="4" placeholder="Flight number" required>
 													</div>
 
 													<button class="btn btn-primary align-items-center"
@@ -138,7 +137,7 @@ Page Banner END -->
 													</div>
 												</div>
 
-												<input type="hidden" class="form-control" id="oneWayTotalDuration">
+												<input type="hidden" class="form-control" id="oneWayTotalDuration" >
 												<input type="hidden" class="form-control" id="oneWayAirlineCode" >
 												<input type="hidden" class="form-control" id="oneWayDepartureCity" >
 												<input type="hidden" class="form-control" id="oneWayArrivalCity" >
@@ -174,14 +173,10 @@ Page Banner END -->
 																	<label class="form-label mb-0">Check In</label>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="adultCheckinNumber"
-																		placeholder="Number of Pieces">
+																	<input type="text" id="adultCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="adultCheckinWeight"
-																		placeholder="Weight(KG)/Piece">
+																	<input type="text" id="adultCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
 																</div>
 
 																<!-- Cabin Baggage -->
@@ -189,14 +184,10 @@ Page Banner END -->
 																	<label class="form-label mb-0">Cabin</label>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="adultCabinNumber"
-																		placeholder="Number of Pieces">
+																	<input type="text" id="adultCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="adultCabinWeight"
-																		placeholder="Weight(KG)/Piece">
+																	<input type="text" id="adultCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
 																</div>
 															</div>
 
@@ -209,20 +200,14 @@ Page Banner END -->
 																	<label class="form-label mb-0">Child</label>
 																</div>
 
-																<!-- Check-In Baggage -->
-																<!-- Check-In Baggage -->
 																<div>
 																	<label class="form-label mb-0">Check In</label>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="childCheckinNumber"
-																		placeholder="Number of Pieces">
+																	<input type="text" id="childCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="childCheckinWeight"
-																		placeholder="Weight(KG)/Piece">
+																	<input type="text" id="childCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
 																</div>
 
 																<!-- Cabin Baggage -->
@@ -230,14 +215,10 @@ Page Banner END -->
 																	<label class="form-label mb-0">Cabin</label>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="childCabinNumber"
-																		placeholder="Number of Pieces">
+																	<input type="text" id="childCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="childCabinWeight"
-																		placeholder="Weight(KG)/Piece">
+																	<input type="text" id="childCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
 																</div>
 															</div>
 
@@ -250,20 +231,14 @@ Page Banner END -->
 																	<label class="form-label mb-0">Infant</label>
 																</div>
 
-																<!-- Check-In Baggage -->
-																<!-- Check-In Baggage -->
 																<div>
 																	<label class="form-label mb-0">Check In</label>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="infantCheckinNumber"
-																		placeholder="Number of Pieces">
+																	<input type="text" id="infantCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="infantCheckinWeight"
-																		placeholder="Weight(KG)/Piece">
+																	<input type="text" id="infantCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
 																</div>
 
 																<!-- Cabin Baggage -->
@@ -271,14 +246,10 @@ Page Banner END -->
 																	<label class="form-label mb-0">Cabin</label>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="infantCabinNumber"
-																		placeholder="Number of Pieces">
+																	<input type="text" id="infantCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="infantCabinWeight"
-																		placeholder="Weight(KG)/Piece">
+																	<input type="text" id="infantCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
 																</div>
 															</div>
 
@@ -319,36 +290,30 @@ Page Banner END -->
 																							class="bi bi-calendar"></i></span>
 																					<input type="text" id="dateInput"
 																						class="form-control oneWayInventoryDate"
-																						placeholder="Select date">
+																						placeholder="Select date" disabled>
 																				</div>
 																			</td>
 																			<td>
-																				<input type="text" class="form-control"
-																					placeholder="e.g. 23">
+																				<input type="text" class="form-control oneWayPnr" style="width: 100px;"
+																					placeholder="Enter PNR">
 																			</td>
 																			<td>
-																				<input type="number"
-																					class="form-control"
-																					placeholder="e.g. 1">
+																				<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control oneWaySeats" placeholder="Number of seats" required>
 																			</td>
 																			<td>
 																				<div class="d-flex">
 																					<span
 																						class="input-group-text rounded-0"><i
 																							class="fa-solid fa-indian-rupee-sign"></i></span>
-																					<input type="number"
-																						class="form-control"
-																						placeholder="e.g. 7">
+																					<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control oneWayAdultFare" placeholder="Price" required>
 																				</div>
 																			</td>
 																			<td>
 																				<div class="d-flex">
 																					<span
-																						class="input-group-text rounded-0"><i
-																							class="fa-solid fa-indian-rupee-sign"></i></span>
-																					<input type="number"
-																						class="form-control"
-																						placeholder="e.g. 7">
+																						class="input-group-text rounded-0">
+																						<i class="fa-solid fa-indian-rupee-sign"></i></span>
+																					<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control oneWayInfantFare" placeholder="Price" required>
 																				</div>
 																			</td>
 																		</tr>
@@ -477,9 +442,7 @@ Page Banner END -->
 																	<label class="form-label mb-0">Flight Number</label>
 																</div>
 																<div class="col-md-2">
-																	<input type="number"
-																		class="form-control searchFlightNumber"
-																		placeholder="Flight Number">
+																	<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control searchFlightNumber" maxlength="4" placeholder="Flight number" required>
 																</div>
 															</div>
 															<div class="flight col-12 mb-1 align-items-center"
@@ -503,9 +466,7 @@ Page Banner END -->
 																	<label class="form-label mb-0">Flight Number</label>
 																</div>
 																<div class="col-md-2">
-																	<input type="number"
-																		class="form-control searchFlightNumber"
-																		placeholder="Flight Number">
+																	<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control searchFlightNumber" maxlength="4" placeholder="Flight number" required>
 																</div>
 															</div>
 
@@ -543,8 +504,7 @@ Page Banner END -->
 															<!-- From Terminal -->
 															<div class="col-md-3">
 																<label class="form-label">Terminal Number</label>
-																<input type="number" class="form-control fromTerminal"
-																	placeholder="Departure Terminal">
+																<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control fromTerminal" maxlength="4" placeholder="Departure Terminal" required>
 															</div>
 
 															<!-- To -->
@@ -557,8 +517,7 @@ Page Banner END -->
 															<!-- To Terminal -->
 															<div class="col-md-3">
 																<label class="form-label">Terminal Number</label>
-																<input type="number" class="form-control toTerminal"
-																	placeholder="Arrival Terminal">
+																<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control toTerminal" maxlength="4" placeholder="Arrival Terminal" required>
 															</div>
 
 															<!-- Airline -->
@@ -571,8 +530,7 @@ Page Banner END -->
 															<!-- Flight Number -->
 															<div class="col-md-2">
 																<label class="form-label">Flight Number</label>
-																<input type="text" class="form-control flightNumber"
-																	placeholder="Flight number">
+																<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control flightNumber" maxlength="4" placeholder="Flight number" required>
 															</div>
 
 															<!-- Departure Time -->
@@ -621,8 +579,7 @@ Page Banner END -->
 															<!-- From Terminal -->
 															<div class="col-md-3">
 																<label class="form-label">Terminal Number</label>
-																<input type="number" class="form-control fromTerminal"
-																	placeholder="Departure Terminal">
+																<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control fromTerminal" maxlength="4" placeholder="Departure Terminal" required>
 															</div>
 
 															<!-- To -->
@@ -635,8 +592,7 @@ Page Banner END -->
 															<!-- To Terminal -->
 															<div class="col-md-3">
 																<label class="form-label">Terminal Number</label>
-																<input type="number" class="form-control toTerminal"
-																	placeholder="Arrival Terminal">
+																<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control toTerminal" maxlength="4" placeholder="Arrival Terminal" required>
 															</div>
 
 															<!-- Airline -->
@@ -649,8 +605,7 @@ Page Banner END -->
 															<!-- Flight Number -->
 															<div class="col-md-2">
 																<label class="form-label">Flight Number</label>
-																<input type="text" class="form-control flightNumber"
-																	placeholder="Flight number">
+																<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control flightNumber" maxlength="4" placeholder="Flight number" required>
 															</div>
 
 															<!-- Departure Day -->
@@ -719,14 +674,10 @@ Page Banner END -->
 																	<label class="form-label mb-0">Check In</label>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="adultConnectCheckinNumber"
-																		placeholder="Number of Pieces">
+																	<input type="text" id="adultConnectCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="adultConnectCheckinWeight"
-																		placeholder="Weight(KG)/Piece">
+																	<input type="text" id="adultConnectCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
 																</div>
 
 																<!-- Cabin Baggage -->
@@ -734,14 +685,10 @@ Page Banner END -->
 																	<label class="form-label mb-0">Cabin</label>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="adultConnectCabinNumber"
-																		placeholder="Number of Pieces">
+																	<input type="text" id="adultConnectCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="adultConnectCabinWeight"
-																		placeholder="Weight(KG)/Piece">
+																	<input type="text" id="adultConnectCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
 																</div>
 															</div>
 
@@ -759,14 +706,10 @@ Page Banner END -->
 																	<label class="form-label mb-0">Check In</label>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="childConnectCheckinNumber"
-																		placeholder="Number of Pieces">
+																	<input type="text" id="childConnectCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="childConnectCheckinWeight"
-																		placeholder="Weight(KG)/Piece">
+																	<input type="text" id="childConnectCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
 																</div>
 
 																<!-- Cabin Baggage -->
@@ -774,14 +717,10 @@ Page Banner END -->
 																	<label class="form-label mb-0">Cabin</label>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="childConnectCabinNumber"
-																		placeholder="Number of Pieces">
+																	<input type="text" id="childConnectCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="childConnectCabinWeight"
-																		placeholder="Weight(KG)/Piece">
+																	<input type="text" id="childConnectCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
 																</div>
 															</div>
 
@@ -799,14 +738,10 @@ Page Banner END -->
 																	<label class="form-label mb-0">Check In</label>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="infantConnectCheckinNumber"
-																		placeholder="Number of Pieces">
+																	<input type="text" id="infantConnectCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="infantConnectCheckinWeight"
-																		placeholder="Weight(KG)/Piece">
+																	<input type="text" id="infantConnectCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
 																</div>
 
 																<!-- Cabin Baggage -->
@@ -814,14 +749,10 @@ Page Banner END -->
 																	<label class="form-label mb-0">Cabin</label>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="infantConnectCabinNumber"
-																		placeholder="Number of Pieces">
+																	<input type="text" id="infantConnectCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="number" class="form-control"
-																		id="infantConnectCabinWeight"
-																		placeholder="Weight(KG)/Piece">
+																	<input type="text" id="infantConnectCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
 																</div>
 															</div>
 
@@ -862,26 +793,22 @@ Page Banner END -->
 																							class="bi bi-calendar"></i></span>
 																					<input type="text" id="dateInput"
 																						class="form-control connectingInventoryDate"
-																						placeholder="Select date">
+																						placeholder="Select date" disabled>
 																				</div>
 																			</td>
 																			<td>
-																				<input type="text" class="form-control"
-																					placeholder="e.g. 23">
+																				<input type="text" class="form-control connectingPnr" style="width: 100px;"
+																					placeholder="Enter PNR">
 																			</td>
 																			<td>
-																				<input type="number"
-																					class="form-control"
-																					placeholder="e.g. 1">
+																				<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control connectingSeats" placeholder="Number of seats" required>
 																			</td>
 																			<td>
 																				<div class="d-flex">
 																					<span
 																						class="input-group-text rounded-0"><i
 																							class="fa-solid fa-indian-rupee-sign"></i></span>
-																					<input type="number"
-																						class="form-control"
-																						placeholder="e.g. 7">
+																							<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control connectingAdultFare" placeholder="Price" required>
 																				</div>
 																			</td>
 																			<td>
@@ -889,9 +816,7 @@ Page Banner END -->
 																					<span
 																						class="input-group-text rounded-0"><i
 																							class="fa-solid fa-indian-rupee-sign"></i></span>
-																					<input type="number"
-																						class="form-control"
-																						placeholder="e.g. 7">
+																							<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control connectingInfantFare" placeholder="Price" required>
 																				</div>
 																			</td>
 																		</tr>
@@ -1421,6 +1346,7 @@ Page Banner END -->
 							document.getElementById('toCountry').value = arrivalAirport?.countryName || "";
 
 							legs.forEach((leg, legIndex) => {
+								document.getElementById('airlineSelect').value = leg.carriersData?.[0]?.name || "";
 								document.getElementById('oneWayAirlineCode').value = leg.carriersData?.[0]?.code || "";
 								document.getElementById('oneWayAirlineLogo').value = leg.carriersData?.[0]?.logo || "";
 								document.getElementById('oneWayDepartureCity').value = leg.departureAirport?.cityName || "";
@@ -1519,12 +1445,12 @@ Page Banner END -->
 						infantCabinNumber: document.getElementById('infantCabinNumber').value,
 						infantCabinWeight: document.getElementById('infantCabinWeight').value,
 						inventoryDates: [{
-							date: getValue('table input[placeholder="Select date"]'),
-							pnr: getValue('table input[placeholder="e.g. 23"]'),
-							seats: getValue('table input[placeholder="e.g. 1"]'),
+							date: getValue('.oneWayInventoryDate'),
+							pnr: getValue('.oneWayPnr'),
+							seats: getValue('.oneWaySeats'),
 							fare: {
-								adults: getValue('table td:nth-child(4) input'),
-								infants: getValue('table td:nth-child(5) input'),
+								adults: getValue('.oneWayAdultFare'),
+								infants: getValue('.oneWayInfantFare'),
 							}
 						}],
 						refundable: true
@@ -1600,7 +1526,7 @@ Page Banner END -->
 							departureTime: departureTimes[i]?.value || "",
 							arrivalTime: arrivalTimes[i]?.value || "",
 							arrivalDay: arrivalDays[i]?.value || "",
-							departureDay: i === 0 ? "" : departureDays[i - 1]?.value || "",
+							departureDay: i === 0 ? getValue('.connectingDepartureDate') : departureDays[i - 1]?.value || "",
 							stopDuration: stopDurations[i]?.value || "",
 							airlineCode: airlineCodes[i]?.value || "",
 							departureCity: departureCities[i]?.value || "",
@@ -1641,12 +1567,12 @@ Page Banner END -->
 						infantCabinNumber: document.getElementById('infantConnectCabinNumber').value,
 						infantCabinWeight: document.getElementById('infantConnectCabinWeight').value,
 						inventoryDates: [{
-							date: getValue('table input[placeholder="Select date"]'),
-							pnr: getValue('table input[placeholder="e.g. 23"]'),
-							seats: getValue('table input[placeholder="e.g. 1"]'),
+							date: getValue('.connectingInventoryDate'),
+							pnr: getValue('.connectingPnr'),
+							seats: getValue('.connectingSeats'),
 							fare: {
-								adults: getValue('table td:nth-child(4) input'),
-								infants: getValue('table td:nth-child(5) input'),
+								adults: getValue('.connectingAdultFare'),
+								infants: getValue('.connectingInfantFare'),
 							}
 						}],
 						refundable: false,

@@ -1,206 +1,230 @@
 <%- include('./partials/header') %>
-    <%- include('./partials/userHeader') %>
+  <%- include('./partials/userHeader') %>
 
-        <!-- **************** MAIN CONTENT START **************** -->
-        <main>
-            <!-- ======================= Title and notice board START -->
-            <section class="pt-0">
-                <div class="container position-relative">
-                    <!-- Title and button START -->
-                    <div class="row">
-                        <div class="col-xl-12 col-xxl-12">
-                            <div class="vstack gap-4">
-                                <div id="flight-list">
-                                    <% if(flight){ %>
-                                    <!-- Ticket item START -->
-                                    <div class="card border">
-                                        <!-- card-body START -->
-                                        <div class="card-body p-4 pb-0">
-                                            <div class="row g-4">
-                                                <!-- Air line name -->
-                                                <div class="col-md-3">
-                                                    <!-- Image -->
-                                                    <img src="<%= flight.stops[0].airlineLogo %>" class="w-80px mb-3" alt="">
-                                                    <!-- Title -->
-                                                    <h6 class="fw-normal mb-0"><%= flight.stops[0].airline.toUpperCase() %></h6>
-                                                    <h6 class="fw-normal mb-0"><%= flight.stops[0].airlineCode %></h6>
-                                                </div>
+    <!-- **************** MAIN CONTENT START **************** -->
+    <main>
+      <!-- ======================= Title and notice board START -->
+      <section class="pt-0">
+        <div class="container position-relative">
+          <!-- Title and button START -->
+          <div class="row">
+            <div class="col-xl-12 col-xxl-12">
+              <div class="vstack gap-4">
+                <div id="flight-list">
+                  <% if(flight){ %>
+                    <!-- Ticket item START -->
+                    <div class="card border">
+                      <!-- card-body START -->
+                      <div class="card-body p-4 pb-0">
+                        <div class="row g-4">
+                          <!-- Air line name -->
+                          <div class="col-md-3">
+                            <!-- Image -->
+                            <img src="<%= flight.stops[0].airlineLogo %>" class="w-80px mb-3" alt="">
+                            <!-- Title -->
+                            <h6 class="fw-normal mb-0">
+                              <%= flight.stops[0].airline %>
+                            </h6>
+                            <h6 class="fw-normal mb-0">
+                              <%= flight.stops[0].airlineCode %>
+                            </h6>
+                          </div>
 
-                                                <% const hasStops = flight.stops && flight.stops.length > 0; %>
-                                                <% const firstStop = hasStops ? flight.stops[0] : null; %>
+                          <% const hasStops=flight.stops && flight.stops.length> 0; %>
+                            <% const firstStop=hasStops ? flight.stops[0] : null; %>
 
-                                                <!-- Airport detail -->
-                                                <div class="col-sm-4 col-md-3">
-                                                    <!-- Title -->
-                                                    <h4><%= flight.departureTime %></h4>
-                                                    <h6 class="mb-0"><%= flight.departureDate %></h6>
-                                                    <p class="mb-0">
-                                                        <%= flight.from.toUpperCase() %> -
-                                                        <% if (hasStops && firstStop.fromTerminal) { %>
-                                                            Terminal <%= firstStop.fromTerminal %>
-                                                        <% } %>
-                                                        <%= flight.fromCity %>, <%= flight.fromCountry %>
-                                                      </p>
-                                                </div>
+                              <!-- Airport detail -->
+                              <div class="col-sm-4 col-md-3">
+                                <!-- Title -->
+                                <h4>
+                                  <%= flight.departureTime %>
+                                </h4>
+                                <h6 class="mb-0">
+                                  <%= new Date(flight.departureDate).toDateString() %>
+                                </h6>
+                                <p class="mb-0">
+                                  <%= flight.from.toUpperCase() %> -
+                                    <% if (hasStops && firstStop.fromTerminal) { %>
+                                      Terminal <%= firstStop.fromTerminal %>
+                                        <% } %>
+                                          <%= flight.fromCity %>, <%= flight.fromCountry %>
+                                </p>
+                              </div>
 
-                                                <% const lastStop = hasStops ? flight.stops[flight.stops.length - 1] : null; %>
+                              <% const lastStop=hasStops ? flight.stops[flight.stops.length - 1] : null; %>
 
-                                                <!-- Airport detail -->
-                                                <div class="col-sm-4 col-md-3">
-                                                    <!-- Title -->
-                                                    <h4><%= flight.arrivalTime %></h4>
-                                                    <h6 class="mb-0"><%= flight.arrivalDate %></h6>
-                                                    <p class="mb-0">
-                                                        <%= flight.to.toUpperCase() %> -
-                                                        <% if (hasStops && lastStop.toTerminal) { %>
-                                                           Terminal <%= lastStop.toTerminal %>
-                                                        <% } %>
-                                                        <%= flight.toCity %>, <%= flight.toCountry %>
-                                                      </p>
-                                                </div>
+                                <!-- Airport detail -->
+                                <div class="col-sm-4 col-md-3">
+                                  <!-- Title -->
+                                  <h4>
+                                    <%= flight.arrivalTime %>
+                                  </h4>
+                                  <h6 class="mb-0">
+                                    <%= new Date(flight.arrivalDate).toDateString() %>
+                                  </h6>
+                                  <p class="mb-0">
+                                    <%= flight.to.toUpperCase() %> -
+                                      <% if (hasStops && lastStop.toTerminal) { %>
+                                        Terminal <%= lastStop.toTerminal %>
+                                          <% } %>
+                                            <%= flight.toCity %>, <%= flight.toCountry %>
+                                  </p>
+                                </div>
 
-                                                <!-- Price -->
-                                                <div class="col-sm-4 col-md-3 text-end" >
-                                                    <!-- Price -->
-                                                    <button class="btn btn-link text-decoration-underline p-0 mb-0 flight-detail-btn"
-                                data-bs-toggle="modal" data-bs-target="#flightdetail"
-                                data-flight='<%= JSON.stringify(flight) %>'
-                              >
-                                <i class="bi bi-eye-fill me-1"></i>Flight Details
-                              </button>
-                                                    
-                                                </div>
+                                <!-- Price -->
+                                <div class="col-sm-4 col-md-3 text-end">
+                                  <!-- Price -->
+                                  <button class="btn btn-link text-decoration-underline p-0 mb-0 flight-detail-btn"
+                                    data-bs-toggle="modal" data-bs-target="#flightdetail"
+                                    data-flight='<%= JSON.stringify(flight) %>'>
+                                    <i class="bi bi-eye-fill me-1"></i>Flight Details
+                                  </button>
 
-                                            </div>
-                                        </div>
-                                        <!-- card-body END -->
+                                </div>
 
-                                        <!-- card footer -->
-                                        <div class="card-footer">
-                                            <!-- <div class="bg-light p-2 rounded-2">
+                        </div>
+                      </div>
+                      <!-- card-body END -->
+
+                      <!-- card footer -->
+                      <div class="card-footer">
+                        <!-- <div class="bg-light p-2 rounded-2">
                                                 <ul class="list-inline d-sm-flex justify-content-sm-between mb-0 mx-4">
                                                     <li class="list-inline-item text-danger">Only 10 Seat Left</li>
                                                     <li class="list-inline-item">Total time: 10h 35m</li>
                                                     <li class="list-inline-item text-success">Refundable</li>
                                                 </ul>
                                             </div> -->
-                                        </div>
-                                    </div>
-                                    <% } %>
-                                    
-                                    <!-- Ticket item END -->
-                                </div>
-                            </div>
-                        </div>
+                      </div>
                     </div>
-                    <!-- Title and button END -->
+                    <% } %>
+
+                      <!-- Ticket item END -->
                 </div>
-            </section>
-            <!-- =======================
+              </div>
+            </div>
+          </div>
+          <!-- Title and button END -->
+        </div>
+      </section>
+      <!-- =======================
     Title and notice board END -->
 
-            <!-- =======================
+      <!-- =======================
     Flight list START -->
-            <section class="pt-0">
-                <div class="container">
-                    <div class="row">
-                        <!-- Left sidebar START -->
+      <section class="pt-0">
+        <div class="container">
+          <div class="row">
+            <!-- Left sidebar START -->
 
-                        <!-- Left sidebar END -->
+            <!-- Left sidebar END -->
 
-                        <!-- Main content START -->
-                        <div class="col-xl-12 col-xxl-12">
-                            <div class="vstack gap-4">
-                                <div id="flight-list">
-                                    <% if (agentsWithFlights && agentsWithFlights.length > 0) { %>
-                                        <% agentsWithFlights.forEach(({ agent, flight }) => { %>
-                                       <!-- Ticket item START -->
-                                        <div class="card border mb-3">
-                                            <!-- card-body START -->
-                                            <div class="card-body p-4 pb-0">
-                                                <div class="row g-4 align-items-center">
-                                                    <!-- Air line name -->
-                                                    <div class="col-md-3 d-flex align-items-center gap-3" >
-                                                        <!-- Image -->
-                                                        <img src="<%= agent.image ? agent.image : '/assets/images/avatar/default.png' %>" 
-                                                        class="w-80px mb-3" alt="" style="position: relative; ">
-                                                        <!-- Title -->
-                                                        <h6 class="fw-normal mb-0"><%= agent.userId %></h6>
-                                                    </div>
-    
-                                                    <div class="col-md-3 d-flex flex-column">
-                                                        <div class="col-4 d-flex justify-content-between">
-                                                            <i class="fa-solid fa-briefcase"></i>
-                                                            <i class="fa-solid fa-suitcase-rolling"></i>
-                                                            <img src="/assets/images/element/seat.png" alt="" height="15px" width="15px">
-                                                            </div>
-    
-                                                        <div style="margin-top: 10px;">
-                                                            <li class="list-inline-item text-success">
-                                                                <%= flight.refundable ? 'Refundable' : 'Non-refundable' %>
-                                                            </li>
-                                                        </div>
-                                                    </div>
-    
-                                                    <!-- Price -->
-                                                    <div class="col-sm-4 col-md-3">
-                                                        <!-- Price -->
-                                                        <h4>₹ <%= flight.inventoryDates[0].fare.adults %></h4>
-                                                    </div>
-    
-                                                    <div class="col-sm-4 col-md-3">
-                                                        <button class="btn btn-dark" onclick='bookNow("<%= agent._id %>", "<%= flight._id %>")'>Book Now</button>
-                                                    </div>
-    
-                                                </div>
-                                            </div>
-                                            <!-- card-body END -->
-    
-                                        </div>
-                                        <!-- Ticket item END -->
-                                    <% }) %>
-                                    <% } else { %>
-                                        <p>No agents available.</p>
-                                     <% } %>
-
-                                </div>
+            <!-- Main content START -->
+            <div class="col-xl-12 col-xxl-12">
+              <div class="vstack gap-4">
+                <div id="flight-list">
+                  <% if (agentsWithFlights && agentsWithFlights.length> 0) { %>
+                    <% agentsWithFlights.forEach(({ agent, flight })=> { %>
+                      <!-- Ticket item START -->
+                      <div class="card border mb-3">
+                        <!-- card-body START -->
+                        <div class="card-body p-4 pb-0">
+                          <div class="row g-4 align-items-center">
+                            <!-- Air line name -->
+                            <div class="col-md-3 d-flex align-items-center gap-3">
+                              <!-- Image -->
+                              <img src="<%= agent.image ? agent.image : '/assets/images/avatar/default.png' %>"
+                                class="w-80px mb-3" alt="" style="position: relative; ">
+                              <!-- Title -->
+                              <h6 class="fw-normal mb-0">
+                                <%= agent.userId %>
+                              </h6>
                             </div>
-                            <!-- Main content END -->
+
+                            <div class="col-md-3 d-flex flex-column">
+                              <div class="col-4 d-flex justify-content-between">
+                                <!-- Cabin Baggage Icon with Tooltip -->
+                                <i class="fa-solid fa-briefcase" data-bs-toggle="tooltip" data-bs-placement="top"
+                                  title="Cabin: <%= flight.baggage?.adult?.cabin?.pieces %> pcs, <%= flight.baggage?.adult?.cabin?.weightPerPiece %> kg each">
+                                </i>
+                                <!-- Check-in Baggage Icon with Tooltip -->
+                                <i class="fa-solid fa-suitcase-rolling" data-bs-toggle="tooltip" data-bs-placement="top"
+                                  title="Check-in: <%= flight.baggage?.adult?.checkIn?.numberOfPieces %> pcs, <%= flight.baggage?.adult?.checkIn?.weightPerPiece %> kg each">
+                                </i>
+                                <!-- Seats Icon with Tooltip -->
+                                <img src="/assets/images/element/seat.png" alt="seats" height="15px" width="15px"
+                                  data-bs-toggle="tooltip" data-bs-placement="top"
+                                  title="Seats Available: <%= flight.inventoryDates?.[0]?.seats %>">
+                              </div>
+
+                              <div style="margin-top: 10px;">
+                                <li class="list-inline-item text-success">
+                                  <%= flight.refundable ? 'Refundable' : 'Non-refundable' %>
+                                </li>
+                              </div>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="col-sm-4 col-md-3">
+                              <!-- Price -->
+                              <h4>₹ <%= flight.inventoryDates[0].fare.adults %>
+                              </h4>
+                            </div>
+
+                            <div class="col-sm-4 col-md-3">
+                              <button class="btn btn-dark"
+                                onclick='bookNow("<%= agent._id %>", "<%= flight._id %>")'>Book Now</button>
+                            </div>
+
+                          </div>
                         </div>
-                        <!-- Row END -->
-                    </div>
-            </section>
+                        <!-- card-body END -->
 
-            <script>
-                async function bookNow(agentId, flightId) {
-                    
-                    try {
-                        const response = await fetch("/flight-detail", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({ agentId, flightId })
-                        });
+                      </div>
+                      <!-- Ticket item END -->
+                      <% }) %>
+                        <% } else { %>
+                          <p>No agents available.</p>
+                          <% } %>
 
-                        const data = await response.json();
-                        console.log(data);
-                        
-                        if (!response.ok) {
-                            alert(data.message || "Failed to fetch flight details");
-                            window.location.href = data.redirectUrl;
-                        }
+                </div>
+              </div>
+              <!-- Main content END -->
+            </div>
+            <!-- Row END -->
+          </div>
+      </section>
 
-                        // Extract redirect URL and navigate
-                        console.log(data.redirectUrl);
-                        
-                        window.location.href = data.redirectUrl;
-                    } catch (error) {
-                        console.error("Error booking flight:", error);
-                    }
-                }
+      <script>
+        async function bookNow(agentId, flightId) {
 
-            </script>
+          try {
+            const response = await fetch("/flight-detail", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ agentId, flightId })
+            });
+
+            const data = await response.json();
+            console.log(data);
+
+            if (!response.ok) {
+              alert(data.message || "Failed to fetch flight details");
+              window.location.href = data.redirectUrl;
+            }
+
+            // Extract redirect URL and navigate
+            console.log(data.redirectUrl);
+
+            window.location.href = data.redirectUrl;
+          } catch (error) {
+            console.error("Error booking flight:", error);
+          }
+        }
+
+      </script>
 
       <!-- Flight detail modal START -->
       <div class="modal fade" id="flightdetail" aria-hidden="true">
@@ -325,86 +349,86 @@
       </div>
       <!-- Flight detail modal END -->
 
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                  const flightDetailButtons = document.querySelectorAll('.flight-detail-btn');
-        
-                  flightDetailButtons.forEach(button => {
-                    button.addEventListener('click', function () {
-                      const flightData = JSON.parse(this.getAttribute('data-flight'));
-                     
-                      const stops = flightData.stops || [];
-        
-                      // ========= Flight Info Tab =========
-                      const flightInfoTab = document.getElementById('flight-info-tab');
-        
-                      // Clear previous content
-                      flightInfoTab.innerHTML = '';
-        
-                      // Create card wrapper
-                      const card = document.createElement('div');
-                      card.className = 'card border';
-        
-                      // Card header
-                      const cardHeader = document.createElement('div');
-                      cardHeader.className = 'card-header';
-        
-                      const headerFlex = document.createElement('div');
-                      headerFlex.className = 'd-sm-flex justify-content-sm-between align-items-center';
-        
-                      const airlineDiv = document.createElement('div');
-                      airlineDiv.className = 'd-flex mb-2 mb-sm-0';
-        
-                      const airlineImg = document.createElement('img');
-                      airlineImg.src = stops[0]?.airlineLogo || 'assets/images/element/09.svg';
-                      airlineImg.className = 'w-40px me-2';
-                      airlineImg.alt = '';
-        
-                      const airlineText = document.createElement('h6');
-                      airlineText.className = 'fw-normal mb-0';
-                      airlineText.textContent = `${stops[0]?.airline.toUpperCase() || 'Airline'} (${stops[0]?.airlineCode} - ${stops[0]?.flightNumber})`;
-        
-                      airlineDiv.appendChild(airlineImg);
-                      airlineDiv.appendChild(airlineText);
-        
-                      const travelClass = document.createElement('h6');
-                      travelClass.className = 'fw-normal mb-0';
-        
-                      headerFlex.appendChild(airlineDiv);
-                      headerFlex.appendChild(travelClass);
-                      cardHeader.appendChild(headerFlex);
-                      card.appendChild(cardHeader);
-        
-                      // Card body
-                      const cardBody = document.createElement('div');
-                      cardBody.className = 'card-body p-4';
-        
-                      // Loop through stops and render each segment
-                      for (let i = 0; i < stops.length; i++) {
-                        const stop = stops[i];
-                        const nextStop = stops[i + 1];
-        
-                        const row = document.createElement('div');
-                        row.className = 'row g-4';
-        
-                        // From Airport
-                        const fromCol = document.createElement('div');
-                        fromCol.className = 'col-sm-4';
-                        fromCol.innerHTML = `
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const flightDetailButtons = document.querySelectorAll('.flight-detail-btn');
+
+          flightDetailButtons.forEach(button => {
+            button.addEventListener('click', function () {
+              const flightData = JSON.parse(this.getAttribute('data-flight'));
+
+              const stops = flightData.stops || [];
+
+              // ========= Flight Info Tab =========
+              const flightInfoTab = document.getElementById('flight-info-tab');
+
+              // Clear previous content
+              flightInfoTab.innerHTML = '';
+
+              // Create card wrapper
+              const card = document.createElement('div');
+              card.className = 'card border';
+
+              // Card header
+              const cardHeader = document.createElement('div');
+              cardHeader.className = 'card-header';
+
+              const headerFlex = document.createElement('div');
+              headerFlex.className = 'd-sm-flex justify-content-sm-between align-items-center';
+
+              const airlineDiv = document.createElement('div');
+              airlineDiv.className = 'd-flex mb-2 mb-sm-0';
+
+              const airlineImg = document.createElement('img');
+              airlineImg.src = stops[0]?.airlineLogo || 'assets/images/element/09.svg';
+              airlineImg.className = 'w-40px me-2';
+              airlineImg.alt = '';
+
+              const airlineText = document.createElement('h6');
+              airlineText.className = 'fw-normal mb-0';
+              airlineText.textContent = `${stops[0]?.airline || 'Airline'} (${stops[0]?.airlineCode} - ${stops[0]?.flightNumber})`;
+
+              airlineDiv.appendChild(airlineImg);
+              airlineDiv.appendChild(airlineText);
+
+              const travelClass = document.createElement('h6');
+              travelClass.className = 'fw-normal mb-0';
+
+              headerFlex.appendChild(airlineDiv);
+              headerFlex.appendChild(travelClass);
+              cardHeader.appendChild(headerFlex);
+              card.appendChild(cardHeader);
+
+              // Card body
+              const cardBody = document.createElement('div');
+              cardBody.className = 'card-body p-4';
+
+              // Loop through stops and render each segment
+              for (let i = 0; i < stops.length; i++) {
+                const stop = stops[i];
+                const nextStop = stops[i + 1];
+
+                const row = document.createElement('div');
+                row.className = 'row g-4';
+
+                // From Airport
+                const fromCol = document.createElement('div');
+                fromCol.className = 'col-sm-4';
+                fromCol.innerHTML = `
                         <h4>${stop.fromCode.toUpperCase()}</h4>
                         <h6 class="mb-0">${stop.departureTime}</h6>
                         <p class="mb-0">${stop.departureCity}, ${stop.from}</p>
                         `;
-        
-                        const totalSeconds = parseInt(stop.stopDuration) || 0;
-                        const hours = Math.floor(totalSeconds / 3600);
-                        const minutes = Math.floor((totalSeconds % 3600) / 60);
-                        const durationDisplay = `${hours}hr ${minutes}min`;
-        
-                        // Flight Duration
-                        const midCol = document.createElement('div');
-                        midCol.className = 'col-sm-4 my-sm-auto text-center';
-                        midCol.innerHTML = `
+
+                const totalSeconds = parseInt(stop.stopDuration) || 0;
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const durationDisplay = `${hours}hr ${minutes}min`;
+
+                // Flight Duration
+                const midCol = document.createElement('div');
+                midCol.className = 'col-sm-4 my-sm-auto text-center';
+                midCol.innerHTML = `
                         <h5>${durationDisplay}</h5>
                         <div class="position-relative my-4">
                         <hr class="bg-primary opacity-5 position-relative">
@@ -413,97 +437,96 @@
                         </div>
                         </div>
                         `;
-        
-                        // To Airport
-                        const toCol = document.createElement('div');
-                        toCol.className = 'col-sm-4';
-                        toCol.innerHTML = `
+
+                // To Airport
+                const toCol = document.createElement('div');
+                toCol.className = 'col-sm-4';
+                toCol.innerHTML = `
                         <h4>${stop.toCode.toUpperCase()}</h4>
                         <h6 class="mb-0">${stop.arrivalTime}</h6>
                         <p class="mb-0">${stop.arrivalCity}, ${stop.to}</p>
                         `;
-        
-                        row.appendChild(fromCol);
-                        row.appendChild(midCol);
-                        row.appendChild(toCol);
-        
-                        cardBody.appendChild(row);
-        
-                        // Add Layover if not last stop
-                        
-                        if (nextStop) {
-                          // Parse arrival time of current stop and departure time of next stop
-                          const arrivalTime = stop.arrivalTime; // e.g., "17:25"
-                          const nextDepartureTime = nextStop.departureTime; // e.g., "18:40"
-        
-                          // Convert both to minutes
-                          const [arrHr, arrMin] = arrivalTime.split(':').map(Number);
-                          const [depHr, depMin] = nextDepartureTime.split(':').map(Number);
-        
-                          const arrivalInMinutes = arrHr * 60 + arrMin;
-                          const departureInMinutes = depHr * 60 + depMin;
-        
-                          let layoverMin = departureInMinutes - arrivalInMinutes;
-        
-                          // Handle overnight flights (e.g., arrival at 23:30, departure at 01:15 next day)
-                          if (layoverMin < 0) layoverMin += 24 * 60;
-        
-                          // Convert to hrs and mins
-                          const layoverHr = Math.floor(layoverMin / 60);
-                          const layoverMins = layoverMin % 60;
-        
-                          // Create layover text
-                          let layoverText = 'Layover: ';
-                          if (layoverHr > 0) layoverText += `${layoverHr} hr `;
-                          if (layoverMins > 0 || layoverHr === 0) layoverText += `${layoverMins} min `;
-                          layoverText += `in ${stop.arrivalCity}`;
-        
-                          const layoverDiv = document.createElement('div');
-                          layoverDiv.className = 'bg-light text-center fw-normal rounded-2 mt-3 mb-4 p-2 text-danger';
-                          layoverDiv.textContent = layoverText;
-        
-                          cardBody.appendChild(layoverDiv);
-                        }
-        
-                      }
-        
-                      card.appendChild(cardBody);
-                      flightInfoTab.appendChild(card);       
-                    });
-                  });
-                });
-              </script>
 
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    const modal = document.getElementById("flightdetail");
+                row.appendChild(fromCol);
+                row.appendChild(midCol);
+                row.appendChild(toCol);
 
-                    modal.addEventListener("hidden.bs.modal", function () {
-                        // Remove any extra modal-backdrop elements that might be lingering
-                        document.querySelectorAll(".modal-backdrop").forEach((backdrop) => backdrop.remove());
+                cardBody.appendChild(row);
 
-                        // Also ensure the body class is removed to prevent background overlay issues
-                        document.body.classList.remove("modal-open");
-                    });
+                // Add Layover if not last stop
 
-                    modal.addEventListener("shown.bs.modal", function () {
-                        // If there are multiple backdrops, remove extras
-                        const backdrops = document.querySelectorAll(".modal-backdrop");
-                        if (backdrops.length > 1) {
-                            backdrops[0].remove(); // Remove the first extra backdrop
-                        }
-                    });
-                });
+                if (nextStop) {
+                  // Parse arrival time of current stop and departure time of next stop
+                  const arrivalTime = stop.arrivalTime; // e.g., "17:25"
+                  const nextDepartureTime = nextStop.departureTime; // e.g., "18:40"
 
-            </script>
+                  // Convert both to minutes
+                  const [arrHr, arrMin] = arrivalTime.split(':').map(Number);
+                  const [depHr, depMin] = nextDepartureTime.split(':').map(Number);
 
-            <script>
-                window.history.replaceState(null, "", window.location.href)
-            </script>
+                  const arrivalInMinutes = arrHr * 60 + arrMin;
+                  const departureInMinutes = depHr * 60 + depMin;
 
-            <!-- =======================
+                  let layoverMin = departureInMinutes - arrivalInMinutes;
+
+                  // Handle overnight flights (e.g., arrival at 23:30, departure at 01:15 next day)
+                  if (layoverMin < 0) layoverMin += 24 * 60;
+
+                  // Convert to hrs and mins
+                  const layoverHr = Math.floor(layoverMin / 60);
+                  const layoverMins = layoverMin % 60;
+
+                  // Create layover text
+                  let layoverText = 'Layover: ';
+                  if (layoverHr > 0) layoverText += `${layoverHr} hr `;
+                  if (layoverMins > 0 || layoverHr === 0) layoverText += `${layoverMins} min `;
+                  layoverText += `in ${stop.arrivalCity}`;
+
+                  const layoverDiv = document.createElement('div');
+                  layoverDiv.className = 'bg-light text-center fw-normal rounded-2 mt-3 mb-4 p-2 text-danger';
+                  layoverDiv.textContent = layoverText;
+
+                  cardBody.appendChild(layoverDiv);
+                }
+
+              }
+
+              card.appendChild(cardBody);
+              flightInfoTab.appendChild(card);
+            });
+          });
+        });
+      </script>
+
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const modal = document.getElementById("flightdetail");
+
+          modal.addEventListener("hidden.bs.modal", function () {
+            // Remove any extra modal-backdrop elements that might be lingering
+            document.querySelectorAll(".modal-backdrop").forEach((backdrop) => backdrop.remove());
+
+            // Also ensure the body class is removed to prevent background overlay issues
+            document.body.classList.remove("modal-open");
+          });
+
+          modal.addEventListener("shown.bs.modal", function () {
+            // If there are multiple backdrops, remove extras
+            const backdrops = document.querySelectorAll(".modal-backdrop");
+            if (backdrops.length > 1) {
+              backdrops[0].remove(); // Remove the first extra backdrop
+            }
+          });
+        });
+      </script>
+
+      <script>
+        window.history.replaceState(null, "", window.location.href)
+      </script>
+
+      <!-- =======================
     Flight list END -->
-        </main>
-        <!-- **************** MAIN CONTENT END **************** -->
+    </main>
+    <!-- **************** MAIN CONTENT END **************** -->
 
-        <%- include('./partials/footer') %>
+    <%- include('./partials/footer') %>
