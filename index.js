@@ -52,13 +52,6 @@ app.use(
     })
   ); 
 
-  // app.use('/uploads', express.static('public/uploads'));
-  // app.use("/agent", express.static("public/"));
-  // app.use("/admin", express.static("public/"));
-  // app.use("/", express.static("public/"));
-  // app.use(express.static('uploads'))
- 
-
   app.use('/uploads', express.static(path.join(__dirname, "public")));
   app.use("/agent", express.static(path.join(__dirname, "public")));
   app.use("/admin", express.static(path.join(__dirname, "public")));
