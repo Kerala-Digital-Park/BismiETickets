@@ -1,6 +1,8 @@
 const Coupon = require("../models/couponModel");
 const Flight = require("../models/flightModel");
 const Subscription = require("../models/subscriptionModel");
+const User = require("../models/userModel");
+const Booking = require("../models/bookingModel");
 
 const viewLogin = async (req, res) => {
     try {
@@ -63,8 +65,39 @@ const viewBookingDetail = async (req, res) => {
 }
 
 const viewUsers = async (req, res) => {
+  const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
     try {
-        res.render("admin/users", {});
+        let query = { userRole: "User" };
+
+if (search) {
+  query.$or = [
+    { name: { $regex: search, $options: "i" } },
+    { email: { $regex: search, $options: "i" } },
+    { userId: { $regex: search, $options: "i" } }
+  ];
+}
+
+
+    const totalCount = await User.countDocuments(query);
+    const users = await User.find(query)
+    .populate("subscription")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const totalPages = Math.ceil(totalCount / limit);
+
+  res.render("admin/users", {
+    users,
+    search,
+    currentPage: page,
+    totalPages,
+    totalCount,
+    limit
+  });
     } catch (error) {
         console.log(error);
         res.status(500).json({ success: false, message: "Internal Server error" });
@@ -81,8 +114,54 @@ const viewUserDetail = async (req, res) => {
 }
 
 const viewAgents = async (req, res) => {
-    try {
-        res.render("admin/agents", {});
+    const search = req.query.search || "";
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+      try {
+          let query = { userRole: "Agent" };
+  
+  if (search) {
+    query.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { userId: { $regex: search, $options: "i" } }
+    ];
+  }
+   
+      const totalCount = await User.countDocuments(query);
+      const agents = await User.find(query)
+      .populate("subscription")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+  
+    const totalPages = Math.ceil(totalCount / limit);
+
+    const agentIds = agents.map((agent) => agent._id);
+
+    const flights = await Flight.find({ sellerId: { $in: agentIds } });
+
+    const flightCountMap = {};
+
+    flights.forEach((flight) => {
+      const sellerId = flight.sellerId.toString();
+      flightCountMap[sellerId] = (flightCountMap[sellerId] || 0) + 1;
+    });
+
+    const agentsWithFlightCount = agents.map((agent) => {
+        const agentObj = agent.toObject();
+        agentObj.flightCount = flightCountMap[agent._id.toString()] || 0;
+        return agentObj;
+      });
+
+    res.render("admin/agents", {
+      agents: agentsWithFlightCount,
+      search,
+      currentPage: page,
+      totalPages,
+      totalCount,
+      limit
+    });
     } catch (error) {
         console.log(error);
         res.status(500).json({ success: false, message: "Internal Server error" });
@@ -90,8 +169,14 @@ const viewAgents = async (req, res) => {
 }
 
 const viewAgentDetail = async (req, res) => {
+    const agentId = req.params.id;
     try {
-        res.render("admin/agentDetail", {});
+        const agent = await User.findById(agentId).populate("subscription");
+        if (!agent) return res.status(404).send("Agent not found");
+    
+        const flights = await Flight.find({ sellerId: agentId }); 
+
+        res.render("admin/agentDetail", { agent, flights });
     } catch (error) {
         console.log(error);
         res.status(500).json({ success: false, message: "Internal Server error" });
@@ -217,6 +302,31 @@ const deleteSubscription = async (req, res) => {
         res.status(500).json({ success: false, message: "Internal Server error" });
     }
 }
+
+const deleteUser = async (req, res) => {
+    console.log("Delete user called");
+    const userId = req.params.id;
+    try {
+        await User.findByIdAndDelete(userId);
+        res.json({ success: true, message: "User deleted successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal Server error" });
+    }
+}
+
+const deleteAgent = async (req, res) => {
+    console.log("Delete user called");
+    const agentId = req.params.id;
+    try {
+        await User.findByIdAndDelete(agentId);
+        res.json({ success: true, message: "User deleted successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal Server error" });
+    }
+}
+
 module.exports = {
     viewLogin,
     loginAdmin,
@@ -238,4 +348,7 @@ module.exports = {
     viewEditSubscription,
     editSubscription,
     deleteSubscription,
+    deleteUser,
+    deleteAgent,
+
 }

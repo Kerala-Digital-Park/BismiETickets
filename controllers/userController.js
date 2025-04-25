@@ -1751,7 +1751,7 @@ const viewUserBookings = async (req, res) => {
   const userId = req.session.userId;
   const search = req.query.search || '';
   const page = parseInt(req.query.page) || 1;
-  const limit = 10;
+  const limit =4;
   const skip = (page - 1) * limit;
 
   try {
@@ -1783,11 +1783,13 @@ const viewUserBookings = async (req, res) => {
       .populate("flight")
       .populate("userId");
 
-    const sellerBookings = allMatchingBookings.filter(booking => {
-      return booking.flight?.sellerId?.toString() === userId;
-    });
-
-    const paginatedBookings = sellerBookings.slice(skip, skip + limit);
+      
+      const sellerBookings = allMatchingBookings.filter(booking => {
+        return booking.flight?.sellerId?.toString() === userId;
+      });
+      
+      const paginatedBookings = sellerBookings.slice(skip, skip + limit);
+      console.log(paginatedBookings)
 
     const totalPages = Math.ceil(sellerBookings.length / limit);
 

@@ -20,7 +20,7 @@ const subscriptionSchema = mongoose.Schema({
     type: [String], // array of strings
     default: [],
   },
-  category: {
+  role: {
     type: String,
     enum: ["User", "Agent"],
     default: "User"

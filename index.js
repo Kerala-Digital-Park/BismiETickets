@@ -20,7 +20,6 @@ app.use((req, res, next) => {
 
 const userRouter = require('./routes/userRouter')
 const adminRouter = require('./routes/adminRouter')
-const agentRouter = require('./routes/agentRouter')
 
 const mongoose = require("mongoose");
 const connect = mongoose.connect(process.env.MONGODB)
@@ -53,14 +52,12 @@ app.use(
   ); 
 
   app.use('/uploads', express.static(path.join(__dirname, "public")));
-  app.use("/agent", express.static(path.join(__dirname, "public")));
   app.use("/admin", express.static(path.join(__dirname, "public")));
   app.use("/", express.static(path.join(__dirname, "public")));
   app.use(express.static(path.join(__dirname, "uploads")));
 
   app.use('/',userRouter); 
   app.use('/admin',adminRouter);
-  app.use('/agent',agentRouter);
   app.use((req,res,next)=>{
     res.status(404).render("error");
 })  

@@ -7,28 +7,30 @@ const { isLogin, isLogout } = require("../middleware/adminAuth");
 
 adminRouter.get("/login", isLogout, adminController.viewLogin); 
 adminRouter.get("/",isLogin, adminController.viewDashboard);
-adminRouter.get("/bookings", adminController.viewBookings);
-adminRouter.get("/booking-detail", adminController.viewBookingDetail);
-adminRouter.get("/users", adminController.viewUsers);
-adminRouter.get("/user-detail", adminController.viewUserDetail);
-adminRouter.get("/agents", adminController.viewAgents);
-adminRouter.get("/agent-detail", adminController.viewAgentDetail);
-adminRouter.get("/settings", adminController.viewSettings);
-adminRouter.get("/add-flight", adminController.viewAddFlight);
-adminRouter.get('/coupons', adminController.viewCoupons);
-adminRouter.post('/add-coupon', adminController.viewAddCoupon);
-adminRouter.post('/delete-coupon/:id', adminController.deleteCoupon);
-adminRouter.get('/subscriptions', adminController.viewSubscriptions);
-adminRouter.post('/add-subscription', adminController.addSubscription);
-adminRouter.get('/edit-subscription/:id',adminController.viewEditSubscription)
-adminRouter.post('/edit-subscription/:id', adminController.editSubscription);
-adminRouter.post('/delete-subscription/:id', adminController.deleteSubscription)
-
-
+adminRouter.get("/logout", isLogin, adminController.logoutAdmin);
+adminRouter.get("/bookings",isLogin, adminController.viewBookings);
+adminRouter.get("/booking-detail",isLogin, adminController.viewBookingDetail);
+adminRouter.get("/users",isLogin, adminController.viewUsers);
+adminRouter.get("/user-detail",isLogin, adminController.viewUserDetail);
+adminRouter.get("/agents",isLogin, adminController.viewAgents);
+adminRouter.get("/agent-detail/:id",isLogin, adminController.viewAgentDetail);
+adminRouter.get("/settings",isLogin, adminController.viewSettings);
+adminRouter.get("/add-flight",isLogin, adminController.viewAddFlight);
+adminRouter.get('/coupons',isLogin, adminController.viewCoupons);
+adminRouter.get('/subscriptions',isLogin, adminController.viewSubscriptions);
+adminRouter.get('/edit-subscription/:id',isLogin, adminController.viewEditSubscription)
 
 
 
 adminRouter.post("/login", adminController.loginAdmin);
-adminRouter.get("/logout", isLogin, adminController.logoutAdmin);
+adminRouter.post('/add-coupon',isLogin, adminController.viewAddCoupon);
+adminRouter.post('/delete-coupon/:id',isLogin, adminController.deleteCoupon);
+adminRouter.post('/add-subscription',isLogin, adminController.addSubscription);
+adminRouter.post('/edit-subscription/:id',isLogin, adminController.editSubscription);
+adminRouter.post('/delete-subscription/:id',isLogin, adminController.deleteSubscription)
+
+
+adminRouter.delete('/delete-user/:id',isLogin, adminController.deleteUser);
+adminRouter.delete('/delete-agent/:id',isLogin, adminController.deleteAgent);
 
 module.exports = adminRouter;

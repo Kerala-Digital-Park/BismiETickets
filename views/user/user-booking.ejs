@@ -74,6 +74,7 @@
 
                                                 <!-- Table body START -->
                                                 <tbody class="border-top-0">
+
                                                     <% if (bookings.length===0) { %>
                                                         <tr>
                                                             <td colspan="7" class="text-center">No bookings found.</td>
@@ -113,7 +114,7 @@
                                                                             <%= booking.bookingId %>
                                                                         </div>
                                                                         <div class="text-primary small">
-                                                                            <%= booking.userId.name.toUpperCase() %>
+                                                                            <%= booking.userId?.name %>
                                                                         </div>
                                                                     </td>
                                                                     <td><strong>₹ <%= booking.amount %></strong></td>
