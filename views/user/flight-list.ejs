@@ -56,7 +56,7 @@
                       <div class="w-100">
                         <div class="dropdown guest-selector me-2">
                             <input type="text" class="form-guest-selector form-control flight-result"
-                                value="1 Passengers" data-bs-auto-close="outside" data-bs-toggle="dropdown">
+                                 data-bs-auto-close="outside" data-bs-toggle="dropdown">
                             <ul class="dropdown-menu guest-selector-dropdown">
                                 <li class="d-flex justify-content-between">
                                     <div>
@@ -66,7 +66,7 @@
                                     <div class="hstack gap-1 align-items-center">
                                         <button type="button" class="btn btn-link adult-remove p-0 mb-0"><i
                                                 class="bi bi-dash-circle fs-5 fa-fw"></i></button>
-                                        <h6 class="guest-selector-count mb-0 adults" id="adults" value="<%= requestDetails.adults %>" >1</h6>
+                                        <h6 class="guest-selector-count mb-0 adults" id="adults" name="adults" value="<%= requestDetails.adults %>" >1</h6>
                                         <button type="button" class="btn btn-link adult-add p-0 mb-0"><i
                                                 class="bi bi-plus-circle fs-5 fa-fw"></i></button>
                                     </div>
@@ -83,7 +83,7 @@
                                     <div class="hstack gap-1 align-items-center">
                                         <button type="button" class="btn btn-link child-remove p-0 mb-0"><i
                                                 class="bi bi-dash-circle fs-5 fa-fw"></i></button>
-                                        <h6 class="guest-selector-count mb-0 child" id="children" value="<%= requestDetails.children %>">0</h6>
+                                        <h6 class="guest-selector-count mb-0 child" id="children" name="children" value="<%= requestDetails.children %>">0</h6>
                                         <button type="button" class="btn btn-link child-add p-0 mb-0"><i
                                                 class="bi bi-plus-circle fs-5 fa-fw"></i></button>
                                     </div>
@@ -100,11 +100,15 @@
                                     <div class="hstack gap-1 align-items-center">
                                         <button type="button" class="btn btn-link infant-remove p-0 mb-0"><i
                                                 class="bi bi-dash-circle fs-5 fa-fw"></i></button>
-                                        <h6 class="guest-selector-count mb-0 infant" id="infants" value="<%= requestDetails.infants %>">0</h6>
+                                        <h6 class="guest-selector-count mb-0 infant" id="infants" name="infants" value="<%= requestDetails.infants %>">0</h6>
                                         <button type="button" class="btn btn-link infant-add p-0 mb-0"><i
                                                 class="bi bi-plus-circle fs-5 fa-fw"></i></button>
                                     </div>
                                 </li>
+
+                                <input type="hidden" name="adults" id="adultsInput" value="<%= requestDetails.adults %>" />
+<input type="hidden" name="children" id="childrenInput" value="<%= requestDetails.children %>" />
+<input type="hidden" name="infants" id="infantsInput" value="<%= requestDetails.infants %>" />
                     
                             </ul>
                         </div>
@@ -126,14 +130,7 @@
                             <select class="form-select" id="fixedFrom" name="fixedFrom"
                               data-selected="<%= requestDetails.fixedFrom %>">
                               <option value="">Select location</option>
-                              <!-- <option value="San Jacinto, USA" <%= requestDetails.fixedFrom === 'San Jacinto, USA' ? 'selected' : '' %> >San Jacinto, USA</option>
-                        <option value="North Dakota, Canada" <%= requestDetails.fixedFrom === 'North Dakota, Canada' ? 'selected' : '' %>>North Dakota, Canada</option>
-                        <option value="West Virginia, Paris" <%= requestDetails.fixedFrom === 'West Virginia, Paris' ? 'selected' : '' %>>West Virginia, Paris</option>
-                        <option value="Doha International Airport" <%= requestDetails.fixedFrom === 'Doha International Airport' ? 'selected' : '' %>>Doha International Airport</option>
-                        <option value="Calicut Airport" <%= requestDetails.fixedFrom === 'Calicut Airport' ? 'selected' : '' %>>Calicut Airport</option>
-                        <option value="Delhi" <%= requestDetails.fixedFrom === 'Delhi' ? 'selected' : '' %>>Delhi</option>
-                        <option value="Ahmedabad" <%= requestDetails.fixedFrom === 'Ahmedabad' ? 'selected' : '' %>>Ahmedabad</option> -->
-                            </select>
+                             </select>
 
                           </div>
 
@@ -153,14 +150,7 @@
                             <select class="form-select" id="fixedTo" name="fixedTo"
                               data-selected="<%= requestDetails.fixedTo %>">
                               <option value="">Select location</option>
-                              <!-- <option value="San Jacinto, USA" <%= requestDetails.fixedTo === 'San Jacinto, USA' ? 'selected' : '' %>>San Jacinto, USA</option>
-                        <option value="North Dakota, Canada" <%= requestDetails.fixedTo === 'North Dakota, Canada' ? 'selected' : '' %>>North Dakota, Canada</option>
-                        <option value="West Virginia, Paris" <%= requestDetails.fixedTo === 'West Virginia, Paris' ? 'selected' : '' %>>West Virginia, Paris</option>
-                        <option value="Doha International Airport" <%= requestDetails.fixedTo === 'Doha International Airport' ? 'selected' : '' %>>Doha International Airport</option>
-                        <option value="Calicut Airport" <%= requestDetails.fixedTo === 'Calicut Airport' ? 'selected' : '' %>>Calicut Airport</option>
-                        <option value="Delhi" <%= requestDetails.fixedTo === 'Delhi' ? 'selected' : '' %>>Delhi</option>
-                        <option value="Ahmedabad" <%= requestDetails.fixedTo === 'Ahmedabad' ? 'selected' : '' %>>Ahmedabad</option> -->
-                            </select>
+                              </select>
                           </div>
                         </div>
 
@@ -193,14 +183,7 @@
                             <label class="mb-1"><i class="bi bi-geo-alt me-2"></i>From</label>
                             <select class="form-select" data-search-enabled="true" id="from" name="from">
                               <option value="">Select location</option>
-                              <!-- <option value="San Jacinto, USA" <%= requestDetails.from === "San Jacinto, USA" ? "selected" : "" %>>San Jacinto, USA</option>
-                        <option value="North Dakota, Canada" <%= requestDetails.from === "North Dakota, Canada" ? "selected" : "" %>>North Dakota, Canada</option>
-                        <option value="West Virginia, Paris" <%= requestDetails.from === "West Virginia, Paris" ? "selected" : "" %>>West Virginia, Paris</option>
-                        <option value="Doha International Airport" <%= requestDetails.from === "Doha International Airport" ? "selected" : "" %>>Doha International Airport</option>
-                        <option value="Calicut Airport" <%= requestDetails.from === "Calicut Airport" ? "selected" : "" %>>Calicut Airport</option>
-                        <option value="Delhi" <%= requestDetails.from === 'Delhi' ? 'selected' : '' %>>Delhi</option>
-                        <option value="Ahmedabad" <%= requestDetails.from === 'Ahmedabad' ? 'selected' : '' %>>Ahmedabad</option> -->
-                            </select>
+                              </select>
                           </div>
 
                           <!-- Auto fill button -->
@@ -218,14 +201,7 @@
                             <label class="mb-1"><i class="bi bi-send me-2"></i>To</label>
                             <select class="form-select" data-search-enabled="true" id="to" name="to">
                               <option value="">Select location</option>
-                              <!-- <option value="San Jacinto, USA" <%= requestDetails.to === "San Jacinto, USA" ? "selected" : "" %>>San Jacinto, USA</option>
-                        <option value="North Dakota, Canada" <%= requestDetails.to === "North Dakota, Canada" ? "selected" : "" %>>North Dakota, Canada</option>
-                        <option value="West Virginia, Paris" <%= requestDetails.to === "West Virginia, Paris" ? "selected" : "" %>>West Virginia, Paris</option>
-                        <option value="Doha International Airport" <%= requestDetails.to === "Doha International Airport" ? "selected" : "" %>>Doha International Airport</option>
-                        <option value="Calicut Airport" <%= requestDetails.to === "Calicut Airport" ? "selected" : "" %>>Calicut Airport</option>
-                        <option value="Delhi" <%= requestDetails.to === 'Delhi' ? 'selected' : '' %>>Delhi</option>
-                        <option value="Ahmedabad" <%= requestDetails.to === 'Ahmedabad' ? 'selected' : '' %>>Ahmedabad</option> -->
-                            </select>
+                                </select>
                           </div>
                         </div>
 
@@ -276,71 +252,76 @@
       console.log(requestDetails)
     </script>
     
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-      const adultsCountElement = document.querySelector(".adults");
-      const childrenCountElement = document.querySelector(".child");
-      const infantsCountElement = document.querySelector(".infant");
-      const adultAddButton = document.querySelector(".adult-add");
-      const adultRemoveButton = document.querySelector(".adult-remove");
-      const childAddButton = document.querySelector(".child-add");
-      const childRemoveButton = document.querySelector(".child-remove");
-      const infantAddButton = document.querySelector(".infant-add");
-      const infantRemoveButton = document.querySelector(".infant-remove");
-      const guestSelectorInput = document.querySelector(".form-guest-selector");
-
-      let adults = parseInt(requestDetails.adults || 1);
-      let children = parseInt(requestDetails.children || 0);
-      let infants = parseInt(requestDetails.infants || 0);
-
-      function updateGuestCount() {
-          adultsCountElement.textContent = adults;
-          childrenCountElement.textContent = children;
-          infantsCountElement.textContent = infants;
-
-          const totalPassengers = adults + children + infants;
-          guestSelectorInput.value = `${totalPassengers} Passenger${totalPassengers > 1 ? "s" : ""}`;
-      }
-
-      adultAddButton.addEventListener("click", function () {
-          adults++;
-          updateGuestCount();
-      });
-
-      adultRemoveButton.addEventListener("click", function () {
-          if (adults > 0) { // Ensure at least 1 adult
-              adults--;
-              updateGuestCount();
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          const adultsCountElement = document.getElementById("adults");
+          const childrenCountElement = document.getElementById("children");
+          const infantsCountElement = document.getElementById("infants");
+          const adultAddButton = document.querySelector(".adult-add");
+          const adultRemoveButton = document.querySelector(".adult-remove");
+          const childAddButton = document.querySelector(".child-add");
+          const childRemoveButton = document.querySelector(".child-remove");
+          const infantAddButton = document.querySelector(".infant-add");
+          const infantRemoveButton = document.querySelector(".infant-remove");
+          const guestSelectorInput = document.querySelector(".form-guest-selector");
+  
+          let adults = parseInt(requestDetails.adults || adultsCountElement.textContent);
+          let children = parseInt(requestDetails.children || childrenCountElement.textContent);
+          let infants = parseInt(requestDetails.infants || infantsCountElement.textContent);
+  
+          function updateGuestCount() {
+              adultsCountElement.textContent = adults;
+              adultsCountElement.value= adults
+              childrenCountElement.textContent = children;
+              infantsCountElement.textContent = infants;
+              const totalPassengers = adults + children + infants;
+              guestSelectorInput.value = `${totalPassengers} Passenger${totalPassengers > 1 ? "s" : ""}`;
+              document.getElementById("adultsInput").value = adults;
+              document.getElementById("childrenInput").value = children;
+              document.getElementById("infantsInput").value = infants;
           }
-      });
-
-      childAddButton.addEventListener("click", function () {
-          children++;
-          updateGuestCount();
-      });
-
-      childRemoveButton.addEventListener("click", function () {
-          if (children > 0) {
-              children--;
+  
+          adultAddButton.addEventListener("click", function () {
+              adults++;
               updateGuestCount();
-          }
-      });
-
-      infantAddButton.addEventListener("click", function () {
-          infants++;
-          updateGuestCount();
-      });
-
-      infantRemoveButton.addEventListener("click", function () {
-          if (infants > 0) {
-              infants--;
+          });
+  
+          adultRemoveButton.addEventListener("click", function () {
+              if (adults > 0) { // Ensure at least 1 adult
+                  adults--;
+                  updateGuestCount();
+              }
+          });
+  
+          childAddButton.addEventListener("click", function () {
+              children++;
               updateGuestCount();
-          }
+          });
+  
+          childRemoveButton.addEventListener("click", function () {
+              if (children > 0) {
+                  children--;
+                  updateGuestCount();
+              }
+          });
+  
+          infantAddButton.addEventListener("click", function () {
+              infants++;
+              updateGuestCount();
+          });
+  
+          infantRemoveButton.addEventListener("click", function () {
+              if (infants > 0) {
+                  infants--;
+                  updateGuestCount();
+              }
+          });
+  
+          updateGuestCount(); // Initialize count on load
+  
+  
       });
-
-      updateGuestCount(); // Initialize count on load
-  });
-</script>
+  </script>
 
       <script>
         document.addEventListener("DOMContentLoaded", function () {

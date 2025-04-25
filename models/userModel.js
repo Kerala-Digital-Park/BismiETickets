@@ -64,8 +64,13 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// Method to decrease transaction count
+// Method to increase transaction count
 userSchema.methods.decreaseTransaction = async function (amount) {
+  // Populate if subscription is still an ObjectId
+  if (mongoose.Types.ObjectId.isValid(this.subscription) || !this.subscription.transactionLimit) {
+    await this.populate('subscription');
+  }
+
   if (
     this.transactions >= this.subscription.transactionLimit ||
     amount > this.subscription.maxTransactionAmount
@@ -75,6 +80,7 @@ userSchema.methods.decreaseTransaction = async function (amount) {
 
   this.transactions += 1;
   this.transactionAmount += amount;
+
   await this.save();
 };
 

@@ -41,7 +41,7 @@
                                                     <h5><%= userDetails.subscription.subscription %> Plan 
                                                         <% 
                                                             const today = new Date();
-                                                            const expiryDate = new Date(userDetails.subscription.expiryDate); 
+                                                            const expiryDate = new Date(userDetails.expiryDate); 
                                                             if (expiryDate < today) { 
                                                         %>
                                                         <span class="badge bg-danger rounded-3" style="font-size: x-small;">Expired</span>
@@ -153,6 +153,7 @@
             let amount = "<%= userDetails.subscription.price %>";
             const subscription = "<%= userDetails.subscription.subscription %>";
             const userEmail = "<%= userDetails.email %>";
+            const role = "<%= userDetails.userRole %>";
            
             // Convert totalFare to paise (Razorpay uses INR in paise)
             const amountInPaise = parseFloat(amount.replace(/[^0-9.]/g, "")) * 100;
@@ -175,6 +176,7 @@
                                 email: userEmail,
                                 price: amountInPaise / 100,
                                 subscription: subscription,
+                                role: role,
                             };
         
                             // Send data to backend via POST request
@@ -187,7 +189,7 @@
                                 .then(data => {
                                     console.log("Server Response:", data);
                                     alert("Renewal completed! Redirecting...");
-                                    window.location.href = "/profile";
+                                    window.location.href = "/manage-subscription";
                                 })
                                 .catch(error => console.error("Error:", error));
                 },
