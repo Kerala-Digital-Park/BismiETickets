@@ -1,0 +1,79 @@
+<%- include('./partials/header') %>
+
+<main>
+  <!-- Sidebar START -->
+  <%- include('./partials/sideBar') %>
+  <!-- Sidebar END -->
+
+  <!-- Page content START -->
+  <div class="page-content">
+    <!-- Top bar START -->
+    <%- include('./partials/topBar') %>
+    <!-- Top bar END -->
+
+    <div class="container mt-4">
+      <h3>Create New Coupon</h3>
+
+      <form action="/admin/add-coupon" method="POST">
+        <div class="mb-3">
+          <label>Coupon Name</label>
+          <input type="text" name="name" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Coupon Code</label>
+          <input type="text" name="code" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Discount (%)</label>
+          <input type="number" name="discount" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Expiry Date</label>
+          <input type="date" name="expiry" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">Create Coupon</button>
+      </form>
+
+      <hr>
+
+      <h4>All Coupons</h4>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Code</th>
+            <th>Discount</th>
+            <th>Expiry</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% coupons.forEach(coupon => { %>
+            <tr>
+              <td><%= coupon.name %></td>
+              <td><%= coupon.code %></td>
+              <td><%= coupon.discount %>%</td>
+              <td><%= coupon.expiry.toDateString() %></td>
+              <td>
+                <form action="/admin/delete-coupon/<%= coupon._id %>" method="POST" style="display:inline;" onsubmit="return confirmDelete()">
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>                
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<%- include('./partials/footer') %>
+<script>
+  function confirmDelete() {
+    return confirm("Are you sure you want to delete this coupon?");
+  }
+</script>

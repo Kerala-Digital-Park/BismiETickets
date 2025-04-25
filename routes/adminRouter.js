@@ -15,6 +15,14 @@ adminRouter.get("/agents", adminController.viewAgents);
 adminRouter.get("/agent-detail", adminController.viewAgentDetail);
 adminRouter.get("/settings", adminController.viewSettings);
 adminRouter.get("/add-flight", adminController.viewAddFlight);
+adminRouter.get('/coupons', adminController.viewCoupons);
+adminRouter.post('/add-coupon', adminController.viewAddCoupon);
+adminRouter.post('/delete-coupon/:id', adminController.deleteCoupon);
+adminRouter.get('/subscriptions', adminController.viewSubscriptions);
+adminRouter.post('/add-subscription', adminController.addSubscription);
+adminRouter.get('/edit-subscription/:id',adminController.viewEditSubscription)
+adminRouter.post('/edit-subscription/:id', adminController.editSubscription);
+adminRouter.post('/delete-subscription/:id', adminController.deleteSubscription)
 
 
 

@@ -1,0 +1,60 @@
+<%- include('./partials/header') %>
+<main>
+  <%- include('./partials/sideBar') %>
+  <div class="page-content">
+    <%- include('./partials/topBar') %>
+
+    <div class="container mt-4">
+      <h3>Edit Subscription Plan</h3>
+      <form action="/admin/edit-subscription/<%= subscription._id %>" method="POST">
+        <div class="mb-3">
+          <label>Subscription Name</label>
+          <select name="subscription" class="form-control">
+            <option value="Free" <%= subscription.subscription === 'Free' ? 'selected' : '' %>>Free</option>
+            <option value="Pro" <%= subscription.subscription === 'Pro' ? 'selected' : '' %>>Pro</option>
+            <option value="Enterprise" <%= subscription.subscription === 'Enterprise' ? 'selected' : '' %>>Enterprise</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label>Transaction Limit</label>
+          <input type="number" name="transactionLimit" class="form-control" value="<%= subscription.transactionLimit %>">
+        </div>
+
+        <div class="mb-3">
+          <label>Max Transaction Amount</label>
+          <input type="number" name="maxTransactionAmount" class="form-control" value="<%= subscription.maxTransactionAmount %>">
+        </div>
+
+        <div class="mb-3">
+          <label>Price</label>
+          <input type="number" name="price" class="form-control" value="<%= subscription.price %>">
+        </div>
+
+        <div class="mb-3">
+          <label>Service Charge</label>
+          <input type="number" name="serviceCharge" class="form-control" value="<%= subscription.serviceCharge %>">
+        </div>
+
+        <div class="mb-3">
+          <label>Features (comma-separated)</label>
+          <textarea name="features" class="form-control"><%= subscription.features.join(', ') %></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update</button>
+        <button type="button" class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+      </form>
+
+      <form id="deleteForm" action="/admin/delete-subscription/<%= subscription._id %>" method="POST" style="display:none;"></form>
+    </div>
+  </div>
+</main>
+<%- include('./partials/footer') %>
+
+<script>
+  function confirmDelete() {
+    if (confirm('Are you sure you want to delete this subscription plan?')) {
+      document.getElementById('deleteForm').submit();
+    }
+  }
+</script>

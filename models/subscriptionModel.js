@@ -16,6 +16,15 @@ const subscriptionSchema = mongoose.Schema({
   },
   price: { type: Number, default: 0 },
   serviceCharge: { type: Number, default: 400 },
+  features: {
+    type: [String], // array of strings
+    default: [],
+  },
+  category: {
+    type: String,
+    enum: ["User", "Agent"],
+    default: "User"
+  },  
 });
 
 module.exports = mongoose.model("Subscriptions", subscriptionSchema);
