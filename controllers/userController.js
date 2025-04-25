@@ -349,18 +349,17 @@ const getFlightDetail = async (req, res) => {
   try {
     const user = await Users.findById(userId).populate("subscription");
     console.log(user);
+
     if (
       user.transactions >= user.subscription.transactionLimit ||
       user.transactionAmount >= user.subscription.maxTransactionAmount
     ) {
-      return res
-        .status(400)
-        .json({
-          message: "Transaction limit exceeded or amount too high. Upgrade Now",
-          redirectUrl: "/subscription",
-        });
+      const redirectUrl = user.userRole === "Agent" ? "/join-us#pricing" : "/subscription";
+      return res.status(400).json({
+        message: "Transaction limit exceeded or amount too high. Upgrade Now",
+        redirectUrl,
+      });
     }
-
     res.status(200).json({ redirectUrl: `/flight-detail?fId=${flightId}&aId=${agentId}` });
   } catch (error) {
     console.error("Error fetching flight details:", error);
@@ -945,8 +944,8 @@ const flightBooking = async (req, res) => {
 
     await Users.findByIdAndUpdate(req.session.userId, {
       $inc: {
-        "subscription.transactions": 1,
-        "subscription.transactionAmount": totalFare,
+        "transactions": 1,
+        "transactionAmount": totalFare,
       },
     });
 
@@ -1498,7 +1497,7 @@ const viewPricing = async (req, res) => {
 
 const renewal = async (req, res) => {
   const userId = req.session.userId;
-  const { razorpay_payment_id, email, price, subscription } = req.body;
+  const { razorpay_payment_id, email, price, subscription, role } = req.body;
   try {
     const user = await Users.findById(userId);
     const today = new Date();
@@ -1525,12 +1524,19 @@ const renewal = async (req, res) => {
         newExpiryDate = startDate.toISOString().split("T")[0];
       }
 
-      user.subscription.subscription = subscription;
-      user.subscription.price = price;
-      user.subscription.expiryDate = newExpiryDate;
-      user.subscription.transactionAmount = 0;
-      user.subscription.transactions = transactions;
-      user.subscription.transactionAmount = transactionAmount;
+      const subscriptionPlan = await Subscriptions.findOne({
+        subscription: subscription,
+        role: role, 
+      });
+
+      if (!subscriptionPlan) {
+        return res.status(400).json({ success: false, message: "Invalid subscription plan." });
+      }
+
+      user.subscription = subscriptionPlan._id;
+      user.expiryDate = newExpiryDate;
+      user.transactions = transactions;
+      user.transactionAmount = transactionAmount;
       await user.save();
 
       res.json({

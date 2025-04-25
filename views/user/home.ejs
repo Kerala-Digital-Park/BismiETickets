@@ -596,7 +596,7 @@
             childrenCountElement.textContent = children;
             infantsCountElement.textContent = infants;
             const totalPassengers = adults + children + infants;
-            guestSelectorInput.value = `${totalPassengers} Passengers`;
+            guestSelectorInput.value = `${totalPassengers} Passenger${totalPassengers > 1 ? "s" : ""}`;
             document.getElementById("adultsInput").value = adults;
             document.getElementById("childrenInput").value = children;
             document.getElementById("infantsInput").value = infants;

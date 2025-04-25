@@ -3,7 +3,6 @@
 
         <!-- **************** MAIN CONTENT START **************** -->
         <main>
-
             <!-- =======================
     Main banner START -->
             <section class="price-wrap pt-4 pt-sm-0">
@@ -94,30 +93,34 @@
                                         <li><i class="bi bi-x-circle text-danger me-2"></i>No Special Fares</li>
                                     </ul>
                                 </div>
-                                <% console.log(user) %>
+                               
                                 <!-- Card footer -->
                                 <% if(user) { %>
                                     <% if(user.subscription && user.subscription.subscription==="Free" ) { %>
                                         <div class="card-footer p-4 pt-0">
                                             <button class="btn btn-success w-100 mb-0" disabled>Current Plan</button>
                                         </div>
-                                        <% } else if (user.subscription && user.subscription.subscription==="Pro" || "Enterprise" ) { %>
+                                        <% } else if (
+                                            user.userRole === "User" &&
+                                            user.subscription &&
+                                            (user.subscription.subscription === "Pro" || user.subscription.subscription === "Enterprise")
+                                          ) { %>
                                             <div class="card-footer p-4 pt-0">
                                                 <button class="btn btn-dark w-100 mb-0"
                                                     onclick="freeDowngrade()">Downgrade</button>
                                             </div>
-                                            <% } else { %>
+                                    <% } else { %>
                                                 <div class="card-footer p-4 pt-0">
                                                     <button class="btn btn-dark w-100 mb-0"
                                                         onclick="freeCheckout()">Get Started</button>
                                                 </div>
-                                                <% } %>
-                                                    <% } else { %>
+                                    <% } %>
+                                <% } else { %>
                                                         <div class="card-footer p-4 pt-0">
                                                             <button class="btn btn-dark w-100 mb-0"
                                                                 onclick="freeCheckout()">Get Started</button>
                                                         </div>
-                                                        <% } %>
+                                <% } %>
 
                             </div>
                         </div>
