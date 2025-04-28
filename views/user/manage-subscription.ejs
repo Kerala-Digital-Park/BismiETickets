@@ -30,7 +30,14 @@
                                             <p>Here is list of package/product that you have subscribed.</p>
                                         </div>
                                         <div class="mt-4">
-                                            <a href="/subscription" class="btn rounded-0 btn-border border-primary" style="background: transparent;">View Pricing</a>
+                                            <div class="col-md-auto ms-auto text-center">
+                                                <% if(userDetails.userRole === "User") { %>
+                                                    <a href="/subscription" class="btn btn-primary">Change Plan</a>
+                                                <% } else { %>
+                                                    <a href="/agent-subscription" class="btn btn-primary">Change Plan</a>
+                                                <% } %>
+
+                                            </div>
                                         </div>
                                     </div>
                                     <% if(userDetails) { %>
@@ -88,15 +95,13 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-4 bg-light p-2 ">
-                                            <div class="col-md-auto ms-auto text-center">
-                                                <a href="/subscription" class="btn btn-primary">Change Plan</a>
-                                            </div>
+                                            
                                             <%
                                             const expiry = new Date(userDetails.expiryDate);
                                             const now = new Date();
                                           %>
                                           
-                                          <div class="col-md-auto ms-auto text-center">
+                                          <div class="col-md-auto ms-auto text-center align-items-center">
                                             <% if (userDetails.subscription.subscription === "Free" ) { %>
                                                 <% if (expiry >= now) { %>
                                                     <button class="btn btn-border border-primary" disabled>Renew Plan</button>

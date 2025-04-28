@@ -40,11 +40,10 @@
                 <ul class="navbar-nav navbar-nav-scroll me-auto mx-auto">
                   <li class="nav-item dropdown"><a class="nav-link" href="/dashboard">Dashboard</a></li>
                   <li class="nav-item dropdown"><a class="nav-link" href="/subscription">Pricing</a></li>
-                  <li class="nav-item dropdown"><a class="nav-link" href="/join-us">Join Us</a>
-                  </li>
+                  <li class="nav-item dropdown"><a class="nav-link" href="/listings">Listings</a></li>
                 </ul>
                 <% } %>
-            <% } else { %>
+          <% } else { %>
               <ul class="navbar-nav navbar-nav-scroll me-auto mx-auto">
                 <li class="nav-item dropdown"><a class="nav-link" href="/about">About</a></li>
                 <li class="nav-item dropdown"><a class="nav-link" href="/contact">Contact</a></li>
@@ -54,7 +53,7 @@
                   <li class="nav-item dropdown"><a class="nav-link" href="/help">Help</a></li>
                 <li class="nav-item dropdown"><a class="nav-link" href="/faq">FAQs</a></li>
               </ul>
-            <% } %>
+        <% } %>
             
             <!-- Nav main menu END -->
           </div>
@@ -149,7 +148,6 @@
                   <li><a class="dropdown-item" href="/bookings"><i class="bi bi-bookmark-check fa-fw me-2"></i>Bookings</a></li>
                   <!-- <li><a class="dropdown-item" href="/wishlist"><i class="bi bi-heart fa-fw me-2"></i>Wishlist</a></li> -->
                   <% if(user.userRole === "Agent") { %>
-                    <li><a class="dropdown-item" href="/listings"><i class="bi bi-journals fa-fw me-2"></i>Listings</a></li>
                   <!-- <li><a class="dropdown-item" href="/earnings"><i class="bi bi-graph-up-arrow fa-fw me-2"></i> Earnings</a></li> -->
                   <% } %>
                   <li><a class="dropdown-item" href="/kyc"><i class="fas fa-id-card fa-fw me-2"></i>KYC</a></li>

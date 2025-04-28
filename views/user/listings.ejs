@@ -12,128 +12,168 @@
 					<div class="row g-2 g-lg-4">
 
 						<!-- Sidebar START -->
-						<%- include('./partials/userSidebar') %>
-							<!-- Sidebar END -->
+						<!-- Sidebar END -->
 
-							<!-- Main content START -->
-							<div class="col-lg-8 col-xl-9 ps-xl-5">
+						<!-- Main content START -->
+						<!-- <div class="col-lg-8 col-xl-9 ps-xl-5"> -->
 
-								<!-- Offcanvas menu button -->
-								<div class="d-grid mb-0 d-lg-none w-100">
-									<button class="btn btn-primary mb-4" type="button" data-bs-toggle="offcanvas"
-										data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
-										<i class="fas fa-sliders-h"></i> Menu
-									</button>
-								</div>
+						<!-- Offcanvas menu button -->
+						<div class="d-grid mb-0 d-lg-none w-100">
+							<button class="btn btn-primary mb-4" type="button" data-bs-toggle="offcanvas"
+								data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
+								<i class="fas fa-sliders-h"></i> Menu
+							</button>
+						</div>
 
-								<div class="card border">
-									<!-- Card header -->
-									<div class="card-header border-bottom">
-										<h4 class="card-header-title">My Listings
-											<!-- <span class="badge bg-primary bg-opacity-10 text-primary ms-2">5 Items</span> -->
-										</h4>
-									</div>
+						<div class="card border">
+							<!-- Card header -->
+							<div class="card-header border-bottom d-flex justify-content-between align-items-center">
+								<h4 class="card-header-title">My Listings
+									<!-- <span class="badge bg-primary bg-opacity-10 text-primary ms-2">5 Items</span> -->
+								</h4>
+								<div class="d-grid"><a href="/add-listing" class="btn btn-primary-soft mb-0"><i
+											class="bi bi-plus-lg fa-fw"></i> New Listing</a></div>
+							</div>
 
-									<!-- Card body START -->
-									<div class="card-body">
-										<div class="table-responsive border-0">
-											<table class="table align-middle p-4 mb-0 table-hover table-shrink">
-												<!-- Table head -->
-												<thead class="table-light">
-													<tr>
-														<th scope="col" class="border-0">Date</th>
-														<th scope="col" class="border-0">ID Details</th>
-														<th scope="col" class="border-0">Airline</th>
-														<th scope="col" class="border-0">Destinations</th>
-														<th scope="col" class="border-0">Travel Date</th>
-														<th scope="col" class="border-0">Amount</th>
-														<th scope="col" class="border-0">Status</th>
-														<th scope="col" class="border-0">Close</th>
-														<th scope="col" class="border-0 rounded-end">Action</th>
-													</tr>
-												</thead>
+							<!-- Card body START -->
+							<div class="card-body">
+								<div class="table-responsive border-0">
+									<table class="table align-middle p-4 mb-0 table-hover table-shrink">
+										<!-- Table head -->
+										<thead class="table-light">
+											<tr>
+												<th scope="col" class="border-0">Date</th>
+												<th scope="col" class="border-0">ID Details</th>
+												<th scope="col" class="border-0">Airline</th>
+												<th scope="col" class="border-0">Destinations</th>
+												<th scope="col" class="border-0">Travel Date</th>
+												<th scope="col" class="border-0">Amount</th>
+												<th scope="col" class="border-0">Status</th>
+												<th scope="col" class="border-0 rounded-end">Action</th>
+											</tr>
+										</thead>
 
-												<!-- Table body START -->
-												<tbody class="border-top-0">
-													<% if (flights.length===0) { %>
-														<tr>
-															<td colspan="7" class="text-center">No inventories found.
+										<!-- Table body START -->
+										<tbody class="border-top-0">
+											<% if (flights.length===0) { %>
+												<tr>
+													<td colspan="7" class="text-center">No inventories found.
+													</td>
+												</tr>
+												<% } else { %>
+													<% flights.forEach((flight, index)=> { %>
+														<tr class="align-middle border-top">
+															<td>
+																<div>
+																	<%= new Date(flight.createdAt).getDate() %>/<%= new
+																			Date(flight.createdAt).getMonth() + 1 %>/<%=
+																				new
+																				Date(flight.createdAt).getFullYear().toString().slice(-2)
+																				%>
+																</div>
+
+																<div>
+																	<%= flight.inventoryDates[0].seats %>
+																		Seat<%= flight.inventoryDates[0].seats>
+																			1 ?
+																			's' : '' %>
+																</div>
 															</td>
+															<td>
+																<%= flight.duration %>
+															</td>
+															<td>
+																<div>
+																	<%= flight.stops[0].airline %>
+																</div>
+																<div class="text-muted">
+																	<%= flight.stops[0].airlineCode %>
+																</div>
+															</td>
+															<td>
+																<% flight.stops.forEach((stop)=> { %>
+																	<%= stop.fromCode.toUpperCase() %> / <%=
+																			stop.departureCity %>
+																			<% }) %>
+															</td>
+															<td>
+																<%= new Date(flight.departureDate).getDate() %>/<%= new
+																		Date(flight.departureDate).getMonth() + 1 %>/<%=
+																			new
+																			Date(flight.departureDate).getFullYear().toString().slice(-2)
+																			%>
+															</td>
+															<td><strong>₹ <%= flight.inventoryDates[0].fare.adults %>
+																</strong></td>
+															<td>
+																<% if (flight.status==='active' ) { %>
+																	<button
+																		class="btn btn-sm btn-success changeStatusBtn"
+																		data-id="<%= flight._id %>"
+																		data-status="inactive">
+																		Active
+																	</button>
+																	<% } else { %>
+																		<button
+																			class="btn btn-sm btn-danger changeStatusBtn"
+																			data-id="<%= flight._id %>"
+																			data-status="active">
+																			Inactive
+																		</button>
+																		<% } %>
+															</td>
+
+															<td>
+																<!-- Edit Days Button -->
+																<a href="#" class="btn btn-sm btn-light"
+																	data-bs-toggle="modal" data-bs-target="#dateModal"
+																	data-flight="<%= JSON.stringify(flight) %>"
+																	data-bs-placement="top" title="Edit Days">
+																	<i class="fa-solid fa-calendar-days"></i>
+																</a>
+
+																<!-- Edit Seats Button -->
+																<a href="#" class="btn btn-sm btn-light"
+																	data-bs-toggle="modal" data-bs-target="#seatModal"
+																	data-flight="<%= JSON.stringify(flight) %>"
+																	data-bs-placement="top" title="Edit Seats">
+																	<i class="fa-solid fa-chair"></i>
+																</a>
+																<!-- Edit Button -->
+																<!-- <a href="#" class="btn btn-sm btn-light"
+																	data-bs-toggle="modal" data-bs-target="#flightModal"
+																	data-flight="<%= JSON.stringify(flight) %>"
+																	data-bs-toggle="tooltip" data-bs-placement="top"
+																	title="Edit Inventory">
+																	<i class="fa-solid fa-pen-to-square"></i>
+																</a> -->
+																<a href="#"
+																	class="btn btn-sm btn-light user-booking-btn"
+																	data-flight-id="<%= flight._id %>"
+																	title="User Bookings">
+																	<i class="fa-solid fa-pen-to-square"></i>
+																</a>
+
+															</td>
+
+
 														</tr>
-														<% } else { %>
-															<% flights.forEach((flight, index)=> { %>
-																<tr class="align-middle border-top">
-																	<td>
-																		<div>
-																			<%= new Date(flight.createdAt).getDate() %>/<%= new Date(flight.createdAt).getMonth() + 1 %>/<%= new Date(flight.createdAt).getFullYear().toString().slice(-2) %>
-																		  </div>
-																		  
-																		<div>
-																			<%= flight.inventoryDates[0].seats %>
-																				Seat<%= flight.inventoryDates[0].seats>
-																					1 ?
-																					's' : '' %>
-																		</div>
-																	</td>
-																	<td>
-																		<%= flight.duration %>
-																	</td>
-																	<td>
-																		<div>
-																			<%= flight.stops[0].airline %>
-																		</div>
-																		<div class="text-muted">
-																			<%= flight.stops[0].airlineCode %>
-																		</div>
-																	</td>
-																	<td>
-																		<% flight.stops.forEach((stop)=> { %>
-																			<%= stop.fromCode.toUpperCase() %> / <%= stop.departureCity %>
-																		<% }) %>
-																	</td>
-																	<td>
-																		<%= new Date(flight.departureDate).getDate() %>/<%= new Date(flight.departureDate).getMonth() + 1 %>/<%= new Date(flight.departureDate).getFullYear().toString().slice(-2) %>
-																	</td>
-																	<td><strong>₹ <%=
-																				flight.inventoryDates[0].fare.adults %>
-																				</strong></td>
-																	<td>
-																		<% if (flight.status==='active' ) { %>
-																			<span
-																			class="badge bg-success bg-opacity-10 text-success">Active</span>
-																			<% } else { %>
-																				<span
-																				class="badge bg-danger bg-opacity-10 text-danger">Inactive</span>
-																				<% } %>
-																			</td>
-																			
-																			<td>Close</td>
-																			<td>
-																		<a href="#" class="btn btn-sm btn-light"
-																			data-bs-toggle="modal"
-																			data-bs-target="#flightModal"
-																			data-flight="<%= JSON.stringify(flight) %>">
-																			<i class="fa-solid fa-pen-to-square"></i>
-																		</a>
-																	</td>
+														<% }); %>
+															<% } %>
+										</tbody>
 
-																</tr>
-																<% }); %>
-																	<% } %>
-												</tbody>
-
-												<!-- Table body END -->
-											</table>
-										</div>
-									</div>
-									<!-- Card body END -->
-
-									<!-- Card footer START -->
-									
-									<!-- Card footer END -->
-
+										<!-- Table body END -->
+									</table>
 								</div>
 							</div>
+							<!-- Card body END -->
+
+							<!-- Card footer START -->
+
+							<!-- Card footer END -->
+
+						</div>
+						<!-- </div> -->
 					</div>
 					<!-- Listing table END -->
 				</div>
@@ -141,176 +181,448 @@
 			<!-- =======================
     Content END -->
 
-	<div class="modal fade" id="flightModal" tabindex="-1" aria-labelledby="flightModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-lg">
-		  <div class="modal-content">
-			<div class="modal-header">
-			  <h5 class="modal-title" id="flightModalLabel">Update Flight</h5>
-			  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-	  
-			<div class="modal-body">
-			  <form id="flightForm">
-				<input type="hidden" name="flightId" id="flightId">
-				<div class="row g-3">
-				  <!-- Row 1 -->
-				  <div class="col-md-3">
-					<label class="form-label">Inventory Name</label>
-					<input type="text" class="form-control" id="inventoryName">
-				  </div>
+			<div class="modal fade" id="flightModal" tabindex="-1" aria-labelledby="flightModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="flightModalLabel">Update Flight</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
 
-				  <div class="col-md-4">
-					<label class="form-label">From</label>
-					<input type="text" class="form-control" id="from">
-				  </div>
+						<div class="modal-body">
+							<form id="flightForm">
+								<input type="hidden" name="flightId" id="flightId">
+								<div class="row g-3">
+									<!-- Row 1 -->
+									<div class="col-md-3">
+										<label class="form-label">Inventory Name</label>
+										<input type="text" class="form-control" id="inventoryName">
+									</div>
 
-				  <div class="col-md-4">
-					<label class="form-label">To</label>
-					<input type="text" class="form-control" id="to">
-				  </div>
+									<div class="col-md-4">
+										<label class="form-label">From</label>
+										<input type="text" class="form-control" id="from">
+									</div>
 
-				  <div class="col-md-3">
-					<label class="form-label">From Code</label>
-					<input type="text" class="form-control" id="fromCode">
-				  </div>
+									<div class="col-md-4">
+										<label class="form-label">To</label>
+										<input type="text" class="form-control" id="to">
+									</div>
 
-				  <div class="col-md-3">
-					<label class="form-label">To Code</label>
-					<input type="text" class="form-control" id="toCode">
-				  </div>
+									<div class="col-md-3">
+										<label class="form-label">From Code</label>
+										<input type="text" class="form-control" id="fromCode">
+									</div>
 
-				  <div class="col-md-3">
-					<label class="form-label">Departure Date</label>
-					<input type="text" class="form-control dateInput" id="departureDate">
-				  </div>
+									<div class="col-md-3">
+										<label class="form-label">To Code</label>
+										<input type="text" class="form-control" id="toCode">
+									</div>
 
-				  <div class="col-md-3">
-					<label class="form-label">Arrival Date</label>
-					<input type="text" class="form-control dateInput" id="arrivalDate">
-				  </div>
+									<div class="col-md-3">
+										<label class="form-label">Departure Date</label>
+										<input type="text" class="form-control dateInput" id="departureDate">
+									</div>
 
-				  <div class="col-md-3">
-					<label class="form-label">Departure Time</label>
-					<input type="time" class="form-control" id="departureTime">
-				  </div>
+									<div class="col-md-3">
+										<label class="form-label">Arrival Date</label>
+										<input type="text" class="form-control dateInput" id="arrivalDate">
+									</div>
 
-				  <div class="col-md-3">
-					<label class="form-label">Arrival Time</label>
-					<input type="time" class="form-control" id="arrivalTime">
-				  </div>
+									<div class="col-md-3">
+										<label class="form-label">Departure Time</label>
+										<input type="time" class="form-control" id="departureTime">
+									</div>
 
-				  <div class="col-md-3">
-					<label class="form-label">Duration(in sec)</label>
-					<input type="text" class="form-control" id="duration">
-				  </div>
+									<div class="col-md-3">
+										<label class="form-label">Arrival Time</label>
+										<input type="time" class="form-control" id="arrivalTime">
+									</div>
 
-				  <div class="col-md-3">
-					<label class="form-label">From City</label>
-					<input type="text" class="form-control" id="fromCity">
-				  </div>
+									<div class="col-md-3">
+										<label class="form-label">Duration(in sec)</label>
+										<input type="text" class="form-control" id="duration">
+									</div>
 
-				  <div class="col-md-3">
-					<label class="form-label">To City</label>
-					<input type="text" class="form-control" id="toCity">
-				  </div>
+									<div class="col-md-3">
+										<label class="form-label">From City</label>
+										<input type="text" class="form-control" id="fromCity">
+									</div>
 
-				  <div class="col-md-3">
-					<label class="form-label">From Country</label>
-					<input type="text" class="form-control" id="fromCountry">
-				  </div>
+									<div class="col-md-3">
+										<label class="form-label">To City</label>
+										<input type="text" class="form-control" id="toCity">
+									</div>
 
-				  <div class="col-md-3">
-					<label class="form-label">To Country</label>
-					<input type="text" class="form-control" id="toCountry">
-				  </div>
+									<div class="col-md-3">
+										<label class="form-label">From Country</label>
+										<input type="text" class="form-control" id="fromCountry">
+									</div>
 
-				  <!-- Row 2 -->
+									<div class="col-md-3">
+										<label class="form-label">To Country</label>
+										<input type="text" class="form-control" id="toCountry">
+									</div>
 
-				  <div id="stopsContainer" class="row g-3 stop-block"></div>
+									<!-- Row 2 -->
 
-				  <!-- Row 3 -->
-				  <div class="col-md-3">
-					<label class="form-label">PNR</label>
-					<input type="text" class="form-control" id="pnr">
-				  </div>
+									<div id="stopsContainer" class="row g-3 stop-block"></div>
 
-				  <div class="col-md-3">
-					<label class="form-label">Seats</label>
-					<input type="number" class="form-control" id="seats">
-				  </div>
-	  
-				  <div class="col-md-3">
-					<label class="form-label">Adults ₹</label>
-					<input type="number" class="form-control" id="adults">
-				  </div>
+									<!-- Row 3 -->
+									<div class="col-md-3">
+										<label class="form-label">PNR</label>
+										<input type="text" class="form-control" id="pnr">
+									</div>
 
-				  <div class="col-md-3">
-					<label class="form-label">Infants ₹</label>
-					<input type="number" class="form-control" id="infants">
-				  </div>
+									<div class="col-md-3">
+										<label class="form-label">Seats</label>
+										<input type="number" class="form-control" id="seats">
+									</div>
 
-				  <div class="col-md-3">
-					<label class="form-label">Cabin Weight</label>
-					<input type="text" class="form-control" id="cab">
-				  </div>
-	  
-				  <div class="col-md-3">
-					  <label class="form-label">CheckIn Weight</label>
-					  <input type="text" class="form-control" id="checkin">
+									<div class="col-md-3">
+										<label class="form-label">Adults ₹</label>
+										<input type="number" class="form-control" id="adults">
+									</div>
+
+									<div class="col-md-3">
+										<label class="form-label">Infants ₹</label>
+										<input type="number" class="form-control" id="infants">
+									</div>
+
+									<div class="col-md-3">
+										<label class="form-label">Cabin Weight</label>
+										<input type="text" class="form-control" id="cab">
+									</div>
+
+									<div class="col-md-3">
+										<label class="form-label">CheckIn Weight</label>
+										<input type="text" class="form-control" id="checkin">
+									</div>
+
+									<div class="col-md-3">
+										<label class="form-label">Status</label>
+										<select class="form-select" id="status">
+											<option value="active">Active</option>
+											<option value="inactive">Inactive</option>
+										</select>
+									</div>
+
+								</div>
+							</form>
+						</div>
+
+						<div class="modal-footer">
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+							<button type="submit" id="updateFlightBtn" class="btn btn-primary">Update</button>
+						</div>
 					</div>
-
-				  <div class="col-md-3">
-					<label class="form-label">Status</label>
-					<select class="form-select" id="status">
-					  <option value="active">Active</option>
-					  <option value="inactive">Inactive</option>
-					</select>
-				  </div>
-
 				</div>
-			  </form>
 			</div>
-	  
-			<div class="modal-footer">
-			  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-			  <button type="submit" id="updateFlightBtn" class="btn btn-primary">Update</button>
+
+			<div class="modal fade" id="seatModal" tabindex="-1" aria-labelledby="seatModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+
+						<div class="modal-header">
+							<h5 class="modal-title" id="seatModalLabel">Update Inventory Seats</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+
+						<div class="modal-body">
+							<form id="seatForm">
+								<input type="hidden" name="inventoryId" id="inventoryId">
+
+								<div class="row g-3">
+									<div class="col-md-4">
+										<label class="form-label">Travel Date</label>
+										<input type="text" class="form-control" id="travelDate" readonly>
+									</div>
+
+									<div class="col-md-4">
+										<label class="form-label">PNR</label>
+										<input type="text" class="form-control" id="pnr">
+									</div>
+
+									<div class="col-md-4">
+										<label class="form-label">Seats Booked</label>
+										<input type="text" class="form-control" id="seatsBooked" readonly>
+									</div>
+
+									<div class="col-md-4">
+										<label class="form-label">Total Seats</label>
+										<input type="number" class="form-control" id="totalSeats">
+									</div>
+
+									<div class="col-md-4">
+										<label class="form-label">Fare Amount (Adults)</label>
+										<input type="number" class="form-control" id="fareAdults">
+									</div>
+
+									<div class="col-md-4">
+										<label class="form-label">Fare Amount (Infants)</label>
+										<input type="number" class="form-control" id="fareInfants">
+									</div>
+
+									<div class="col-md-4">
+										<label class="form-label">Disable Before Departure (Days)</label>
+										<input type="number" class="form-control" id="disableBeforeDeparture">
+									</div>
+
+									<div class="col-md-4">
+										<label class="form-label">Status</label>
+										<select class="form-select" id="status">
+											<option value="active">Active</option>
+											<option value="disable">Disable</option>
+										</select>
+									</div>
+								</div>
+
+							</form>
+						</div>
+
+						<div class="modal-footer">
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+							<button type="submit" id="updateSeatBtn" class="btn btn-primary">Update</button>
+						</div>
+
+					</div>
+				</div>
 			</div>
-		  </div>
-		</div>
-	</div>
-	  
-	  <script>
-		const flightModal = document.getElementById('flightModal');
-	  
-		flightModal.addEventListener('show.bs.modal', function (event) {
-		  const button = event.relatedTarget;
-		  const flightData = JSON.parse(button.getAttribute('data-flight'));
-	  
-		  // Main flight details
-		  document.getElementById('flightId').value = flightData._id;
-		  document.getElementById('inventoryName').value = flightData.inventoryName || '';
-		  document.getElementById('from').value = flightData.departureName || '';
-		  document.getElementById('to').value = flightData.arrivalName || '';
-		  document.getElementById('fromCode').value = flightData.from || '';
-		  document.getElementById('toCode').value = flightData.to || '';
-		  document.getElementById('departureDate').value = flightData.departureDate || '';
-		  document.getElementById('arrivalDate').value = flightData.arrivalDate || '';
-		  document.getElementById('departureTime').value = flightData.departureTime || '';
-		  document.getElementById('arrivalTime').value = flightData.arrivalTime || '';
-		  document.getElementById('duration').value = flightData.duration || '';
-		  document.getElementById('fromCity').value = flightData.fromCity || '';
-		  document.getElementById('toCity').value = flightData.toCity || '';
-		  document.getElementById('fromCountry').value = flightData.fromCountry || '';
-		  document.getElementById('toCountry').value = flightData.toCountry || '';
-	  
-		  // Clear existing stops if any
-		  const stopsContainer = document.getElementById('stopsContainer');
-		  stopsContainer.innerHTML = '';
-	  
-		  // Add stops dynamically
-		  if (flightData.stops && flightData.stops.length > 0) {
-			flightData.stops.forEach((stop, index) => {
-			  const stopHTML = `
+
+			<div class="modal fade" id="dateModal" tabindex="-1" aria-labelledby="dateModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="dateModalLabel">Schedule Update Details</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+
+						<div class="modal-body">
+							<form id="flightForm">
+								<input type="hidden" name="flightId" id="flightId">
+								<div class="row g-3">
+
+									<div>
+										<h4><span id="displayFromCode"></span> -> <span id="displayToCode"></span> -
+											<span id="displayDepartureDate"></span>
+										</h4>
+										<h6>Sector: <span id="displayFromCode"></span> - <span
+												id="displayToCode"></span> . <span id="displayAirline"></span> : <span
+												id="displayAirlineCode"></span> - <span id="displayFlightNumber"></span>
+											. Total Seats : <span id="displaySeats"></span></h6>
+										<h6>Departure & Arrival Time : <span id="displayDepartureTime"></span> - <span
+												id="displayArrivalTime"></span></h6>
+										<h6>Travel Date : <span id="displaydepartureDate"></span></h6>
+									</div>
+
+									<h6>Edit Inventory Details</h6>
+									<!-- Row 1 -->
+									<div class="col-md-3">
+										<label class="form-label">Airline</label>
+										<input type="text" class="form-control" id="inputAirline" disabled>
+									</div>
+
+									<div class="col-md-3">
+										<label class="form-label">Flight Number</label>
+										<input type="text" class="form-control" id="inputFlightNumber" disabled>
+									</div>
+
+									<div class="col-md-3">
+										<label class="form-label">Travel Date</label>
+										<input type="text" class="form-control dateInput" id="inputDepartureDate">
+									</div>
+
+									<div class="col-md-3">
+										<label class="form-label">Departure Time</label>
+										<input type="time" class="form-control" id="inputDepartureTime">
+									</div>
+
+									<div class="col-md-3">
+										<label class="form-label">Arrival Date</label>
+										<input type="text" class="form-control dateInput" id="inputArrivalDate">
+									</div>
+
+									<div class="col-md-3">
+										<label class="form-label">Arrival Time</label>
+										<input type="time" class="form-control" id="inputArrivalTime">
+									</div>
+								</div>
+							</form>
+						</div>
+
+						<div class="modal-footer">
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+							<button type="submit" id="updateDateBtn" class="btn btn-primary">Update</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<script>
+				const seatModal = document.getElementById('seatModal');
+
+				seatModal.addEventListener('show.bs.modal', async function (event) {
+					const button = event.relatedTarget;
+					const flightData = JSON.parse(button.getAttribute('data-flight'));
+
+					// Fill modal fields
+					document.getElementById('inventoryId').value = flightData._id || '';
+					document.getElementById('travelDate').value = flightData.departureDate || '';
+					document.getElementById('pnr').value = flightData.inventoryDates?.[0].seats || '';
+					document.getElementById('seatsBooked').value = `${flightData.seatsBooked || 0}/${flightData.inventoryDates?.[0].seats || 0}`;
+					document.getElementById('totalSeats').value = flightData.inventoryDates?.[0].seats || '';
+					document.getElementById('fareAdults').value = flightData.inventoryDates?.[0].fare.adults || '';
+					document.getElementById('fareInfants').value = flightData.inventoryDates[0].fare.infants || '';
+					document.getElementById('disableBeforeDeparture').value = flightData.disableBeforeDeparture || '';
+					document.getElementById('status').value = flightData.status || 'active';
+				});
+
+			</script>
+
+			<script>
+				document.getElementById('updateSeatBtn').addEventListener('click', async function (e) {
+					e.preventDefault(); // stop form from submitting normally
+
+					const inventoryId = document.getElementById('inventoryId').value;
+
+					const updatedData = {
+						departureDate: document.getElementById('travelDate').value,
+						inventoryDates: [{
+							seats: document.getElementById('totalSeats').value,
+							fare: {
+								adults: document.getElementById('fareAdults').value,
+								infants: document.getElementById('fareInfants').value
+							}
+						}],
+						disableBeforeDeparture: document.getElementById('disableBeforeDeparture').value,
+						status: document.getElementById('status').value
+					};
+
+					try {
+						const response = await fetch(`/update-seats?id=${inventoryId}`, {
+							method: 'PUT',
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify(updatedData)
+						});
+
+						if (!response.ok) {
+							throw new Error('Failed to update flight');
+						}
+
+						const result = await response.json();
+						alert('Flight updated successfully!');
+						window.location.reload();
+					} catch (error) {
+						console.error('Error:', error);
+						alert('Error updating flight.');
+					}
+				});
+
+			</script>
+
+			<script>
+				const dateModal = document.getElementById('dateModal');
+
+				dateModal.addEventListener('show.bs.modal', function (event) {
+					const button = event.relatedTarget;
+					const flightData = JSON.parse(button.getAttribute('data-flight'));
+
+					// Fill the header fields
+					document.getElementById('flightId').value = flightData._id || '';
+					document.getElementById('displayFromCode').textContent = flightData.from || '';
+					document.getElementById('displayToCode').textContent = flightData.to || '';
+					document.getElementById('displayDepartureDate').textContent = flightData.departureDate || '';
+					document.getElementById('displayAirline').textContent = flightData.stops[0]?.airline || '';
+					document.getElementById('displayAirlineCode').textContent = flightData.stops[0]?.airlineCode || '';
+					document.getElementById('displayFlightNumber').textContent = flightData.stops[0]?.flightNumber || '';
+					document.getElementById('displaySeats').textContent = flightData.inventoryDates?.[0]?.seats || '';
+					document.getElementById('displayDepartureTime').textContent = flightData.departureTime || '';
+					document.getElementById('displayArrivalTime').textContent = flightData.arrivalTime || '';
+					document.getElementById('displaydepartureDate').textContent = flightData.departureDate || '';
+
+					// Fill form inputs
+					document.getElementById('inputAirline').value = flightData.stops[0]?.airline || '';
+					document.getElementById('inputFlightNumber').value = flightData.stops[0]?.flightNumber || '';
+					document.getElementById('inputDepartureDate').value = flightData.departureDate || '';
+					document.getElementById('inputDepartureTime').value = flightData.departureTime || '';
+					document.getElementById('inputArrivalDate').value = flightData.arrivalDate || '';
+					document.getElementById('inputArrivalTime').value = flightData.arrivalTime || '';
+				});
+
+			</script>
+
+			<script>
+				document.getElementById('updateDateBtn').addEventListener('click', async function (e) {
+					e.preventDefault(); // prevent form from submitting normally
+
+					const flightId = document.getElementById('flightId').value;
+
+					const updatedData = {
+						departureDate: document.getElementById('inputDepartureDate').value,
+						departureTime: document.getElementById('inputDepartureTime').value,
+						arrivalDate: document.getElementById('inputArrivalDate').value,
+						arrivalTime: document.getElementById('inputArrivalTime').value,
+					};
+
+					try {
+						const response = await fetch(`/update-dates?id=${flightId}`, {
+							method: 'PUT',
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify(updatedData)
+						});
+
+						if (!response.ok) {
+							throw new Error('Failed to update flight');
+						}
+
+						const result = await response.json();
+						alert('Flight updated successfully!');
+						window.location.reload();
+					} catch (error) {
+						console.error('Error:', error);
+						alert('Error updating flight.');
+					}
+				});
+
+			</script>
+
+			<script>
+				const flightModal = document.getElementById('flightModal');
+
+				flightModal.addEventListener('show.bs.modal', function (event) {
+					const button = event.relatedTarget;
+					const flightData = JSON.parse(button.getAttribute('data-flight'));
+
+					// Main flight details
+					document.getElementById('flightId').value = flightData._id;
+					document.getElementById('inventoryName').value = flightData.inventoryName || '';
+					document.getElementById('from').value = flightData.departureName || '';
+					document.getElementById('to').value = flightData.arrivalName || '';
+					document.getElementById('fromCode').value = flightData.from || '';
+					document.getElementById('toCode').value = flightData.to || '';
+					document.getElementById('departureDate').value = flightData.departureDate || '';
+					document.getElementById('arrivalDate').value = flightData.arrivalDate || '';
+					document.getElementById('departureTime').value = flightData.departureTime || '';
+					document.getElementById('arrivalTime').value = flightData.arrivalTime || '';
+					document.getElementById('duration').value = flightData.duration || '';
+					document.getElementById('fromCity').value = flightData.fromCity || '';
+					document.getElementById('toCity').value = flightData.toCity || '';
+					document.getElementById('fromCountry').value = flightData.fromCountry || '';
+					document.getElementById('toCountry').value = flightData.toCountry || '';
+
+					// Clear existing stops if any
+					const stopsContainer = document.getElementById('stopsContainer');
+					stopsContainer.innerHTML = '';
+
+					// Add stops dynamically
+					if (flightData.stops && flightData.stops.length > 0) {
+						flightData.stops.forEach((stop, index) => {
+							const stopHTML = `
 				<div class="col-12"><hr><strong>Stop ${index}</strong></div>
 				<div class="col-md-4">
 				  <label class="form-label">From</label>
@@ -381,126 +693,193 @@
 				  <input type="text" class="form-control stop-airline-logo" value="${stop.airlineLogo || ''}" >
 				</div>
 			  `;
-			  stopsContainer.insertAdjacentHTML('beforeend', stopHTML);
-			});
-		  }
-	  
-		  // Pricing and baggage
-		  const invDate = flightData.inventoryDates?.[0] || {};
-		  document.getElementById('pnr').value = invDate.pnr || '';
-		  document.getElementById('seats').value = invDate.seats || '';
-		  document.getElementById('adults').value = invDate.fare?.adults || '';
-		  document.getElementById('infants').value = invDate.fare?.infants || '';
-		  document.getElementById('cab').value = flightData.baggage?.adult?.cabin?.weightPerPiece || '';
-		  document.getElementById('checkin').value = flightData.baggage?.adult?.checkIn?.weightPerPiece || '';
-	  
-		  // Status
-		  document.getElementById('status').value = flightData.status || 'inactive';
-		});
-	  </script>
+							stopsContainer.insertAdjacentHTML('beforeend', stopHTML);
+						});
+					}
 
-<script>
-	document.getElementById('updateFlightBtn').addEventListener('click', async function () {
-	  const form = document.getElementById('flightForm');
-  
-	  const getValue = (id) => document.getElementById(id)?.value || '';
-	  const flightId = getValue('flightId');
-  
-	  const stopBlocks = document.querySelectorAll('.stop-block');
-	  const stops = [];
-  
-	  stopBlocks.forEach((block, index) => {
-		stops.push({
-		  from: block.querySelector('.stop-from')?.value || '',
-		  to: block.querySelector('.stop-to')?.value || '',
-		  fromCode: block.querySelector('.stop-from-code')?.value || '',
-		  toCode: block.querySelector('.stop-to-code')?.value || '',
-		  fromTerminal: block.querySelector('.stop-from-terminal')?.value || '',
-		  toTerminal: block.querySelector('.stop-to-terminal')?.value || '',
-		  flightNumber: block.querySelector('.stop-flight-number')?.value || '',
-		  airline: block.querySelector('.stop-airline')?.value || '',
-		  departureDay: block.querySelector('.stop-departure-day')?.value || '',
-		  arrivalDay: block.querySelector('.stop-arrival-day')?.value || '',
-		  departureTime: block.querySelector('.stop-departure-time')?.value || '',
-		  arrivalTime: block.querySelector('.stop-arrival-time')?.value || '',
-		  stopDuration: block.querySelector('.stop-duration')?.value || '',
-		  departureCity: block.querySelector('.stop-departure-city')?.value || '',
-		  arrivalCity: block.querySelector('.stop-arrival-city')?.value || '',
-		  airlineCode: block.querySelector('.stop-airline-code')?.value || '',
-		  airlineLogo: block.querySelector('.stop-airline-logo')?.value || ''
-		});
-	  });
-  
-	  const flightData = {
-		flightId: getValue('flightId'),
-		inventoryName: getValue('inventoryName'),
-		from: getValue('fromCode'),
-		to: getValue('toCode'),
-		departureName: getValue('from'),
-		arrivalName: getValue('to'),
-		departureDate: getValue('departureDate'),
-		arrivalDate: getValue('arrivalDate'),
-		departureTime: getValue('departureTime'),
-		arrivalTime: getValue('arrivalTime'),
-		duration: getValue('duration'),
-		fromCity: getValue('fromCity'),
-		toCity: getValue('toCity'),
-		fromCountry: getValue('fromCountry'),
-		toCountry: getValue('toCountry'),
-		stops: stops,
-		inventoryDates: [{
-		  pnr: getValue('pnr'),
-		  seats: getValue('seats'),
-		  fare: {
-			adults: getValue('adults'),
-			infants: getValue('infants'),
-		  }
-		}],
-		baggage: {
-		  adult: {
-			cabin: { weightPerPiece: getValue('cab') },
-			checkIn: { weightPerPiece: getValue('checkin') }
-		  }
-		},
-		status: getValue('status'),
-	  };
-  
-	  try {
-		const response = await fetch(`/update-listing?id=${flightId}`, {
-		  method: 'PUT',
-		  headers: {
-			'Content-Type': 'application/json'
-		  },
-		  body: JSON.stringify(flightData)
-		});
-  
-		if (!response.ok) {
-		  throw new Error('Failed to update flight');
-		}
-  
-		const result = await response.json();
-		alert('Flight updated successfully!');
-		window.location.reload();
-	  } catch (error) {
-		console.error('Error:', error);
-		alert('Error updating flight.');
-	  }
-	});
-  </script>
-  
-  <script>
-	function initFlatpickrOnNewDateInputs(container) {
-  container.querySelectorAll(".dateInput:not(.flatpickr-input)").forEach(input => {
-    flatpickr(input, {
-      dateFormat: "d M Y",
-      defaultDate: "today",
-      allowInput: true
-    });
-  });
-}
+					// Pricing and baggage
+					const invDate = flightData.inventoryDates?.[0] || {};
+					document.getElementById('pnr').value = invDate.pnr || '';
+					document.getElementById('seats').value = invDate.seats || '';
+					document.getElementById('adults').value = invDate.fare?.adults || '';
+					document.getElementById('infants').value = invDate.fare?.infants || '';
+					document.getElementById('cab').value = flightData.baggage?.adult?.cabin?.weightPerPiece || '';
+					document.getElementById('checkin').value = flightData.baggage?.adult?.checkIn?.weightPerPiece || '';
 
-  </script>
-	  
+					// Status
+					document.getElementById('status').value = flightData.status || 'inactive';
+				});
+			</script>
+
+			<script>
+				document.getElementById('updateFlightBtn').addEventListener('click', async function () {
+					const form = document.getElementById('flightForm');
+
+					const getValue = (id) => document.getElementById(id)?.value || '';
+					const flightId = getValue('flightId');
+
+					const stopBlocks = document.querySelectorAll('.stop-block');
+					const stops = [];
+
+					stopBlocks.forEach((block, index) => {
+						stops.push({
+							from: block.querySelector('.stop-from')?.value || '',
+							to: block.querySelector('.stop-to')?.value || '',
+							fromCode: block.querySelector('.stop-from-code')?.value || '',
+							toCode: block.querySelector('.stop-to-code')?.value || '',
+							fromTerminal: block.querySelector('.stop-from-terminal')?.value || '',
+							toTerminal: block.querySelector('.stop-to-terminal')?.value || '',
+							flightNumber: block.querySelector('.stop-flight-number')?.value || '',
+							airline: block.querySelector('.stop-airline')?.value || '',
+							departureDay: block.querySelector('.stop-departure-day')?.value || '',
+							arrivalDay: block.querySelector('.stop-arrival-day')?.value || '',
+							departureTime: block.querySelector('.stop-departure-time')?.value || '',
+							arrivalTime: block.querySelector('.stop-arrival-time')?.value || '',
+							stopDuration: block.querySelector('.stop-duration')?.value || '',
+							departureCity: block.querySelector('.stop-departure-city')?.value || '',
+							arrivalCity: block.querySelector('.stop-arrival-city')?.value || '',
+							airlineCode: block.querySelector('.stop-airline-code')?.value || '',
+							airlineLogo: block.querySelector('.stop-airline-logo')?.value || ''
+						});
+					});
+
+					const flightData = {
+						flightId: getValue('flightId'),
+						inventoryName: getValue('inventoryName'),
+						from: getValue('fromCode'),
+						to: getValue('toCode'),
+						departureName: getValue('from'),
+						arrivalName: getValue('to'),
+						departureDate: getValue('departureDate'),
+						arrivalDate: getValue('arrivalDate'),
+						departureTime: getValue('departureTime'),
+						arrivalTime: getValue('arrivalTime'),
+						duration: getValue('duration'),
+						fromCity: getValue('fromCity'),
+						toCity: getValue('toCity'),
+						fromCountry: getValue('fromCountry'),
+						toCountry: getValue('toCountry'),
+						stops: stops,
+						inventoryDates: [{
+							pnr: getValue('pnr'),
+							seats: getValue('seats'),
+							fare: {
+								adults: getValue('adults'),
+								infants: getValue('infants'),
+							}
+						}],
+						baggage: {
+							adult: {
+								cabin: { weightPerPiece: getValue('cab') },
+								checkIn: { weightPerPiece: getValue('checkin') }
+							}
+						},
+						status: getValue('status'),
+					};
+
+					try {
+						const response = await fetch(`/update-listing?id=${flightId}`, {
+							method: 'PUT',
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify(flightData)
+						});
+
+						if (!response.ok) {
+							throw new Error('Failed to update flight');
+						}
+
+						const result = await response.json();
+						alert('Flight updated successfully!');
+						window.location.reload();
+					} catch (error) {
+						console.error('Error:', error);
+						alert('Error updating flight.');
+					}
+				});
+			</script>
+
+			<script>
+				function initFlatpickrOnNewDateInputs(container) {
+					container.querySelectorAll(".dateInput:not(.flatpickr-input)").forEach(input => {
+						flatpickr(input, {
+							dateFormat: "d M Y",
+							defaultDate: "today",
+							allowInput: true
+						});
+					});
+				}
+
+			</script>
+
+			<script>
+				document.addEventListener("DOMContentLoaded", () => {
+					document.querySelectorAll('.changeStatusBtn').forEach(button => {
+						button.addEventListener('click', async function () {
+							const flightId = this.getAttribute('data-id');
+							const newStatus = this.getAttribute('data-status');
+
+							if (!flightId || !newStatus) {
+								console.error('Missing flight ID or status.');
+								return;
+							}
+
+							// ⚡ Ask for confirmation before proceeding
+							const confirmChange = confirm(`Are you sure you want to change the status to "${newStatus}"?`);
+							if (!confirmChange) return;
+
+							try {
+								const res = await fetch('/change-status', {
+									method: 'POST',
+									headers: {
+										'Content-Type': 'application/json'
+									},
+									body: JSON.stringify({ flightId, newStatus })
+								});
+
+								const data = await res.json();
+
+								if (data.success) {
+									location.reload();  // ✅ Reload after success
+								} else {
+									alert('Failed to change status.');
+								}
+							} catch (err) {
+								console.error('Error changing status:', err);
+								alert('Something went wrong.');
+							}
+						});
+					});
+				});
+			</script>
+
+			<script>
+				document.addEventListener('DOMContentLoaded', function () {
+					flatpickr(".dateInput", {
+						dateFormat: "d M Y",
+						defaultDate: "today",
+						allowInput: true
+					});
+				});
+			</script>
+			
+			<script>
+				document.querySelectorAll('.user-booking-btn').forEach(button => {
+					button.addEventListener('click', function(e) {
+						e.preventDefault(); 
+				
+						const flightId = this.getAttribute('data-flight-id');
+				
+						if (flightId) {
+							window.location.href = `/user-bookings?flightId=${flightId}`;
+						} else {
+							alert('Flight ID missing.');
+						}
+					});
+				});
+			</script>
+				
 
 		</main>
 		<!-- **************** MAIN CONTENT END **************** -->

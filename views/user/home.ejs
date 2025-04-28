@@ -8,9 +8,11 @@
   <section class="position-relative py-8 py-lg-9"
     style="background-image:url(assets/images/bg/20.jpg); background-position: center left; background-size: cover;">
     <% if (userId) { %>
+      <% if (user.kyc !== "Completed") { %>
       <p class="alert alert-info text-center mx-auto shadow-sm rounded" style="max-width: 80%;  z-index: 10;">
         <a href="/kyc"><strong>Complete your KYC</strong></a> to enable transactions securely.
       </p>
+      <% } %>
     <% } %>
     
        <!-- Background dark overlay -->
@@ -1190,10 +1192,10 @@
 
   <!-- =======================
     Action box START -->
-  <section class="py-0">
+  <!-- <section class="py-0">
     <div class="container position-relative">
       <div class="bg-light rounded-3 position-relative p-4 p-sm-5">
-        <!-- Svg decoration -->
+        Svg decoration
         <figure
           class="position-absolute top-50 start-50 d-none d-lg-block mt-n4 ms-9"
         >
@@ -1206,7 +1208,7 @@
 
         <div class="row align-items-center position-relative">
           <div class="col-lg-8">
-            <!-- Title -->
+            Title
             <div class="d-flex">
               <h3>It's time to discover</h3>
               <img
@@ -1220,17 +1222,17 @@
               all Devonshire difficulty gay assistance joy.
             </p>
           </div>
-          <!-- Content and input -->
+          Content and input
           <div class="col-lg-4 text-lg-end">
             <a href="flight-list.html" class="btn btn-lg btn-dark mb-0"
               >Book a Flight</a
             >
           </div>
         </div>
-        <!-- Row END -->
+        Row END
       </div>
     </div>
-  </section>
+  </section> -->
   <!-- =======================
     Action box END -->
 

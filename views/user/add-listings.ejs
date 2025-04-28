@@ -66,8 +66,8 @@ Page Banner END -->
 													<!-- Dates -->
 													<div class="col-md-4">
 														<label class="form-label">Inventory Departure Date</label>
-														<input class="form-control oneWayDepartureDate" type="text"
-															placeholder="Enter departure date" id="dateInput" />
+														<input class="form-control oneWayDepartureDate dateInput" type="text"
+															placeholder="Enter departure date"  />
 													</div>
 
 													<!-- Disable -->
@@ -85,25 +85,22 @@ Page Banner END -->
 														</select>
 													</div>
 
-													<!-- From -->
+													<!-- FROM -->
 													<div class="col-md-3">
 														<label class="form-label">From</label>
-														<input class="form-control" type="text" id="fromSelect"
-															placeholder="Select from" />
-													</div>
-
-													<!-- To -->
+														<select class="form-select js-airport" id="fromSelect" placeholder="Select from"></select>
+													  </div>
+  
+													<!-- TO -->
 													<div class="col-md-3">
 														<label class="form-label">To</label>
-														<input class="form-control" type="text" id="toSelect"
-															placeholder="Select to" />
+														<select class="form-select js-airport" id="toSelect" placeholder="Select to"></select>
 													</div>
 
 													<!-- Airline -->
 													<div class="col-md-3">
 														<label class="form-label">Airline</label>
-														<input type="text" class="form-control searchAirlineSelect"
-															id="airlineSelect" placeholder="Airline">
+														<select class="form-select js-airline searchAirlineSelect" id="airlineSelect" placeholder="Select Airline"></select>
 													</div>
 
 													<!-- Flight Number -->
@@ -132,8 +129,8 @@ Page Banner END -->
 													<!-- Arrival Day -->
 													<div class="col-md-3">
 														<label class="form-label">Arrival Day</label>
-														<input type="text" class="form-control oneWayArrivalDay"
-															placeholder="Select Arrival Day" id="dateInput" />
+														<input type="text" class="form-control oneWayArrivalDay dateInput"
+															placeholder="Select Arrival Day"  />
 													</div>
 												</div>
 
@@ -176,7 +173,7 @@ Page Banner END -->
 																	<input type="text" id="adultCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="text" id="adultCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
+																	<input type="text" id="adultCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
 																</div>
 
 																<!-- Cabin Baggage -->
@@ -187,7 +184,7 @@ Page Banner END -->
 																	<input type="text" id="adultCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="text" id="adultCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
+																	<input type="text" id="adultCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
 																</div>
 															</div>
 
@@ -207,7 +204,7 @@ Page Banner END -->
 																	<input type="text" id="childCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="text" id="childCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
+																	<input type="text" id="childCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
 																</div>
 
 																<!-- Cabin Baggage -->
@@ -218,7 +215,7 @@ Page Banner END -->
 																	<input type="text" id="childCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="text" id="childCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
+																	<input type="text" id="childCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
 																</div>
 															</div>
 
@@ -238,7 +235,7 @@ Page Banner END -->
 																	<input type="text" id="infantCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="text" id="infantCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
+																	<input type="text" id="infantCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
 																</div>
 
 																<!-- Cabin Baggage -->
@@ -249,7 +246,7 @@ Page Banner END -->
 																	<input type="text" id="infantCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="text" id="infantCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
+																	<input type="text" id="infantCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
 																</div>
 															</div>
 
@@ -288,8 +285,8 @@ Page Banner END -->
 																					<span
 																						class="input-group-text rounded-0"><i
 																							class="bi bi-calendar"></i></span>
-																					<input type="text" id="dateInput"
-																						class="form-control oneWayInventoryDate"
+																					<input type="text" 
+																						class="form-control oneWayInventoryDate dateInput"
 																						placeholder="Select date" disabled>
 																				</div>
 																			</td>
@@ -358,8 +355,8 @@ Page Banner END -->
 													<!-- Dates -->
 													<div class="col-md-3">
 														<label class="form-label">Inventory Departure Date</label>
-														<input class="form-control connectingDepartureDate" type="text"
-															placeholder="Select date" id="dateInput" />
+														<input class="form-control connectingDepartureDate dateInput" type="text"
+															placeholder="Select date"  />
 													</div>
 
 													<!-- Disable -->
@@ -402,20 +399,17 @@ Page Banner END -->
 														</div>
 
 														<div class="row g-3 mb-3">
-															<!-- From -->
-															<div class="col-md-6">
-																<label class="form-label">From</label>
-																<input class="form-control" type="text"
-																	id="fromConnectingSelect"
-																	placeholder="Select from" />
-															</div>
-
-															<!-- To -->
-															<div class="col-md-6">
-																<label class="form-label">To</label>
-																<input class="form-control" type="text"
-																	id="toConnectingSelect" placeholder="Select to" />
-															</div>
+															<!-- FROM -->
+  															<div class="col-md-6">
+ 																<label class="form-label">From</label>
+ 																<select class="form-select js-airport" id="fromConnectingSelect" placeholder="Select from"></select>
+ 															</div>
+  
+	 														<!-- TO -->
+ 															<div class="col-md-6">
+ 																<label class="form-label">To</label>
+ 																<select class="form-select js-airport" id="toConnectingSelect" placeholder="Select to"></select>
+ 															</div>
 														</div>
 
 														<!-- Flight header -->
@@ -434,9 +428,7 @@ Page Banner END -->
 																	<label class="form-label mb-0">Airline</label>
 																</div>
 																<div class="col-md-3">
-																	<input type="text"
-																		class="form-control searchAirlineSelect"
-																		id="airlineSelect" placeholder="Airline">
+																	<select class="form-select js-airline searchAirlineSelect" id="airlineSelect" placeholder="Select Airline"></select>
 																</div>
 																<div>
 																	<label class="form-label mb-0">Flight Number</label>
@@ -458,9 +450,7 @@ Page Banner END -->
 																	<label class="form-label mb-0">Airline</label>
 																</div>
 																<div class="col-md-3">
-																	<input type="text"
-																		class="form-control searchAirlineSelect"
-																		id="airlineSelect" placeholder="Airline">
+																	<select class="form-select js-airline searchAirlineSelect" id="airlineSelect" placeholder="Select Airline"></select>
 																</div>
 																<div>
 																	<label class="form-label mb-0">Flight Number</label>
@@ -494,11 +484,11 @@ Page Banner END -->
 															<div>
 																Sector 1
 															</div>
+															
 															<!-- From -->
 															<div class="col-md-3">
 																<label class="form-label">Departure Airport</label>
-																<input type="text" class="form-control connectDeparture"
-																	placeholder="Departure Airport">
+																<select class="form-select js-airport connectDeparture" placeholder="Departure Airport"></select>
 															</div>
 
 															<!-- From Terminal -->
@@ -510,8 +500,7 @@ Page Banner END -->
 															<!-- To -->
 															<div class="col-md-3">
 																<label class="form-label">Arrival Airport</label>
-																<input type="text" class="form-control connectArrival"
-																	placeholder="Arrival Airport">
+																<select class="form-select js-airport connectArrival" placeholder="Arrival Airport"></select>
 															</div>
 
 															<!-- To Terminal -->
@@ -523,8 +512,7 @@ Page Banner END -->
 															<!-- Airline -->
 															<div class="col-md-2">
 																<label class="form-label">Airline</label>
-																<input type="text" class="form-control airlineSelect"
-																	placeholder="Airline ">
+																<select class="form-select js-airline airlineSelect" placeholder="Select Airline"></select>
 															</div>
 
 															<!-- Flight Number -->
@@ -550,8 +538,8 @@ Page Banner END -->
 															<!-- Arrival Day -->
 															<div class="col-md-2">
 																<label class="form-label">Arrival Day</label>
-																<input type="text" class="form-control arrivalDay"
-																	placeholder="Select Arrival Day" id="dateInput" />
+																<input type="text" class="form-control arrivalDay dateInput"
+																	placeholder="Select Arrival Day"  />
 															</div>
 														</div>
 														<input type="hidden" class="form-control connectingDuration">
@@ -572,8 +560,7 @@ Page Banner END -->
 															<!-- From -->
 															<div class="col-md-3">
 																<label class="form-label">Departure Airport</label>
-																<input type="text" class="form-control connectDeparture"
-																	placeholder="Departure Airport">
+																<select class="form-select js-airport connectDeparture" placeholder="Departure Airport"></select>
 															</div>
 
 															<!-- From Terminal -->
@@ -585,8 +572,7 @@ Page Banner END -->
 															<!-- To -->
 															<div class="col-md-3">
 																<label class="form-label">Arrival Airport</label>
-																<input type="text" class="form-control connectArrival"
-																	placeholder="Arrival Airport">
+																<select class="form-select js-airport connectArrival" placeholder="Arrival Airport"></select>
 															</div>
 
 															<!-- To Terminal -->
@@ -598,8 +584,7 @@ Page Banner END -->
 															<!-- Airline -->
 															<div class="col-md-2">
 																<label class="form-label">Airline</label>
-																<input type="text" class="form-control airlineSelect"
-																	placeholder="Airline ">
+																<select class="form-select js-airline airlineSelect" placeholder="Select Airline"></select>
 															</div>
 
 															<!-- Flight Number -->
@@ -611,8 +596,8 @@ Page Banner END -->
 															<!-- Departure Day -->
 															<div class="col-md-2">
 																<label class="form-label">Departure Day</label>
-																<input type="text" class="form-control departureDay"
-																	placeholder="Select Departure Day" id="dateInput">
+																<input type="text" class="form-control departureDay dateInput"
+																	placeholder="Select Departure Day" >
 															</div>
 
 															<!-- Departure Time -->
@@ -631,8 +616,8 @@ Page Banner END -->
 															<!-- Arrival Day -->
 															<div class="col-md-2">
 																<label class="form-label">Arrival Day</label>
-																<input type="text" class="form-control arrivalDay"
-																	placeholder="Select Arrival Day" id="dateInput" />
+																<input type="text" class="form-control arrivalDay dateInput"
+																	placeholder="Select Arrival Day"  />
 															</div>
 														</div>
 														<input type="hidden" class="form-control connectingDuration">
@@ -677,7 +662,7 @@ Page Banner END -->
 																	<input type="text" id="adultConnectCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="text" id="adultConnectCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
+																	<input type="text" id="adultConnectCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
 																</div>
 
 																<!-- Cabin Baggage -->
@@ -688,7 +673,7 @@ Page Banner END -->
 																	<input type="text" id="adultConnectCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="text" id="adultConnectCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
+																	<input type="text" id="adultConnectCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
 																</div>
 															</div>
 
@@ -709,7 +694,7 @@ Page Banner END -->
 																	<input type="text" id="childConnectCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="text" id="childConnectCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
+																	<input type="text" id="childConnectCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
 																</div>
 
 																<!-- Cabin Baggage -->
@@ -720,7 +705,7 @@ Page Banner END -->
 																	<input type="text" id="childConnectCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="text" id="childConnectCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
+																	<input type="text" id="childConnectCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
 																</div>
 															</div>
 
@@ -741,7 +726,7 @@ Page Banner END -->
 																	<input type="text" id="infantConnectCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="text" id="infantConnectCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
+																	<input type="text" id="infantConnectCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
 																</div>
 
 																<!-- Cabin Baggage -->
@@ -752,7 +737,7 @@ Page Banner END -->
 																	<input type="text" id="infantConnectCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
 																</div>
 																<div class="col-md-2">
-																	<input type="text" id="infantConnectCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG)/Piece" required>
+																	<input type="text" id="infantConnectCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
 																</div>
 															</div>
 
@@ -791,8 +776,8 @@ Page Banner END -->
 																					<span
 																						class="input-group-text rounded-0"><i
 																							class="bi bi-calendar"></i></span>
-																					<input type="text" id="dateInput"
-																						class="form-control connectingInventoryDate"
+																					<input type="text" 
+																						class="form-control connectingInventoryDate dateInput"
 																						placeholder="Select date" disabled>
 																				</div>
 																			</td>
@@ -900,14 +885,6 @@ Page Banner END -->
 			<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
 			<script>
-				flatpickr("#dateInput", {
-					dateFormat: "d M Y",
-					defaultDate: "today",
-					allowInput: true
-				});
-			</script>
-
-			<script>
 				$(document).ready(function () {
 					$('#myTab a').on('click', function (e) {
 						e.preventDefault();
@@ -943,7 +920,7 @@ Page Banner END -->
 								<label class="form-label mb-0">Airline</label>
 							</div>
 							<div class="col-md-3">
-								<input type="text" class="form-control searchAirlineSelect" id="airlineSelect" placeholder="Airline">
+								<select class="form-select js-airline searchAirlineSelect" id="airlineSelect" placeholder="Select Airline"></select>
 							</div>
 							<div>
 								<label class="form-label mb-0">Flight Number</label>
@@ -962,17 +939,17 @@ Page Banner END -->
 			
 								<div class="col-md-3">
 									<label class="form-label">Departure Airport</label>
-									<input type="text" class="form-control connectDeparture" placeholder="Departure Airport">
+									<select class="form-select js-airport connectDeparture" placeholder="Departure Airport"></select>
 								</div>
-				
+
 								<div class="col-md-3">
 									<label class="form-label">Terminal Number</label>
-									<input type="number" class="form-control fromTerminal" placeholder="Departure Terminal">
+									<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control fromTerminal" maxlength="4" placeholder="Departure Terminal" required>
 								</div>
-			
+
 								<div class="col-md-3">
 									<label class="form-label">Arrival Airport</label>
-									<input type="text" class="form-control connectArrival" placeholder="Arrival Airport">
+									<select class="form-select js-airport connectArrival" placeholder="Arrival Airport"></select>
 								</div>
 			
 								<div class="col-md-3">
@@ -982,8 +959,7 @@ Page Banner END -->
 			
 								<div class="col-md-2">
 									<label class="form-label">Airline</label>
-									<input type="text" class="form-control airlineSelect" placeholder="Airline ">
-									
+									<select class="form-select js-airline airlineSelect" placeholder="Select Airline"></select>
 								</div>
 			
 								<div class="col-md-2">
@@ -993,7 +969,7 @@ Page Banner END -->
 			
 								<div class="col-md-2">
 									<label class="form-label">Departure Day</label>
-									<input type="text" class="form-control departureDay" placeholder="Select Departure Day" id="dateInput">
+									<input type="text" class="form-control departureDay dateInput" placeholder="Select Departure Day" >
 								</div>
 
 								<div class="col-md-2">
@@ -1008,7 +984,7 @@ Page Banner END -->
 				
 								<div class="col-md-2">
 									<label class="form-label">Arrival Day</label>
-									<input type="text" class="form-control arrivalDay" placeholder="Select Arrival Day" id="dateInput">
+									<input type="text" class="form-control arrivalDay dateInput" placeholder="Select Arrival Day" >
 								</div>
 								<input type="hidden" class="form-control connectingDuration" >
 								<input type="hidden" class="form-control connectingAirlineCode" >
@@ -1020,6 +996,11 @@ Page Banner END -->
 							</div>
 						`;
 						container.appendChild(flightDetailWrapper);
+						flatpickr(".dateInput", {
+  							dateFormat: "d M Y",
+  							defaultDate: "today",
+  							allowInput: true
+						});
 					}
 
 					// Update references after any new ones have been added
@@ -1088,6 +1069,11 @@ Page Banner END -->
 				}
 
 				function populateFlightDetails(flights) {
+					if (!Array.isArray(flights) || flights.length === 0) {
+    						alert("❗ No matching flights found. Please add manually!");
+    						return;
+					}
+
 					//   console.log("Structured Flights:", flights);
 
 					const flightDetailWrappers = document.querySelectorAll('.flight-details-wrapper');
@@ -1100,8 +1086,8 @@ Page Banner END -->
 						console.log(flatFlights);
 
 						const durationInput = document.getElementById('connectingTotalDuration');
-						if (durationInput) {
-							durationInput.value = totalTime;
+						if (durationInput && totalTime) {
+							durationInput.value = formatDuration(totalTime);
 						} else {
 							console.warn(" 'connectingTotalDuration' element not found in DOM.");
 						}
@@ -1145,11 +1131,11 @@ Page Banner END -->
 							if (arrivalDayInput) arrivalDayInput.value = formattedArrivalDay;
 
 
-							wrapper.querySelector('.connectDeparture').value = leg.departureAirport?.name || "";
-							wrapper.querySelector('.connectDeparture').innerHTML = leg.departureAirport?.name || "";
+							// wrapper.querySelector('.connectDeparture').value = leg.departureAirport?.name || "";
+							// wrapper.querySelector('.connectDeparture').innerHTML = leg.departureAirport?.name || "";
 
-							wrapper.querySelector('.connectArrival').value = leg.arrivalAirport?.name || "";
-							wrapper.querySelector('.connectArrival').innerHTML = leg.arrivalAirport?.name || "";
+							// wrapper.querySelector('.connectArrival').value = leg.arrivalAirport?.name || "";
+							// wrapper.querySelector('.connectArrival').innerHTML = leg.arrivalAirport?.name || "";
 
 							wrapper.querySelector('.departureTime').value = leg.departureTime?.split('T')[1]?.slice(0, 5) || "";
 							wrapper.querySelector('.departureTime').innerHTML = leg.departureTime?.split('T')[1]?.slice(0, 5) || "";
@@ -1161,13 +1147,13 @@ Page Banner END -->
 							wrapper.querySelector('.toTerminal').value = leg.arrivalTerminal || "";
 							wrapper.querySelector('.toTerminal').innerHTML = leg.arrivalTerminal || "";
 
-							wrapper.querySelector('.airlineSelect').value = leg.carriersData?.[0]?.name || "";
-							wrapper.querySelector('.airlineSelect').innerHTML = leg.carriersData?.[0]?.name || "";
+							// wrapper.querySelector('.airlineSelect').value = leg.carriersData?.[0]?.name || "";
+							// wrapper.querySelector('.airlineSelect').innerHTML = leg.carriersData?.[0]?.name || "";
 
 							wrapper.querySelector('.flightNumber').value = leg.flightInfo?.flightNumber || "";
 							wrapper.querySelector('.flightNumber').innerHTML = leg.flightInfo?.flightNumber || "";
 
-							wrapper.querySelector('.connectingDuration').value = leg.totalTime || "";
+							wrapper.querySelector('.connectingDuration').value = formatDuration(leg.totalTime) || "";
 							
 							wrapper.querySelector('.connectingAirlineCode').value = leg.carriersData?.[0]?.code || "";
 							wrapper.querySelector('.airlineLogo').value = leg.carriersData?.[0]?.logo || "";
@@ -1178,6 +1164,14 @@ Page Banner END -->
 							wrapper.querySelector('.fromCode').value = leg.departureAirport?.code || "";
 							wrapper.querySelector('.toCode').value = leg.arrivalAirport?.code || "";
 							
+							const connectDepartureSelect = wrapper.querySelector('.connectDeparture');
+							const connectArrivalSelect = wrapper.querySelector('.connectArrival');
+							const airlineSelect = wrapper.querySelector('.airlineSelect');
+
+							setSelectValue(connectDepartureSelect, leg.departureAirport?.code || "", leg.departureAirport?.name || "");
+							setSelectValue(connectArrivalSelect, leg.arrivalAirport?.code || "", leg.arrivalAirport?.name || "");
+							setSelectValue(airlineSelect, leg.carriersData?.[0]?.code || "", leg.carriersData?.[0]?.name || "");
+
 						});
 
 						const inventoryDate = document.querySelector('.connectingInventoryDate');
@@ -1221,30 +1215,6 @@ Page Banner END -->
 					});
 				}
 			</script>
-
-			<!-- <script>
-				document.addEventListener("DOMContentLoaded", function () {
-					const airlineSelect = document.getElementById('airlineSelect');
-					const apiKey = 'Lgv8DqhTs1aoiA7rQykK8w==tN5MZOc6787IWL5g'; // Replace with your actual API key
-
-					fetch('https://api.api-ninjas.com/v1/airlines', {
-						headers: { 'X-Api-Key': apiKey }
-					})
-						.then(response => response.json())
-						.then(data => {
-							data.forEach(airline => {
-								const option = document.createElement('option');
-								option.value = airline.iata; // Airline IATA code
-								option.textContent = `${airline.name} (${airline.iata})`;
-								airlineSelect.appendChild(option);
-							});
-						})
-						.catch(error => {
-							console.error('Error fetching airlines:', error);
-						});
-				});
-
-			</script> -->
 
 			<script>
 				document.addEventListener("DOMContentLoaded", () => {
@@ -1297,6 +1267,11 @@ Page Banner END -->
 
 					function populateOneWayFlightDetails(flights) {
 
+						if (!Array.isArray(flights) || flights.length === 0) {
+    						alert("❗ No matching flights found. Please add manually!");
+    						return;
+						}
+
 						flights.forEach((flight, flightIndex) => {
 							const { legs, checkedLuggage, cabinLuggage, totalTime, departureTime, arrivalTime, departureAirport, arrivalAirport } = flight;
 
@@ -1304,8 +1279,8 @@ Page Banner END -->
 							console.log(flatFlights);
 
 							const durationInput = document.getElementById('oneWayTotalDuration');
-							if (durationInput) {
-								durationInput.value = totalTime;
+							if (durationInput && totalTime) {
+								durationInput.value = formatDuration(totalTime);
 							} else {
 								console.warn(" 'oneWayTotalDuration' element not found in DOM.");
 							}
@@ -1346,7 +1321,11 @@ Page Banner END -->
 							document.getElementById('toCountry').value = arrivalAirport?.countryName || "";
 
 							legs.forEach((leg, legIndex) => {
-								document.getElementById('airlineSelect').value = leg.carriersData?.[0]?.name || "";
+								const airlineSelect = document.getElementById('airlineSelect');
+								setSelectValue(airlineSelect, leg.carriersData?.[0]?.name || "");
+
+								// document.getElementById('airlineSelect').value = leg.carriersData?.[0]?.name || "";
+
 								document.getElementById('oneWayAirlineCode').value = leg.carriersData?.[0]?.code || "";
 								document.getElementById('oneWayAirlineLogo').value = leg.carriersData?.[0]?.logo || "";
 								document.getElementById('oneWayDepartureCity').value = leg.departureAirport?.cityName || "";
@@ -1385,6 +1364,47 @@ Page Banner END -->
 				})
 			</script>
 
+			<script>
+				function formatDuration(seconds) {
+  					const hours = Math.floor(seconds / 3600);
+  					const minutes = Math.floor((seconds % 3600) / 60);
+  					return `${hours}h ${minutes}m`;
+				}
+
+				function setSelectValue(selectElement, value, label) {
+  if (!selectElement) return;
+
+  const choices = selectElement._choicesInstance;
+
+  if (choices) {
+    // If Choices.js is attached, use Choices.js API
+    choices.setChoices(
+      [
+        {
+          value: value,
+          label: label,
+          selected: true
+        }
+      ],
+      'value',
+      'label',
+      true
+    );
+  } else {
+    // If no Choices.js, fallback to normal select
+    let option = Array.from(selectElement.options).find(opt => opt.value === value);
+    if (!option) {
+      option = new Option(label, value, true, true);
+      selectElement.add(option);
+    } else {
+      selectElement.value = value;
+    }
+  }
+}
+
+
+
+			</script>
 			<script>
 				async function addOneWay(event) {
 					event.preventDefault(); 
@@ -1484,128 +1504,492 @@ Page Banner END -->
 				}
 			</script>
 
-			<script>
-				async function addConnecting(event) {
-					event.preventDefault();
 
-					const form = document.getElementById("connectingForm");
-					const getValue = (selector) => form.querySelector(selector)?.value || "";
+	
 
-					const noOfStops = parseInt(document.getElementById('no_of_stops').value);
+<script>
+	flatpickr(".dateInput", {
+		dateFormat: "d M Y",
+		defaultDate: "today",
+		allowInput: true
+	});
+</script>
 
-					const stops = [];
-					const froms = form.querySelectorAll('.connectDeparture');
-					const tos = form.querySelectorAll('.connectArrival');
-					const fromCodes = form.querySelectorAll('.fromCode');
-					const toCodes = form.querySelectorAll('.toCode');
-					const fromTerminals = form.querySelectorAll('.fromTerminal');
-					const toTerminals = form.querySelectorAll('.toTerminal');
-					const airlines = form.querySelectorAll('.airlineSelect');
-					const flightNumbers = form.querySelectorAll('.flightNumber');
-					const departureTimes = form.querySelectorAll('.departureTime');
-					const arrivalTimes = form.querySelectorAll('.arrivalTime');
-					const arrivalDays = form.querySelectorAll('.arrivalDay');
-					const departureDays = form.querySelectorAll('.departureDay');
-					const stopDurations = form.querySelectorAll('.connectingDuration');
-					const airlineCodes = form.querySelectorAll('.connectingAirlineCode');
-					const departureCities = form.querySelectorAll('.departureCity');
-					const arrivalCities = form.querySelectorAll('.arrivalCity');
-					const airlineLogos = form.querySelectorAll('.airlineLogo');
+<script>
+	async function addConnecting(event) {
+		event.preventDefault();
+
+		const form = document.getElementById("connectingForm");
+		const getValue = (selector) => form.querySelector(selector)?.value || "";
+
+		const noOfStops = parseInt(document.getElementById('no_of_stops').value);
+
+		const stops = [];
+		const froms = form.querySelectorAll('.connectDeparture');
+		const tos = form.querySelectorAll('.connectArrival');
+		const fromCodes = form.querySelectorAll('.fromCode');
+		const toCodes = form.querySelectorAll('.toCode');
+		const fromTerminals = form.querySelectorAll('.fromTerminal');
+		const toTerminals = form.querySelectorAll('.toTerminal');
+		const airlines = form.querySelectorAll('.airlineSelect');
+		const flightNumbers = form.querySelectorAll('.flightNumber');
+		const departureTimes = form.querySelectorAll('.departureTime');
+		const arrivalTimes = form.querySelectorAll('.arrivalTime');
+		const arrivalDays = form.querySelectorAll('.arrivalDay');
+		const departureDays = form.querySelectorAll('.departureDay');
+		const stopDurations = form.querySelectorAll('.connectingDuration');
+		const airlineCodes = form.querySelectorAll('.connectingAirlineCode');
+		const departureCities = form.querySelectorAll('.departureCity');
+		const arrivalCities = form.querySelectorAll('.arrivalCity');
+		const airlineLogos = form.querySelectorAll('.airlineLogo');
 
 
-					for (let i = 0; i <= noOfStops; i++) {
-						stops.push({
-							from: froms[i]?.value || "",
-							to: tos[i]?.value || "",
-							fromCode: fromCodes[i]?.value || "",
-							toCode: toCodes[i]?.value || "",
-							fromTerminal: fromTerminals[i]?.value || "",
-							toTerminal: toTerminals[i]?.value || "",
-							airline: airlines[i]?.value || "",
-							flightNumber: flightNumbers[i]?.value || "",
-							departureTime: departureTimes[i]?.value || "",
-							arrivalTime: arrivalTimes[i]?.value || "",
-							arrivalDay: arrivalDays[i]?.value || "",
-							departureDay: i === 0 ? getValue('.connectingDepartureDate') : departureDays[i - 1]?.value || "",
-							stopDuration: stopDurations[i]?.value || "",
-							airlineCode: airlineCodes[i]?.value || "",
-							departureCity: departureCities[i]?.value || "",
-							arrivalCity: arrivalCities[i]?.value || "",
-							airlineLogo: airlineLogos[i]?.value || "",
-						});
+		for (let i = 0; i <= noOfStops; i++) {
+			stops.push({
+				from: froms[i]?.value || "",
+				to: tos[i]?.value || "",
+				fromCode: fromCodes[i]?.value || "",
+				toCode: toCodes[i]?.value || "",
+				fromTerminal: fromTerminals[i]?.value || "",
+				toTerminal: toTerminals[i]?.value || "",
+				airline: airlines[i]?.value || "",
+				flightNumber: flightNumbers[i]?.value || "",
+				departureTime: departureTimes[i]?.value || "",
+				arrivalTime: arrivalTimes[i]?.value || "",
+				arrivalDay: arrivalDays[i]?.value || "",
+				departureDay: i === 0 ? getValue('.connectingDepartureDate') : departureDays[i - 1]?.value || "",
+				stopDuration: stopDurations[i]?.value || "",
+				airlineCode: airlineCodes[i]?.value || "",
+				departureCity: departureCities[i]?.value || "",
+				arrivalCity: arrivalCities[i]?.value || "",
+				airlineLogo: airlineLogos[i]?.value || "",
+			});
 
-					}
+		}
 
-					const oneWayFlight = {
-						sellerId: document.getElementById('userId').value,
-						inventoryName: getValue('input[placeholder="Inventory name"]'),
-						from: getValue('#fromConnectingSelect'),
-						to: getValue('#toConnectingSelect'),
-						departureName: getValue('#connectingDepartureName'),
-						arrivalName: getValue('#connectingArrivalName'),
-  						fromCity: getValue('#connectingFromCity'),
-  						toCity: getValue('#connectingToCity'),
-  						fromCountry: getValue('#connectingFromCountry'),
-  						toCountry: getValue('#connectingToCountry'),
-						totalDuration: document.getElementById('connectingTotalDuration').value,
-						departureDate: getValue('.connectingDepartureDate'),
-						departureTime: document.getElementById('connectDepartureTime').value,
-						arrivalDate: stops[noOfStops]?.arrivalDay || "",
-						arrivalTime: document.getElementById('connectArrivalTime').value,
-						disableBeforeDays: getValue('#days'),
-						stops: stops,
-						adultCheckinNumber: document.getElementById('adultConnectCheckinNumber').value,
-						adultCheckinWeight: document.getElementById('adultConnectCheckinWeight').value,
-						adultCabinNumber: document.getElementById('adultConnectCabinNumber').value,
-						adultCabinWeight: document.getElementById('adultConnectCabinWeight').value,
-						childCheckinNumber: document.getElementById('childConnectCheckinNumber').value,
-						childCheckinWeight: document.getElementById('childConnectCheckinWeight').value,
-						childCabinNumber: document.getElementById('childConnectCabinNumber').value,
-						childCabinWeight: document.getElementById('childConnectCabinWeight').value,
-						infantCheckinNumber: document.getElementById('infantConnectCheckinNumber').value,
-						infantCheckinWeight: document.getElementById('infantConnectCheckinWeight').value,
-						infantCabinNumber: document.getElementById('infantConnectCabinNumber').value,
-						infantCabinWeight: document.getElementById('infantConnectCabinWeight').value,
-						inventoryDates: [{
-							date: getValue('.connectingInventoryDate'),
-							pnr: getValue('.connectingPnr'),
-							seats: getValue('.connectingSeats'),
-							fare: {
-								adults: getValue('.connectingAdultFare'),
-								infants: getValue('.connectingInfantFare'),
-							}
-						}],
-						refundable: false,
-					};
-
-					try {
-						const response = await fetch("/add-flight", {
-							method: "POST",
-							headers: {
-								"Content-Type": "application/json"
-							},
-							body: JSON.stringify(oneWayFlight)
-						});
-
-						if (!response.ok) {
-							throw new Error("Failed to submit connecting flight");
-						}
-
-						const result = await response.json();
-						console.log("Success:", result);
-						alert("Connecting flight added successfully!");
-						window.location.href = result.redirectUrl;
-
-						form.reset();
-
-					} catch (error) {
-						console.error("Error:", error);
-						alert("Error submitting the connecting flight.");
-					}
+		const oneWayFlight = {
+			sellerId: document.getElementById('userId').value,
+			inventoryName: getValue('input[placeholder="Inventory name"]'),
+			from: getValue('#fromConnectingSelect'),
+			to: getValue('#toConnectingSelect'),
+			departureName: getValue('#connectingDepartureName'),
+			arrivalName: getValue('#connectingArrivalName'),
+			  fromCity: getValue('#connectingFromCity'),
+			  toCity: getValue('#connectingToCity'),
+			  fromCountry: getValue('#connectingFromCountry'),
+			  toCountry: getValue('#connectingToCountry'),
+			totalDuration: document.getElementById('connectingTotalDuration').value,
+			departureDate: getValue('.connectingDepartureDate'),
+			departureTime: document.getElementById('connectDepartureTime').value,
+			arrivalDate: stops[noOfStops]?.arrivalDay || "",
+			arrivalTime: document.getElementById('connectArrivalTime').value,
+			disableBeforeDays: getValue('#days'),
+			stops: stops,
+			adultCheckinNumber: document.getElementById('adultConnectCheckinNumber').value,
+			adultCheckinWeight: document.getElementById('adultConnectCheckinWeight').value,
+			adultCabinNumber: document.getElementById('adultConnectCabinNumber').value,
+			adultCabinWeight: document.getElementById('adultConnectCabinWeight').value,
+			childCheckinNumber: document.getElementById('childConnectCheckinNumber').value,
+			childCheckinWeight: document.getElementById('childConnectCheckinWeight').value,
+			childCabinNumber: document.getElementById('childConnectCabinNumber').value,
+			childCabinWeight: document.getElementById('childConnectCabinWeight').value,
+			infantCheckinNumber: document.getElementById('infantConnectCheckinNumber').value,
+			infantCheckinWeight: document.getElementById('infantConnectCheckinWeight').value,
+			infantCabinNumber: document.getElementById('infantConnectCabinNumber').value,
+			infantCabinWeight: document.getElementById('infantConnectCabinWeight').value,
+			inventoryDates: [{
+				date: getValue('.connectingInventoryDate'),
+				pnr: getValue('.connectingPnr'),
+				seats: getValue('.connectingSeats'),
+				fare: {
+					adults: getValue('.connectingAdultFare'),
+					infants: getValue('.connectingInfantFare'),
 				}
-			</script>
+			}],
+			refundable: false,
+		};
 
+		try {
+			const response = await fetch("/add-flight", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(oneWayFlight)
+			});
 
+			if (!response.ok) {
+				throw new Error("Failed to submit connecting flight");
+			}
+
+			const result = await response.json();
+			console.log("Success:", result);
+			alert("Connecting flight added successfully!");
+			window.location.href = result.redirectUrl;
+
+			form.reset();
+
+		} catch (error) {
+			console.error("Error:", error);
+			alert("Error submitting the connecting flight.");
+		}
+	}
+</script>
+
+<!-- <script>
+	document.addEventListener("DOMContentLoaded", function () {
+	  const selectors = [
+		"#fromSelect",
+		"#toSelect",
+		"#fromConnectingSelect",
+		"#toConnectingSelect"
+	  ];
+	
+	  selectors.forEach(selector => {
+		const element = document.querySelector(selector);
+		const choices = new Choices(element, {
+		  searchEnabled: true,
+		  placeholderValue: "Select Airport",
+		  searchChoices: false,
+		  shouldSort: false,
+		  allowHTML: true // suppress future deprecation warning
+		});
+	
+		let defaultLoaded = false;
+		let typingTimer;
+		const doneTypingInterval = 100; // milliseconds
+	
+		element.addEventListener('showDropdown', async () => {
+		  if (!defaultLoaded) {
+			try {
+			  const res = await fetch("/search-airports");
+			  const airports = await res.json();
+			  choices.setChoices(
+				airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
+				"value",
+				"label",
+				true
+			  );
+			  defaultLoaded = true;
+			} catch (err) {
+			  console.error("Error loading default airports:", err);
+			}
+		  }
+		});
+	
+		element.addEventListener('search', function (e) {
+		  clearTimeout(typingTimer);
+		  const searchTerm = e.detail.value.trim();
+		  if (searchTerm.length >= 2) {
+			typingTimer = setTimeout(async () => {
+			  try {
+				const res = await fetch(`/search-airports?q=${encodeURIComponent(searchTerm)}`);
+				const airports = await res.json();
+				choices.setChoices(
+				  airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
+				  "value",
+				  "label",
+				  true
+				);
+			  } catch (err) {
+				console.error("Error searching airports:", err);
+			  }
+			}, doneTypingInterval);
+		  }
+		});
+	
+	  });
+	});
+</script> -->
+	
+<!-- <script>
+	document.addEventListener("DOMContentLoaded", function () {
+	  const staticSelectors = [
+		"#fromSelect",
+		"#toSelect",
+		"#fromConnectingSelect",
+		"#toConnectingSelect"
+	  ];
+	
+	  const dynamicSelectors = [
+		".connectDeparture",
+		".connectArrival"
+	  ];
+	
+	  const doneTypingInterval = 100; // milliseconds
+	
+	  function initChoicesForElement(element) {
+		if (element.classList.contains('choices-initialized')) return; // prevent double initialization
+		element.classList.add('choices-initialized');
+	
+		const choices = new Choices(element, {
+		  searchEnabled: true,
+		  placeholderValue: "Select Airport",
+		  searchChoices: false,
+		  shouldSort: false,
+		  allowHTML: true
+		});
+	
+		let defaultLoaded = false;
+		let typingTimer;
+	
+		element.addEventListener('showDropdown', async () => {
+		  if (!defaultLoaded) {
+			try {
+			  const res = await fetch("/search-airports");
+			  const airports = await res.json();
+			  choices.setChoices(
+				airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
+				"value",
+				"label",
+				true
+			  );
+			  defaultLoaded = true;
+			} catch (err) {
+			  console.error("Error loading default airports:", err);
+			}
+		  }
+		});
+	
+		element.addEventListener('search', function (e) {
+		  clearTimeout(typingTimer);
+		  const searchTerm = e.detail.value.trim();
+		  if (searchTerm.length >= 2) {
+			typingTimer = setTimeout(async () => {
+			  try {
+				const res = await fetch(`/search-airports?q=${encodeURIComponent(searchTerm)}`);
+				const airports = await res.json();
+				choices.setChoices(
+				  airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
+				  "value",
+				  "label",
+				  true
+				);
+			  } catch (err) {
+				console.error("Error searching airports:", err);
+			  }
+			}, doneTypingInterval);
+		  }
+		});
+	  }
+	
+	  // Initialize static dropdowns
+	  staticSelectors.forEach(selector => {
+		const element = document.querySelector(selector);
+		if (element) initChoicesForElement(element);
+	  });
+	
+	  // Listen for dynamically added selects
+	  const observer = new MutationObserver(mutations => {
+		mutations.forEach(mutation => {
+		  mutation.addedNodes.forEach(node => {
+			if (node.nodeType === 1) { // Element
+			  dynamicSelectors.forEach(sel => {
+				if (node.matches(sel)) {
+				  initChoicesForElement(node);
+				}
+				// Also check inside the node if it contains new selects
+				node.querySelectorAll(sel).forEach(inner => initChoicesForElement(inner));
+			  });
+			}
+		  });
+		});
+	  });
+	
+	  observer.observe(document.body, { childList: true, subtree: true });
+	});
+	</script> -->
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+		  const staticSelectors = [
+			"#fromSelect",
+			"#toSelect",
+			"#fromConnectingSelect",
+			"#toConnectingSelect"
+		  ];
+		
+		  const dynamicSelectors = [
+			".connectDeparture",
+			".connectArrival"
+		  ];
+		
+		  const doneTypingInterval = 100;
+		
+		  function initChoicesForElement(element) {
+			if (!element || element.classList.contains('choices-initialized')) return;
+			element.classList.add('choices-initialized');
+		
+			const choices = new Choices(element, {
+			  searchEnabled: true,
+			  placeholderValue: "Select Airport",
+			  searchChoices: false,
+			  shouldSort: false,
+			  allowHTML: true
+			});
+		
+			element._choicesInstance = choices;
+
+			let defaultLoaded = false;
+			let typingTimer;
+		
+			element.addEventListener('showDropdown', async () => {
+			  if (!defaultLoaded) {
+				try {
+				  const res = await fetch("/search-airports");
+				  const airports = await res.json();
+				  choices.setChoices(
+					airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
+					"value",
+					"label",
+					true
+				  );
+				  defaultLoaded = true;
+				} catch (err) {
+				  console.error("Error loading default airports:", err);
+				}
+			  }
+			});
+		
+			element.addEventListener('search', function (e) {
+			  clearTimeout(typingTimer);
+			  const searchTerm = e.detail.value.trim();
+			  if (searchTerm.length >= 2) {
+				typingTimer = setTimeout(async () => {
+				  try {
+					const res = await fetch(`/search-airports?q=${encodeURIComponent(searchTerm)}`);
+					const airports = await res.json();
+					choices.setChoices(
+					  airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
+					  "value",
+					  "label",
+					  true
+					);
+				  } catch (err) {
+					console.error("Error searching airports:", err);
+				  }
+				}, doneTypingInterval);
+			  }
+			});
+		  }
+		
+		  // ✅ Init static selects
+		  staticSelectors.forEach(selector => {
+			const element = document.querySelector(selector);
+			if (element) initChoicesForElement(element);
+		  });
+		
+		  // ✅ Init already existing sectors (like Sector 1 & 2 already in HTML)
+		  dynamicSelectors.forEach(selector => {
+			document.querySelectorAll(selector).forEach(el => {
+			  initChoicesForElement(el);
+			});
+		  });
+		
+		  // ✅ Watch for dynamically added future selects (Sector 3, 4, etc)
+		  const observer = new MutationObserver(mutations => {
+			mutations.forEach(mutation => {
+			  mutation.addedNodes.forEach(node => {
+				if (node.nodeType === 1) {
+				  dynamicSelectors.forEach(sel => {
+					if (node.matches(sel)) {
+					  initChoicesForElement(node);
+					}
+					node.querySelectorAll(sel).forEach(inner => initChoicesForElement(inner));
+				  });
+				}
+			  });
+			});
+		  });
+		
+		  observer.observe(document.body, { childList: true, subtree: true });
+		});
+		</script>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+	  const selectorsStatic  = [".searchAirlineSelect", ".airlineSelect"];
+	  const selectorsDynamic = [".searchAirlineSelect", ".airlineSelect"];
+	  const delay            = 100; // ms debounce
+	
+	  function initAirlineSelect(el) {
+		if (!el || el.classList.contains('choices-initialized')) return;
+		el.classList.add('choices-initialized');
+	
+		const choices = new Choices(el, {
+		  searchEnabled: true,
+		  placeholderValue: "Select Airline",
+		  searchChoices: false,
+		  shouldSort: false,
+		  allowHTML: true
+		});
+	
+		el._choicesInstance = choices;
+
+		let loadedDefault = false;
+		let timer;
+	
+		// load default list on open
+		el.addEventListener('showDropdown', async () => {
+		  if (loadedDefault) return;
+		  try {
+			const res = await fetch('/search-airlines');
+			const arr = await res.json();
+			choices.setChoices(
+			  arr.map(a => ({ value: a.Value, label: `${a.Name} (${a.Value})` })),
+			  'value','label',
+			  true
+			);
+			loadedDefault = true;
+		  } catch(err) {
+			console.error('Error loading airlines:', err);
+		  }
+		});
+	
+		// live search on typing
+		el.addEventListener('search', e => {
+		  clearTimeout(timer);
+		  const term = e.detail.value.trim();
+		  if (term.length < 2) return;
+		  timer = setTimeout(async () => {
+			try {
+			  const res = await fetch(`/search-airlines?q=${encodeURIComponent(term)}`);
+			  const arr = await res.json();
+			  choices.setChoices(
+				arr.map(a => ({ value: a.Value, label: `${a.Name} (${a.Value})` })),
+				'value','label',
+				true
+			  );
+			} catch(err) {
+			  console.error('Error searching airlines:', err);
+			}
+		  }, delay);
+		});
+	  }
+	
+	  // initialize all existing selects
+	  selectorsStatic.forEach(sel =>
+		document.querySelectorAll(sel).forEach(el => initAirlineSelect(el))
+	  );
+	
+	  // watch for dynamically added ones
+	  const obs = new MutationObserver(muts => {
+		muts.forEach(m => {
+		  m.addedNodes.forEach(node => {
+			if (node.nodeType !== 1) return;
+			selectorsDynamic.forEach(sel => {
+			  if (node.matches(sel)) initAirlineSelect(node);
+			  node.querySelectorAll(sel).forEach(inner => initAirlineSelect(inner));
+			});
+		  });
+		});
+	  });
+	  obs.observe(document.body, { childList: true, subtree: true });
+	});
+	</script>
+	
+	
+		
 		</main>
 		<!-- **************** MAIN CONTENT END **************** -->
 

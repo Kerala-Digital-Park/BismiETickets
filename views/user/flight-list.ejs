@@ -472,10 +472,9 @@
                             </div>
                             <!-- Time -->
                             <div class="col-sm-4 col-md-3 my-sm-auto text-center">
-                              <% const totalSeconds=parseInt(flight.duration) || 0; const hours=Math.floor(totalSeconds
-                                / 3600); const minutes=Math.floor((totalSeconds % 3600) / 60); %>
+                               
                                 <h5>
-                                  <%= hours %>hr <%= minutes %>min
+                                  <%= flight.duration %>
                                 </h5>
 
                                 <div class="position-relative my-4">
@@ -952,17 +951,11 @@
                 <h6 class="mb-0">${stop.departureTime}</h6>
                 <p class="mb-0">${stop.departureCity}, ${stop.from}</p>
                 `;
-
-                const totalSeconds = parseInt(stop.stopDuration) || 0;
-                const hours = Math.floor(totalSeconds / 3600);
-                const minutes = Math.floor((totalSeconds % 3600) / 60);
-                const durationDisplay = `${hours}hr ${minutes}min`;
-
                 // Flight Duration
                 const midCol = document.createElement('div');
                 midCol.className = 'col-sm-4 my-sm-auto text-center';
                 midCol.innerHTML = `
-                <h5>${durationDisplay}</h5>
+                <h5>stop.stopDuration</h5>
                 <div class="position-relative my-4">
                 <hr class="bg-primary opacity-5 position-relative">
                 <div class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">

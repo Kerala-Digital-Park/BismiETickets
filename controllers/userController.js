@@ -1,9 +1,12 @@
+const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const Flights = require("../models/flightModel");
 const Users = require("../models/userModel");
 const Bookings = require("../models/bookingModel");
 const Subscriptions = require("../models/subscriptionModel");
+const Airports = require("../models/airportModel");
+const Airlines = require("../models/airlineModel");
 const { countries } = require('countries-list');
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -1495,6 +1498,15 @@ const viewPricing = async (req, res) => {
   }
 };
 
+const viewAgentSubscription = async (req, res) => {
+  try {
+    res.render("user/agent-subscription", {});
+  } catch (error) {
+    console.error(error);
+    res.render("error", { error });
+  }
+};
+
 const renewal = async (req, res) => {
   const userId = req.session.userId;
   const { razorpay_payment_id, email, price, subscription, role } = req.body;
@@ -1677,12 +1689,76 @@ const viewListings = async (req, res) => {
 
 const viewAddListing = async (req, res) => {
   try {
-    res.render("user/add-listings", {});
+    res.render("user/add-listings", {  });  
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "Internal Server error" });
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
+const searchAirports = async (req, res) => {
+  try {
+    const q = (req.query.q || "").trim();
+    const matchStage = q
+      ? {
+          $or: [
+            { Airport: { $regex: q, $options: "i" } },
+            { Value:   { $regex: q, $options: "i" } }
+          ]
+        }
+      : {};
+
+    const airports = await Airports.aggregate([
+      { $match: matchStage },                        // 1. filter
+      {
+        $group: {                                    // 2. group by code
+          _id: "$Value", 
+          Airport: { $first: "$Airport" }            // 3. pick first name
+        }
+      },
+      {
+        $project: {                                  // 4. project back
+          _id: 0,
+          Value: "$_id",
+          Airport: 1
+        }
+      },
+      { $limit: 25 }                                 // 5. limit results
+    ]);
+
+    res.json(airports);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+}
+
+const searchAirlines = async (req, res) => { 
+  try {
+    const q = (req.query.q || "").trim();
+
+    // Build search filter
+    const filter = q
+      ? {
+          // $text: { $search: q }  // Use the text index for efficient search
+          $or: [
+            { Name: { $regex: q, $options: "i" } },
+            { Value:   { $regex: q, $options: "i" } }
+          ]
+        }
+      : {};
+
+    // Query only Name and Value fields (using .select to limit the fields)
+    const airlines = await Airlines.find(filter)
+      .limit(50)  // Limit to 20 results (adjust as needed)
+      .select("Name Value -_id");  // Only return the fields you need (Name and Value)
+
+    res.json(airlines);  // Return the search results
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+}
 
 const viewJoinUs = async (req, res) => {
   try {
@@ -1696,7 +1772,10 @@ const viewJoinUs = async (req, res) => {
 // const viewUserBookings = async (req, res) => {
 //   const userId = req.session.userId;
 //   const search = req.query.search || '';
-  
+//   const page = parseInt(req.query.page) || 1;
+//   const limit =4;
+//   const skip = (page - 1) * limit;
+
 //   try {
 //     let flightIds = [];
 
@@ -1707,11 +1786,10 @@ const viewJoinUs = async (req, res) => {
 //           { toCity: { $regex: search, $options: 'i' } }
 //         ]
 //       }).select('_id');
-  
+
 //       flightIds = matchingFlights.map(f => f._id);
 //     }
 
-//     // Build query based on search
 //     let query = {};
 //     if (search) {
 //       query = {
@@ -1722,24 +1800,27 @@ const viewJoinUs = async (req, res) => {
 //       };
 //     }
 
-//     // Fetch bookings and filter by seller (current user)
-//     const allBookings = await Bookings.find(query)
+//     // Get total for pagination
+//     const allMatchingBookings = await Bookings.find(query)
 //       .populate("flight")
-//       .populate("userId")
-//       .sort({ createdAt: -1 });
+//       .populate("userId");
 
-//     const sellerBookings = allBookings.filter(booking => {
-//       const sellerId = booking.flight?.sellerId?.toString(); 
-//       return sellerId === userId;
+      
+//       const sellerBookings = allMatchingBookings.filter(booking => {
+//         return booking.flight?.sellerId?.toString() === userId;
+//       });
+      
+//       const paginatedBookings = sellerBookings.slice(skip, skip + limit);
+//       console.log(paginatedBookings)
+
+//     const totalPages = Math.ceil(sellerBookings.length / limit);
+
+//     res.render("user/user-booking", {
+//       bookings: paginatedBookings,
+//       search,
+//       currentPage: page,
+//       totalPages,
 //     });
-
-//     // AJAX request (real-time search)
-//     if (req.xhr) {
-//       return res.render('partials/bookingTableRows', { bookings: sellerBookings });
-//     }
-
-//     // Full page load
-//     res.render("user/user-booking", { bookings: sellerBookings, search });
 
 //   } catch (error) {
 //     console.error(error);
@@ -1748,11 +1829,12 @@ const viewJoinUs = async (req, res) => {
 // };
 
 const viewUserBookings = async (req, res) => {
-  const userId = req.session.userId;
+  const userId = req.session.userId; // seller's user ID
   const search = req.query.search || '';
   const page = parseInt(req.query.page) || 1;
-  const limit =4;
+  const limit = 4;
   const skip = (page - 1) * limit;
+  const flightId = req.query.flightId; 
 
   try {
     let flightIds = [];
@@ -1769,6 +1851,7 @@ const viewUserBookings = async (req, res) => {
     }
 
     let query = {};
+
     if (search) {
       query = {
         $or: [
@@ -1778,18 +1861,19 @@ const viewUserBookings = async (req, res) => {
       };
     }
 
-    // Get total for pagination
+    if (flightId) {
+      query.flight = flightId;  
+    }
+
     const allMatchingBookings = await Bookings.find(query)
       .populate("flight")
       .populate("userId");
 
-      
-      const sellerBookings = allMatchingBookings.filter(booking => {
-        return booking.flight?.sellerId?.toString() === userId;
-      });
-      
-      const paginatedBookings = sellerBookings.slice(skip, skip + limit);
-      console.log(paginatedBookings)
+    const sellerBookings = allMatchingBookings.filter(booking => {
+      return booking.flight?.sellerId?.toString() === userId;
+    });
+
+    const paginatedBookings = sellerBookings.slice(skip, skip + limit);
 
     const totalPages = Math.ceil(sellerBookings.length / limit);
 
@@ -1897,6 +1981,14 @@ const getApiFlights = async (req, res) => {
     flightNumbers = [],
   } = req.body;
 
+  console.log("Get flights");
+  console.log(req.body);
+  console.log("From", from);
+  console.log("To", to);  
+  console.log("Departure Date", departureDate);
+  console.log("Airlines", airlines);
+  console.log("Flight Numbers", flightNumbers);
+  
   const formatDate = (dateString) => {
     if (!dateString) return null;
 
@@ -1968,7 +2060,7 @@ const getApiFlights = async (req, res) => {
 
             if (
               flightInfo.flightNumber !== parseInt(flightNumbers[i]) ||
-              carrierData[0].name.toLowerCase() !== airlines[i].toLowerCase()
+              carrierData[0].code.toLowerCase() !== airlines[i].toLowerCase()
             ) {
               allMatch = false;
               break;
@@ -2021,6 +2113,69 @@ const updateListingById = async( req, res ) => {
   } catch (error) {
     console.error("Error updating flight:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+const updateSeatById = async( req, res ) => {
+  console.log("Update flight")
+  const flightId = req.query.id;
+  const flightData = req.body;
+  console.log(flightId, flightData)
+
+  try {
+    const updatedFlight = await Flights.findByIdAndUpdate(flightId, flightData, { new: true });
+    console.log(updatedFlight);
+    if (!updatedFlight) {
+      return res.status(404).json({ message: "Flight not found" });
+    }
+    res.json({ message: "Flight updated successfully", flight: updatedFlight });
+  } catch (error) {
+    console.error("Error updating flight:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+const updateDateById = async( req, res ) => {
+  console.log("Update flight")
+  const flightId = req.query.id;
+  const flightData = req.body;
+  console.log(flightId, flightData)
+
+  try {
+    const updatedFlight = await Flights.findByIdAndUpdate(flightId, flightData, { new: true });
+    console.log(updatedFlight);
+    if (!updatedFlight) {
+      return res.status(404).json({ message: "Flight not found" });
+    }
+    res.json({ message: "Flight updated successfully", flight: updatedFlight });
+  } catch (error) {
+    console.error("Error updating flight:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+const changeStatus = async (req, res) => {
+  try {
+    const { flightId, newStatus } = req.body;
+
+    if (!flightId || !newStatus) {
+      return res.status(400).json({ success: false, message: 'Missing data' });
+    }
+
+    const updatedFlight = await Flights.findByIdAndUpdate(
+      flightId,
+      { status: newStatus },
+      { new: true } // return the updated document if you want
+    );
+
+    if (!updatedFlight) {
+      return res.status(404).json({ success: false, message: 'Flight not found' });
+    }
+
+    res.json({ success: true, message: 'Status updated' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
 }
 
@@ -2085,5 +2240,11 @@ module.exports = {
   getApiFlights,
   getApiCountries,
   updateListingById,
+  searchAirports,
+  searchAirlines,
+  changeStatus,
+  viewAgentSubscription,
+  updateSeatById,
+  updateDateById,
 
 };

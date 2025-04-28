@@ -94,7 +94,9 @@ userRouter.get("/add-listing", isLogin, userController.viewAddListing);
 userRouter.get("/join-us", userController.viewJoinUs);
 userRouter.get("/user-bookings", isLogin, userController.viewUserBookings);
 userRouter.get("/api/countries", userController.getApiCountries);
-
+userRouter.get("/search-airports", userController.searchAirports);
+userRouter.get("/search-airlines", userController.searchAirlines);
+userRouter.get("/agent-subscription", isLogin, userController.viewAgentSubscription);
 
 
 userRouter.post("/sign-up", userController.signup);
@@ -130,8 +132,12 @@ userRouter.post("/renewal-free", isLogin, userController.freeRenewal);
 userRouter.post("/agent-subscription", isLogin, userController.agentSubscription);
 userRouter.post("/add-flight", isLogin, userController.addFlight);
 userRouter.post("/api/flights", isLogin, userController.getApiFlights);
+userRouter.post('/change-status', isLogin, userController.changeStatus);
+
 
 
 userRouter.put("/update-listing", isLogin, userController.updateListingById);
+userRouter.put("/update-seats", isLogin, userController.updateSeatById);
+userRouter.put("/update-dates", isLogin, userController.updateDateById);
 
 module.exports = userRouter;

@@ -41,13 +41,13 @@
                     <% const stopCount = flightDetails.stops.length - 1; %>
                     <%= stopCount === 0 ? 'Non-stop' : stopCount === 1 ? '1 stop' : `${stopCount} stops` %>
                   </li>
-                <% 
+                <!-- <% 
                   const totalSeconds = parseInt(flightDetails.duration) || 0;
                   const hours = Math.floor(totalSeconds / 3600);
                   const minutes = Math.floor((totalSeconds % 3600) / 60);
-                %>
+                %> -->
                 <li class="nav-item">
-                  <%= hours %>hr <%= minutes %>min
+                  <%= flightDetails.duration %>
                 </li>
                 </ul>
               </div>
@@ -95,12 +95,8 @@
               
                       <!-- Duration Between Stops -->
                       <div class="col-sm-4 col-md-3 text-center my-sm-auto">
-                        <% 
-                          const duration = parseInt(flightDetails.stops[i].stopDuration || 0);
-                          const hrs = Math.floor(duration / 3600);
-                          const mins = Math.floor((duration % 3600) / 60);
-                        %>
-                        <h5><%= hrs %>hr <%= mins %>min</h5>
+                        
+                        <h5><%= flightDetails.stops[i].stopDuration || 0 %></h5>
                         <div class="position-relative my-4">
                           <hr class="bg-primary opacity-5 position-relative" />
                           <div class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
@@ -158,12 +154,8 @@
                     </div>
               
                     <div class="col-sm-4 col-md-3 text-center my-sm-auto">
-                      <% 
-                        const secs = parseInt(flightDetails.duration || 0);
-                        const h = Math.floor(secs / 3600);
-                        const m = Math.floor((secs % 3600) / 60);
-                      %>
-                      <h5><%= h %>hr <%= m %>min</h5>
+                      
+                      <h5><%= flightDetails.duration || 0 %></h5>
                       <div class="position-relative my-4">
                         <hr class="bg-primary opacity-5 position-relative" />
                         <div class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
