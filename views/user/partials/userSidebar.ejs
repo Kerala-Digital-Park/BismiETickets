@@ -70,10 +70,12 @@
                             <a class="nav-link" href="/payment-details"><i
                                     class="bi bi-wallet fa-fw me-2"></i>Payment Details</a>
                         </li> -->
+                        <% if (user.kyc !== "Completed") { %>
                         <li class="nav-item">
                             <a class="nav-link" href="/kyc"><i
                                     class="fas fa-id-card fa-fw me-2"></i>KYC</a>
                         </li>
+                        <% } %>  
                         <% if (user.kyc !== "Pending") { %>
                             <li class="nav-item">
                                 <a class="nav-link" href="/manage-subscription"><i 

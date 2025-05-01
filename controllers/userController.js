@@ -7,6 +7,7 @@ const Bookings = require("../models/bookingModel");
 const Subscriptions = require("../models/subscriptionModel");
 const Airports = require("../models/airportModel");
 const Airlines = require("../models/airlineModel");
+const Transactions = require("../models/transactionModel");
 const { countries } = require('countries-list');
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -37,11 +38,70 @@ const viewHomepage = async (req, res) => {
 };
 
 const viewDashboard = async (req, res) => {
+  const userId = req.session.userId; 
+  const search = req.query.search || '';
+  const page = parseInt(req.query.page) || 1;
+  const limit = 4;
+  const skip = (page - 1) * limit;
+
   try {
-    res.render("user/dashboard", {});
+    const flights = await Flights.find({ sellerId: userId });
+
+    const sellerOwnBookings = await Bookings.find({ userId: userId });
+
+    let flightSearchIds = [];
+
+    if (search) {
+      const matchingFlights = await Flights.find({
+        $or: [
+          { fromCity: { $regex: search, $options: 'i' } },
+          { toCity: { $regex: search, $options: 'i' } }
+        ]
+      }).select('_id');
+
+      flightSearchIds = matchingFlights.map(f => f._id);
+    }
+
+    const allBookings = await Bookings.find()
+      .populate("flight")
+      .populate("userId");
+
+    let userBookings = allBookings.filter(booking => {
+      return booking.flight?.sellerId?.toString() === userId;
+    });
+
+    if (search) {
+      userBookings = userBookings.filter(booking =>
+        booking.bookingId?.toLowerCase().includes(search.toLowerCase()) ||
+        flightSearchIds.some(id => id.toString() === booking.flight?._id?.toString())
+      );
+    }
+
+    const totalPages = Math.ceil(userBookings.length / limit);
+    const paginatedBookings = userBookings.slice(skip, skip + limit);
+
+    const transactions = await Transactions.find({ userId });
+
+    // Sum transaction amounts (parse strings to numbers safely)
+    const totalTransactionAmount = transactions.reduce((sum, tx) => {
+      const amount = parseFloat(tx.amount);
+      return sum + (isNaN(amount) ? 0 : amount);
+    }, 0);
+    
+    res.render("user/dashboard", {
+      flights,
+      bookings: sellerOwnBookings,     
+      userBookings: paginatedBookings, 
+      search,
+      currentPage: page,
+      totalPages,
+      totalTransactionAmount,
+      transactions
+    });
+
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal Server error" });
+    console.error("Error rendering dashboard:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
@@ -770,10 +830,8 @@ const viewProfile = async (req, res) => {
 const viewBookings = async (req, res) => {
   try {
     const userId = req.session.userId;
-    console.log(userId);
 
     const bookings = await Bookings.find({ userId: userId });
-    console.log(bookings);
 
     const bookingsWithFlights = await Promise.all(
       bookings.map(async (booking) => {
@@ -783,7 +841,6 @@ const viewBookings = async (req, res) => {
     );
 
     const userDetails = await Users.findById(userId);
-    console.log(userDetails);
 
     const today = new Date();
 
@@ -798,7 +855,6 @@ const viewBookings = async (req, res) => {
       ) {
         const formattedDateStr = booking.flightDetails.departureDate + " 20:00"; // Adding a default time for parsing
         const departureDate = new Date(Date.parse(formattedDateStr));
-        console.log(departureDate);
         // If the arrival time is given separately, merge it
         if (booking.flightDetails.departureTime) {
           const [hours, minutes] =
@@ -816,9 +872,6 @@ const viewBookings = async (req, res) => {
       }
     });
 
-    console.log({ upcomingBookings, completedBookings });
-
-    console.log(bookingsWithFlights);
     res.render("user/bookings", {
       upcomingBookings,
       completedBookings,
@@ -945,6 +998,16 @@ const flightBooking = async (req, res) => {
 
     await newBooking.save();
 
+
+    // Create a new transaction
+    const newTransaction = new Transactions({
+      bookingId: newBooking._id,
+      userId: flightDetails.sellerId,
+      amount: totalFare, 
+    });
+
+    await newTransaction.save();
+
     await Users.findByIdAndUpdate(req.session.userId, {
       $inc: {
         "transactions": 1,
@@ -952,7 +1015,22 @@ const flightBooking = async (req, res) => {
       },
     });
 
-    console.log(newBooking);
+    const flightId = flightDetails._id;
+    const travelDate = flightDetails.departureDate;
+
+    const updatedFlight = await Flights.findOneAndUpdate(
+      { _id: flightId, "inventoryDates.date": travelDate },
+      {
+        $inc: {
+          "inventoryDates.$.seatsBooked": travelers.length,
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedFlight) {
+      return res.status(404).json({ message: "Flight or inventory date not found" });
+    }
 
     return res
       .status(201)
@@ -1675,7 +1753,6 @@ const viewListings = async (req, res) => {
       .populate("sellerId")
       .sort({ createdAt: -1 });
     
-    console.log(flights);
     if (!flights || flights.length === 0) {
       return res.status(404).json({ success: false, message: "No flights found" });
     }
@@ -2157,7 +2234,7 @@ const updateDateById = async( req, res ) => {
 const changeStatus = async (req, res) => {
   try {
     const { flightId, newStatus } = req.body;
-
+    console.log("Change flight status", flightId, newStatus);
     if (!flightId || !newStatus) {
       return res.status(400).json({ success: false, message: 'Missing data' });
     }

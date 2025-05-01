@@ -22,7 +22,7 @@ Page Banner END -->
 			<section>
 				<div class="container">
 					<div class="row">
-						<div class="col-lg-10 mx-auto">
+						<div class="col-lg-12 mx-auto">
 							<!-- Inventory Detail START -->
 							<div class="card shadow">
 								<!-- Card header -->
@@ -57,21 +57,21 @@ Page Banner END -->
 											<div class="card-body">
 												<div class="row g-3">
 													<!-- Inventory name -->
-													<div class="col-md-4">
+													<div class="col-md-3">
 														<label class="form-label">Inventory Name</label>
 														<input type="text" class="form-control"
 															placeholder="Inventory name">
 													</div>
 
 													<!-- Dates -->
-													<div class="col-md-4">
+													<div class="col-md-3">
 														<label class="form-label">Inventory Departure Date</label>
 														<input class="form-control oneWayDepartureDate dateInput" type="text"
 															placeholder="Enter departure date"  />
 													</div>
 
 													<!-- Disable -->
-													<div class="col-md-4">
+													<div class="col-md-3">
 														<label class="form-label">Disable Before Departure
 															(Days)</label>
 														<select class="form-select js-choice" id="oneWayDisable"
@@ -85,28 +85,28 @@ Page Banner END -->
 														</select>
 													</div>
 
-													<!-- FROM -->
+													<!-- Flight Number -->
 													<div class="col-md-3">
+														<label class="form-label">Flight Number</label>
+														<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control searchFlightNumber" maxlength="4" placeholder="Flight number" required>
+													</div>
+
+													<!-- FROM -->
+													<div class="col-md-4">
 														<label class="form-label">From</label>
 														<select class="form-select js-airport" id="fromSelect" placeholder="Select from"></select>
 													  </div>
   
 													<!-- TO -->
-													<div class="col-md-3">
+													<div class="col-md-4">
 														<label class="form-label">To</label>
 														<select class="form-select js-airport" id="toSelect" placeholder="Select to"></select>
 													</div>
 
 													<!-- Airline -->
-													<div class="col-md-3">
+													<div class="col-md-4">
 														<label class="form-label">Airline</label>
 														<select class="form-select js-airline searchAirlineSelect" id="airlineSelect" placeholder="Select Airline"></select>
-													</div>
-
-													<!-- Flight Number -->
-													<div class="col-md-3">
-														<label class="form-label">Flight Number</label>
-														<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control searchFlightNumber" maxlength="4" placeholder="Flight number" required>
 													</div>
 
 													<button class="btn btn-primary align-items-center"

@@ -132,12 +132,13 @@ userRouter.post("/renewal-free", isLogin, userController.freeRenewal);
 userRouter.post("/agent-subscription", isLogin, userController.agentSubscription);
 userRouter.post("/add-flight", isLogin, userController.addFlight);
 userRouter.post("/api/flights", isLogin, userController.getApiFlights);
-userRouter.post('/change-status', isLogin, userController.changeStatus);
 
 
 
 userRouter.put("/update-listing", isLogin, userController.updateListingById);
 userRouter.put("/update-seats", isLogin, userController.updateSeatById);
 userRouter.put("/update-dates", isLogin, userController.updateDateById);
+userRouter.put('/update-status', isLogin, userController.changeStatus);
+// userRouter.put("/update-status", isLogin, userController.updateStatusById);
 
 module.exports = userRouter;

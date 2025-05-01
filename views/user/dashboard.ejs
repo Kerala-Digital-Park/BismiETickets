@@ -28,7 +28,7 @@ Content START -->
 						</div>
 						<!-- Content -->
 						<div class="ms-3">
-							<h4>56</h4>
+							<h4><%= flights.length %></h4>
 							<span>Total Listings</span>
 						</div>
 					</div>
@@ -45,7 +45,7 @@ Content START -->
 						</div>
 						<!-- Content -->
 						<div class="ms-3">
-							<h4>$2,55,365</h4>
+							<h4>₹ <%= totalTransactionAmount %></h4>
 							<span>Earning</span>
 						</div>
 					</div>
@@ -62,8 +62,8 @@ Content START -->
 						</div>
 						<!-- Content -->
 						<div class="ms-3">
-							<h4>15K</h4>
-							<span>Visitors</span>
+							<h4><%= bookings.length %></h4>
+							<span>Bookings</span>
 						</div>
 					</div>
 				</div>
@@ -79,8 +79,8 @@ Content START -->
 						</div>
 						<!-- Content -->
 						<div class="ms-3">
-							<h4>12K</h4>
-							<span>Total Reviews</span>
+							<h4><%= userBookings.length %></h4>
+							<span>User Bookings</span>
 						</div>
 					</div>
 				</div>
@@ -97,7 +97,7 @@ Content START -->
 					<div class="card-header border-bottom">
 						<div class="d-sm-flex justify-content-between align-items-center">
 							<h5 class="mb-2 mb-sm-0">Upcoming Bookings</h5>
-							<a href="#" class="btn btn-sm btn-primary mb-0">View All</a>
+							<a href="/listings" class="btn btn-sm btn-primary mb-0">View All</a>
 						</div>
 					</div>
 					<!-- Card header END -->
@@ -108,23 +108,18 @@ Content START -->
 						<div class="row g-3 align-items-center justify-content-between mb-3">
 							<!-- Search -->
 							<div class="col-md-8">
-								<form class="rounded position-relative">
-									<input class="form-control pe-5" type="search" placeholder="Search" aria-label="Search">
-									<button class="btn border-0 px-3 py-0 position-absolute top-50 end-0 translate-middle-y" type="submit"><i class="fas fa-search fs-6"></i></button>
+								<form class="rounded position-relative" method="GET"
+									action="/dashboard">
+									<input class="form-control pe-5" type="search" name="search"
+										placeholder="Search bookings..."
+										value="<%= typeof search !== 'undefined' ? search : '' %>">
+									<button
+										class="btn border-0 px-3 py-0 position-absolute top-50 end-0 translate-middle-y"
+										type="submit">
+										<i class="fas fa-search fs-6"></i>
+									</button>
 								</form>
-							</div>
 
-							<!-- Select option -->
-							<div class="col-md-3">
-								<!-- Short by filter -->
-								<form>
-									<select class="form-select js-choice" aria-label=".form-select-sm">
-										<option value="">Sort by</option>
-										<option>Free</option>
-										<option>Newest</option>
-										<option>Oldest</option>
-									</select>
-								</form>
 							</div>
 						</div>
 						<!-- Search and select END -->
@@ -135,73 +130,91 @@ Content START -->
 								<!-- Table head -->
 								<thead class="table-light">
 									<tr>
-										<th scope="col" class="border-0 rounded-start">#</th>
-										<th scope="col" class="border-0">Name</th>
-										<th scope="col" class="border-0">Type</th>
-										<th scope="col" class="border-0">Date</th>
-										<th scope="col" class="border-0">status</th>
-										<th scope="col" class="border-0">Payment</th>
+										<th scope="col" class="border-0">Trip Details</th>
+										<th scope="col" class="border-0">Trip Date</th>
+										<th scope="col" class="border-0">Ref & User</th>
+										<th scope="col" class="border-0">Amount</th>
+										<th scope="col" class="border-0">Status</th>
 										<th scope="col" class="border-0 rounded-end">Action</th>
 									</tr>
 								</thead>
 
 								<!-- Table body START -->
 								<tbody class="border-top-0">
-									<!-- Table item -->
-									<tr>
-										<td> <h6 class="mb-0">01</h6> </td>
-										<td> <h6 class="mb-0"><a href="#">Deluxe Pool View</a></h6> </td>
-										<td> With Breakfast </td>
-										<td> Nov 22 - 25 </td>
-										<td> <div class="badge text-bg-success">Booked</div> </td>
-										<td> <div class="badge bg-success bg-opacity-10 text-success">Full payment</div> </td>
-										<td> <a href="#" class="btn btn-sm btn-light mb-0">View</a> </td>
-									</tr>
 
-									<!-- Table item -->
-									<tr>
-										<td> <h6 class="mb-0">02</h6> </td>
-										<td> <h6 class="mb-0"><a href="#">Deluxe Pool View with Breakfast</a></h6> </td>
-										<td> Free Cancellation | Breakfast only </td>
-										<td> Nov 24 - 28 </td>
-										<td> <div class="badge text-bg-success">Booked</div> </td>
-										<td> <div class="badge bg-orange bg-opacity-10 text-orange">On Property</div> </td>
-										<td> <a href="#" class="btn btn-sm btn-light mb-0">View</a> </td>
-									</tr>
+									<% if (userBookings.length===0) { %>
+										<tr>
+											<td colspan="7" class="text-center">No userBookings found.</td>
+										</tr>
+										<% } else { %>
+											<% userBookings.forEach((booking, index)=> { %>
+												<tr class="align-middle border-top">
+													<td class="d-flex align-items-center gap-2">
+														<div>
+															<img src="<%= booking.flight.stops[0].airlineLogo %>"
+																alt="Airline Logo"
+																class="img-fluid rounded-circle"
+																style="width: 50px; height: 40px;">
+														</div>
+														<div>
+															<div>
+																<%= booking.flight.fromCity %> → <%=
+																		booking.flight.toCity %> on <%=
+																			booking.flight.stops[0].airline
+																			%>
+															</div>
+															<small class="text-muted">
+																<%= booking.travelers.length %>
+																	Passenger<%=
+																		booking.travelers.length> 1 ?
+																		's' : '' %>
+															</small>
+														</div>
+													</td>
+													<td>
+														<%= new
+															Date(booking.flight.departureDate).toDateString()
+															%>
+													</td>
+													<td>
+														<div class="text-primary">
+															<%= booking.bookingId %>
+														</div>
+														<div class="text-primary small">
+															<%= booking.userId?.name %>
+														</div>
+													</td>
+													<td><strong>₹ <%= booking.amount %></strong></td>
+													<td>
+														<% const today=new Date(); %>
+															<% const depDate=new
+																Date(booking.flight.departureDate); %>
 
-									<!-- Table item -->
-									<tr>
-										<td> <h6 class="mb-0">03</h6> </td>
-										<td> <h6 class="mb-0"><a href="#">Luxury Room with Balcony</a></h6> </td>
-										<td> Free Cancellation | Breakfast + Lunch/Dinner </td>
-										<td> Nov 24 - 28 </td>
-										<td> <div class="badge text-bg-info">Reserved</div> </td>
-										<td> <div class="badge bg-info bg-opacity-10 text-info">Half Payment</div> </td>
-										<td> <a href="#" class="btn btn-sm btn-light mb-0">View</a> </td>
-									</tr>
+																<% if (today> depDate) { %>
+																	<span class="badge bg-danger">●
+																		completed</span><br>
+																	<% } else { %>
+																		<span class="badge bg-success">●
+																			upcoming</span><br>
+																		<% } %>
 
-									<!-- Table item -->
-									<tr>
-										<td> <h6 class="mb-0">04</h6> </td>
-										<td> <h6 class="mb-0"><a href="#">Deluxe Room Twin Bed With Balcony</a></h6> </td>
-										<td> Free Cancellation </td>
-										<td> Nov 28 - 30 </td>
-										<td> <div class="badge text-bg-success">Booked</div> </td>
-										<td> <div class="badge bg-success bg-opacity-10 text-success">Full Payment</div> </td>
-										<td> <a href="#" class="btn btn-sm btn-light mb-0">View</a> </td>
-									</tr>
+																			<small class="text-muted">B:
+																				<%= new
+																					Date(booking.createdAt).toDateString()
+																					%></small>
+													</td>
 
-									<!-- Table item -->
-									<tr>
-										<td> <h6 class="mb-0">05</h6> </td>
-										<td> <h6 class="mb-0"><a href="#">Room With Free Cancellation | Breakfast + Lunch</a></h6> </td>
-										<td> Free Cancellation </td>
-										<td> Nov 28 - 30 </td>
-										<td> <div class="badge text-bg-info">Reserved</div> </td>
-										<td> <div class="badge bg-success bg-opacity-10 text-success">Full Payment</div> </td>
-										<td> <a href="#" class="btn btn-sm btn-light mb-0">View</a> </td>
-									</tr>
+													<td>
+														<a href="/manage-booking?id=<%= booking._id %>"
+															class="btn btn-sm btn-light">
+															<i class="fas fa-plus"></i>
+														</a>
+													</td>
+												</tr>
+												<% }); %>
+													<% } %>
 								</tbody>
+
 								<!-- Table body END -->
 							</table>
 						</div>
@@ -212,24 +225,35 @@ Content START -->
 					<!-- Card footer START -->
 					<div class="card-footer pt-0">
 						<!-- Pagination and content -->
-						<div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+						<div class="d-sm-flex justify-content-sm-end align-items-sm-center">
 							<!-- Content -->
-							<p class="mb-sm-0 text-center text-sm-start">Showing 1 to 8 of 20 entries</p>
+							<!-- <p class="mb-sm-0 text-center text-sm-start">Showing 1 to 8 of 20 entries
+							</p> -->
 							<!-- Pagination -->
 							<nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
 								<ul class="pagination pagination-sm pagination-primary-soft mb-0">
-									<li class="page-item disabled">
-										<a class="page-link" href="#" tabindex="-1">Prev</a>
+									<li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+										<a class="page-link"
+											href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
 									</li>
-									<li class="page-item"><a class="page-link" href="#">1</a></li>
-									<li class="page-item active"><a class="page-link" href="#">2</a></li>
-									<li class="page-item disabled"><a class="page-link" href="#">..</a></li>
-									<li class="page-item"><a class="page-link" href="#">15</a></li>
-									<li class="page-item">
-										<a class="page-link" href="#">Next</a>
-									</li>
+
+									<% for (let i=1; i <=totalPages; i++) { %>
+										<li class="page-item <%= i === currentPage ? 'active' : '' %>">
+											<a class="page-link"
+												href="?search=<%= search %>&page=<%= i %>">
+												<%= i %>
+											</a>
+										</li>
+										<% } %>
+
+											<li
+												class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+												<a class="page-link"
+													href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
+											</li>
 								</ul>
 							</nav>
+
 						</div>
 					</div>
 					<!-- Card footer END -->
