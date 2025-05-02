@@ -57,39 +57,11 @@ Page Banner END -->
 											<div class="card-body">
 												<div class="row g-3">
 													<!-- Inventory name -->
-													<div class="col-md-3">
+													<!-- <div class="col-md-3">
 														<label class="form-label">Inventory Name</label>
 														<input type="text" class="form-control"
 															placeholder="Inventory name">
-													</div>
-
-													<!-- Dates -->
-													<div class="col-md-3">
-														<label class="form-label">Inventory Departure Date</label>
-														<input class="form-control oneWayDepartureDate dateInput" type="text"
-															placeholder="Enter departure date"  />
-													</div>
-
-													<!-- Disable -->
-													<div class="col-md-3">
-														<label class="form-label">Disable Before Departure
-															(Days)</label>
-														<select class="form-select js-choice" id="oneWayDisable"
-															data-search-enabled="true">
-															<option value="">Select days</option>
-															<option>1</option>
-															<option>2</option>
-															<option>3</option>
-															<option>4</option>
-															<option>5</option>
-														</select>
-													</div>
-
-													<!-- Flight Number -->
-													<div class="col-md-3">
-														<label class="form-label">Flight Number</label>
-														<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control searchFlightNumber" maxlength="4" placeholder="Flight number" required>
-													</div>
+													</div> -->
 
 													<!-- FROM -->
 													<div class="col-md-4">
@@ -107,6 +79,34 @@ Page Banner END -->
 													<div class="col-md-4">
 														<label class="form-label">Airline</label>
 														<select class="form-select js-airline searchAirlineSelect" id="airlineSelect" placeholder="Select Airline"></select>
+													</div>
+
+													<!-- Flight Number -->
+													<div class="col-md-4">
+														<label class="form-label">Flight Number</label>
+														<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control searchFlightNumber" maxlength="4" placeholder="Flight number" required>
+													</div>
+
+													<!-- Dates -->
+													<div class="col-md-4">
+														<label class="form-label">Inventory Departure Date</label>
+														<input class="form-control oneWayDepartureDate dateInput" type="text"
+															placeholder="Enter departure date"  />
+													</div>
+
+													<!-- Disable -->
+													<div class="col-md-4">
+														<label class="form-label">Disable Before Departure
+															(Days)</label>
+														<select class="form-select js-choice" id="oneWayDisable"
+															data-search-enabled="true">
+															<option value="">Select days</option>
+															<option>1</option>
+															<option>2</option>
+															<option>3</option>
+															<option>4</option>
+															<option>5</option>
+														</select>
 													</div>
 
 													<button class="btn btn-primary align-items-center"
@@ -345,55 +345,11 @@ Page Banner END -->
 											<!-- Card body -->
 											<div class="card-body">
 												<div class="row g-3">
-													<!-- Inventory name -->
-													<div class="col-md-3">
-														<label class="form-label">Inventory Name</label>
-														<input type="text" class="form-control"
-															placeholder="Inventory name">
-													</div>
-
-													<!-- Dates -->
-													<div class="col-md-3">
-														<label class="form-label">Inventory Departure Date</label>
-														<input class="form-control connectingDepartureDate dateInput" type="text"
-															placeholder="Select date"  />
-													</div>
-
-													<!-- Disable -->
-													<div class="col-md-3">
-														<label class="form-label">Disable Before Departure
-														</label>
-														<select class="form-select js-choice" id="days"
-															data-search-enabled="true">
-															<option value="">Select days</option>
-															<option>1</option>
-															<option>2</option>
-															<option>3</option>
-															<option>4</option>
-															<option>5</option>
-														</select>
-													</div>
-
-													<!-- Stops -->
-													<div class="col-md-3">
-														<label class="form-label">No of Stops</label>
-														<select class="form-select js-choice" data-search-enabled="true"
-															id="no_of_stops">
-															<option>1</option>
-															<option>2</option>
-															<option>3</option>
-															<option>4</option>
-															<option>5</option>
-														</select>
-													</div>
-												</div>
-
-												<div class="row g-3">
 													<div class="col-12">
-														<div class="position-relative my-4 mt-4 mb-3">
+														<div class="position-relative my-4 mb-3">
 															<hr />
 															<p class="position-absolute top-50 translate-middle start-0 bg-mode px-2"
-																style="left: 69px !important;">
+																style="left: 69px !important; font-weight: bold;">
 																Enter Flight Details
 															</p>
 														</div>
@@ -410,6 +366,50 @@ Page Banner END -->
  																<label class="form-label">To</label>
  																<select class="form-select js-airport" id="toConnectingSelect" placeholder="Select to"></select>
  															</div>
+														</div>
+
+														<div class="row g-3 mb-3">
+															<!-- Inventory name -->
+															<!-- <div class="col-md-3">
+																<label class="form-label">Inventory Name</label>
+																<input type="text" class="form-control"
+																	placeholder="Inventory name">
+															</div> -->
+		
+															<!-- Dates -->
+															<div class="col-md-4">
+																<label class="form-label">Inventory Departure Date</label>
+																<input class="form-control connectingDepartureDate dateInput" type="text"
+																	placeholder="Select date"  />
+															</div>
+		
+															<!-- Disable -->
+															<div class="col-md-4">
+																<label class="form-label">Disable Before Departure
+																</label>
+																<select class="form-select js-choice" id="days"
+																	data-search-enabled="true">
+																	<option value="">Select days</option>
+																	<option>1</option>
+																	<option>2</option>
+																	<option>3</option>
+																	<option>4</option>
+																	<option>5</option>
+																</select>
+															</div>
+		
+															<!-- Stops -->
+															<div class="col-md-4">
+																<label class="form-label">No of Stops</label>
+																<select class="form-select js-choice" data-search-enabled="true"
+																	id="no_of_stops">
+																	<option>1</option>
+																	<option>2</option>
+																	<option>3</option>
+																	<option>4</option>
+																	<option>5</option>
+																</select>
+															</div>
 														</div>
 
 														<!-- Flight header -->
@@ -632,7 +632,7 @@ Page Banner END -->
 												</div>
 
 
-												<!-- Flight Details -->
+												<!-- Baggage Details -->
 
 
 												<div class="row g-3">
@@ -1168,9 +1168,9 @@ Page Banner END -->
 							const connectArrivalSelect = wrapper.querySelector('.connectArrival');
 							const airlineSelect = wrapper.querySelector('.airlineSelect');
 
-							setSelectValue(connectDepartureSelect, leg.departureAirport?.code || "", leg.departureAirport?.name || "");
-							setSelectValue(connectArrivalSelect, leg.arrivalAirport?.code || "", leg.arrivalAirport?.name || "");
-							setSelectValue(airlineSelect, leg.carriersData?.[0]?.code || "", leg.carriersData?.[0]?.name || "");
+							setSelectValue(connectDepartureSelect, leg.departureAirport?.name || "", leg.departureAirport?.code || "");
+							setSelectValue(connectArrivalSelect, leg.arrivalAirport?.name || "", leg.arrivalAirport?.code || "");
+							setSelectValue(airlineSelect, leg.carriersData?.[0]?.name || "", leg.carriersData?.[0]?.code || "");
 
 						});
 
@@ -1436,7 +1436,7 @@ Page Banner END -->
 
 					const oneWayFlight = {
 						sellerId: document.getElementById('userId').value,
-						inventoryName: getValue('input[placeholder="Inventory name"]'),
+						// inventoryName: getValue('input[placeholder="Inventory name"]'),
 						from: getValue('#fromSelect'),
 						to: getValue('#toSelect'),
 						departureName: getValue('#departureName'),
@@ -1504,9 +1504,6 @@ Page Banner END -->
 				}
 			</script>
 
-
-	
-
 <script>
 	flatpickr(".dateInput", {
 		dateFormat: "d M Y",
@@ -1569,7 +1566,7 @@ Page Banner END -->
 
 		const oneWayFlight = {
 			sellerId: document.getElementById('userId').value,
-			inventoryName: getValue('input[placeholder="Inventory name"]'),
+			// inventoryName: getValue('input[placeholder="Inventory name"]'),
 			from: getValue('#fromConnectingSelect'),
 			to: getValue('#toConnectingSelect'),
 			departureName: getValue('#connectingDepartureName'),
@@ -1636,170 +1633,7 @@ Page Banner END -->
 	}
 </script>
 
-<!-- <script>
-	document.addEventListener("DOMContentLoaded", function () {
-	  const selectors = [
-		"#fromSelect",
-		"#toSelect",
-		"#fromConnectingSelect",
-		"#toConnectingSelect"
-	  ];
-	
-	  selectors.forEach(selector => {
-		const element = document.querySelector(selector);
-		const choices = new Choices(element, {
-		  searchEnabled: true,
-		  placeholderValue: "Select Airport",
-		  searchChoices: false,
-		  shouldSort: false,
-		  allowHTML: true // suppress future deprecation warning
-		});
-	
-		let defaultLoaded = false;
-		let typingTimer;
-		const doneTypingInterval = 100; // milliseconds
-	
-		element.addEventListener('showDropdown', async () => {
-		  if (!defaultLoaded) {
-			try {
-			  const res = await fetch("/search-airports");
-			  const airports = await res.json();
-			  choices.setChoices(
-				airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
-				"value",
-				"label",
-				true
-			  );
-			  defaultLoaded = true;
-			} catch (err) {
-			  console.error("Error loading default airports:", err);
-			}
-		  }
-		});
-	
-		element.addEventListener('search', function (e) {
-		  clearTimeout(typingTimer);
-		  const searchTerm = e.detail.value.trim();
-		  if (searchTerm.length >= 2) {
-			typingTimer = setTimeout(async () => {
-			  try {
-				const res = await fetch(`/search-airports?q=${encodeURIComponent(searchTerm)}`);
-				const airports = await res.json();
-				choices.setChoices(
-				  airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
-				  "value",
-				  "label",
-				  true
-				);
-			  } catch (err) {
-				console.error("Error searching airports:", err);
-			  }
-			}, doneTypingInterval);
-		  }
-		});
-	
-	  });
-	});
-</script> -->
-	
-<!-- <script>
-	document.addEventListener("DOMContentLoaded", function () {
-	  const staticSelectors = [
-		"#fromSelect",
-		"#toSelect",
-		"#fromConnectingSelect",
-		"#toConnectingSelect"
-	  ];
-	
-	  const dynamicSelectors = [
-		".connectDeparture",
-		".connectArrival"
-	  ];
-	
-	  const doneTypingInterval = 100; // milliseconds
-	
-	  function initChoicesForElement(element) {
-		if (element.classList.contains('choices-initialized')) return; // prevent double initialization
-		element.classList.add('choices-initialized');
-	
-		const choices = new Choices(element, {
-		  searchEnabled: true,
-		  placeholderValue: "Select Airport",
-		  searchChoices: false,
-		  shouldSort: false,
-		  allowHTML: true
-		});
-	
-		let defaultLoaded = false;
-		let typingTimer;
-	
-		element.addEventListener('showDropdown', async () => {
-		  if (!defaultLoaded) {
-			try {
-			  const res = await fetch("/search-airports");
-			  const airports = await res.json();
-			  choices.setChoices(
-				airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
-				"value",
-				"label",
-				true
-			  );
-			  defaultLoaded = true;
-			} catch (err) {
-			  console.error("Error loading default airports:", err);
-			}
-		  }
-		});
-	
-		element.addEventListener('search', function (e) {
-		  clearTimeout(typingTimer);
-		  const searchTerm = e.detail.value.trim();
-		  if (searchTerm.length >= 2) {
-			typingTimer = setTimeout(async () => {
-			  try {
-				const res = await fetch(`/search-airports?q=${encodeURIComponent(searchTerm)}`);
-				const airports = await res.json();
-				choices.setChoices(
-				  airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
-				  "value",
-				  "label",
-				  true
-				);
-			  } catch (err) {
-				console.error("Error searching airports:", err);
-			  }
-			}, doneTypingInterval);
-		  }
-		});
-	  }
-	
-	  // Initialize static dropdowns
-	  staticSelectors.forEach(selector => {
-		const element = document.querySelector(selector);
-		if (element) initChoicesForElement(element);
-	  });
-	
-	  // Listen for dynamically added selects
-	  const observer = new MutationObserver(mutations => {
-		mutations.forEach(mutation => {
-		  mutation.addedNodes.forEach(node => {
-			if (node.nodeType === 1) { // Element
-			  dynamicSelectors.forEach(sel => {
-				if (node.matches(sel)) {
-				  initChoicesForElement(node);
-				}
-				// Also check inside the node if it contains new selects
-				node.querySelectorAll(sel).forEach(inner => initChoicesForElement(inner));
-			  });
-			}
-		  });
-		});
-	  });
-	
-	  observer.observe(document.body, { childList: true, subtree: true });
-	});
-	</script> -->
-
+<!-- airports dropdown -->
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
 		  const staticSelectors = [
@@ -1904,8 +1738,9 @@ Page Banner END -->
 		
 		  observer.observe(document.body, { childList: true, subtree: true });
 		});
-		</script>
+	</script>
 
+	<!-- airlines dropdown -->
 <script>
 	document.addEventListener("DOMContentLoaded", () => {
 	  const selectorsStatic  = [".searchAirlineSelect", ".airlineSelect"];

@@ -127,10 +127,14 @@
                           <div class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3">
                             <!-- Input field -->
                             <label class="mb-1"><i class="bi bi-geo-alt me-2"></i>From</label>
-                            <select class="form-select" id="fixedFrom" name="fixedFrom"
+                            <!-- <select class="form-select" id="fixedFrom" name="fixedFrom"
                               data-selected="<%= requestDetails.fixedFrom %>">
                               <option value="">Select location</option>
-                             </select>
+                             </select> -->
+                             <select class="form-select js-airport" id="fixedFrom" name="fixedFrom" 
+                             data-selected="<%= requestDetails.fixedFrom %>">
+                              <option value="">Select location</option>
+                              </select>
 
                           </div>
 
@@ -147,8 +151,12 @@
                           <div class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3">
                             <!-- Input field -->
                             <label class="mb-1"><i class="bi bi-send me-2"></i>To</label>
-                            <select class="form-select" id="fixedTo" name="fixedTo"
+                            <!-- <select class="form-select" id="fixedTo" name="fixedTo"
                               data-selected="<%= requestDetails.fixedTo %>">
+                              <option value="">Select location</option>
+                              </select> -->
+                              <select class="form-select js-airport" id="fixedTo"
+                              name="fixedTo" data-selected="<%= requestDetails.fixedTo %>">
                               <option value="">Select location</option>
                               </select>
                           </div>
@@ -181,7 +189,11 @@
                           <div class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3">
                             <!-- Input field -->
                             <label class="mb-1"><i class="bi bi-geo-alt me-2"></i>From</label>
-                            <select class="form-select" data-search-enabled="true" id="from" name="from">
+                            <!-- <select class="form-select" data-search-enabled="true" id="from" name="from">
+                              <option value="">Select location</option>
+                              </select> -->
+                              <select class="form-select js-airport" id="from"
+                              name="from" data-selected="<%= requestDetails.from %>">
                               <option value="">Select location</option>
                               </select>
                           </div>
@@ -199,8 +211,12 @@
                           <div class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3">
                             <!-- Input field -->
                             <label class="mb-1"><i class="bi bi-send me-2"></i>To</label>
-                            <select class="form-select" data-search-enabled="true" id="to" name="to">
+                            <!-- <select class="form-select" data-search-enabled="true" id="to" name="to">
                               <option value="">Select location</option>
+                                </select> -->
+                                <select class="form-select js-airport" id="to"
+                                name="to" data-selected="<%= requestDetails.to %>">
+                                <option value="">Select location</option>
                                 </select>
                           </div>
                         </div>

@@ -1975,7 +1975,7 @@ const addFlight = async (req, res) => {
   try {
     const newFlight = new Flights({
       sellerId: oneWayFlight.sellerId,
-      inventoryName: oneWayFlight.inventoryName,
+      // inventoryName: oneWayFlight.inventoryName,
       from: oneWayFlight.from,
       to: oneWayFlight.to,
       departureName: oneWayFlight.departureName,
