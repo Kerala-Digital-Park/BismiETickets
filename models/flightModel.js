@@ -3,8 +3,7 @@ const Counter = require("./counterModel");
 
 const flightSchema = mongoose.Schema({
   sellerId: { type: String, required: true },
-  // inventoryName: { type: String, required: true },
-  inventoryId: { type: String, unique: true },
+  inventoryId: { type: String, required: true, unique: true },
   from: { type: String, required: true },
   to: { type: String, required: true },
   departureName: { type: String, required: false },
@@ -74,7 +73,7 @@ const flightSchema = mongoose.Schema({
     },
   },
   inventoryDates: [{
-    date: { type: String, required: true },
+    // date: { type: String, required: true },
     pnr: { type: String, required: true },
     seats: { type: Number, required: true },
     seatsBooked: { type: Number, required: true, default: 0 },
@@ -90,27 +89,27 @@ const flightSchema = mongoose.Schema({
 );
 
 // Add pre-save hook
-flightSchema.pre("save", async function (next) {
-  const flight = this;
+// flightSchema.pre("save", async function (next) {
+//   const flight = this;
 
-  if (!flight.inventoryId) {
-    try {
-      const counter = await Counter.findOneAndUpdate(
-        { name: "inventoryId" },
-        { $inc: { seq: 1 } },
-        { new: true, upsert: true }
-      );
+//   if (!flight.inventoryId) {
+//     try {
+//       const counter = await Counter.findOneAndUpdate(
+//         { name: "inventoryId" },
+//         { $inc: { seq: 1 } },
+//         { new: true, upsert: true }
+//       );
 
-      const paddedSeq = String(counter.seq).padStart(5, "0");
-      flight.inventoryId = `INV${paddedSeq}`;
+//       const paddedSeq = String(counter.seq).padStart(5, "0");
+//       flight.inventoryId = `INV${paddedSeq}`;
 
-      next();
-    } catch (err) {
-      return next(err);
-    }
-  } else {
-    next();
-  }
-});
+//       next();
+//     } catch (err) {
+//       return next(err);
+//     }
+//   } else {
+//     next();
+//   }
+// });
 
 module.exports = mongoose.model("Flights", flightSchema);

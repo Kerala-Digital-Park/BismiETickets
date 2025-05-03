@@ -144,7 +144,7 @@
 																
 															</td>
 															<td>
-																<strong data-bs-toggle="modal" data-bs-target="#flightdetail" class="flight-detail-btn"
+																<strong data-bs-toggle="modal" data-bs-target="#flightdetail" class="flight-detail-btn text-primary"
 																data-flight='<%= JSON.stringify(flight) %>' style="cursor: pointer;"><%= flight.stops[0].airlineCode %> - <%= flight.stops[0].flightNumber %></strong>
 															</td>
 															<td>
@@ -159,38 +159,31 @@
 																		<%= flight.disableBeforeDays == 1 ? "Day" : "Days" %>
 																</strong>
 															</td>
-															<!-- <td>
-																<label class="custom-switch">
-																	<input type="checkbox" class="changeStatusToggle"
-																		data-id="<%= flight._id %>"
-																		data-status="<%= flight.status === 'active' ? 'inactive' : 'active' %>">
-																	<span class="slider">
-																		<span class="label-on"
-																			style="font-size: xx-small;"> &nbsp;
-																			Active</span>
-																		<span class="label-off"
-																			style="font-size: xx-small;">Inactive &nbsp;
-																		</span>
-																	</span>
-																</label>
-															</td> -->
+															
 															<td>
 																<div style="display: flex; align-items: center; gap: 8px; flex-direction: column;">
-																	<span style="font-size: small;">
-																		<%= flight.status == "active" ? "Active" : "Inactive" %>
-																	</span>
-																	<label class="custom-switch">
-																		<input type="checkbox" class="changeStatusToggle"
-																			<%= flight.status == "active" ? "checked" : "" %>
-																			data-id="<%= flight._id %>"
-																			data-status="<%= flight.status == "active" ? "inactive" : "active" %>">
-																		<span class="slider"></span>
-																	</label>
+																  <span class="status-label" style="font-size: small;">
+																	<%= flight.status === 'active' ? 'Active' : 'Inactive' %>
+																  </span>
+																  <label class="custom-switch">
+																	<input type="checkbox" class="changeStatusToggle"
+																	  <%= flight.status === 'active' ? 'checked' : '' %>
+																	  data-id="<%= flight._id %>"
+																	  data-status="<%= flight.status === 'active' ? 'inactive' : 'active' %>">
+																	<span class="slider"></span>
+																  </label>
 																</div>
 															</td>
-															
 
 															<td>
+																<!-- Edit Seats Button -->
+																<a href="#" class="btn btn-sm btn-light"
+																	data-bs-toggle="modal" data-bs-target="#seatModal"
+																	data-flight="<%= JSON.stringify(flight) %>"
+																	data-bs-placement="top" title="Edit Seats">
+																	<i class="fa-solid fa-chair"></i>
+																</a>
+
 																<!-- Edit Days Button -->
 																<a href="#" class="btn btn-sm btn-light"
 																	data-bs-toggle="modal" data-bs-target="#dateModal"
@@ -199,13 +192,6 @@
 																	<i class="fa-solid fa-calendar-days"></i>
 																</a>
 
-																<!-- Edit Seats Button -->
-																<a href="#" class="btn btn-sm btn-light"
-																	data-bs-toggle="modal" data-bs-target="#seatModal"
-																	data-flight="<%= JSON.stringify(flight) %>"
-																	data-bs-placement="top" title="Edit Seats">
-																	<i class="fa-solid fa-chair"></i>
-																</a>
 																<!-- Edit Button -->
 																<!-- <a href="#" class="btn btn-sm btn-light"
 																	data-bs-toggle="modal" data-bs-target="#flightModal"
@@ -392,7 +378,7 @@
 					<div class="modal-content">
 
 						<div class="modal-header">
-							<h5 class="modal-title" id="seatModalLabel">Update Seats on <span id="seatfrom"></span> - <span id="seatto"></span> ( Sector) & PNR: <span id="seatpnr"></span></h5>
+							<h5 class="modal-title" id="seatModalLabel">Update Seats on <span id="seatfrom"></span> - <span id="seatto"></span> & PNR: <span id="seatpnr"></span></h5>
 							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 						</div>
 
@@ -403,7 +389,7 @@
 									<table class="table custom-border text-center p-0" style="font-size: 0.9em;">
 									  <thead class="table-light">
 										<tr>
-										  <th>Created Date</th>
+										  <th>Travel Date</th>
 										  <th>Seats Booked</th>
 										  <th>Total Seats</th>
 										  <th>Fare Amount Adults(12y+)</th>
@@ -413,7 +399,7 @@
 									  </thead>
 									  <tbody class="table-light">
 										<tr>
-										  <td><input type="text" class="form-control-plaintext text-center text-dark" id="createdDate" disabled></td>
+										  <td><input type="text" class="form-control-plaintext text-center text-dark" id="travelDate" disabled></td>
 										  <td><input type="text" class="form-control-plaintext text-center text-dark" id="seatsBooked" readonly></td>
 										  <td><input type="text" class="form-control border-0 text-center text-dark" id="totalSeats" required onkeypress='return event.charCode >= 48 && event.charCode <= 57'></td>
 										  <td><input type="text" class="form-control border-0 text-center text-dark" id="fareAdults" required onkeypress='return event.charCode >= 48 && event.charCode <= 57'></td>
@@ -519,9 +505,7 @@
 					const invDate = flightData.inventoryDates?.[0] || {};
 
 					document.getElementById('inventoryId').value = flightData._id || '';
-					document.getElementById('createdDate').value = new Date(flightData.createdAt).toLocaleDateString('en-GB', {
-					day: '2-digit', month: 'short', year: 'numeric' 
-				});					
+					document.getElementById('travelDate').value = flightData.departureDate || '';		
 					document.getElementById('seatpnr').textContent = invDate.pnr || '';
 					document.getElementById('seatsBooked').value = `${invDate.seatsBooked || 0}/${invDate.seats  || 0}`;
 					document.getElementById('totalSeats').value = invDate.seats || '';
@@ -871,48 +855,57 @@
 
 			<script>
 				document.addEventListener("DOMContentLoaded", () => {
+	document.querySelectorAll('.changeStatusToggle').forEach(toggle => {
+		toggle.addEventListener('change', async function (event) {
+			const checkbox = this;
+			const wasChecked = !checkbox.checked; // Save original state before toggle
+			const flightId = checkbox.getAttribute('data-id');
+			const newStatus = checkbox.getAttribute('data-status');
 
-					document.querySelectorAll('.changeStatusToggle').forEach(toggle => {
-						toggle.addEventListener('change', async function (event) {
-							const flightId = this.getAttribute('data-id');
-							const newStatus = this.getAttribute('data-status');
+			if (!flightId || !newStatus) {
+				console.error('Missing flight ID or status.');
+				return;
+			}
 
-							if (!flightId || !newStatus) {
-								console.error('Missing flight ID or status.');
-								return;
-							}
+			const confirmChange = confirm(`Are you sure you want to change the status to "${newStatus}"?`);
+			if (!confirmChange) {
+				checkbox.checked = wasChecked; // Revert checkbox state
+				return;
+			}
 
-							// ⚡ Ask for confirmation before proceeding
-							const confirmChange = confirm(`Are you sure you want to change the status to "${newStatus}"?`);
-							if (!confirmChange) return;
-
-							console.log('Flight ID:', flightId);
-							console.log('New Status:', newStatus);
-							try {
-								const response = await fetch('/update-status', {
-									method: 'PUT',
-									headers: {
-										'Content-Type': 'application/json'
-									},
-									body: JSON.stringify({
-										flightId: flightId,
-										newStatus: newStatus
-									})
-								});
-
-								if (!response.ok) {
-									throw new Error('Status update failed');
-								}
-
-								alert('Status updated successfully!');
-							} catch (err) {
-								alert('Error updating status');
-								this.checked = !this.checked; // Revert if error
-							}
-						});
-					});
-
+			try {
+				const response = await fetch('/update-status', {
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						flightId: flightId,
+						newStatus: newStatus
+					})
 				});
+
+				if (!response.ok) {
+  throw new Error('Status update failed');
+}
+
+// ✅ Update the status text
+const statusLabel = checkbox.closest('td').querySelector('.status-label');
+statusLabel.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+
+// ✅ Update the data-status to reflect the next toggle
+checkbox.setAttribute('data-status', newStatus === 'active' ? 'inactive' : 'active');
+
+alert('Status updated successfully!');
+
+			} catch (err) {
+				alert('Error updating status');
+				checkbox.checked = wasChecked; // Revert on error too
+			}
+		});
+	});
+});
+
 			</script>
 
 			<script>

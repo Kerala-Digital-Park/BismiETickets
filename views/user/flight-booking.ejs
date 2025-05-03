@@ -323,7 +323,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			document.getElementById("flight-route").textContent = 
 				`${flightDetails.from} -> ${flightDetails.to}`;
 			document.getElementById("flight-date").textContent = 
-				flightDetails.inventoryDates[0].date || "N/A";
+				flightDetails.departureDate || "N/A";
 			document.getElementById("flight-stops").textContent = 
 				flightDetails.stops.length-1 === 0 ? "Non-stop" : `${flightDetails.stops.length - 1} Stop(s)`;
 			document.getElementById("flight-duration").textContent = 

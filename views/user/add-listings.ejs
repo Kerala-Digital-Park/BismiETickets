@@ -271,7 +271,7 @@ Page Banner END -->
 																	style="font-size: 0.9em;">
 																	<thead class="table-light">
 																		<tr>
-																			<th>Inventory Added Dates</th>
+																			<th>Inventory Name</th>
 																			<th>PNR</th>
 																			<th>Number of Seats</th>
 																			<th>Fare-Adults(12y+)</th>
@@ -281,14 +281,15 @@ Page Banner END -->
 																	<tbody>
 																		<tr>
 																			<td>
-																				<div class="d-flex">
+																				<!-- <div class="d-flex">
 																					<span
 																						class="input-group-text rounded-0"><i
 																							class="bi bi-calendar"></i></span>
 																					<input type="text" 
 																						class="form-control oneWayInventoryDate dateInput"
 																						placeholder="Select date" disabled>
-																				</div>
+																				</div> -->
+																				<%= inventoryId %>
 																			</td>
 																			<td>
 																				<input type="text" class="form-control oneWayPnr" style="width: 100px;"
@@ -762,7 +763,7 @@ Page Banner END -->
 																	style="font-size: 0.9em;">
 																	<thead class="table-light">
 																		<tr>
-																			<th>Inventory Added Dates</th>
+																			<th>Inventory Name</th>
 																			<th>PNR</th>
 																			<th>Number of Seats</th>
 																			<th>Fare-Adults(12y+)</th>
@@ -772,14 +773,15 @@ Page Banner END -->
 																	<tbody>
 																		<tr>
 																			<td>
-																				<div class="d-flex">
+																				<!-- <div class="d-flex">
 																					<span
 																						class="input-group-text rounded-0"><i
 																							class="bi bi-calendar"></i></span>
 																					<input type="text" 
 																						class="form-control connectingInventoryDate dateInput"
 																						placeholder="Select date" disabled>
-																				</div>
+																				</div> -->
+																				<%= inventoryId %>
 																			</td>
 																			<td>
 																				<input type="text" class="form-control connectingPnr" style="width: 100px;"
@@ -1174,8 +1176,8 @@ Page Banner END -->
 
 						});
 
-						const inventoryDate = document.querySelector('.connectingInventoryDate');
-						inventoryDate.value = document.querySelector('.connectingDepartureDate')?.value;
+						// const inventoryDate = document.querySelector('.connectingInventoryDate');
+						// inventoryDate.value = document.querySelector('.connectingDepartureDate')?.value;
 
 						document.getElementById('connectingDepartureName').value = departureAirport?.name || "";
 						document.getElementById('connectingArrivalName').value = arrivalAirport?.name || "";
@@ -1189,15 +1191,15 @@ Page Banner END -->
 							const cabin = flights[0].cabinLuggage?.[0]?.luggageAllowance;
 
 							if (checked) {
-								document.getElementById("adultConnectCheckinNumber").value = checked.maxPiece || "";
-								document.getElementById("adultConnectCheckinWeight").value = checked.maxTotalWeight || "";
+								document.getElementById("adultConnectCheckinNumber").value = checked.maxPiece || 0;
+								document.getElementById("adultConnectCheckinWeight").value = checked.maxTotalWeight || 0;
 
 								// Assuming same baggage for all pax types — customize if needed:
-								document.getElementById("childConnectCheckinNumber").value = checked.maxPiece || "";
-								document.getElementById("childConnectCheckinWeight").value = checked.maxTotalWeight || "";
+								document.getElementById("childConnectCheckinNumber").value = checked.maxPiece || 0;
+								document.getElementById("childConnectCheckinWeight").value = checked.maxTotalWeight || 0;
 
-								document.getElementById("infantConnectCheckinNumber").value = checked.maxPiece || "";
-								document.getElementById("infantConnectCheckinWeight").value = checked.maxTotalWeight || "";
+								document.getElementById("infantConnectCheckinNumber").value = checked.maxPiece || 0;
+								document.getElementById("infantConnectCheckinWeight").value = checked.maxTotalWeight || 0;
 							}
 
 							if (cabin) {
@@ -1310,8 +1312,8 @@ Page Banner END -->
 								console.warn(" 'oneWayArrivalTime' element not found in DOM.");
 							}
 
-							const inventoryDate = document.querySelector('.oneWayInventoryDate');
-							inventoryDate.value = document.querySelector('.oneWayDepartureDate')?.value;
+							// const inventoryDate = document.querySelector('.oneWayInventoryDate');
+							// inventoryDate.value = document.querySelector('.oneWayDepartureDate')?.value;
 
 							document.getElementById('departureName').value = departureAirport?.name || "";
 							document.getElementById('arrivalName').value = arrivalAirport?.name || "";
@@ -1408,6 +1410,7 @@ Page Banner END -->
 			<script>
 				async function addOneWay(event) {
 					event.preventDefault(); 
+					const inventoryName = "<%= inventoryId %>"
 
 					const form = document.getElementById("onewayForm");
 
@@ -1436,7 +1439,7 @@ Page Banner END -->
 
 					const oneWayFlight = {
 						sellerId: document.getElementById('userId').value,
-						// inventoryName: getValue('input[placeholder="Inventory name"]'),
+						inventoryName: inventoryName,
 						from: getValue('#fromSelect'),
 						to: getValue('#toSelect'),
 						departureName: getValue('#departureName'),
@@ -1465,7 +1468,7 @@ Page Banner END -->
 						infantCabinNumber: document.getElementById('infantCabinNumber').value,
 						infantCabinWeight: document.getElementById('infantCabinWeight').value,
 						inventoryDates: [{
-							date: getValue('.oneWayInventoryDate'),
+							// date: getValue('.oneWayInventoryDate'),
 							pnr: getValue('.oneWayPnr'),
 							seats: getValue('.oneWaySeats'),
 							fare: {
@@ -1516,6 +1519,8 @@ Page Banner END -->
 	async function addConnecting(event) {
 		event.preventDefault();
 
+		const inventoryName = "<%= inventoryId %>"
+		
 		const form = document.getElementById("connectingForm");
 		const getValue = (selector) => form.querySelector(selector)?.value || "";
 
@@ -1566,7 +1571,7 @@ Page Banner END -->
 
 		const oneWayFlight = {
 			sellerId: document.getElementById('userId').value,
-			// inventoryName: getValue('input[placeholder="Inventory name"]'),
+			inventoryName: inventoryName,
 			from: getValue('#fromConnectingSelect'),
 			to: getValue('#toConnectingSelect'),
 			departureName: getValue('#connectingDepartureName'),
@@ -1595,7 +1600,7 @@ Page Banner END -->
 			infantCabinNumber: document.getElementById('infantConnectCabinNumber').value,
 			infantCabinWeight: document.getElementById('infantConnectCabinWeight').value,
 			inventoryDates: [{
-				date: getValue('.connectingInventoryDate'),
+				// date: getValue('.connectingInventoryDate'),
 				pnr: getValue('.connectingPnr'),
 				seats: getValue('.connectingSeats'),
 				fare: {

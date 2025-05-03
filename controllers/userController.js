@@ -8,6 +8,7 @@ const Subscriptions = require("../models/subscriptionModel");
 const Airports = require("../models/airportModel");
 const Airlines = require("../models/airlineModel");
 const Transactions = require("../models/transactionModel");
+const Counter = require("../models/counterModel");
 const { countries } = require('countries-list');
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -316,7 +317,7 @@ console.log(req.body);
     };
 
     const flights = await Flights.find();
-    console.log("flights", flights[0].inventoryDates[0].date);
+    console.log("flights", flights[0].departureDate);
 
     // Function to check if a date falls within a range
     const isDateInRange = (dateStr, startDateStr, endDateStr) => {
@@ -331,7 +332,7 @@ console.log(req.body);
       if (flexible) {
         return (
           isDateInRange(
-            flight.inventoryDates[0].date,
+            flight.departureDate,
             departureDate,
             returnDate
           ) &&
@@ -340,7 +341,7 @@ console.log(req.body);
         );
       } else {
         return (
-          flight.inventoryDates[0].date === departure &&
+          flight.departureDate === departure &&
           flight.from.toUpperCase() === fixedFrom &&
           flight.to.toUpperCase() === fixedTo
         );
@@ -1016,10 +1017,10 @@ const flightBooking = async (req, res) => {
     });
 
     const flightId = flightDetails._id;
-    const travelDate = flightDetails.departureDate;
+    const pnr = flightDetails.inventoryDates[0].pnr;
 
     const updatedFlight = await Flights.findOneAndUpdate(
-      { _id: flightId, "inventoryDates.date": travelDate },
+      { _id: flightId, "inventoryDates.pnr": pnr },
       {
         $inc: {
           "inventoryDates.$.seatsBooked": travelers.length,
@@ -1754,7 +1755,7 @@ const viewListings = async (req, res) => {
       .sort({ createdAt: -1 });
     
     if (!flights || flights.length === 0) {
-      return res.status(404).json({ success: false, message: "No flights found" });
+      res.render("user/listings",{success: false, message: "No flights found" });
     }
 
     res.render("user/listings", {flights});
@@ -1764,14 +1765,62 @@ const viewListings = async (req, res) => {
   }
 };
 
+// const viewAddListing = async (req, res) => {
+//   try {
+//     res.render("user/add-listings", {  });  
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
+// const viewAddListing = async (req, res) => {
+//   try {
+//     // Generate next inventory ID manually
+//     const counter = await Counter.findOneAndUpdate(
+//       { name: "inventoryId" },
+//       { $inc: { seq: 1 } },
+//       { new: true, upsert: true }
+//     );
+
+//     const paddedSeq = String(counter.seq).padStart(5, "0");
+//     const generatedInventoryId = `INV${paddedSeq}`;
+
+//     // Pass the generated inventoryId to the frontend
+//     res.render("user/add-listings", { inventoryId: generatedInventoryId });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
 const viewAddListing = async (req, res) => {
   try {
-    res.render("user/add-listings", {  });  
+    // Get the flight with the highest inventoryId
+    const lastFlight = await Flights.findOne({})
+      .sort({ createdAt: -1 })
+      .select("inventoryId");
+    console.log("last",lastFlight);
+
+    let nextInventoryId;
+
+    if (lastFlight && lastFlight.inventoryId) {
+      // Extract numeric part (e.g., from 'INV00123')
+      const lastSeq = parseInt(lastFlight.inventoryId.replace("INV", ""), 10);
+      const newSeq = lastSeq + 1;
+      nextInventoryId = `INV${String(newSeq).padStart(5, "0")}`;
+    } else {
+      // Default to INV00001 if no flights exist
+      nextInventoryId = "INV00001";
+    }
+
+    res.render("user/add-listings", { inventoryId: nextInventoryId });
   } catch (error) {
-    console.log(error);
+    console.error("Error generating inventoryId:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
 
 const searchAirports = async (req, res) => {
   try {
@@ -1975,7 +2024,7 @@ const addFlight = async (req, res) => {
   try {
     const newFlight = new Flights({
       sellerId: oneWayFlight.sellerId,
-      // inventoryName: oneWayFlight.inventoryName,
+      inventoryId: oneWayFlight.inventoryName,
       from: oneWayFlight.from,
       to: oneWayFlight.to,
       departureName: oneWayFlight.departureName,
@@ -2025,7 +2074,7 @@ const addFlight = async (req, res) => {
       },
       inventoryDates: [
         {
-          date: oneWayFlight.inventoryDates[0]?.date,
+          // date: oneWayFlight.inventoryDates[0]?.date,
           pnr: oneWayFlight.inventoryDates[0]?.pnr,
           seats: oneWayFlight.inventoryDates[0]?.seats,
           fare: {
