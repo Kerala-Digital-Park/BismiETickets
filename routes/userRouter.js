@@ -132,6 +132,7 @@ userRouter.post("/renewal-free", isLogin, userController.freeRenewal);
 userRouter.post("/agent-subscription", isLogin, userController.agentSubscription);
 userRouter.post("/add-flight", isLogin, userController.addFlight);
 userRouter.post("/api/flights", isLogin, userController.getApiFlights);
+userRouter.post("/add-bank", isLogin, userController.addBank);
 
 
 

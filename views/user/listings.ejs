@@ -7,7 +7,7 @@
 			<!-- =======================
     Content START -->
 			<section class="pt-3">
-				<div class="container-fluid">
+				<div class="container">
 
 					<div class="row g-2 g-lg-4">
 
@@ -31,34 +31,34 @@
 	<!-- Earning item -->
 	<div class="col-md-6 col-xl-4">
 		<div class="card card-body border p-4 h-100">
-			<h6>May Total Sales
-				<a tabindex="0" class="h6 mb-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="top" data-bs-content="After US royalty withholding tax" data-bs-original-title="" title="">
+			<h6><%= currentMonth %> Total Seats
+				<!-- <a tabindex="0" class="h6 mb-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="top" data-bs-content="After US royalty withholding tax" data-bs-original-title="" title="">
 					<i class="bi bi-info-circle-fill small"></i>
-				</a>
+				</a> -->
 			</h6>
-			<h2 class="text-success">₹ 25,869</h2>
-			<p class="mb-2"><span class="text-danger me-1">102</span> Total Bookings</p>
-			<div class="mt-auto text-primary-hover"><a href="#" class="text-decoration-underline p-0 mb-0">View statement</a></div>
+			<h2 class="text-success"><%= totalSeats %></h2>
+			<!-- <p class="mb-2"><span class="text-danger me-1">102</span>May Total Bookings</p>
+			<div class="mt-auto text-primary-hover"><a href="#" class="text-decoration-underline p-0 mb-0">View statement</a></div> -->
 		</div>
 	</div>
 
 	<!-- Booked Rooms item -->
 	<div class="col-md-6 col-xl-4">
 		<div class="card card-body border p-4 h-100">
-			<h6>May Payout Done</h6>
-			<h2 class="text-info">₹ 15869</h2>
-			<p class="mb-2"><span class="text-danger me-1">102</span>75 Paid Booking</p>
-			<div class="mt-auto text-primary-hover"><a href="#" class="text-decoration-underline p-0 mb-0">View Bookings</a></div>
+			<h6><%= currentMonth %> Sold out Seats</h6>
+			<h2 class="text-info"><%= totalSeatsBooked %></h2>
+			<!-- <p class="mb-2"><span class="text-danger me-1">102</span>Sold out Seats</p>
+			<div class="mt-auto text-primary-hover"><a href="#" class="text-decoration-underline p-0 mb-0">View Bookings</a></div> -->
 		</div>
 	</div>
 
 	<!-- Available Rooms item -->
 	<div class="col-md-6 col-xl-4">
 		<div class="card card-body border p-4 h-100">
-			<h6>May Payout Pending</h6>
-			<h2 class="text-warning">42</h2>
-			<p class="mb-2"><span class="text-danger me-1">27</span>Pending Payout Booking</p>
-			<div class="mt-auto text-primary-hover"><a href="#" class="text-decoration-underline p-0 mb-0">View Bookings</a></div>
+			<h6><%= currentMonth %> Pending Seats</h6>
+			<h2 class="text-warning"><%= totalPendingSeats %></h2>
+			<!-- <p class="mb-2"><span class="text-danger me-1">27</span>Pending Seats</p>
+			<div class="mt-auto text-primary-hover"><a href="#" class="text-decoration-underline p-0 mb-0">View Bookings</a></div> -->
 		</div>
 	</div>
 

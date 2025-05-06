@@ -42,6 +42,13 @@ const userSchema = mongoose.Schema(
     transactionAmount: { type: Number, default: 0 },
     subscriptionDate: { type: Date, default: null },
     expiryDate: { type: Date, default: null },
+    bankDetails: {
+      accountHolderName: { type: String, default: null, required: false },
+      accountNumber: { type: String, default: null, required: false },
+      ifscCode: { type: String, default: null, required: false },
+      bankName: { type: String, default: null, required: false },
+      branchName: { type: String, default: null, required: false },
+    },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

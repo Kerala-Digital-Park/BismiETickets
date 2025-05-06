@@ -3,6 +3,7 @@ const Flight = require("../models/flightModel");
 const Subscription = require("../models/subscriptionModel");
 const User = require("../models/userModel");
 const Booking = require("../models/bookingModel");
+const BankUpdates = require("../models/bankUpdateModel");
 
 const viewLogin = async (req, res) => {
     try {
@@ -327,6 +328,166 @@ const deleteAgent = async (req, res) => {
     }
 }
 
+const viewBankUpdates = async (req, res) => {
+    const search = req.query.search || "";
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+      try {
+  
+  if (search) {
+    query.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+      { userId: { $regex: search, $options: "i" } }
+    ];
+  }
+  
+      const totalCount = await BankUpdates.countDocuments();
+      const updates = await BankUpdates.find()
+      .populate("userId")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+  
+    const totalPages = Math.ceil(totalCount / limit);
+  
+    res.render("admin/bankUpdates", {
+      updates,
+      search,
+      currentPage: page,
+      totalPages,
+      totalCount,
+      limit
+    });
+      } catch (error) {
+          console.log(error);
+          res.status(500).json({ success: false, message: "Internal Server error" });
+      }
+}
+
+// const addBank = async (req, res) => {
+//   const userId = req.session.userId;
+//   const bankDetails = req.body;
+//   console.log(bankDetails, userId)
+
+//   if (!userId) {
+//     return res.status(401).json({ success: false, message: "Unauthorized" });
+//   }
+//   try {
+//     const updatedUser = await Users.findByIdAndUpdate(
+//       userId, bankDetails,
+//       { new: true, runValidators: true }
+//     );
+
+//     console.log(updatedUser,"updatedUser")
+
+//     if (!updatedUser) {
+//       return res.status(404).json({ success: false, message: "User not found" });
+//     }
+
+//     res.json({ success: true, message: "Bank details updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating bank details:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
+// const updateBankDetail = async (req, res) => {
+//     const bankUpdateId = req.params.id;
+//     const { status } = req.body;
+
+//     try {
+//         if (status === "Accept") {
+//         const update = await BankUpdates.findById(bankUpdateId).populate("userId");
+//         if (!update) {
+//             return res.status(404).json({ success: false, message: "Bank update not found" });
+//         }
+
+//         const userId = update.userId._id;
+
+//         const bankDetails = {
+//             bankName: update.bankDetails.bankName,
+//             accountNumber: update.bankDetails.accountNumber,
+//             ifscCode: update.bankDetails.ifscCode,
+//             accountHolderName: update.bankDetails.accountHolderName,
+//             branchName: update.bankDetails.branchName,
+//         };
+
+//         const updatedUser = await User.findByIdAndUpdate(
+//             userId, bankDetails,
+//             { new: true, runValidators: true }
+//         );
+//         if (updatedUser) {
+
+//         }else {
+//             return res.status(404).json({ success: false, message: "User not found" });
+//         }
+
+//     }
+//         res.redirect("/admin/bankUpdates");
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({ success: false, message: "Internal Server error" });
+//     }
+// }
+
+const updateBankDetail = async (req, res) => {
+    console.log("Update bank detail called");
+    const bankUpdateId = req.params.id;
+    const { status } = req.body;
+    console.log("Bank update ID:", bankUpdateId);
+    console.log("Status:", status); 
+    console.log("Request body:", req.body);
+
+  
+    try {
+      const update = await BankUpdates.findById(bankUpdateId).populate("userId");
+      if (!update) {
+        return res.status(404).json({ success: false, message: "Bank update not found" });
+      }
+  
+      const userId = update.userId._id;
+  
+      if (status === "accept") {
+        const bankDetails = {
+          bankName: update.bankDetails.bankName,
+          accountNumber: update.bankDetails.accountNumber,
+          ifscCode: update.bankDetails.ifscCode,
+          accountHolderName: update.bankDetails.accountHolderName,
+          branchName: update.bankDetails.branchName,
+        };
+  
+        const updatedUser = await User.findByIdAndUpdate(
+          userId,
+          { bankDetails },
+          { new: true, runValidators: true }
+        );
+  
+        if (!updatedUser) {
+          return res.status(404).json({ success: false, message: "User not found" });
+        }
+  
+        // Remove approved bank update request
+        await BankUpdates.findByIdAndDelete(bankUpdateId);
+        return res.json({ success: true, message: "Bank details accepted successfully" });
+      }
+  
+      if (status === "reject") {
+        // Optional: Set a status or delete it
+        await BankUpdates.findByIdAndDelete(bankUpdateId);
+        return res.json({ success: true, message: "Bank details rejected successfully" });
+
+      }
+  
+      res.redirect("/admin/bankUpdates");
+    } catch (error) {
+      console.log("Error updating bank detail:", error);
+      res.status(500).json({ success: false, message: "Internal Server error" });
+    }
+  };
+  
+
 module.exports = {
     viewLogin,
     loginAdmin,
@@ -350,5 +511,7 @@ module.exports = {
     deleteSubscription,
     deleteUser,
     deleteAgent,
+    viewBankUpdates,
+    updateBankDetail,
 
 }

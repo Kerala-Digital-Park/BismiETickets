@@ -9,6 +9,7 @@ const Airports = require("../models/airportModel");
 const Airlines = require("../models/airlineModel");
 const Transactions = require("../models/transactionModel");
 const Counter = require("../models/counterModel");
+const BankUpdate = require("../models/bankUpdateModel");
 const { countries } = require('countries-list');
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -1739,8 +1740,38 @@ const agentSubscription = async (req, res) => {
 };
 
 const viewEarnings = async (req, res) => {
+  const userId = req.session.userId;
+  const currentMonth = new Date().toLocaleString("default", { month: "short" });
+
   try {
-    res.render("user/earnings", {});
+    const user = await Users.findById(userId);
+    const bookings = await Bookings.find().populate("flight");
+
+    let totalAmount = 0;
+    let totalBaseFare = 0;
+
+    bookings.forEach(booking => {
+      const flight = booking.flight;
+      if (!flight || !flight.departureDate || !flight.sellerId) return;
+
+      // Match seller
+      if (flight.sellerId.toString() !== userId.toString()) return;
+
+      // Get month from departureDate (e.g., "27 Oct 2025")
+      const depMonth = flight.departureDate.split(" ")[1];
+      if (depMonth !== currentMonth) return;
+
+      // Add to totals
+      totalAmount += booking.amount || 0;
+      totalBaseFare += booking.baseFare || 0;
+    });
+
+    res.render("user/earnings", {
+      user,
+      currentMonth,
+      totalAmount,
+      totalBaseFare
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
@@ -1749,50 +1780,58 @@ const viewEarnings = async (req, res) => {
 
 const viewListings = async (req, res) => {
   const userId = req.session.userId;
+
+  // Get current month as a string like "May"
+  const currentMonth = new Date().toLocaleString("default", { month: "short" });
   try {
     const flights = await Flights.find({ sellerId: userId })
       .populate("sellerId")
       .sort({ createdAt: -1 });
-    
+
     if (!flights || flights.length === 0) {
-      res.render("user/listings",{success: false, message: "No flights found" });
+        res.render("user/listings", {
+        success: false,
+        message: "No flights found",
+        currentMonth
+      });
     }
 
-    res.render("user/listings", {flights});
+    let totalSeats = 0;
+    let totalSeatsBooked = 0;
+    let totalPendingSeats = 0;
+
+    flights.forEach((flight) => {
+      const depDate = flight.departureDate; 
+      if (!depDate) return;
+
+      const depMonth = depDate.split(" ")[1]; 
+      if (depMonth === currentMonth) {
+        const inventory = flight.inventoryDates?.[0];
+        if (inventory) {
+          const seats = parseInt(inventory.seats) || 0;
+          const seatsBooked = parseInt(inventory.seatsBooked) || 0;
+          const pendingSeats = seats - seatsBooked;
+
+          totalSeats += seats;
+          totalSeatsBooked += seatsBooked;
+          totalPendingSeats += pendingSeats;
+        }
+      }
+    });
+
+    res.render("user/listings", {
+      flights,
+      currentMonth,
+      totalSeats,
+      totalSeatsBooked,
+      totalPendingSeats
+    });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "Internal Server error" });
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
-// const viewAddListing = async (req, res) => {
-//   try {
-//     res.render("user/add-listings", {  });  
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({ success: false, message: "Internal Server Error" });
-//   }
-// };
-
-// const viewAddListing = async (req, res) => {
-//   try {
-//     // Generate next inventory ID manually
-//     const counter = await Counter.findOneAndUpdate(
-//       { name: "inventoryId" },
-//       { $inc: { seq: 1 } },
-//       { new: true, upsert: true }
-//     );
-
-//     const paddedSeq = String(counter.seq).padStart(5, "0");
-//     const generatedInventoryId = `INV${paddedSeq}`;
-
-//     // Pass the generated inventoryId to the frontend
-//     res.render("user/add-listings", { inventoryId: generatedInventoryId });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({ success: false, message: "Internal Server Error" });
-//   }
-// };
 
 const viewAddListing = async (req, res) => {
   try {
@@ -2305,6 +2344,80 @@ const changeStatus = async (req, res) => {
   }
 }
 
+// const addBank = async (req, res) => {
+//   const userId = req.session.userId;
+//   const bankDetails = req.body;
+//   console.log(bankDetails, userId)
+
+//   if (!userId) {
+//     return res.status(401).json({ success: false, message: "Unauthorized" });
+//   }
+//   try {
+//     const updatedUser = await Users.findByIdAndUpdate(
+//       userId, bankDetails,
+//       { new: true, runValidators: true }
+//     );
+
+//     console.log(updatedUser,"updatedUser")
+
+//     if (!updatedUser) {
+//       return res.status(404).json({ success: false, message: "User not found" });
+//     }
+
+//     res.json({ success: true, message: "Bank details updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating bank details:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
+  const addBank = async (req, res) => {
+  const userId = req.session.userId;
+  const { accountHolderName, accountNumber, ifscCode, bankName, branchName } = req.body.bankDetails;
+  console.log(accountHolderName, userId);
+
+  if (!userId) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
+  }
+
+  try {
+    const existingRequest = await BankUpdate.findOne({ userId });
+    console.log(existingRequest, "existingRequest")
+
+    if (existingRequest) {
+      existingRequest.bankDetails.accountHolderName = accountHolderName;
+      existingRequest.bankDetails.accountNumber = accountNumber;
+      existingRequest.bankDetails.ifscCode = ifscCode;
+      existingRequest.bankDetails.bankName = bankName;
+      existingRequest.bankDetails.branchName = branchName;
+    
+      await existingRequest.save();
+      console.log(existingRequest, "existingRequest");
+      return res.json({ success: true, message: "Bank details update request modified" });
+    }
+
+    // Create a new request
+    const newRequest = new BankUpdate({
+      userId: userId,
+      bankDetails:{
+        accountHolderName: accountHolderName,
+        accountNumber: accountNumber,
+        ifscCode: ifscCode,
+        bankName: bankName,
+        branchName: branchName,
+      },
+    });
+
+    await newRequest.save();
+    console.log(newRequest, "newRequest")
+    res.json({ success: true, message: "Wait for the admin to approve your bank details" });
+
+  } catch (error) {
+    console.error("Error updating bank details:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 module.exports = {
   viewHomepage,
   viewDashboard,
@@ -2372,5 +2485,6 @@ module.exports = {
   viewAgentSubscription,
   updateSeatById,
   updateDateById,
+  addBank,
 
 };
