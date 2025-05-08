@@ -10,6 +10,7 @@ const Airlines = require("../models/airlineModel");
 const Transactions = require("../models/transactionModel");
 const Counter = require("../models/counterModel");
 const BankUpdate = require("../models/bankUpdateModel");
+const KycUpdate = require("../models/kycUpdateModel");
 const { countries } = require('countries-list');
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -1182,148 +1183,148 @@ const updatePassword = async (req, res) => {
   }
 };
 
-const verifyCard = async (req, res) => {
-  console.log("Verify card")
-  try {
-    const userId = req.session.userId;
-    if (!userId) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
-    }
+// const verifyCard = async (req, res) => {
+//   console.log("Verify card")
+//   try {
+//     const userId = req.session.userId;
+//     if (!userId) {
+//       return res.status(401).json({ success: false, message: "Unauthorized" });
+//     }
 
-    const user = await Users.findById(userId).populate('subscription');
-    const subscription = user.subscription;
-    console.log(subscription)
+//     const user = await Users.findById(userId).populate('subscription');
+//     const subscription = user.subscription;
+//     console.log(subscription)
     
-    if (!subscription) {
-      return res.status(400).json({ success: false, message: "Subscription not found" });
-    }
+//     if (!subscription) {
+//       return res.status(400).json({ success: false, message: "Subscription not found" });
+//     }
 
-    console.log(req.files);
+//     console.log(req.files);
 
-    const today = new Date();
+//     const today = new Date();
 
-    // Format today's date to YYYY-MM-DD
-    const todayFormatted = today.toISOString().split("T")[0];
+//     // Format today's date to YYYY-MM-DD
+//     const todayFormatted = today.toISOString().split("T")[0];
 
-    // Calculate the expiry date (30 days from today)
-    const subscriptionDate = new Date(today); // Create a copy of today's date
-    subscriptionDate.setDate(subscriptionDate.getDate() + 30);
+//     // Calculate the expiry date (30 days from today)
+//     const subscriptionDate = new Date(today); // Create a copy of today's date
+//     subscriptionDate.setDate(subscriptionDate.getDate() + 30);
 
-    // Format expiry date to YYYY-MM-DD
-    const expiryDate = subscriptionDate.toISOString().split("T")[0];
+//     // Format expiry date to YYYY-MM-DD
+//     const expiryDate = subscriptionDate.toISOString().split("T")[0];
 
-    if (req.files && req.files.visitingCard && req.files.panCard) {
-      const visitingCardFile = req.files.visitingCard[0];
-      const panCardFile = req.files.panCard[0];
+//     if (req.files && req.files.visitingCard && req.files.panCard) {
+//       const visitingCardFile = req.files.visitingCard[0];
+//       const panCardFile = req.files.panCard[0];
     
-      if (!visitingCardFile || !panCardFile) {
-        return res
-          .status(400)
-          .json({
-            success: false,
-            message: "Visiting Card and PAN Card are required.",
-          });
-      }
+//       if (!visitingCardFile || !panCardFile) {
+//         return res
+//           .status(400)
+//           .json({
+//             success: false,
+//             message: "Visiting Card and PAN Card are required.",
+//           });
+//       }
 
-      user.visitingCard = "/uploads/" + visitingCardFile.filename;
-      user.panCard = "/uploads/" + panCardFile.filename;
+//       user.visitingCard = "/uploads/" + visitingCardFile.filename;
+//       user.panCard = "/uploads/" + panCardFile.filename;
 
-  if (subscription.subscription === "Null") {
-    const defaultPlan = await Subscriptions.findOne({
-      subscription: "Free",
-      role: user.userRole,
-    });
+//   if (subscription.subscription === "Null") {
+//     const defaultPlan = await Subscriptions.findOne({
+//       subscription: "Free",
+//       role: user.userRole,
+//     });
 
-    if (!defaultPlan) {
-      return res.status(400).json({
-        success: false,
-        message: "Default subscription plan not found",
-      });
-    }
+//     if (!defaultPlan) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Default subscription plan not found",
+//       });
+//     }
 
-    user.subscription = defaultPlan._id;
-  }
+//     user.subscription = defaultPlan._id;
+//   }
 
-  user.subscriptionDate = todayFormatted;
-  user.expiryDate = expiryDate;
-  user.kyc = "Initial";
-  user.transactions = 0;
-  user.transactionAmount = 0;
+//   user.subscriptionDate = todayFormatted;
+//   user.expiryDate = expiryDate;
+//   user.kyc = "Initial";
+//   user.transactions = 0;
+//   user.transactionAmount = 0;
 
-  await user.save();
+//   await user.save();
 
-      res.json({
-        success: true,
-        user,
-        message: "Visiting card and PAN card uploaded successfully!",
-      });
-    } else {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Visiting Card and Pan Card are required.",
-        });
-    }
-  } catch (error) {
-    console.error("Error verifying card:", error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-};
+//       res.json({
+//         success: true,
+//         user,
+//         message: "Visiting card and PAN card uploaded successfully!",
+//       });
+//     } else {
+//       return res
+//         .status(400)
+//         .json({
+//           success: false,
+//           message: "Visiting Card and Pan Card are required.",
+//         });
+//     }
+//   } catch (error) {
+//     console.error("Error verifying card:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
 
-const verifyAadhaar = async (req, res) => {
-  try {
-    const userId = req.session.userId;
-    if (!userId) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
-    }
+// const verifyAadhaar = async (req, res) => {
+//   try {
+//     const userId = req.session.userId;
+//     if (!userId) {
+//       return res.status(401).json({ success: false, message: "Unauthorized" });
+//     }
 
-    const user = await Users.findById(userId).populate("subscription");
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
-    }
+//     const user = await Users.findById(userId).populate("subscription");
+//     if (!user) {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "User not found" });
+//     }
 
-    if (req.files && req.files.aadhaar1 && req.files.aadhaar2) {
-      // Access files using req.files.fieldname
-      const aadhaarCard1File = req.files.aadhaar1[0];
-      const aadhaarCard2File = req.files.aadhaar2[0];
+//     if (req.files && req.files.aadhaar1 && req.files.aadhaar2) {
+//       // Access files using req.files.fieldname
+//       const aadhaarCard1File = req.files.aadhaar1[0];
+//       const aadhaarCard2File = req.files.aadhaar2[0];
 
-      if (!aadhaarCard1File || !aadhaarCard2File) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Both Aadhaar Card front and back are required." });
-      }
+//       if (!aadhaarCard1File || !aadhaarCard2File) {
+//         return res
+//           .status(400)
+//           .json({ success: false, message: "Both Aadhaar Card front and back are required." });
+//       }
 
-      user.aadhaarCardFront = "/uploads/" + aadhaarCard1File.filename;
-      user.aadhaarCardBack = "/uploads/" + aadhaarCard2File.filename;
+//       user.aadhaarCardFront = "/uploads/" + aadhaarCard1File.filename;
+//       user.aadhaarCardBack = "/uploads/" + aadhaarCard2File.filename;
 
-      if (user.subscription && user.subscription.subscription === "Free") {
-        user.kyc = "Completed";
-        user.transactions = 0;
-        user.transactionAmount = 0;
-      }
-      await user.save();
+//       if (user.subscription && user.subscription.subscription === "Free") {
+//         user.kyc = "Completed";
+//         user.transactions = 0;
+//         user.transactionAmount = 0;
+//       }
+//       await user.save();
 
-      res.json({
-        success: true,
-        user,
-        message: "Aadhaar card uploaded successfully!",
-      });
-    } else {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Aadhaar Card Front and Back are required.",
-        });
-    }
-  } catch (error) {
-    console.error("Error verifying aadhaar:", error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-};
+//       res.json({
+//         success: true,
+//         user,
+//         message: "Aadhaar card uploaded successfully!",
+//       });
+//     } else {
+//       return res
+//         .status(400)
+//         .json({
+//           success: false,
+//           message: "Aadhaar Card Front and Back are required.",
+//         });
+//     }
+//   } catch (error) {
+//     console.error("Error verifying aadhaar:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
 
 // const subscription = async (req, res) => {
 //   const { subscription } = req.body;
@@ -1373,6 +1374,176 @@ const verifyAadhaar = async (req, res) => {
 //     res.status(400).json({ error: "Invalid subscription detail" });
 //   }
 // };
+
+
+const verifyCard = async (req, res) => {
+  console.log("Verify card")
+  try {
+    const userId = req.session.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const existingRequest = await KycUpdate.findOne({ userId });
+    console.log(existingRequest, "existingRequest")
+
+    const user = await Users.findById(userId).populate('subscription');
+    // const subscription = user.subscription;
+    // console.log(subscription)
+    
+    // if (!subscription) {
+    //   return res.status(400).json({ success: false, message: "Subscription not found" });
+    // }
+
+    console.log(req.files);
+
+    // const today = new Date();
+
+    // Format today's date to YYYY-MM-DD
+    // const todayFormatted = today.toISOString().split("T")[0];
+
+    // Calculate the expiry date (30 days from today)
+    // const subscriptionDate = new Date(today); // Create a copy of today's date
+    // subscriptionDate.setDate(subscriptionDate.getDate() + 30);
+
+    // Format expiry date to YYYY-MM-DD
+    // const expiryDate = subscriptionDate.toISOString().split("T")[0];
+
+    if (req.files && req.files.visitingCard && req.files.panCard) {
+      const visitingCardFile = req.files.visitingCard[0];
+      const panCardFile = req.files.panCard[0];
+    
+      if (!visitingCardFile || !panCardFile) {
+        return res
+          .status(400)
+          .json({
+            success: false,
+            message: "Visiting Card and PAN Card are required.",
+          });
+      }
+      if (existingRequest) {
+        existingRequest.visitingCard = "/uploads/" + visitingCardFile.filename;
+        existingRequest.panCard = "/uploads/" + panCardFile.filename;
+
+        await existingRequest.save();
+      console.log(existingRequest, "existingRequest");
+      return res.json({ success: true, message: "KYC details update request modified" });
+      }
+
+  // if (subscription.subscription === "Null") {
+  //   const defaultPlan = await Subscriptions.findOne({
+  //     subscription: "Free",
+  //     role: user.userRole,
+  //   });
+
+  //   if (!defaultPlan) {
+  //     return res.status(400).json({
+  //       success: false,
+  //       message: "Default subscription plan not found",
+  //     });
+  //   }
+
+  //   user.subscription = defaultPlan._id;
+  // }
+
+  // user.subscriptionDate = todayFormatted;
+  // user.expiryDate = expiryDate;
+  // user.kyc = "Initial";
+  // user.transactions = 0;
+  // user.transactionAmount = 0;
+
+  // await user.save();
+
+    //   res.json({
+    //     success: true,
+    //     user,
+    //     message: "Visiting card and PAN card uploaded successfully!",
+    //   });
+    // } else {
+    //   return res
+    //     .status(400)
+    //     .json({
+    //       success: false,
+    //       message: "Visiting Card and Pan Card are required.",
+    //     });
+    const newRequest = new KycUpdate({
+      userId: userId,
+      visitingCard : "/uploads/" + visitingCardFile.filename,
+      panCard : "/uploads/" + panCardFile.filename,
+      kyc : user.kyc,
+      subscription: user.subscription,
+    });
+
+    await newRequest.save();
+    console.log(newRequest, "newRequest")
+    res.json({ success: true, message: "Wait for the admin to approve your bank details" });
+  }
+  
+  } catch (error) {
+    console.error("Error verifying card:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const verifyAadhaar = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const existingRequest = await KycUpdate.findOne({ userId });
+    console.log(existingRequest, "existingRequest")
+
+    const user = await Users.findById(userId).populate("subscription");
+    // if (!user) {
+    //   return res
+    //     .status(404)
+    //     .json({ success: false, message: "User not found" });
+    // }
+
+    if (req.files && req.files.aadhaar1 && req.files.aadhaar2) {
+      // Access files using req.files.fieldname
+      const aadhaarCard1File = req.files.aadhaar1[0];
+      const aadhaarCard2File = req.files.aadhaar2[0];
+
+      if (!aadhaarCard1File || !aadhaarCard2File) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Both Aadhaar Card front and back are required." });
+      }
+
+      if (existingRequest) {
+      user.aadhaarCardFront = "/uploads/" + aadhaarCard1File.filename;
+      user.aadhaarCardBack = "/uploads/" + aadhaarCard2File.filename;
+
+      await existingRequest.save();
+      console.log(existingRequest, "existingRequest");
+      return res.json({ success: true, message: "KYC details update request modified" });
+      }
+      // if (user.subscription && user.subscription.subscription === "Free") {
+      //   user.kyc = "Completed";
+      //   user.transactions = 0;
+      //   user.transactionAmount = 0;
+      // }
+      const newRequest = new KycUpdate({
+        userId: userId,
+        aadhaarCardFront: "/uploads/" + aadhaarCard1File.filename,
+        aadhaarCardBack: "/uploads/" + aadhaarCard2File.filename,
+        kyc : user.kyc,
+        subscription: user.subscription,
+      });
+      await newRequest.save();
+
+      console.log(newRequest, "newRequest")
+    res.json({ success: true, message: "Wait for the admin to approve your bank details" });
+  }
+  
+  } catch (error) {
+    console.error("Error verifying aadhaar:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
 const subscription = async (req, res) => {
   const { subscription } = req.body;

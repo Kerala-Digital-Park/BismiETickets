@@ -3,10 +3,11 @@
 
 		<!-- **************** MAIN CONTENT START **************** -->
 		<main>
+			<%- include('./partials/agentTopBar') %>
 
 			<!-- =======================
     Content START -->
-			<section class="pt-3">
+			<section class="pt-0">
 				<div class="container">
 
 					<div class="row g-2 g-lg-4">
@@ -97,7 +98,7 @@
 										<tbody class="border-top-0">
 											<% if (flights.length===0) { %>
 												<tr>
-													<td colspan="7" class="text-center">No inventories found.
+													<td colspan="9" class="text-center">No inventories found.
 													</td>
 												</tr>
 												<% } else { %>
@@ -110,17 +111,13 @@
 																	</strong>
 																</div>
 																<div class="text-muted">
-																	Inventory Start & End Date
+																	Create Date
 																</div>
 																<div>
-																	<strong>
-																	<%= new Date(flight.departureDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) %> - 
-																	<%= new Date(flight.arrivalDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) %>
-																	</strong>
+																	<strong><%= new Date(flight.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %></strong>
 																</div>	  
 															</td>
 															<td>
-																<!-- <strong><%= new Date(flight.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %></strong> -->
 																<div>
 																	<strong>
 																		<%= new Date(flight.departureDate).toLocaleDateString('en-GB') %>
@@ -204,8 +201,10 @@
 																	class="btn btn-sm btn-light user-booking-btn"
 																	data-flight-id="<%= flight._id %>"
 																	title="User Bookings">
-																	<i class="fa-solid fa-pen-to-square"></i>
+																	<i class="bi bi-eye-fill me-1"></i>
+																	 View
 																</a>
+
 
 															</td>
 

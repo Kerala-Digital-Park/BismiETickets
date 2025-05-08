@@ -20,6 +20,7 @@ adminRouter.get('/coupons',isLogin, adminController.viewCoupons);
 adminRouter.get('/subscriptions',isLogin, adminController.viewSubscriptions);
 adminRouter.get('/edit-subscription/:id',isLogin, adminController.viewEditSubscription)
 adminRouter.get('/bank-updates',isLogin, adminController.viewBankUpdates);
+adminRouter.get('/kyc-updates',isLogin, adminController.viewKycUpdates);
 
 
 adminRouter.post("/login", adminController.loginAdmin);
@@ -29,6 +30,7 @@ adminRouter.post('/add-subscription',isLogin, adminController.addSubscription);
 adminRouter.post('/edit-subscription/:id',isLogin, adminController.editSubscription);
 adminRouter.post('/delete-subscription/:id',isLogin, adminController.deleteSubscription)
 adminRouter.post('/update-bank-detail/:id',isLogin, adminController.updateBankDetail);
+adminRouter.post('/update-kyc-detail/:id',isLogin, adminController.updateKycDetail);
 
 
 adminRouter.delete('/delete-user/:id',isLogin, adminController.deleteUser);

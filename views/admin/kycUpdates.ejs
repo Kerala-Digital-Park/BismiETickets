@@ -21,10 +21,10 @@
                         <div class="row">
                             <div class="col-12 mb-4 mb-sm-5">
                                 <div class="d-sm-flex justify-content-between align-items-center">
-                                    <h1 class="h3 mb-3 mb-sm-0">Bank Updates List</h1>
+                                    <h1 class="h3 mb-3 mb-sm-0">KYC Updates List</h1>
                                     <div class="col-md-6 col-lg-3">
                                         <form class="rounded position-relative" method="get"
-                                            action="/admin/bank-updates">
+                                            action="/admin/kyc-updates">
                                             <input class="form-control bg-transparent pe-5" type="search" name="search"
                                                 placeholder="Search" aria-label="Search" value="<%= search %>">
                                             <button
@@ -47,15 +47,15 @@
                                     <table class="table align-middle">
                                         <thead class="bg-light">
                                             <tr>
-                                                <!-- <th>User ID</th> -->
+                                                <th>User ID</th>
                                                 <th>Name</th>
-                                                <!-- <th>Email</th>
-												<th>Contact</th> -->
-                                                <th>Account Holder</th>
-                                                <th>Account Number</th>
-                                                <th>Bank Name</th>
+                                                <th>Role</th>
+												<!-- <th>Contact</th> -->
+                                                <th>KYC</th>
+                                                <th>Subscription</th>
+                                                <!-- <th>Bank Name</th>
                                                 <th>Branch Name</th>
-                                                <th>IFSC Code</th>
+                                                <th>IFSC Code</th> -->
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -63,57 +63,43 @@
                                             <% if(updates && updates.length> 0) { %>
                                                 <% updates.forEach((update, index)=> { %>
                                                     <tr>
-                                                        <!-- <td>
+                                                        <td>
 															<h6 class="mb-0 fw-normal">
-                                                                <%= update._id %>
+                                                                <%= update.user.userId %>
                                                             </h6>
-														</td> -->
+														</td>
                                                         <td>
                                                             <h6 class="mb-0 fw-normal">
                                                                 <%= update.user.name %>
                                                             </h6>
                                                         </td>
-                                                        <!-- <td>
+                                                        <td>
 															<h6 class="mb-0 fw-normal">
-																<%= update.user.email %>
+																<%= update.user.userRole %>
 															</h6>
 														</td>
-														<td>
+														<!-- <td>
 															<h6 class="mb-0 fw-normal">
 																<%= update.user.mobile %>
 															</h6>
 														</td> -->
                                                         <td>
                                                             <h6 class="mb-0 fw-normal">
-                                                                <%= update.bankDetails.accountHolderName %>
+                                                                <%= update.kyc %>
                                                             </h6>
                                                         </td>
                                                         <td>
                                                             <h6 class="mb-0 fw-normal">
-                                                                <%= update.bankDetails.accountNumber %>
+                                                                <%= update.subscription.subscription %>
                                                             </h6>
                                                         </td>
+                                                       
                                                         <td>
-                                                            <h6 class="mb-0 fw-normal">
-                                                                <%= update.bankDetails.ifscCode %>
-                                                            </h6>
-                                                        </td>
-                                                        <td>
-                                                            <h6 class="mb-0 fw-normal">
-                                                                <%= update.bankDetails.bankName %>
-                                                            </h6>
-                                                        </td>
-                                                        <td>
-                                                            <h6 class="mb-0 fw-normal">
-                                                                <%= update.bankDetails.branchName %>
-                                                            </h6>
-                                                        </td>
-                                                        <td>
-                                                            <!-- <button class="btn btn-sm btn-primary view-update-btn"
-																	data-update='<%= JSON.stringify(update) %>' title="View"
-																	data-bs-toggle="tooltip" data-bs-placement="top">
-																	<i class="fa-solid fa-eye"></i>
-																</button> -->
+                                                            <button class="btn btn-sm btn-primary view-update-btn"
+																data-update='<%= JSON.stringify(update) %>' title="View"
+																data-bs-toggle="tooltip" data-bs-placement="top">
+																<i class="fa-solid fa-eye"></i>
+															</button>
                                                             <button class="btn btn-sm btn-success update-btn ms-2"
                                                                 data-update-id="<%= update._id %>" title="Accept"
                                                                 data-title="accept" data-bs-toggle="tooltip"
@@ -177,6 +163,120 @@
                             <!-- Card footer END -->
                         </div>
 
+                        <div class="modal fade" id="updateViewModal" tabindex="-1" aria-labelledby="userViewModalLabel"
+							aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered modal-lg">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="userViewModalLabel">Update Details</h5>
+										<button type="button" class="btn-close" data-bs-dismiss="modal"
+											aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+										<form id="userDetailsForm">
+											<div class="row g-3">
+												<div class="col-md-4">
+													<label class="form-label">User ID</label>
+													<input type="text" class="form-control" id="viewUserId" readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Name</label>
+													<input type="text" class="form-control" id="viewName" readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">PAN</label>
+													<input type="text" class="form-control" id="viewPan" readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Gender</label>
+													<input type="text" class="form-control" id="viewGender" readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">KYC Status</label>
+													<input type="text" class="form-control" id="viewKyc" readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Subscription</label>
+													<input type="text" class="form-control" id="viewSubscription"
+														readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Visiting Card</label>
+													<img id="viewVisitingCard" class="img-fluid rounded border"
+														alt="Visiting Card" />
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">PAN Card</label>
+													<img id="viewPanCard" class="img-fluid rounded border"
+														alt="PAN Card" />
+												</div>
+												<div class="col-md-6">
+													<label class="form-label">Aadhaar Front</label>
+													<img id="viewAadhaarFront" class="img-fluid rounded border"
+														alt="Aadhaar Front" />
+												</div>
+												<div class="col-md-6">
+													<label class="form-label">Aadhaar Back</label>
+													<img id="viewAadhaarBack" class="img-fluid rounded border"
+														alt="Aadhaar Back" />
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<script>
+							document.addEventListener("DOMContentLoaded", function () {
+								const viewButtons = document.querySelectorAll(".view-update-btn");
+
+								viewButtons.forEach((btn) => {
+									btn.addEventListener("click", function () {
+										const update = JSON.parse(this.dataset.update);
+
+										// Text fields
+										document.getElementById("viewUserId").value = update.userId || '';
+										document.getElementById("viewName").value = update.user.name || '';
+										document.getElementById("viewPan").value = update.user.pan || '';
+										document.getElementById("viewGender").value = update.user.gender || '';
+										document.getElementById("viewKyc").value = update.kyc || '';
+										document.getElementById("viewSubscription").value = update.subscription?.subscription || 'N/A';
+										
+										const fallback = '/assets/images/avatar/placeholder.png';
+
+										// Get image container elements
+										const visitingCardEl = document.getElementById("viewVisitingCard").parentElement;
+										const panCardEl = document.getElementById("viewPanCard").parentElement;
+										const aadhaarFrontEl = document.getElementById("viewAadhaarFront").parentElement;
+										const aadhaarBackEl = document.getElementById("viewAadhaarBack").parentElement;
+
+										// Hide all by default
+										visitingCardEl.style.display = 'none';
+										panCardEl.style.display = 'none';
+										aadhaarFrontEl.style.display = 'none';
+										aadhaarBackEl.style.display = 'none';
+
+										if (update.visitingCard && update.panCard) {
+												visitingCardEl.style.display = '';
+												panCardEl.style.display = '';
+												document.getElementById("viewVisitingCard").src = update.visitingCard || fallback;
+												document.getElementById("viewPanCard").src = update.panCard || fallback;
+                                        } else if (update.aadhaarCardBack && update.aadhaarCardFront) {
+												aadhaarFrontEl.style.display = '';
+												aadhaarBackEl.style.display = '';
+												document.getElementById("viewAadhaarFront").src = update.aadhaarCardFront || fallback;
+												document.getElementById("viewAadhaarBack").src = update.aadhaarCardBack || fallback;
+										}
+
+										// Show modal
+										const modal = new bootstrap.Modal(document.getElementById("updateViewModal"));
+										modal.show();
+									});
+								});
+							});
+						</script>
+
                         <script>
                             document.addEventListener("DOMContentLoaded", function () {
                                 const acceptButtons = document.querySelectorAll(".update-btn");
@@ -199,7 +299,7 @@
 
 
                                         try {
-                                            const response = await fetch(`/admin/update-bank-detail/${updateId}`, {
+                                            const response = await fetch(`/admin/update-kyc-detail/${updateId}`, {
                                                 method: 'POST',
                                                 headers: {
                                                     'Content-Type': 'application/json',

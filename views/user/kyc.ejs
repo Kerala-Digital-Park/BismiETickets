@@ -297,7 +297,7 @@
             const data = await response.json();
 
             if (data.success) {
-                alert("Card verified successfully!");
+                alert(data.message || "Card verified successfully!");
                 location.reload();
             } else {
                 alert("Error verifying card: " + data.message);
@@ -343,7 +343,7 @@
             const data = await response.json();
 
             if (data.success) {
-                alert("Aadhaar card verified successfully!");
+                alert(data.message || "Aadhaar card verified successfully!");
                 location.reload();
             } else {
                 alert("Error verifying Aadhaar: " + data.message);

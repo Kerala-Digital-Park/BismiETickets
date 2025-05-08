@@ -4,6 +4,8 @@ const Subscription = require("../models/subscriptionModel");
 const User = require("../models/userModel");
 const Booking = require("../models/bookingModel");
 const BankUpdates = require("../models/bankUpdateModel");
+const KycUpdates = require("../models/kycUpdateModel");
+const Subscriptions = require("../models/subscriptionModel");
 
 const viewLogin = async (req, res) => {
     try {
@@ -333,105 +335,76 @@ const viewBankUpdates = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
     const skip = (page - 1) * limit;
-      try {
   
-  if (search) {
-    query.$or = [
-      { name: { $regex: search, $options: "i" } },
-      { email: { $regex: search, $options: "i" } },
-      { userId: { $regex: search, $options: "i" } }
-    ];
-  }
-  
-      const totalCount = await BankUpdates.countDocuments();
-      const updates = await BankUpdates.find()
-      .populate("userId")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
-  
-    const totalPages = Math.ceil(totalCount / limit);
-  
-    res.render("admin/bankUpdates", {
-      updates,
-      search,
-      currentPage: page,
-      totalPages,
-      totalCount,
-      limit
-    });
-      } catch (error) {
-          console.log(error);
-          res.status(500).json({ success: false, message: "Internal Server error" });
+    try {
+      // Build the match stage conditionally
+      let matchStage = {};
+      if (search) {
+        const regex = new RegExp(search, "i");
+        matchStage = {
+          $or: [
+            { "user.name": regex },
+            { "user.email": regex },
+            { "user._id": { $regex: search, $options: "i" } }, // _id must be string
+            { "bankDetails.accountHolderName": regex },
+            { "bankDetails.bankName": regex },
+          ]
+        };
       }
-}
-
-// const addBank = async (req, res) => {
-//   const userId = req.session.userId;
-//   const bankDetails = req.body;
-//   console.log(bankDetails, userId)
-
-//   if (!userId) {
-//     return res.status(401).json({ success: false, message: "Unauthorized" });
-//   }
-//   try {
-//     const updatedUser = await Users.findByIdAndUpdate(
-//       userId, bankDetails,
-//       { new: true, runValidators: true }
-//     );
-
-//     console.log(updatedUser,"updatedUser")
-
-//     if (!updatedUser) {
-//       return res.status(404).json({ success: false, message: "User not found" });
-//     }
-
-//     res.json({ success: true, message: "Bank details updated successfully" });
-//   } catch (error) {
-//     console.error("Error updating bank details:", error);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
-
-// const updateBankDetail = async (req, res) => {
-//     const bankUpdateId = req.params.id;
-//     const { status } = req.body;
-
-//     try {
-//         if (status === "Accept") {
-//         const update = await BankUpdates.findById(bankUpdateId).populate("userId");
-//         if (!update) {
-//             return res.status(404).json({ success: false, message: "Bank update not found" });
-//         }
-
-//         const userId = update.userId._id;
-
-//         const bankDetails = {
-//             bankName: update.bankDetails.bankName,
-//             accountNumber: update.bankDetails.accountNumber,
-//             ifscCode: update.bankDetails.ifscCode,
-//             accountHolderName: update.bankDetails.accountHolderName,
-//             branchName: update.bankDetails.branchName,
-//         };
-
-//         const updatedUser = await User.findByIdAndUpdate(
-//             userId, bankDetails,
-//             { new: true, runValidators: true }
-//         );
-//         if (updatedUser) {
-
-//         }else {
-//             return res.status(404).json({ success: false, message: "User not found" });
-//         }
-
-//     }
-//         res.redirect("/admin/bankUpdates");
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({ success: false, message: "Internal Server error" });
-//     }
-// }
-
+  
+      // Pipeline for pagination
+      const pipeline = [
+        {
+          $lookup: {
+            from: "users", // collection name for User model
+            localField: "userId",
+            foreignField: "_id",
+            as: "user"
+          }
+        },
+        { $unwind: "$user" },
+        { $match: matchStage },
+        { $sort: { createdAt: -1 } },
+        { $skip: skip },
+        { $limit: limit }
+      ];
+  
+      // Pipeline for counting total results
+      const countPipeline = [
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "user"
+          }
+        },
+        { $unwind: "$user" },
+        { $match: matchStage },
+        { $count: "totalCount" }
+      ];
+  
+      // Execute aggregation
+      const updates = await BankUpdates.aggregate(pipeline);
+      const countResult = await BankUpdates.aggregate(countPipeline);
+      const totalCount = countResult[0]?.totalCount || 0;
+      const totalPages = Math.ceil(totalCount / limit);
+  
+      res.render("admin/bankUpdates", {
+        updates,
+        search,
+        currentPage: page,
+        totalPages,
+        totalCount,
+        limit
+      });
+  
+    } catch (error) {
+      console.error("Aggregation error:", error);
+      res.status(500).json({ success: false, message: "Internal Server error" });
+    }
+};
+  
 const updateBankDetail = async (req, res) => {
     console.log("Update bank detail called");
     const bankUpdateId = req.params.id;
@@ -485,8 +458,208 @@ const updateBankDetail = async (req, res) => {
       console.log("Error updating bank detail:", error);
       res.status(500).json({ success: false, message: "Internal Server error" });
     }
-  };
+};
   
+const viewKycUpdates = async (req, res) => {
+    const search = req.query.search || "";
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+  
+    try {
+      // Build the match stage conditionally
+      let matchStage = {};
+      if (search) {
+        const regex = new RegExp(search, "i");
+        matchStage = {
+          $or: [
+            { "user.name": regex },
+            { "user._id": { $regex: search, $options: "i" } }, // _id must be string
+            { "kyc": regex },
+            { "subscription.subscription": regex },
+          ]
+        };
+      }
+  
+      const pipeline = [
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "user"
+          }
+        },
+        { $unwind: "$user" },
+        {
+          $lookup: {
+            from: "subscriptions",
+            localField: "subscription",
+            foreignField: "_id",
+            as: "subscription"
+          }
+        },
+        { $unwind: "$subscription" },
+        { $match: matchStage },
+        { $sort: { createdAt: -1 } },
+        { $skip: skip },
+        { $limit: limit }
+      ];
+  
+      // Aggregation pipeline for total count
+      const countPipeline = [
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "user"
+          }
+        },
+        { $unwind: "$user" },
+        {
+          $lookup: {
+            from: "subscriptions",
+            localField: "subscription",
+            foreignField: "_id",
+            as: "subscription"
+          }
+        },
+        { $unwind: "$subscription" },
+        { $match: matchStage },
+        { $count: "totalCount" }
+      ];
+  
+      // Execute aggregation
+      const updates = await KycUpdates.aggregate(pipeline);
+      const countResult = await KycUpdates.aggregate(countPipeline);
+      const totalCount = countResult[0]?.totalCount || 0;
+      const totalPages = Math.ceil(totalCount / limit);
+  
+      res.render("admin/kycUpdates", {
+        updates,
+        search,
+        currentPage: page,
+        totalPages,
+        totalCount,
+        limit
+      });
+  
+    } catch (error) {
+      console.error("Aggregation error:", error);
+      res.status(500).json({ success: false, message: "Internal Server error" });
+    }
+};
+
+const updateKycDetail = async (req, res) => {
+  console.log("Update kyc detail called");
+  const kycUpdateId = req.params.id;
+  const { status } = req.body;
+  console.log("Kyc update ID:", kycUpdateId);
+  console.log("Status:", status); 
+  console.log("Request body:", req.body);
+
+
+  try {
+    const update = await KycUpdates.findById(kycUpdateId).populate("userId").populate("subscription");
+    if (!update) {
+      return res.status(404).json({ success: false, message: "KYC update not found" });
+    }
+
+    const userId = update.userId._id;
+    const role = update.userId.userRole;
+    const subscription = update.subscription;
+
+    let subscriptionId;
+    let newKyc;
+
+    if (update.kyc === "Pending" && update.visitingCard && update.panCard){
+        if (subscription.subscription === "Null") {
+          const defaultPlan = await Subscriptions.findOne({
+            subscription: "Free",
+            role: role,
+          });
+          if (!defaultPlan) {
+            return res.status(400).json({
+            success: false,
+            message: "Default subscription plan not found",
+            });
+          }
+          subscriptionId = defaultPlan._id;
+          newKyc = "Initial";
+        } 
+    } else if (update.kyc === "Initial" && update.aadhaarCardBack && update.aadhaarCardFront) {
+      // if (subscription.subscription === "Free") {
+      //   const defaultPlan = await Subscriptions.findOne({
+      //     subscription: "Free",
+      //     role: role,
+      //   });
+      //   if (!defaultPlan) {
+      //     return res.status(400).json({
+      //     success: false,
+      //     message: "Default subscription plan not found",
+      //     });
+      //   }
+      // } 
+      // subscriptionId = defaultPlan._id;
+      newKyc = "Completed";
+    }
+
+    const today = new Date();
+
+    // Format today's date to YYYY-MM-DD
+    const todayFormatted = today.toISOString().split("T")[0];
+
+    // Calculate the expiry date (30 days from today)
+    const subscriptionDate = new Date(today); // Create a copy of today's date
+    subscriptionDate.setDate(subscriptionDate.getDate() + 30);
+
+    // Format expiry date to YYYY-MM-DD
+    const expiryDate = subscriptionDate.toISOString().split("T")[0];
+
+
+    if (status === "accept") {
+
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { 
+          visitingCard: update.visitingCard ? update.visitingCard : null,
+          panCard: update.panCard ? update.panCard : null,
+          aadhaarCardFront: update.aadhaarCardFront ? update.aadhaarCardFront : null,
+          aadhaarCardBack: update.aadhaarCardBack ? update.aadhaarCardBack : null,
+          kyc: newKyc,
+          subscription: subscriptionId,
+          subscriptionDate: todayFormatted,
+          expiryDate: expiryDate,
+          transactions: 0,
+          transactionAmount: 0,
+        },
+        { new: true, runValidators: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      // Remove approved bank update request
+      await KycUpdates.findByIdAndDelete(kycUpdateId);
+      return res.json({ success: true, message: "Kyc details accepted successfully" });
+    }
+
+    if (status === "reject") {
+      // Optional: Set a status or delete it
+      await KycUpdates.findByIdAndDelete(kycUpdateId);
+      return res.json({ success: true, message: "Kyc details rejected successfully" });
+
+    }
+
+    res.redirect("/admin/kycUpdates");
+  } catch (error) {
+    console.log("Error updating kyc detail:", error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+};
+
 
 module.exports = {
     viewLogin,
@@ -513,5 +686,7 @@ module.exports = {
     deleteAgent,
     viewBankUpdates,
     updateBankDetail,
+    viewKycUpdates,
+    updateKycDetail,
 
 }
