@@ -1006,7 +1006,10 @@ const flightBooking = async (req, res) => {
     const newTransaction = new Transactions({
       bookingId: newBooking._id,
       userId: flightDetails.sellerId,
-      amount: totalFare, 
+      totalAmount: totalFare, 
+      baseFare: baseFare,
+      tax: otherServices,
+      discount,
     });
 
     await newTransaction.save();
@@ -2105,64 +2108,6 @@ const viewJoinUs = async (req, res) => {
   }
 };
 
-// const viewUserBookings = async (req, res) => {
-//   const userId = req.session.userId;
-//   const search = req.query.search || '';
-//   const page = parseInt(req.query.page) || 1;
-//   const limit =4;
-//   const skip = (page - 1) * limit;
-
-//   try {
-//     let flightIds = [];
-
-//     if (search) {
-//       const matchingFlights = await Flights.find({
-//         $or: [
-//           { fromCity: { $regex: search, $options: 'i' } },
-//           { toCity: { $regex: search, $options: 'i' } }
-//         ]
-//       }).select('_id');
-
-//       flightIds = matchingFlights.map(f => f._id);
-//     }
-
-//     let query = {};
-//     if (search) {
-//       query = {
-//         $or: [
-//           { bookingId: { $regex: search, $options: 'i' } },
-//           { flight: { $in: flightIds } }
-//         ]
-//       };
-//     }
-
-//     // Get total for pagination
-//     const allMatchingBookings = await Bookings.find(query)
-//       .populate("flight")
-//       .populate("userId");
-
-      
-//       const sellerBookings = allMatchingBookings.filter(booking => {
-//         return booking.flight?.sellerId?.toString() === userId;
-//       });
-      
-//       const paginatedBookings = sellerBookings.slice(skip, skip + limit);
-//       console.log(paginatedBookings)
-
-//     const totalPages = Math.ceil(sellerBookings.length / limit);
-
-//     res.render("user/user-booking", {
-//       bookings: paginatedBookings,
-//       search,
-//       currentPage: page,
-//       totalPages,
-//     });
-
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ success: false, message: "Internal Server Error" });
-//   }
-// };
 
 const viewUserBookings = async (req, res) => {
   const userId = req.session.userId; // seller's user ID
@@ -2515,33 +2460,6 @@ const changeStatus = async (req, res) => {
   }
 }
 
-// const addBank = async (req, res) => {
-//   const userId = req.session.userId;
-//   const bankDetails = req.body;
-//   console.log(bankDetails, userId)
-
-//   if (!userId) {
-//     return res.status(401).json({ success: false, message: "Unauthorized" });
-//   }
-//   try {
-//     const updatedUser = await Users.findByIdAndUpdate(
-//       userId, bankDetails,
-//       { new: true, runValidators: true }
-//     );
-
-//     console.log(updatedUser,"updatedUser")
-
-//     if (!updatedUser) {
-//       return res.status(404).json({ success: false, message: "User not found" });
-//     }
-
-//     res.json({ success: true, message: "Bank details updated successfully" });
-//   } catch (error) {
-//     console.error("Error updating bank details:", error);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
-
   const addBank = async (req, res) => {
   const userId = req.session.userId;
   const { accountHolderName, accountNumber, ifscCode, bankName, branchName } = req.body.bankDetails;
@@ -2586,6 +2504,23 @@ const changeStatus = async (req, res) => {
   } catch (error) {
     console.error("Error updating bank details:", error);
     res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const viewTransactions = async (req, res) => {
+  const userId = req.session.userId; 
+  try {
+    const transactions = await Transactions.find({ userId }).populate("userId").populate({
+      path: "bookingId",
+    populate: [
+      { path: "flight" },
+      { path: "userId" }
+    ]
+    });
+    res.render("user/transaction", {transactions});
+  } catch (error) {
+    console.error(error);
+    res.render("error", { error });
   }
 };
 
@@ -2657,5 +2592,6 @@ module.exports = {
   updateSeatById,
   updateDateById,
   addBank,
+  viewTransactions,
 
 };

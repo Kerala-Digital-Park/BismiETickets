@@ -302,27 +302,6 @@
                                                         <div
                                                             class="card-body position-relative d-flex flex-column p-0 h-100">
 
-                                                            <!-- Buttons -->
-                                                            <div
-                                                                class="list-inline-item dropdown position-absolute top-0 end-0">
-                                                                <!-- Share button -->
-                                                                <a href="#" class="btn btn-sm btn-round btn-light"
-                                                                    role="button" id="dropdownAction1"
-                                                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                                                    <i class="bi bi-three-dots-vertical"></i>
-                                                                </a>
-                                                                <!-- dropdown button -->
-                                                                <ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded"
-                                                                    aria-labelledby="dropdownAction1">
-                                                                    <li><a class="dropdown-item" href="#"><i
-                                                                                class="bi bi-info-circle me-1"></i>Report</a>
-                                                                    </li>
-                                                                    <li><a class="dropdown-item" href="#"><i
-                                                                                class="bi bi-slash-circle me-1"></i>Disable</a>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-
                                                             <!-- Title -->
                                                             <h5 class="card-title mb-2 me-5"><%= flight.inventoryName %></h5>
                                                             <small><%= flight.from.toUpperCase() %> → <%= flight.to.toUpperCase() %> (<%= flight.stops[0].airlineCode %> - <%= flight.stops[0].flightNumber %> )</small>
@@ -336,8 +315,12 @@
                                                                     <span class="mb-0 me-2">/adult</span>
                                                                 </div>
                                                                 <!-- Button -->
-                                                                <!-- <a href="#" class="btn btn-sm btn-primary px-2 mb-0"><i
-                                                                        class="bi bi-eye fa-fw me-1"></i>View</a> -->
+                                                                <a href="/admin/withdrawal/<%= flight._id %>/<%= flight.sellerId %>" 
+                                                                class="btn btn-sm btn-primary px-2 mb-0 withdraw-btn" 
+                                                                data-flight='<%- JSON.stringify(flight) %>'
+                                                                >
+                                                                Withdraw
+                                                                </a>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -391,6 +374,35 @@
                     });
                 });
             </script>
+
+<!-- <script>
+    document.querySelectorAll('.withdraw-btn').forEach(button => {
+      button.addEventListener('click', function (e) {
+        e.preventDefault();
+  
+        const flightData = JSON.parse(this.dataset.flight);
+        console.log(flightData);
+
+        // Example: Redirect with sellerId + send flight data via POST
+        fetch(`/admin/withdrawal/${flightData._id}/${flightData.sellerId}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        })
+        .then(res => res.json())
+        .then(data => {
+          console.log("Server Response:", data);
+          alert("Withdrawal initiated!");
+          // Optionally redirect
+          window.location.href = data.redirectUrl;
+        })
+        .catch(err => {
+          console.error("Error:", err);
+          alert("An error occurred.");
+        });
+      });
+    });
+  </script>
+   -->
 
     </main>
     <!-- **************** MAIN CONTENT END **************** -->

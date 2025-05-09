@@ -1,0 +1,192 @@
+<%- include('./partials/header') %>
+
+    <!-- **************** MAIN CONTENT START **************** -->
+    <main>
+
+        <!-- Sidebar START -->
+        <%- include('./partials/sideBar') %>
+            <!-- Sidebar END -->
+
+            <!-- Page content START -->
+            <div class="page-content">
+
+                <!-- Top bar START -->
+                <%- include('./partials/topBar') %>
+                    <!-- Top bar END -->
+
+                    <!-- Page main content START -->
+                    <div class="page-content-wrapper p-xxl-4">
+
+                        <!-- Title -->
+                        <div class="row">
+                            <div class="col-12 mb-4 mb-sm-5">
+                                <div class="d-sm-flex justify-content-between align-items-center">
+                                    <h1 class="h3 mb-3 mb-sm-0">Bookings List</h1>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Guest list START -->
+                        <div class="card shadow mt-3">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table align-middle">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th>Booking ID</th>
+                                                <th>Date</th>
+                                                <th>Particulars</th>
+                                                <th>Travelers</th>
+                                                <th>Amount</th>
+                                                <th>Base Fare</th>
+                                                <th>Tax & <br>Service Charges</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                            <% if(withdrawalList && withdrawalList.length> 0) { %>
+                                                <% withdrawalList.forEach((withdrawal, index)=> { %>
+                                                    <tr>
+                                                        <td>
+                                                            <h6 class="mb-0 fw-normal">
+                                                                <%= withdrawal.bookingId %>
+                                                            </h6>
+                                                        </td>
+                                                        <td>
+                                                            <h6 class="mb-0 fw-normal">
+                                                                <%= new
+                                                                    Date(withdrawal.createdAt).toLocaleDateString("en-US",
+                                                                    { dateStyle: "medium" }) %>
+                                                            </h6>
+                                                        </td>
+                                                        <td>
+                                                            <div>
+                                                                <h6>
+                                                                    <%= withdrawal.flight.from %> - <%=
+                                                                            withdrawal.flight.to %> (<%=
+                                                                                withdrawal.flight.stops[0].airlineCode
+                                                                                %> - <%=
+                                                                                    withdrawal.flight.stops[0].flightNumber
+                                                                                    %>)
+                                                                </h6>
+                                                            </div>
+                                                            <div>
+                                                                <small class="text-muted">
+                                                                    <%= withdrawal.flight.departureDate %> - <%=
+                                                                            withdrawal.flight.arrivalDate %>
+                                                                </small>
+                                                            </div>
+                                                            <div>
+                                                                <small>
+                                                                    <%= withdrawal.userId.name %>
+                                                                </small>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <%= withdrawal.travelers.length %>
+                                                        </td>
+                                                        <td>
+                                                            <%= withdrawal.amount %>
+                                                        </td>
+                                                        <td><input type="number" name="baseFare" id="baseFare"
+                                                                class="form-control"
+                                                                value="<%= withdrawal.baseFare %>" /></td>
+                                                        <td>
+                                                            <%= withdrawal.tax %>
+                                                        </td>
+                                                        <td>
+                                                            <% if (withdrawal.paymentStatus === "Paid") { %>
+                                                              <button class="btn btn-secondary w-100" disabled>
+                                                                Withdrawn
+                                                              </button>
+                                                            <% } else { %>
+                                                              <button class="btn btn-primary w-100 payNowBtn"
+                                                                data-booking='<%- JSON.stringify(withdrawal) %>'>
+                                                                Withdraw
+                                                              </button>
+                                                            <% } %>
+                                                          </td>
+                                                          
+                                                    </tr>
+                                                    <% }) %>
+                                                        <% } else { %>
+                                                            <tr>
+                                                                <td colspan="9" class="text-center">
+                                                                    <p class="mb-0">No withdrawalList found.</p>
+                                                                </td>
+                                                            </tr>
+                                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Card footer START -->
+
+                            <!-- Card footer END -->
+                        </div>
+
+                    </div>
+                    <!-- Page main content END -->
+            </div>
+            <!-- Page content END -->
+
+            <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+            <script>
+                document.querySelectorAll(".payNowBtn").forEach(button => {
+                  button.addEventListener("click", function () {
+                    const bookingData = JSON.parse(this.dataset.booking);
+              
+                    // Get the editable baseFare input in the same row
+                    const baseFareInput = this.closest("tr").querySelector('input[name="baseFare"]');
+                    const baseFare = baseFareInput?.value;
+              
+                    if (!baseFare) {
+                      alert("Base fare is required!");
+                      return;
+                    }
+              
+                    const amountInPaise = parseFloat(baseFare) * 100;
+                    console.log("Booking Data:", bookingData);
+                    console.log("Amount in paise:", amountInPaise);
+              
+                    const options = {
+                      key: "rzp_test_1ziG9HjgAv6f6j",
+                      amount: amountInPaise,
+                      currency: "INR",
+                      name: "Bismi",
+                      description: "UPI Payment",
+                      image: "https://your-logo-url.com/logo.png",
+              
+                      handler: function (response) {
+                        const paymentDetails = {
+                          razorpay_payment_id: response.razorpay_payment_id,
+                          baseFare: parseFloat(baseFare)
+                        };
+              
+                        fetch(`/admin/withdrawal-payment/${bookingData._id}`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify(paymentDetails)
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                          alert(data.message || "Payment successful");
+                          window.location.href = "/admin/transactions";
+                        })
+                        .catch(err => console.error("Error:", err));
+                      },
+                      theme: { color: "#3399cc" }
+                    };
+              
+                    const razorpayInstance = new Razorpay(options);
+                    razorpayInstance.open();
+                  });
+                });
+              </script>
+              
+    </main>
+    <!-- **************** MAIN CONTENT END **************** -->
+
+    <%- include('./partials/footer') %>

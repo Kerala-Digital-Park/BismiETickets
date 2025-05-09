@@ -1,0 +1,198 @@
+<%- include('./partials/header') %>
+
+    <!-- **************** MAIN CONTENT START **************** -->
+    <main>
+
+        <!-- Sidebar START -->
+        <%- include('./partials/sideBar') %>
+            <!-- Sidebar END -->
+
+            <!-- Page content START -->
+            <div class="page-content">
+
+                <!-- Top bar START -->
+                <%- include('./partials/topBar') %>
+                    <!-- Top bar END -->
+
+                    <!-- Page main content START -->
+                    <div class="page-content-wrapper p-xxl-4">
+
+                        <!-- Title -->
+                        <div class="row">
+                            <div class="col-12 mb-4 mb-sm-5">
+                                <div class="d-sm-flex justify-content-between align-items-center">
+                                    <h1 class="h3 mb-3 mb-sm-0">Transactions History</h1>
+                                    <div class="col-md-6 col-lg-3">
+                                        <form class="rounded position-relative" method="get"
+                                            action="/admin/transactions">
+                                            <input class="form-control bg-transparent pe-5" type="search" name="search"
+                                                placeholder="Search" aria-label="Search" value="<%= search %>">
+                                            <button
+                                                class="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover "
+                                                type="submit">
+                                                <i class="fas fa-search fs-6"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="d-grid"><a href="#" class="btn btn-primary mb-0"><i
+                                                class="bi bi-filetype-pdf me-2"></i>Generate Report</a> </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Guest list START -->
+                        <div class="card shadow mt-3">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table align-middle">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th>Transaction ID</th>
+                                                <th>Date</th>
+                                                <th>Particulars</th>
+												<th>User ID</th>
+                                                <th>Debit</th>
+                                                <th>Credit</th>
+                                                <th>Balance</th>
+                                                <th>Pay Status</th>
+                                                <th>Action</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                            <% if(transactions && transactions.length> 0) { %>
+                                                <% transactions.forEach((transaction, index)=> { 
+                                                    
+                                                        let debit = 0;
+                                                        let credit = 0;
+                                                    
+                                                        if (transaction.paymentStatus === "Paid") {
+                                                            debit = transaction.baseFare;
+                                                        } else if (transaction.paymentStatus === "Unpaid") {
+                                                            credit = transaction.totalAmount;
+                                                        }
+                                                    
+                                                        const balance = credit - debit;
+                                                
+                                                    %>
+                                                    <tr>
+                                                        <td>
+															<h6 class="mb-0 fw-normal">
+                                                                <%= transaction.transactionId %>
+                                                            </h6>
+														</td>
+                                                        <td>
+                                                            <h6 class="mb-0 fw-normal">
+                                                                <%= new Date(transaction.createdAt).toLocaleDateString("en-US", { dateStyle: "medium" }) %>
+                                                              </h6>                                                          
+                                                        </td>
+                                                        <td>
+                                                            <div>
+                                                                <h6><%= transaction.flight.from %> - <%= transaction.flight.to %> (<%= transaction.flight.stops[0].airlineCode %> - <%= transaction.flight.stops[0].flightNumber %>)</h6>
+                                                            </div>
+                                                            <div>
+                                                                <small class="text-muted"><%= transaction.flight.departureDate %> - <%= transaction.flight.arrivalDate %></small>
+                                                            </div>
+                                                            <div>
+                                                                <small><%= transaction.bookingUser.name %>(<%= transaction.booking.travelers.length %> seats)</small>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+															<h6 class="mb-0 fw-normal">
+																<%= transaction.user.userId %>
+															</h6>
+														</td>
+                                                        
+                                                        <td>
+                                                            <h6 class="mb-0 fw-normal"><%= debit %></h6>
+                                                        </td>
+                                                        <td>
+                                                            <h6 
+                                                                class="mb-0 fw-normal" 
+                                                                title="Total: <%= transaction.totalAmount %>, Tax: <%= transaction.tax %>, Base Fare: <%= transaction.baseFare %>"
+                                                                data-bs-toggle="tooltip" 
+                                                                data-bs-placement="top"
+                                                            >
+                                                                <%= credit %>
+                                                            </h6>
+                                                        </td>                                                        
+                                                        <td>
+                                                            <h6 class="mb-0 fw-normal"><%= balance %></h6>
+                                                        </td>
+                                                        <td>
+                                                            <h6 class="mb-0 fw-normal"><%= transaction.paymentStatus %></h6>
+                                                        </td>
+                                                        <td>
+                                                            <a href="/admin/agent-detail/<%= transaction.flight.sellerId %>" class="btn btn-sm btn-primary view-transaction-btn"
+																data-transaction='<%= JSON.stringify(transaction) %>' >
+																<i class="fa-solid fa-eye"></i> View
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    <% }) %>
+                                                        <% } else { %>
+                                                            <tr>
+                                                                <td colspan="9" class="text-center">
+                                                                    <p class="mb-0">No transactions found.</p>
+                                                                </td>
+                                                            </tr>
+                                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Card footer START -->
+                            <div class="card-footer pt-0">
+                                <!-- Pagination and content -->
+                                <div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+                                    <p class="mb-sm-0 text-center text-sm-start">
+                                        Showing <%= (currentPage - 1) * limit + 1 %> to
+                                            <%= Math.min(currentPage * limit, totalCount) %> of
+                                                <%= totalCount %> entries
+                                    </p>
+                                    <nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
+                                        <ul class="pagination pagination-sm pagination-primary-soft mb-0">
+                                            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                                <a class="page-link"
+                                                    href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
+                                            </li>
+
+                                            <% for (let i=1; i <=totalPages; i++) { %>
+                                                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                                    <a class="page-link" href="?search=<%= search %>&page=<%= i %>">
+                                                        <%= i %>
+                                                    </a>
+                                                </li>
+                                                <% } %>
+
+                                                    <li
+                                                        class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                                        <a class="page-link"
+                                                            href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
+                                                    </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                            <!-- Card footer END -->
+                        </div>
+
+                    </div>
+                    <!-- Page main content END -->
+            </div>
+            <!-- Page content END -->
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+                        new bootstrap.Tooltip(tooltipTriggerEl);
+                    });
+                });
+            </script>
+            
+    </main>
+    <!-- **************** MAIN CONTENT END **************** -->
+
+    <%- include('./partials/footer') %>

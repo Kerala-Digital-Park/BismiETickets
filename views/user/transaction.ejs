@@ -1,0 +1,159 @@
+<%- include('./partials/header') %>
+    <%- include('./partials/userHeader') %>
+
+        <!-- **************** MAIN CONTENT START **************** -->
+        <main>
+            <%- include('./partials/agentTopBar') %>
+
+            <!-- =======================
+    Content START -->
+            <section class="pt-0">
+                <div class="container vstack gap-4">
+
+                    <div class="row g-4">
+
+
+                            <!-- Main content START -->
+                            <div>
+
+                           
+                                <div class="card border">
+                                    <!-- Card header START -->
+                                    <div class="card-header border-bottom">
+                                        <h4 class="card-header-title">Transactions
+                                            <!-- <span class="badge bg-primary bg-opacity-10 text-primary ms-2" style="font-size: medium;">20 Tickets</span> -->
+                                        </h4>
+                                    </div>
+                                    <!-- Card header END -->
+
+                                    <!-- Card body START -->
+                                    <div class="card-body">
+                                        <!-- Search and select START -->
+                                        <div class="row g-3 align-items-center justify-content-between mb-3">
+                                            <!-- Search -->
+                                            <!-- <div class="col-md-8">
+                                                <form class="rounded position-relative" method="GET"
+                                                    action="/transactions">
+                                                    <input class="form-control pe-5" type="search" name="search"
+                                                        placeholder="Search transactions..."
+                                                        value="<%= typeof search !== 'undefined' ? search : '' %>">
+                                                    <button
+                                                        class="btn border-0 px-3 py-0 position-absolute top-50 end-0 translate-middle-y"
+                                                        type="submit">
+                                                        <i class="fas fa-search fs-6"></i>
+                                                    </button>
+                                                </form>
+
+                                            </div> -->
+                                        </div>
+                                        <!-- Search and select END -->
+
+                                        <!-- Hotel room list START -->
+                                        <div class="table-responsive border-0">
+                                            <table class="table align-middle p-4 mb-0 table-hover table-shrink">
+                                                <!-- Table head -->
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th scope="col" class="border-0">Transaction ID</th>
+                                                        <th scope="col" class="border-0">Date</th>
+                                                        <th scope="col" class="border-0">Particulars</th>
+                                                        <th scope="col" class="border-0">Booking ID</th>
+                                                        <th scope="col" class="border-0">Credit</th>
+                                                        <th scope="col" class="border-0">Debit</th>
+                                                        <th scope="col" class="border-0 rounded-end">Balance</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <!-- Table body START -->
+                                                <tbody class="border-top-0">
+
+                                                    <% if (transactions.length===0) { %>
+                                                        <tr>
+                                                            <td colspan="7" class="text-center">No transactions found.</td>
+                                                        </tr>
+                                                        <% } else { %>
+                                                            <% transactions.forEach((transaction, index)=> { 
+                                                                let debit = 0;
+                                                        let credit = 0;
+                                                    
+                                                        if (transaction.paymentStatus === "Paid") {
+                                                            debit = transaction.baseFare;
+                                                        } else if (transaction.paymentStatus === "Unpaid") {
+                                                            credit = transaction.totalAmount;
+                                                        }
+                                                    
+                                                        const balance = credit - debit;
+                                                
+                                                    %>
+                                                                <tr class="align-middle border-top">
+                                                                    <td>
+                                                                        <h6 class="mb-0 fw-normal">
+                                                                            <%= transaction.transactionId %>
+                                                                        </h6>
+                                                                    </td>
+                                                                    <td>
+                                                                        <h6 class="mb-0 fw-normal">
+                                                                            <%= new Date(transaction.createdAt).toLocaleDateString("en-US", { dateStyle: "medium" }) %>
+                                                                          </h6>                                                          
+                                                                    </td>
+                                                                    <td>
+                                                                        <div>
+                                                                            <h6><%= transaction.bookingId.flight.from %> - <%= transaction.bookingId.flight.to %> (<%= transaction.bookingId.flight?.stops[0]?.airlineCode %> - <%= transaction.bookingId.flight.stops[0].flightNumber %>)</h6>
+                                                                        </div>
+                                                                        <div>
+                                                                            <small class="text-muted"><%= transaction.bookingId.flight.departureDate %> - <%= transaction.bookingId.flight.arrivalDate %></small>
+                                                                        </div>
+                                                                        <div>
+                                                                            <small><%= transaction.bookingId.userId.name %>(<%= transaction.bookingId.travelers.length %> seats)</small>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <h6 class="mb-0 fw-normal">
+                                                                            <%= transaction.bookingId.bookingId %>
+                                                                        </h6>
+                                                                    </td>
+                                                                    
+                                                                    <td>
+                                                                        <h6 class="mb-0 fw-normal"><%= credit %></h6>
+                                                                    </td>
+                                                                    <td>
+                                                                        <h6 
+                                                                            class="mb-0 fw-normal" 
+                                                                            title="Total: <%= transaction.totalAmount %>, Tax: <%= transaction.tax %>, Base Fare: <%= transaction.baseFare %>"
+                                                                            data-bs-toggle="tooltip" 
+                                                                            data-bs-placement="top"
+                                                                        >
+                                                                            <%= debit %>
+                                                                        </h6>
+                                                                    </td>                                                        
+                                                                    <td>
+                                                                        <h6 class="mb-0 fw-normal"><%= balance %></h6>
+                                                                    </td>
+                                                                </tr>
+                                                                <% }); %>
+                                                                    <% } %>
+                                                </tbody>
+
+                                                <!-- Table body END -->
+                                            </table>
+                                        </div>
+                                        <!-- Hotel room list END -->
+                                    </div>
+                                    <!-- Card body END -->
+
+                                    <!-- Card footer START -->
+                                    
+                                    <!-- Card footer END -->
+                                </div>
+                            </div>
+                    </div>
+                    <!-- Booking table END -->
+                </div>
+            </section>
+            <!-- =======================
+    Content END -->
+
+        </main>
+        <!-- **************** MAIN CONTENT END **************** -->
+
+        <%- include('./partials/footer') %>
