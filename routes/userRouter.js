@@ -73,6 +73,8 @@ userRouter.get("/blog-detail", userController.viewBlogDetail);
 userRouter.get("/help", userController.viewHelp);
 userRouter.get("/help-detail", userController.viewHelpDetail);
 userRouter.get("/faq", userController.viewFAQ);
+userRouter.get("/help-contact", userController.viewHelpContact);
+userRouter.get("/support-ticket", isLogin, userController.viewSupportTicket);
 userRouter.get("/privacy-policy", userController.viewPrivacy);
 userRouter.get("/terms-of-service", userController.viewTerms);
 userRouter.get("/profile",isLogin, userController.viewProfile);
@@ -97,7 +99,8 @@ userRouter.get("/api/countries", userController.getApiCountries);
 userRouter.get("/search-airports", userController.searchAirports);
 userRouter.get("/search-airlines", userController.searchAirlines);
 userRouter.get("/agent-subscription", isLogin, userController.viewAgentSubscription);
-userRouter.get("/transactions", userController.viewTransactions)
+userRouter.get("/transactions", isLogin, userController.viewTransactions);
+userRouter.get("/notifications", isLogin, userController.viewNotifications)
 
 
 userRouter.post("/sign-up", userController.signup);
@@ -134,7 +137,7 @@ userRouter.post("/agent-subscription", isLogin, userController.agentSubscription
 userRouter.post("/add-flight", isLogin, userController.addFlight);
 userRouter.post("/api/flights", isLogin, userController.getApiFlights);
 userRouter.post("/add-bank", isLogin, userController.addBank);
-
+userRouter.post("/support-ticket", upload.single('file'), isLogin, userController.addSupportTicket)
 
 
 userRouter.put("/update-listing", isLogin, userController.updateListingById);

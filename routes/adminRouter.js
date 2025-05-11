@@ -23,6 +23,7 @@ adminRouter.get('/bank-updates',isLogin, adminController.viewBankUpdates);
 adminRouter.get('/kyc-updates',isLogin, adminController.viewKycUpdates);
 adminRouter.get('/transactions', isLogin, adminController.viewTransactions);
 adminRouter.get('/withdrawal/:flightId/:sellerId',isLogin, adminController.viewWithdrawalsById);
+adminRouter.get('/messages', isLogin, adminController.viewMessages)
 
 
 
@@ -35,6 +36,9 @@ adminRouter.post('/delete-subscription/:id',isLogin, adminController.deleteSubsc
 adminRouter.post('/update-bank-detail/:id',isLogin, adminController.updateBankDetail);
 adminRouter.post('/update-kyc-detail/:id',isLogin, adminController.updateKycDetail);
 adminRouter.post('/withdrawal-payment/:id', isLogin, adminController.withdrawalPayment)
+adminRouter.post('/send-response', isLogin, adminController.sendResponse)
+
+
 
 adminRouter.delete('/delete-user/:id',isLogin, adminController.deleteUser);
 adminRouter.delete('/delete-agent/:id',isLogin, adminController.deleteAgent);

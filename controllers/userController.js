@@ -11,6 +11,7 @@ const Transactions = require("../models/transactionModel");
 const Counter = require("../models/counterModel");
 const BankUpdate = require("../models/bankUpdateModel");
 const KycUpdate = require("../models/kycUpdateModel");
+const Support = require("../models/supportModel")
 const { countries } = require('countries-list');
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -248,6 +249,15 @@ const viewHelpDetail = async (req, res) => {
   }
 };
 
+const viewHelpContact = async (req, res) => {
+  try {
+    res.render("user/contact2", {});
+  } catch (error) {
+    console.error(error);
+    res.render("error", { error });
+  }
+};
+
 const viewFAQ = async (req, res) => {
   try {
     res.render("user/faq", {});
@@ -268,6 +278,15 @@ const viewTerms = async (req, res) => {
 const viewPrivacy = async (req, res) => {
   try {
     res.render("user/privacy", {});
+  } catch (error) {
+    console.error(error);
+    res.render("error", { error });
+  }
+};
+
+const viewSupportTicket = async (req, res) => {
+  try {
+    res.render("user/support", {});
   } catch (error) {
     console.error(error);
     res.render("error", { error });
@@ -2524,6 +2543,56 @@ const viewTransactions = async (req, res) => {
   }
 };
 
+const addSupportTicket = async (req, res) => {
+  try {
+    const {
+      enquiryType,
+      category,
+      priority,
+      subject,
+      message
+    } = req.body;
+
+    const userId = req.session.userId; // Assumes session is set up
+    if (!userId) return res.status(401).send('Unauthorized');
+
+    let enquiry;
+
+    if(enquiryType === "A general enquiry"){
+      enquiry = "general"
+    }else {
+      enquiry = "problem"
+    }
+
+    const newTicket = new Support({
+      userId,
+      enquiryType : enquiry,
+      category,
+      priority,
+      subject,
+      message,
+      fileUrl: req.file ? `/uploads/${req.file.filename}` : null,
+    });
+
+    await newTicket.save();
+    res.redirect('/support-ticket'); 
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+}
+
+const viewNotifications = async (req, res) => {
+  const userId = req.session.userId;
+  try {
+    const messages = await Support.find({ userId }).sort({ createdAt: -1 }).populate("userId");
+    return res.render('user/notifications', {messages})
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+}
+
 module.exports = {
   viewHomepage,
   viewDashboard,
@@ -2540,6 +2609,8 @@ module.exports = {
   viewHelp,
   viewHelpDetail,
   viewFAQ,
+  viewHelpContact,
+  viewSupportTicket,
   viewTerms,
   viewPrivacy,
   findTicket,
@@ -2593,5 +2664,7 @@ module.exports = {
   updateDateById,
   addBank,
   viewTransactions,
+  addSupportTicket,
+  viewNotifications,
 
 };

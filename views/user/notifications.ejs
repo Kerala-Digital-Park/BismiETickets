@@ -1,0 +1,112 @@
+<%- include('./partials/header') %>
+<%- include('./partials/userHeader') %>
+
+<!-- **************** MAIN CONTENT START **************** -->
+<main>
+
+    <!-- =======================
+    Main banner START -->
+    <section>
+        <div class="container">
+          <div class="row mb-5">
+            <div class="mx-auto text-center">
+              <h1>Notifications</h1>
+            </div>
+          </div>
+      
+          <% if (messages && messages.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover align-middle text-center">
+                <thead class="table-primary">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Subject</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% messages.forEach((msg, idx) => { %>
+                    <tr>
+                      <td><%= idx + 1 %></td>
+                      <td><%= msg.subject || 'No subject' %></td>
+                      <td><%= msg.createdAt.toLocaleString() %></td>
+                      <td>
+                        <button class="btn btn-sm btn-outline-primary open-convo-btn" 
+                                data-message='<%- JSON.stringify(msg) %>'>
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <p class="text-center">No notifications found.</p>
+          <% } %>
+        </div>
+      </section>
+      
+    <!-- =======================
+    Main banner END -->
+    
+    <div class="modal fade" id="conversationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Message Details</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div id="conversationThread" class="d-flex flex-column gap-3 px-2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const buttons = document.querySelectorAll(".open-convo-btn");
+          const modal = new bootstrap.Modal(document.getElementById("conversationModal"));
+          const threadContainer = document.getElementById("conversationThread");
+      
+          buttons.forEach(btn => {
+            btn.addEventListener("click", () => {
+              const message = JSON.parse(btn.dataset.message);
+              threadContainer.innerHTML = ""; // Clear old content
+      
+              // User message (right aligned)
+              const userMsg = document.createElement("div");
+              userMsg.className = "align-self-end bg-primary text-white p-3 rounded w-75";
+              userMsg.innerHTML = `
+                <div><strong>You</strong></div>
+                <div>${message.message}</div>
+                <div class="text-end small">${new Date(message.createdAt).toLocaleString()}</div>
+              `;
+              threadContainer.appendChild(userMsg);
+      
+              // Replies (left aligned)
+              if (message.reply && message.reply.length > 0) {
+                message.reply.forEach(r => {
+                  const reply = document.createElement("div");
+                  reply.className = "align-self-start bg-light text-dark p-3 rounded w-75";
+                  reply.innerHTML = `
+                    <div><strong>Support Team</strong></div>
+                    <div>${r.message}</div>
+                    <div class="text-end small">${new Date(r.date).toLocaleString()}</div>
+                  `;
+                  threadContainer.appendChild(reply);
+                });
+              }
+      
+              modal.show();
+            });
+          });
+        });
+      </script>
+      
+    </main>
+    <!-- **************** MAIN CONTENT END **************** -->
+
+    <%- include('./partials/footer') %>

@@ -1,0 +1,321 @@
+<%- include('./partials/header') %>
+
+	<!-- **************** MAIN CONTENT START **************** -->
+	<main>
+
+		<!-- Sidebar START -->
+		<%- include('./partials/sideBar') %>
+			<!-- Sidebar END -->
+
+			<!-- Page content START -->
+			<div class="page-content">
+
+				<!-- Top bar START -->
+				<%- include('./partials/topBar') %>
+					<!-- Top bar END -->
+
+					<!-- Page main content START -->
+					<div class="page-content-wrapper p-xxl-4">
+
+						<!-- Title -->
+						<div class="row">
+							<div class="col-12 mb-4 mb-sm-5">
+								<div class="d-sm-flex justify-content-between align-items-center">
+									<h1 class="h3 mb-3 mb-sm-0">Messages</h1>
+									<div class="col-md-6 col-lg-3">
+										<form class="rounded position-relative" method="get" action="/admin/messages">
+											<input class="form-control bg-transparent pe-5" type="search" name="search"
+												placeholder="Search" aria-label="Search" value="<%= search %>">
+											<button
+												class="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover "
+												type="submit">
+												<i class="fas fa-search fs-6"></i>
+											</button>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Guest list START -->
+						<div class="card shadow mt-3">
+							<div class="card-body">
+								<div class="table-responsive">
+									<table class="table align-middle">
+										<thead class="bg-light">
+											<tr>
+												<th>User ID</th>
+												<th>Name</th>
+												<th>Enquiry Type</th>
+												<th>Category</th>
+												<th>Priority</th>
+												<th>Subject</th>
+												<th>Action</th>
+											</tr>
+										</thead>
+										<tbody class="list">
+											<% if(messages && messages.length> 0) { %>
+												<% messages.forEach((message, index)=> { %>
+													<tr>
+														<td>
+															<h6 class="mb-0 fw-normal">
+																<%= message.user.userId %>
+															</h6>
+														</td>
+														<td>
+															<h6 class="mb-0 fw-normal">
+																<%= message.user.name %>
+															</h6>
+														</td>
+														<td>
+															<h6 class="mb-0 fw-normal">
+																<%= message.enquiryType==='general' ? 'General enquiry'
+																	: 'Problem' %>
+															</h6>
+														</td>
+														<td>
+															<h6 class="mb-0 fw-normal">
+																<%= message.category %>
+															</h6>
+														</td>
+														<td>
+															<h6 class="mb-0 fw-normal">
+																<%= message.priority %>
+															</h6>
+														</td>
+														<td>
+															<h6 class="mb-0 fw-normal">
+																<%= message.subject %>
+															</h6>
+														</td>
+														<td>
+															<button class="btn btn-sm btn-primary view-message-btn"
+																data-message='<%= JSON.stringify(message) %>'
+																title="View" data-bs-toggle="tooltip"
+																data-bs-placement="top">
+																<i class="fa-solid fa-eye"></i>
+															</button>
+															<!-- <button
+																	class="btn btn-sm btn-success reply-message-btn ms-2"
+																	data-message-id="<%= message._id %>" title="Reply"
+																	data-bs-toggle="tooltip" data-bs-placement="top">
+																	<i class="fa-solid fa-comment"></i>
+																</button> -->
+														</td>
+													</tr>
+													<% }) %>
+														<% } else { %>
+															<tr>
+																<td colspan="9" class="text-center">
+																	<p class="mb-0">No messages found.</p>
+																</td>
+															</tr>
+															<% } %>
+										</tbody>
+									</table>
+								</div>
+							</div>
+
+							<!-- Card footer START -->
+							<div class="card-footer pt-0">
+								<!-- Pagination and content -->
+								<div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+									<p class="mb-sm-0 text-center text-sm-start">
+										Showing <%= (currentPage - 1) * limit + 1 %> to
+											<%= Math.min(currentPage * limit, totalCount) %> of
+												<%= totalCount %> entries
+									</p>
+									<nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
+										<ul class="pagination pagination-sm pagination-primary-soft mb-0">
+											<li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+												<a class="page-link"
+													href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
+											</li>
+
+											<% for (let i=1; i <=totalPages; i++) { %>
+												<li class="page-item <%= i === currentPage ? 'active' : '' %>">
+													<a class="page-link" href="?search=<%= search %>&page=<%= i %>">
+														<%= i %>
+													</a>
+												</li>
+												<% } %>
+
+													<li
+														class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+														<a class="page-link"
+															href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
+													</li>
+										</ul>
+									</nav>
+								</div>
+							</div>
+							<!-- Card footer END -->
+						</div>
+						<!-- Guest list END -->
+						<!-- User View Modal -->
+						<div class="modal fade" id="messageViewModal" tabindex="-1"
+							aria-labelledby="messageViewModalLabel" aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered modal-lg">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="messageViewModalLabel">Message Details</h5>
+										<button type="button" class="btn-close" data-bs-dismiss="modal"
+											aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+										<form id="messageDetailsForm">
+											<div class="row g-3">
+												<div class="col-md-3">
+													<label class="form-label">User ID</label>
+													<input type="text" class="form-control" id="viewUserId" readonly>
+												</div>
+												<div class="col-md-3">
+													<label class="form-label">Name</label>
+													<input type="text" class="form-control" id="viewName" readonly>
+												</div>
+												<div class="col-md-3">
+													<label class="form-label">Category</label>
+													<input type="email" class="form-control" id="viewCategory" readonly>
+												</div>
+												<div class="col-md-3">
+													<label class="form-label">Priority</label>
+													<input type="text" class="form-control" id="viewPriority" readonly>
+												</div>
+												<div class="col-md-12">
+													<label class="form-label">Subject</label>
+													<input type="text" class="form-control" id="viewSubject" readonly>
+												</div>
+												<div class="col-md-12">
+													<label class="form-label">Message</label>
+													<textarea type="text" class="form-control" id="viewMessage"
+														readonly></textarea>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Image</label>
+													<img id="viewImage" class="img-fluid rounded border" alt="Image" />
+												</div>
+											</div>
+											<div id="replyContainer" class="mt-4">
+												<label class="form-label">Replies</label>
+												<div id="replyMessages" class="d-flex flex-column gap-2"></div>
+											</div>
+										</form>
+									</div>
+									<div class="modal-footer">
+										<!-- Hidden reply input & send button -->
+										<div id="replyInputGroup" class="d-flex w-100 align-items-center gap-2">
+											<input type="text" class="form-control" id="replyTextInput"
+												placeholder="Type your reply..." />
+											<button id="sendReplyBtn" class="btn btn-primary">Send</button>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
+
+						<script>
+							document.addEventListener("DOMContentLoaded", function () {
+								const viewButtons = document.querySelectorAll(".view-message-btn");
+
+								viewButtons.forEach((btn) => {
+									btn.addEventListener("click", function () {
+										const message = JSON.parse(this.dataset.message);
+
+										// Fill modal fields
+										document.getElementById("viewUserId").value = message.user.userId || '';
+										document.getElementById("viewName").value = message.user.name || '';
+										document.getElementById("viewCategory").value = message.category || '';
+										document.getElementById("viewPriority").value = message.priority || '';
+										document.getElementById("viewSubject").value = message.subject || '';
+										document.getElementById("viewMessage").value = message.message || '';
+										document.getElementById("viewImage").src = message.fileUrl;
+
+										// Store message ID for reply
+										document.getElementById("sendReplyBtn").dataset.messageId = message._id;
+
+										const replyContainer = document.getElementById("replyContainer");
+										const replyMessages = document.getElementById("replyMessages");
+										replyMessages.innerHTML = "";
+										replyContainer.style.display = "none";
+
+										// Show replies if available
+										if (Array.isArray(message.reply) && message.reply.length > 0) {
+											replyContainer.style.display = "block";
+											message.reply.forEach(rep => {
+												const dateFormatted = rep.date ? new Date(rep.date).toLocaleString() : "";
+												const bubble = document.createElement("div");
+												bubble.className = "text-end mb-2";
+												bubble.innerHTML = `
+						<div class="bg-primary text-white rounded p-2 d-inline-block">
+							<small><strong>Support Team:</strong></small><br>
+							${rep.message}
+							<div class="text-end"><small>${dateFormatted}</small></div>
+						</div>
+					`;
+												replyMessages.appendChild(bubble);
+											});
+										}
+
+										// Show modal
+										const modal = new bootstrap.Modal(document.getElementById("messageViewModal"));
+										modal.show();
+									});
+								});
+
+								// Send reply handler
+								document.getElementById("sendReplyBtn").addEventListener("click", async () => {
+									const replyText = document.getElementById("replyTextInput").value.trim();
+									const messageId = document.getElementById("sendReplyBtn").dataset.messageId;
+
+									if (!replyText || !messageId) return;
+
+									try {
+										const response = await fetch("/admin/send-response", {
+											method: "POST",
+											headers: {
+												"Content-Type": "application/json"
+											},
+											body: JSON.stringify({ messageId, reply: replyText })
+										});
+
+										const result = await response.json();
+
+										if (result.success) {
+											// Add new reply visually
+											const replyMessages = document.getElementById("replyMessages");
+											const bubble = document.createElement("div");
+											bubble.className = "text-end mb-2";
+											bubble.innerHTML = `
+					<div class="bg-primary text-white rounded p-2 d-inline-block">
+						<small><strong>Support Team:</strong></small><br>
+						${replyText}
+						<div class="text-end"><small>${new Date().toLocaleString()}</small></div>
+					</div>
+				`;
+											replyMessages.appendChild(bubble);
+
+											document.getElementById("replyTextInput").value = "";
+											document.getElementById("replyContainer").style.display = "block";
+										} else {
+											alert("Failed to send reply.");
+										}
+									} catch (err) {
+										console.error(err);
+										alert("Server error");
+									}
+								});
+							});
+
+						</script>
+
+
+					</div>
+					<!-- Page main content END -->
+			</div>
+			<!-- Page content END -->
+
+	</main>
+	<!-- **************** MAIN CONTENT END **************** -->
+
+	<%- include('./partials/footer') %>

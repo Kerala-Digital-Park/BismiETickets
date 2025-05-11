@@ -7,6 +7,7 @@ const Booking = require("../models/bookingModel");
 const BankUpdates = require("../models/bankUpdateModel");
 const KycUpdates = require("../models/kycUpdateModel");
 const Transaction = require("../models/transactionModel");
+const Support = require("../models/supportModel")
 
 const viewLogin = async (req, res) => {
   try {
@@ -1202,6 +1203,122 @@ const withdrawalPayment = async (req, res) => {
   }
 };
 
+const viewMessages = async (req, res) => {
+  const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+  try {
+    const matchQuery = {};
+
+    if (search) {
+      matchQuery.$or = [
+        { "user.name": { $regex: search, $options: "i" } },
+        { "user.userId": { $regex: search, $options: "i" } },
+        { enquiryType: { $regex: search, $options: "i" } },
+        { priority: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Aggregation to get paginated and populated data
+    const messages = await Support.aggregate([
+      {
+        $lookup: {
+          from: "users", // Make sure the collection name matches your MongoDB Users collection
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      ...(search ? [{ $match: matchQuery }] : []),
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+    ]);
+
+    // Aggregation to count total matching documents
+    const countResult = await Support.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      ...(search ? [{ $match: matchQuery }] : []),
+      {
+        $count: "total",
+      },
+    ]);
+
+    const totalCount = countResult[0]?.total || 0;
+    const totalPages = Math.ceil(totalCount / limit);
+    
+    res.render("admin/messages", {
+      messages,
+      search,
+      currentPage: page,
+      totalPages,
+      totalCount,
+      limit,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
+// const sendResponse = async (req, res) => {
+//   const { messageId, reply } = req.body;
+
+//   try {
+//     const message = await Support.findById(messageId);
+//     if (!message) return res.status(404).json({ success: false, message: "Message not found" });
+
+//     if (!message.reply) message.reply = [];
+
+//     message.reply.push(reply);
+//     await message.save();
+
+//     res.json({ success: true });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// }
+
+const sendResponse = async (req, res) => {
+  const { messageId, reply } = req.body;
+
+  try {
+    const messageDoc = await Support.findById(messageId);
+    if (!messageDoc) {
+      return res.status(404).json({ success: false, message: "Message not found" });
+    }
+
+    // Initialize reply array if not already
+    if (!Array.isArray(messageDoc.reply)) {
+      messageDoc.reply = [];
+    }
+
+    // Push structured reply object
+    messageDoc.reply.push({
+      message: reply,
+      date: new Date(),
+    });
+
+    await messageDoc.save();
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
 module.exports = {
   viewLogin,
   loginAdmin,
@@ -1232,5 +1349,7 @@ module.exports = {
   viewTransactions,
   viewWithdrawalsById,
   withdrawalPayment,
+  viewMessages,
+  sendResponse,
 
 };

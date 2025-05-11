@@ -1,0 +1,156 @@
+<%- include('./partials/header') %>
+<%- include('./partials/userHeader') %>
+
+<!-- **************** MAIN CONTENT START **************** -->
+<main>
+
+    <!-- =======================
+    Main banner START -->
+    <!-- <section class="pt-4 pt-md-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-12">
+                    <h1>How can we help?</h1>
+                    <p>You can find all of the questions and answers about secure your account</p>
+    
+                    <form class="mt-4">
+                        <div class="mb-4">
+                            <label><input type="radio" name="enquiryType"> A general enquiry</label>
+                            <label style="margin-left: 20px;">
+                                <input type="radio" name="enquiryType" checked> I have a problem need help
+                            </label>
+                        </div>
+                    
+                        <div class="mb-4 d-flex gap-3">
+                            <div class="form-control-bg-light">
+                                <label class="form-label">Category</label>
+                                <select class="form-control">
+                                    <option>General</option>
+                                    <option>Technical</option>
+                                    <option>Billing</option>
+                                </select>
+                            </div>
+                            <div class="form-control-bg-light">
+                                <label class="form-label">Priority</label>
+                                <select class="form-control">
+                                    <option>Normal</option>
+                                    <option>High</option>
+                                    <option>Urgent</option>
+                                </select>
+                            </div>
+                        </div>
+                    
+                        <div class="mb-4 form-control-bg-light">
+                            <label class="form-label">Describe the problem you have (Subject)</label>
+                            <input type="text" class="form-control" placeholder="Write your problem...">
+                        </div>
+                    
+                        <div class="mb-2">
+                            <label class="form-label">Give us the details</label>
+                            <p class="text-muted" style="font-size: 0.9rem;">
+                                If you’re experiencing a personal crisis, are unable to cope and need support send message. We will always try to respond to texters as quickly as possible.
+                            </p>
+                        </div>
+                    
+                        <div class="mb-4">
+                            <textarea class="form-control" rows="6" placeholder="Give us the details..."></textarea>
+                        </div>
+                    
+                        <div class="mb-4">
+                            <label for="fileUpload">📎 Attach file</label>
+                            <input type="file" id="fileUpload" class="form-control">
+                        </div>
+                    
+                        <div>
+                            <button class="btn btn-primary btn-lg" type="submit">Submit Us</button>
+                        </div>
+                    </form>
+                    
+                </div>
+    
+            </div>
+        </div>
+    </section> -->
+
+    <section class="pt-4 pt-md-5">
+        <div class="d-flex justify-content-center">
+          <div class="p-4 p-md-5 bg-white shadow rounded" style="max-width: 850px; width: 100%;">
+            
+            <!-- Title -->
+            <h1>How can we help?</h1>
+            <p>You can find all of the questions and answers about securing your account</p>
+      
+            <!-- Contact form -->
+            <form class="mt-4" method="POST" action="/support-ticket" enctype="multipart/form-data">
+                <!-- Enquiry Type -->
+              <div class="mb-2 d-flex flex-wrap">
+                <label class="col-lg-6 mb-2">
+                    <input type="radio" name="enquiryType"> A general enquiry
+                </label>
+                <label class="col-lg-6 mb-2">
+                  <input type="radio" name="enquiryType" checked> I have a problem need help
+                </label>
+              </div>
+      
+              <!-- Category and Priority -->
+              <div class="mb-4 d-flex gap-3">
+                <div class="form-control-bg-light w-50 w-md-50">
+                  <label class="form-label">Category</label>
+                  <select class="form-select" name="category">
+                    <option>General</option>
+                    <option>Technical</option>
+                    <option>Billing</option>
+                  </select>
+                </div>
+                <div class="form-control-bg-light w-50 w-md-50">
+                  <label class="form-label">Priority</label>
+                  <select class="form-select" name="priority">
+                    <option>Normal</option>
+                    <option>Important</option>
+                    <option>High Priority</option>
+                  </select>
+                </div>
+              </div>
+      
+              <!-- Subject -->
+              <div class="mb-4 form-control-bg-light">
+                <label class="form-label">Describe the problem you have (Subject)</label>
+                <input type="text" class="form-control" placeholder="Write your problem..." name="subject">
+              </div>
+      
+              <!-- Details Instructions -->
+              <div class="mb-2">
+                <label class="form-label">Give us the details</label>
+                <p class="text-muted" style="font-size: 0.9rem;">
+                  If you’re experiencing a personal crisis, are unable to cope and need support send message.
+                  We will always try to respond to texters as quickly as possible.
+                </p>
+              </div>
+      
+              <!-- Simple Textarea -->
+              <div class="mb-4">
+                <textarea class="form-control" rows="6" placeholder="Give us the details..." name="message"></textarea>
+              </div>
+      
+              <!-- File Attachment -->
+              <div class="mb-4">
+                <label class="mb-2" for="fileUpload">📎 Attach file</label>
+                <input type="file" id="fileUpload" class="form-control" name="file">
+              </div>
+      
+              <!-- Submit Button -->
+              <div>
+                <button class="btn btn-primary btn-lg" type="submit">Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+      
+    <!-- =======================
+    Main banner START -->
+    
+</main>
+<!-- **************** MAIN CONTENT END **************** -->
+    
+<%- include('./partials/footer') %>
