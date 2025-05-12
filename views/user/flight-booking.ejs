@@ -144,8 +144,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const { travelers, email, mobile_number, totalFare, baseFare, discount, otherServices } = bookingData;
-	
-	// const { from, to, stops, duration } = flightDetails;
 
     if (!upiId || !mobileNumber) {
         alert("Please fill in all details.");
@@ -333,7 +331,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		if (bookingData && bookingData.travelers.length > 0) {
 			const travelerList = document.getElementById("traveler-list");
 			bookingData.travelers.forEach(traveler => {
-				const gender = traveler.title === "Mr" ? "Male" : "Female"; 
+				const gender = (traveler.title === "Mr" || traveler.title === "Master") ? "Male" : "Female";
 				const travelerHTML = `
 					<h6 class="mb-0 fw-normal mt-2">${traveler.first_name} ${traveler.last_name}</h6>
 					<ul class="nav nav-divider small text-body mt-1 mb-0">

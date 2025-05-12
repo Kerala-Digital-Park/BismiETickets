@@ -639,35 +639,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
-<!-- <script>
-	document.addEventListener("DOMContentLoaded", function () {
-	  fetch('https://restcountries.com/v2/all')
-		.then(response => response.json())
-		.then(data => {
-		  const select = document.getElementById('countrySelect');
-		  const countries = data.map(c => c.name).sort();
-  
-		  countries.forEach(country => {
-			const option = document.createElement('option');
-			option.value = country;
-			option.textContent = country;
-			select.appendChild(option);
-		  });
-  
-		  // ✅ Initialize Choices.js AFTER countries are added
-		  if (window.Choices) {
-			new Choices('#countrySelect', {
-			  searchEnabled: true,
-			  shouldSort: false,
-			  placeholder: true,
-			  placeholderValue: 'Select From'
-			});
-		  }
-		})
-		.catch(error => console.error('Error loading countries:', error));
-	});
-  </script> -->
-
   <script>
     async function populateCountryDropdowns() {
       try {
@@ -749,6 +720,25 @@
                 maxDOB = formatDateForFlatpickr(infantMaxDOB);
             }
 
+            let titleOptions = "";
+if (type === "Adult") {
+    titleOptions = `
+        <option>Mr</option>
+        <option>Mrs</option>
+        <option>Ms</option>
+    `;
+} else if (type === "Child") {
+    titleOptions = `
+        <option>Master</option>
+        <option>Miss</option>
+    `;
+} else {
+    titleOptions = `
+<option>Master</option>
+        <option>Miss</option>    `;
+}
+
+
         return `
             <div class="accordion-item mb-3">
                 <h6 class="accordion-header font-base" id="heading-${travelerCount}">
@@ -759,14 +749,12 @@
                 <div id="collapse-${travelerCount}" class="accordion-collapse collapse show" aria-labelledby="heading-${travelerCount}" data-bs-parent="#travelerAccordion">
                     <div class="accordion-body mt-3">
                         <div class="row g-4">
-                            <div class="col-md-3">
-                                <label class="form-label">Title</label>
-                                <select class="form-select" name="title">
-                                    <option>Mr</option>
-                                    <option>Mrs</option>
-                                    <option>Ms</option>
-                                </select>
-                            </div>
+                           <div class="col-md-3">
+            <label class="form-label">Title</label>
+            <select class="form-select" name="title">
+                ${titleOptions}
+            </select>
+        </div>
                             
                             <div class="col-md-9">
                                 <label class="form-label">Full Name</label>
