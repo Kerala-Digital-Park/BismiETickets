@@ -45,7 +45,8 @@
                             </form>
                             <!-- Switch END -->
                         </div>
-                    </div> <!-- Row END -->
+                    </div> 
+                    <!-- Row END -->
 
                     <h6 class="text-primary mt-5 text-center">User Pricing</h6>
                     <!-- Pricing START -->
@@ -74,7 +75,8 @@
                                 <!-- Card body -->
                                 <div class="card-body p-4">
                                     <!-- List -->
-                                    <ul class="list-unstyled mb-0">
+
+                                    <!-- <ul class="list-unstyled mb-0">
                                         <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>20
                                             Bookings/Month</li>
                                         <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>2 Lakh
@@ -91,36 +93,46 @@
                                         <li class="mb-2"><i class="fas fa-tools text-muted me-2"></i>Limited Action
                                             Tools</li>
                                         <li><i class="bi bi-x-circle text-danger me-2"></i>No Special Fares</li>
+                                    </ul> -->
+                                    <ul class="list-unstyled mb-0">
+                                        <% const freePlan=subscriptions.find(plan=> plan.subscription === "Free");
+                                            const featureList = freePlan?.features[0]?.split(',') || [];
+                                            %>
+                                            <% featureList.forEach(feature=> { %>
+                                                <li class="mb-2">
+                                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                                    <%= feature.trim() %>
+                                                </li>
+                                                <% }) %>
                                     </ul>
+
                                 </div>
-                               
+
                                 <!-- Card footer -->
                                 <% if(user) { %>
                                     <% if(user.subscription && user.subscription.subscription==="Free" ) { %>
                                         <div class="card-footer p-4 pt-0">
                                             <button class="btn btn-success w-100 mb-0" disabled>Current Plan</button>
                                         </div>
-                                        <% } else if (
-                                            user.userRole === "User" &&
-                                            user.subscription &&
-                                            (user.subscription.subscription === "Pro" || user.subscription.subscription === "Enterprise")
-                                          ) { %>
+                                        <% } else if ( user.userRole==="User" && user.subscription &&
+                                            (user.subscription.subscription==="Pro" ||
+                                            user.subscription.subscription==="Enterprise" ) ) { %>
                                             <div class="card-footer p-4 pt-0">
                                                 <button class="btn btn-dark w-100 mb-0"
                                                     onclick="freeDowngrade()">Downgrade</button>
                                             </div>
-                                    <% } else { %>
+                                            <% } else { %>
                                                 <div class="card-footer p-4 pt-0">
-                                                    <button class="btn btn-dark w-100 mb-0"
-                                                        onclick="freeCheckout()">Get Started</button>
+                                                    <button class="btn btn-dark w-100 mb-0" onclick="freeCheckout()">Get
+                                                        Started</button>
                                                 </div>
-                                    <% } %>
-                                <% } else { %>
+                                                <% } %>
+                                                    <% } else { %>
                                                         <div class="card-footer p-4 pt-0">
                                                             <button class="btn btn-dark w-100 mb-0"
                                                                 onclick="freeCheckout()">Get Started</button>
                                                         </div>
-                                <% } %>
+                                                        <% } %>
 
                             </div>
                         </div>
@@ -129,28 +141,36 @@
                         <!-- Price item START -->
                         <div class="col-md-6 col-lg-4">
                             <div class="card border">
-                                <!-- Card header -->
-                                <div
-                                    class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
-                                    <div>
-                                        <h6 class="mb-0 text-primary">Pro Plan</h6>
-                                        <div class="hstack gap-2">
-                                            <span class="h3 plan-price mb-0" data-monthly-price="$59"
-                                                data-annual-price="$840">$59</span>
-                                            <span class="h6 fw-light mb-0">/ per user</span>
-                                        </div>
-                                    </div>
-                                    <span class="icon-lg bg-opacity-10 rounded-circle text-primary"
-                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Recommended">
-                                        <img src="/assets/images/element/plan-s2.svg" alt="Starter Plan"
-                                            class="img-fluid" style="max-width: 100px;">
-                                    </span>
-                                </div>
+                                <% const proPlan=subscriptions.find(plan=> plan.subscription === "Pro");
+                                    const proFeatureList = proPlan?.features[0]?.split(',') || [];
+                                    const proPrice = proPlan?.price || 0;
+                                    const proAnnualPrice = proPrice * 12 ;
+                                    %>
 
-                                <!-- Card body -->
-                                <div class="card-body p-4">
-                                    <!-- List -->
-                                    <ul class="list-unstyled mb-0">
+                                    <!-- Card header -->
+                                    <div
+                                        class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
+                                        <div>
+                                            <h6 class="mb-0 text-primary">Pro Plan</h6>
+                                            <div class="hstack gap-2">
+                                                <span class="h3 plan-price mb-0" data-monthly-price="₹<%= proPrice %>"
+                                                    data-annual-price="₹<%= proAnnualPrice.toFixed(0) %>">
+                                                    ₹<%= proPrice %>
+                                                </span>
+                                                <span class="h6 fw-light mb-0">/ per user</span>
+                                            </div>
+                                        </div>
+                                        <span class="icon-lg bg-opacity-10 rounded-circle text-primary"
+                                            data-bs-toggle="tooltip" data-bs-placement="top" title="Recommended">
+                                            <img src="/assets/images/element/plan-s2.svg" alt="Starter Plan"
+                                                class="img-fluid" style="max-width: 100px;">
+                                        </span>
+                                    </div>
+
+                                    <!-- Card body -->
+                                    <div class="card-body p-4">
+                                        <!-- List -->
+                                        <!-- <ul class="list-unstyled mb-0">
                                         <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>100
                                             Bookings/Month</li>
                                         <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>20 Lakh
@@ -168,27 +188,38 @@
                                         <li class="mb-2"><i class="fas fa-shield-alt text-success me-2"></i>Full KYC
                                             Badge</li>
                                         <li><i class="fas fa-tools text-success me-2"></i>Limited Action Tools</li>
-                                    </ul>
-                                </div>
+                                    </ul> -->
+                                        <ul class="list-unstyled mb-0">
 
-                                <!-- Card footer -->
-                                <% if(user) { %>
-                                    <% if(user.subscription && user.subscription.subscription==="Pro" ) { %>
-                                        <div class="card-footer p-4 pt-0">
-                                            <button class="btn btn-success w-100 mb-0" disabled>Current Plan</button>
-                                        </div>
-                                        <% } else { %>
+                                            <% proFeatureList.forEach(feature=> { %>
+                                                <li class="mb-2">
+                                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                                    <%= feature.trim() %>
+                                                </li>
+                                                <% }) %>
+                                        </ul>
+
+                                    </div>
+
+                                    <!-- Card footer -->
+                                    <% if(user) { %>
+                                        <% if(user.subscription && user.subscription.subscription==="Pro" ) { %>
                                             <div class="card-footer p-4 pt-0">
-                                                <button class="btn btn-dark w-100 mb-0" onclick="proCheckout()">Get
-                                                    Started</a>
+                                                <button class="btn btn-success w-100 mb-0" disabled>Current
+                                                    Plan</button>
                                             </div>
-                                            <% } %>
-                                                <% } else { %>
-                                                    <div class="card-footer p-4 pt-0">
-                                                        <button class="btn btn-dark w-100 mb-0"
-                                                            onclick="proCheckout()">Get Started</a>
-                                                    </div>
-                                                    <% } %>
+                                            <% } else { %>
+                                                <div class="card-footer p-4 pt-0">
+                                                    <button class="btn btn-dark w-100 mb-0" onclick="proCheckout()">Get
+                                                        Started</a>
+                                                </div>
+                                                <% } %>
+                                                    <% } else { %>
+                                                        <div class="card-footer p-4 pt-0">
+                                                            <button class="btn btn-dark w-100 mb-0"
+                                                                onclick="proCheckout()">Get Started</a>
+                                                        </div>
+                                                        <% } %>
 
                             </div>
                         </div>
@@ -197,28 +228,36 @@
                         <!-- Price item START -->
                         <div class="col-md-6 col-lg-4">
                             <div class="card shadow">
-                                <!-- Card header -->
-                                <div
-                                    class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
-                                    <div>
-                                        <h6 class="mb-0">Enterprise Plan</h6>
-                                        <div class="hstack gap-2">
-                                            <span class="h3 plan-price mb-0" data-monthly-price="$99"
-                                                data-annual-price="$999">$99</span>
-                                            <span class="h6 fw-light mb-0">/ per user</span>
+                                <% const enterprisePlan=subscriptions.find(plan=> plan.subscription === "Enterprise");
+                                    const enterpriseFeatureList = enterprisePlan?.features[0]?.split(',') || [];
+                                    const enterprisePrice = enterprisePlan?.price || 0;
+                                    const enterpriseAnnualPrice = enterprisePrice * 12 ;
+                                    %>
+                                    <!-- Card header -->
+                                    <div
+                                        class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
+                                        <div>
+                                            <h6 class="mb-0">Enterprise Plan</h6>
+                                            <div class="hstack gap-2">
+                                                <span class="h3 plan-price mb-0"
+                                                    data-monthly-price="₹<%= enterprisePrice %>"
+                                                    data-annual-price="₹<%= enterpriseAnnualPrice.toFixed(0) %>">
+                                                    ₹<%= enterprisePrice %>
+                                                </span>
+                                                <span class="h6 fw-light mb-0">/ per user</span>
+                                            </div>
                                         </div>
+                                        <span class="icon-lg rounded-circle" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="Best Value">
+                                            <img src="/assets/images/element/plan-s3.svg" alt="Starter Plan"
+                                                class="img-fluid" style="max-width: 100px;">
+                                        </span>
                                     </div>
-                                    <span class="icon-lg rounded-circle" data-bs-toggle="tooltip"
-                                        data-bs-placement="top" title="Best Value">
-                                        <img src="/assets/images/element/plan-s3.svg" alt="Starter Plan"
-                                            class="img-fluid" style="max-width: 100px;">
-                                    </span>
-                                </div>
 
-                                <!-- Card body -->
-                                <div class="card-body p-4">
-                                    <!-- List -->
-                                    <ul class="list-unstyled mb-0">
+                                    <!-- Card body -->
+                                    <div class="card-body p-4">
+                                        <!-- List -->
+                                        <!-- <ul class="list-unstyled mb-0">
                                         <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Unlimited
                                             Bookings</li>
                                         <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Unlimited
@@ -237,27 +276,36 @@
                                             Badge</li>
                                         <li><i class="fas fa-money-bill-alt text-success me-2"></i>Reduced Booking Fees
                                         </li>
-                                    </ul>
-                                </div>
+                                    </ul> -->
+                                        <ul class="list-unstyled mb-0">
+                                            <% enterpriseFeatureList.forEach(feature=> { %>
+                                                <li class="mb-2">
+                                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                                    <%= feature.trim() %>
+                                                </li>
+                                                <% }) %>
+                                        </ul>
+                                    </div>
 
-                                <!-- Card footer -->
-                                <% if(user) { %>
-                                    <% if(user.subscription && user.subscription.subscription==="Enterprise" ) { %>
-                                        <div class="card-footer p-4 pt-0">
-                                            <button class="btn btn-success w-100 mb-0" disabled>Current Plan</button>
-                                        </div>
-                                        <% } else { %>
+                                    <!-- Card footer -->
+                                    <% if(user) { %>
+                                        <% if(user.subscription && user.subscription.subscription==="Enterprise" ) { %>
                                             <div class="card-footer p-4 pt-0">
-                                                <button class="btn btn-dark w-100 mb-0"
-                                                    onclick="enterpriseCheckout()">Get Started</button>
+                                                <button class="btn btn-success w-100 mb-0" disabled>Current
+                                                    Plan</button>
                                             </div>
-                                            <% } %>
-                                                <% } else { %>
-                                                    <div class="card-footer p-4 pt-0">
-                                                        <button class="btn btn-dark w-100 mb-0"
-                                                            onclick="enterpriseCheckout()">Get Started</button>
-                                                    </div>
-                                                    <% } %>
+                                            <% } else { %>
+                                                <div class="card-footer p-4 pt-0">
+                                                    <button class="btn btn-dark w-100 mb-0"
+                                                        onclick="enterpriseCheckout()">Get Started</button>
+                                                </div>
+                                                <% } %>
+                                                    <% } else { %>
+                                                        <div class="card-footer p-4 pt-0">
+                                                            <button class="btn btn-dark w-100 mb-0"
+                                                                onclick="enterpriseCheckout()">Get Started</button>
+                                                        </div>
+                                                        <% } %>
 
                             </div>
                         </div>

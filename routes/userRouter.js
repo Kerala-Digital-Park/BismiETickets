@@ -137,7 +137,8 @@ userRouter.post("/agent-subscription", isLogin, userController.agentSubscription
 userRouter.post("/add-flight", isLogin, userController.addFlight);
 userRouter.post("/api/flights", isLogin, userController.getApiFlights);
 userRouter.post("/add-bank", isLogin, userController.addBank);
-userRouter.post("/support-ticket", upload.single('file'), isLogin, userController.addSupportTicket)
+userRouter.post("/support-ticket", upload.single('file'), isLogin, userController.addSupportTicket);
+userRouter.post("/contact", userController.contact)
 
 
 userRouter.put("/update-listing", isLogin, userController.updateListingById);

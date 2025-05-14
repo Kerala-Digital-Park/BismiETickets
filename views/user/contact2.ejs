@@ -14,30 +14,34 @@
                     <!-- Title -->
                     <h1>Let's talk about traveling</h1>
     
+                    <div class="col-12">
+                        <p id="contactMessage" class="p-2 mb-0 text-primary"></p>
+                    </div>
+
                     <!-- Contact form -->
-                    <form class="mt-4">
+                    <form class="mt-4" id="contactForm">
                         <!-- Name -->
                         <div class="mb-4 form-control-bg-light">
                             <label class="form-label">Your name *</label>
-                            <input type="text" class="form-control">
+                            <input type="text" class="form-control" name="name">
                         </div>
                         <!-- Email -->
                         <div class="mb-4 form-control-bg-light">
                             <label class="form-label">Email address *</label>
-                            <input type="email" class="form-control">
+                            <input type="email" class="form-control" name="email">
                         </div>
                         <!-- Mobile number -->
                         <div class="mb-4 form-control-bg-light">
                             <label class="form-label">Mobile number *</label>
-                            <input type="text" class="form-control">
+                            <input type="text" class="form-control" name="mobile">
                         </div>
                         <!-- Message -->
                         <div class="mb-4 form-control-bg-light">
                             <label class="form-label">Message *</label>
-                            <textarea class="form-control" rows="4"></textarea>
+                            <textarea class="form-control" rows="4" name="message"></textarea>
                         </div>
                         <!-- Button -->
-                        <div><button class="btn btn-lg btn-primary mb-0" type="button">Send Message</button></div>	
+                        <div><button class="btn btn-lg btn-primary mb-0" type="submit">Send Message</button></div>	
                     </form>
                 </div>
     
@@ -342,7 +346,44 @@
     </section>
     <!-- =======================
     Map and office END -->
-    
+        
+    <script>
+        document.getElementById("contactForm").addEventListener("submit", async function (e) {
+          e.preventDefault();
+      
+          const form = e.target;
+          const formData = new FormData(form);
+          const messageP = document.getElementById("contactMessage");
+      
+          try {
+            const response = await fetch("/contact", {
+              method: "POST",
+              body: new URLSearchParams(formData),
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              }
+            });
+      
+            const result = await response.json();
+            if (result.success) {
+              messageP.textContent = "Message sent successfully!";
+              messageP.classList.remove("text-danger");
+              messageP.classList.add("text-success");
+              form.reset();
+            } else {
+              messageP.textContent = "Message not sent.";
+              messageP.classList.remove("text-success");
+              messageP.classList.add("text-danger");
+            }
+          } catch (error) {
+            console.error("Error submitting contact form:", error);
+            messageP.textContent = "An error occurred. Please try again.";
+            messageP.classList.remove("text-success");
+            messageP.classList.add("text-danger");
+          }
+        });
+    </script>
+
 </main>
 <!-- **************** MAIN CONTENT END **************** -->
     

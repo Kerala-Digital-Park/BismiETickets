@@ -1764,7 +1764,8 @@ const freeSubscription = async (req, res) => {
 
 const viewPricing = async (req, res) => {
   try {
-    res.render("user/pricing", {});
+    const subscriptions = await Subscriptions.find({role:"User"})
+    res.render("user/pricing", {subscriptions});
   } catch (error) {
     console.error(error);
     res.render("error", { error });
@@ -2120,13 +2121,13 @@ const searchAirlines = async (req, res) => {
 
 const viewJoinUs = async (req, res) => {
   try {
-    res.render("user/join-us", {});
+    const subscriptions = await Subscriptions.find({role:"Agent"})
+    res.render("user/join-us", {subscriptions});
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
   }
 };
-
 
 const viewUserBookings = async (req, res) => {
   const userId = req.session.userId; // seller's user ID
@@ -2527,24 +2528,94 @@ const changeStatus = async (req, res) => {
 };
 
 const viewTransactions = async (req, res) => {
-  const userId = req.session.userId; 
+  const userId = req.session.userId;
+  const search = req.query.search || '';
+  const page = parseInt(req.query.page) || 1;
+  const limit = 4;
+  const skip = (page - 1) * limit;
+  const flightId = req.query.flightId;
+
   try {
-    const transactions = await Transactions.find({ userId }).populate("userId").populate({
-      path: "bookingId",
-    populate: [
-      { path: "flight" },
-      { path: "userId" }
-    ]
+    let allTransactions = [];
+
+    // 🔍 Case 1: Search is likely a transactionId (e.g. "TRS0012")
+    if (search && search.toUpperCase().startsWith("TRS")) {
+      allTransactions = await Transactions.find({
+        userId,
+        transactionId: { $regex: search, $options: "i" },
+      })
+        .populate("userId")
+        .populate({
+          path: "bookingId",
+          populate: [
+            { path: "flight" },
+            { path: "userId" }
+          ]
+        });
+
+    } else {
+      // 🔍 Case 2: Search by bookingId, fromCity, toCity, flightId
+      let bookingQuery = { userId };
+      if (flightId) {
+        bookingQuery.flight = flightId;
+      }
+
+      const allUserBookings = await Bookings.find(bookingQuery).populate('flight');
+
+      let matchedBookings = allUserBookings;
+
+      if (search) {
+        const matchingFlights = await Flights.find({
+          $or: [
+            { fromCity: { $regex: search, $options: 'i' } },
+            { toCity: { $regex: search, $options: 'i' } },
+          ]
+        }).select('_id');
+
+        const flightIds = matchingFlights.map(f => f._id.toString());
+
+        matchedBookings = allUserBookings.filter(b =>
+          b._id.toString().includes(search) ||
+          (b.flight && flightIds.includes(b.flight._id.toString()))
+        );
+      }
+
+      const bookingIds = matchedBookings.map(b => b._id);
+
+      allTransactions = await Transactions.find({
+        userId,
+        bookingId: { $in: bookingIds },
+      })
+        .populate("userId")
+        .populate({
+          path: "bookingId",
+          populate: [
+            { path: "flight" },
+            { path: "userId" }
+          ]
+        });
+    }
+
+    // 📄 Pagination
+    const paginatedTransactions = allTransactions.slice(skip, skip + limit);
+    const totalPages = Math.ceil(allTransactions.length / limit);
+
+    // ✅ Render the transactions page
+    res.render("user/transaction", {
+      transactions: paginatedTransactions,
+      search,
+      currentPage: page,
+      totalPages,
     });
-    res.render("user/transaction", {transactions});
+
   } catch (error) {
-    console.error(error);
-    res.render("error", { error });
+    console.error("Transaction error:", error);
+    res.status(500).render("error", { error });
   }
 };
 
 const addSupportTicket = async (req, res) => {
-  try {
+  try { 
     const {
       enquiryType,
       category,
@@ -2552,7 +2623,7 @@ const addSupportTicket = async (req, res) => {
       subject,
       message
     } = req.body;
-
+ 
     const userId = req.session.userId; // Assumes session is set up
     if (!userId) return res.status(401).send('Unauthorized');
 
@@ -2590,6 +2661,34 @@ const viewNotifications = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
+  }
+}
+
+const contact = async (req, res) => {
+  const { name, email, mobile, message } = req.body;
+  
+  try {
+    const mailOptions = {
+      from: email, // Sender (user's email)
+      to: process.env.EMAIL, // Recipient (you)
+      subject: `New Contact Form Submission from ${name}`,
+      html: `
+        <h3>Contact Form Submission</h3>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Mobile:</strong> ${mobile}</p>
+        <p><strong>Message:</strong><br>${message}</p>
+      `,
+    };
+
+    // Send email
+    await transporter.sendMail(mailOptions);
+
+    // Respond
+    res.json({success: true});
+  } catch (error) {
+    console.error("Error sending email:", error);
+    res.status(500).send("Something went wrong. Please try again.");
   }
 }
 
@@ -2666,5 +2765,6 @@ module.exports = {
   viewTransactions,
   addSupportTicket,
   viewNotifications,
+  contact,
 
 };

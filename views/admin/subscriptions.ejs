@@ -16,7 +16,7 @@
         <!-- Subscription Category -->
         <div class="mb-3">
           <label class="form-label">Subscription For</label>
-          <select name="category" class="form-select">
+          <select name="category" class="form-select" id="categorySelect">
             <option value="User">User</option>
             <option value="Agent">Agent</option>
           </select>
@@ -24,7 +24,7 @@
       
         <div class="mb-3">
           <label class="form-label">Plan Name</label>
-          <select name="subscription" class="form-select">
+          <select name="subscription" class="form-select" id="subscriptionSelect">
             <option value="Free">Free</option>
             <option value="Pro">Pro</option>
             <option value="Enterprise">Enterprise</option>
@@ -94,6 +94,35 @@
       </table>
     </div>
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const categorySelect = document.getElementById("categorySelect");
+      const subscriptionSelect = document.getElementById("subscriptionSelect");
+    
+      const plans = {
+        User: ["Free", "Pro", "Enterprise"],
+        Agent: ["Starter", "Enterprise"]
+      };
+    
+      categorySelect.addEventListener("change", function () {
+        const selectedCategory = categorySelect.value;
+        const availablePlans = plans[selectedCategory] || [];
+    
+        // Clear current options
+        subscriptionSelect.innerHTML = "";
+    
+        // Add new options
+        availablePlans.forEach(plan => {
+          const option = document.createElement("option");
+          option.value = plan;
+          option.textContent = plan;
+          subscriptionSelect.appendChild(option);
+        });
+      });
+    });
+    </script>
+    
 </main>
 
 <%- include('./partials/footer') %>

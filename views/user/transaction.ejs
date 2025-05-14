@@ -31,7 +31,7 @@
                                         <!-- Search and select START -->
                                         <div class="row g-3 align-items-center justify-content-between mb-3">
                                             <!-- Search -->
-                                            <!-- <div class="col-md-8">
+                                            <div class="col-md-8">
                                                 <form class="rounded position-relative" method="GET"
                                                     action="/transactions">
                                                     <input class="form-control pe-5" type="search" name="search"
@@ -44,7 +44,7 @@
                                                     </button>
                                                 </form>
 
-                                            </div> -->
+                                            </div>
                                         </div>
                                         <!-- Search and select END -->
 
@@ -141,7 +141,39 @@
                                     <!-- Card body END -->
 
                                     <!-- Card footer START -->
-                                    
+                                    <div class="card-footer pt-0">
+                                        <!-- Pagination and content -->
+                                        <div class="d-sm-flex justify-content-sm-end align-items-sm-center">
+                                            <!-- Content -->
+                                            <!-- <p class="mb-sm-0 text-center text-sm-start">Showing 1 to 8 of 20 entries
+                                            </p> -->
+                                            <!-- Pagination -->
+                                            <nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
+                                                <ul class="pagination pagination-sm pagination-primary-soft mb-0">
+                                                    <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                                        <a class="page-link"
+                                                            href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
+                                                    </li>
+
+                                                    <% for (let i=1; i <=totalPages; i++) { %>
+                                                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                                            <a class="page-link"
+                                                                href="?search=<%= search %>&page=<%= i %>">
+                                                                <%= i %>
+                                                            </a>
+                                                        </li>
+                                                        <% } %>
+
+                                                            <li
+                                                                class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                                                <a class="page-link"
+                                                                    href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
+                                                            </li>
+                                                </ul>
+                                            </nav>
+
+                                        </div>
+                                    </div>
                                     <!-- Card footer END -->
                                 </div>
                             </div>
