@@ -11,7 +11,8 @@ const Transactions = require("../models/transactionModel");
 const Counter = require("../models/counterModel");
 const BankUpdate = require("../models/bankUpdateModel");
 const KycUpdate = require("../models/kycUpdateModel");
-const Support = require("../models/supportModel")
+const Support = require("../models/supportModel");
+const PopularFlight = require("../models/popularFlightModel");
 const { countries } = require('countries-list');
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -34,7 +35,8 @@ const transporter = nodemailer.createTransport({
 
 const viewHomepage = async (req, res) => {
   try {
-    res.render("user/home", {});
+    const popularFlights = await PopularFlight.find();
+    res.render("user/home", {popularFlights});
   } catch (error) {
     console.error(error);
     res.render("error", { error });
@@ -849,12 +851,71 @@ const viewProfile = async (req, res) => {
   }
 };
 
+// const viewBookings = async (req, res) => {
+//   try {
+//     const userId = req.session.userId;
+
+//     const bookings = await Bookings.find({ userId: userId });
+
+//     const bookingsWithFlights = await Promise.all(
+//       bookings.map(async (booking) => {
+//         const flightDetails = await Flights.findById(booking.flight);
+//         return { ...booking.toObject(), flightDetails };
+//       })
+//     );
+
+//     const userDetails = await Users.findById(userId);
+
+//     const today = new Date();
+
+//     const upcomingBookings = [];
+//     const completedBookings = [];
+//     const cancelledBookings = [];
+
+//     bookingsWithFlights.forEach((booking) => {
+//       if (
+//         booking.flightDetails &&
+//         booking.flightDetails.departureDate &&
+//         booking.flightDetails.departureTime
+//       ) {
+//         const formattedDateStr = booking.flightDetails.departureDate + " 20:00"; // Adding a default time for parsing
+//         const departureDate = new Date(Date.parse(formattedDateStr));
+//         // If the arrival time is given separately, merge it
+//         if (booking.flightDetails.departureTime) {
+//           const [hours, minutes] =
+//             booking.flightDetails.departureTime.split(":");
+//           departureDate.setHours(parseInt(hours), parseInt(minutes));
+//         }
+
+//         if (departureDate <= today) {
+//           completedBookings.push(booking);
+//         } else {
+//           upcomingBookings.push(booking);
+//         }
+//       } else {
+//         upcomingBookings.push(booking);
+//       }
+//     });
+
+//     res.render("user/bookings", {
+//       upcomingBookings,
+//       completedBookings,
+//       user: userDetails,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.render("error", { error });
+//   }
+// };
+
 const viewBookings = async (req, res) => {
   try {
     const userId = req.session.userId;
 
-    const bookings = await Bookings.find({ userId: userId });
+    // Fetch all bookings for the user
+    const bookings = await Bookings.find({ userId });
 
+    // Attach flight details to each booking
     const bookingsWithFlights = await Promise.all(
       bookings.map(async (booking) => {
         const flightDetails = await Flights.findById(booking.flight);
@@ -863,26 +924,24 @@ const viewBookings = async (req, res) => {
     );
 
     const userDetails = await Users.findById(userId);
-
     const today = new Date();
 
     const upcomingBookings = [];
     const completedBookings = [];
+    const cancelledBookings = [];
 
     bookingsWithFlights.forEach((booking) => {
-      if (
+      if (booking.status === "cancelled") {
+        cancelledBookings.push(booking);
+      } else if (
         booking.flightDetails &&
         booking.flightDetails.departureDate &&
         booking.flightDetails.departureTime
       ) {
-        const formattedDateStr = booking.flightDetails.departureDate + " 20:00"; // Adding a default time for parsing
-        const departureDate = new Date(Date.parse(formattedDateStr));
-        // If the arrival time is given separately, merge it
-        if (booking.flightDetails.departureTime) {
-          const [hours, minutes] =
-            booking.flightDetails.departureTime.split(":");
-          departureDate.setHours(parseInt(hours), parseInt(minutes));
-        }
+        // Combine date and time
+        const [hours, minutes] = booking.flightDetails.departureTime.split(":");
+        const departureDate = new Date(booking.flightDetails.departureDate);
+        departureDate.setHours(parseInt(hours), parseInt(minutes));
 
         if (departureDate <= today) {
           completedBookings.push(booking);
@@ -890,13 +949,16 @@ const viewBookings = async (req, res) => {
           upcomingBookings.push(booking);
         }
       } else {
+        // If no departure date, treat as upcoming
         upcomingBookings.push(booking);
       }
     });
 
+    // Render bookings page
     res.render("user/bookings", {
       upcomingBookings,
       completedBookings,
+      cancelledBookings,
       user: userDetails,
     });
   } catch (error) {
@@ -1410,26 +1472,8 @@ const verifyCard = async (req, res) => {
     console.log(existingRequest, "existingRequest")
 
     const user = await Users.findById(userId).populate('subscription');
-    // const subscription = user.subscription;
-    // console.log(subscription)
-    
-    // if (!subscription) {
-    //   return res.status(400).json({ success: false, message: "Subscription not found" });
-    // }
 
     console.log(req.files);
-
-    // const today = new Date();
-
-    // Format today's date to YYYY-MM-DD
-    // const todayFormatted = today.toISOString().split("T")[0];
-
-    // Calculate the expiry date (30 days from today)
-    // const subscriptionDate = new Date(today); // Create a copy of today's date
-    // subscriptionDate.setDate(subscriptionDate.getDate() + 30);
-
-    // Format expiry date to YYYY-MM-DD
-    // const expiryDate = subscriptionDate.toISOString().split("T")[0];
 
     if (req.files && req.files.visitingCard && req.files.panCard) {
       const visitingCardFile = req.files.visitingCard[0];
@@ -2274,6 +2318,7 @@ const addFlight = async (req, res) => {
 };
 
 const getApiFlights = async (req, res) => {
+  console.log("Api flights")
   const {
     from,
     to,
@@ -2692,6 +2737,32 @@ const contact = async (req, res) => {
   }
 }
 
+const cancelBooking = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    if (!userId) return res.status(401).send('Unauthorized');
+
+    const { bookingId, enquiryType, category, priority, message } = req.body;
+    const file = req.file; // assuming you're using multer
+
+    // Save to DB or process as needed
+    await Support.create({
+      userId,
+      enquiryType,
+      category,
+      priority,
+      subject: `Cancellation request for booking ${bookingId}`,
+      message,
+      fileUrl: file? `/uploads/${file.filename}` : null,
+    });
+
+    res.redirect("/bookings"); // or wherever appropriate
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to submit support ticket.");
+  }
+};
+
 module.exports = {
   viewHomepage,
   viewDashboard,
@@ -2766,5 +2837,6 @@ module.exports = {
   addSupportTicket,
   viewNotifications,
   contact,
+  cancelBooking,
 
 };

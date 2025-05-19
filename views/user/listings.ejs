@@ -208,16 +208,6 @@
 																		<i class="fa-solid fa-chair"></i>
 																	</a>
 
-																	<a href="#"
-																		class="btn btn-sm btn-light user-booking-btn"
-																		data-flight-id="<%= flight._id %>"
-																		title="User Bookings">
-																		<i class="bi bi-eye-fill me-1"></i>
-																		Bookings
-																	</a>
-
-																</div>
-																<div>
 																	<!-- Edit Days Button -->
 																	<a href="#" class="btn btn-sm btn-light"
 																		data-bs-toggle="modal"
@@ -225,18 +215,23 @@
 																		data-flight="<%= JSON.stringify(flight) %>"
 																		data-bs-placement="top" title="Edit Days">
 																		<i class="fa-solid fa-calendar-days"></i>
-																	</a>
+																	</a>																	
 
+																</div>
+																<div class="d-flex g-2">
+																	<a href="#"
+																		class="btn btn-sm btn-light user-booking-btn"
+																		data-flight-id="<%= flight._id %>"
+																		title="User Bookings">
+																		<i class="bi bi-eye-fill"></i>
+																	</a>
 																	<a href="#"
 																		class="btn btn-sm btn-light transaction-btn"
 																		data-flight-id="<%= flight._id %>"
 																		title="Transactions">
-																		Transactions
+																		<i class="fa-solid fa-wallet "></i>
 																	</a>
 																</div>
-
-
-
 															</td>
 
 

@@ -1,0 +1,148 @@
+<%- include('./partials/header') %>
+
+    <main>
+        <!-- Sidebar START -->
+        <%- include('./partials/sideBar') %>
+            <!-- Sidebar END -->
+
+            <!-- Page content START -->
+            <div class="page-content">
+                <!-- Top bar START -->
+                <%- include('./partials/topBar') %>
+                    <!-- Top bar END -->
+
+                    <div class="container mt-4">
+                        <h3>Add New Popular Flight</h3>
+
+                        <form action="/admin/popular-flights" method="POST" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label class="form-label">From</label>
+                                <select class="form-select js-airport" id="fromSelect" name="from"
+                                    placeholder="Select from"></select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">To</label>
+                                <select class="form-select" id="toSelect" name="to" style="width: 100%"></select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Upload File</label>
+                                <input type="file" name="file" class="form-control" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-success">Create</button>
+                        </form>
+
+                        <hr>
+
+                        <h4>All Popular Flights</h4>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% popularFlights.forEach ((flight) => { %>
+                                    <% if(popularFlights.length > 0) { %>
+                                        <tr>
+                                            <td>
+                                              <img src="<%= flight.image %>" alt="Popular Flight" class="img-thumbnail" style="max-width: 150px; height: auto;">
+                                            </td>
+                                            <td><strong><%= flight.fromCity %></strong> (<%= flight.fromCode %>)</td>
+                                            <td><strong><%= flight.toCity %></strong> (<%= flight.toCode %>)</td>
+                                            <td>
+                                              <form action="/admin/delete-popular-flight/<%= flight._id %>" method="POST" onsubmit="return confirmDelete()">
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                  <i class="bi bi-trash-fill"></i> Delete
+                                                </button>
+                                              </form>
+                                            </td>
+                                          </tr>
+                                      <% } else { %>
+                                        <tr>
+                                          <td colspan="4" class="text-muted">No popular flights found.</td>
+                                        </tr>
+                                        <% } %>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+            </div>
+
+            <!-- airports dropdown -->
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const selectors = ["#fromSelect", "#toSelect"];
+                    const doneTypingInterval = 100; 
+
+                    selectors.forEach(selector => {
+                        const element = document.querySelector(selector);
+                        if (!element) return;
+
+                        const choices = new Choices(element, {
+                            searchEnabled: true,
+                            placeholderValue: "Select Airport",
+                            searchChoices: false,
+                            shouldSort: false,
+                            allowHTML: true,
+                        });
+
+                        let typingTimer;
+
+                        fetch("/admin/airports")
+                            .then(res => res.json())
+                            .then(data => {
+                                choices.setChoices(
+                                    data.map(a => ({
+                                        value: a.Name,
+                                        label: a.Name
+                                    })),
+                                    "value",
+                                    "label",
+                                    true
+                                );
+                            })
+                            .catch(err => console.error("Default airport load failed:", err));
+
+                        element.addEventListener("search", function (e) {
+                            clearTimeout(typingTimer);
+                            const searchTerm = e.detail.value.trim();
+
+                            if (searchTerm.length >= 2) {
+                                typingTimer = setTimeout(async () => {
+                                    try {
+                                        const res = await fetch(`/admin/airports?q=${encodeURIComponent(searchTerm)}`);
+                                        const airports = await res.json();
+                                        choices.setChoices(
+                                            airports.map(a => ({
+                                                value: a.Name,
+                                                label: a.Name
+                                            })),
+                                            "value",
+                                            "label",
+                                            true
+                                        );
+                                    } catch (err) {
+                                        console.error("Search error:", err);
+                                    }
+                                }, doneTypingInterval);
+                            }
+                        });
+                    });
+                });
+            </script>
+
+<script>
+    function confirmDelete() {
+      return confirm("Are you sure you want to delete this flight?");
+    }
+  </script>
+
+    </main>
+
+    <%- include('./partials/footer') %>

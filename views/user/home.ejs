@@ -1,444 +1,360 @@
-<%- include('./partials/header') %> 
-<%- include('./partials/homeHeader') %>
+<%- include('./partials/header') %>
+  <%- include('./partials/homeHeader') %>
 
-<!-- **************** MAIN CONTENT START **************** -->
-<main>
-  <!-- =======================
+    <!-- **************** MAIN CONTENT START **************** -->
+    <main>
+      <!-- =======================
     Main Banner START -->
-  <section class="position-relative py-8 py-lg-9"
-    style="background-image:url(assets/images/bg/20.jpg); background-position: center left; background-size: cover;">
-    <% if (userId) { %>
-      <% if (user.kyc !== "Completed") { %>
-      <p class="alert alert-info text-center mx-auto shadow-sm rounded" style="max-width: 80%;  z-index: 10;">
-        <a href="/kyc"><strong>Complete your KYC</strong></a> to enable transactions securely.
-      </p>
-      <% } %>
-    <% } %>
-    
-       <!-- Background dark overlay -->
-       <div class="bg-overlay bg-dark opacity-7"></div>
-       <div class="container z-index-9 position-relative"> <!-- Banner title -->
-           <div class="row">
-               <div class="col-md-10 mx-auto text-center">
-                   <h1 class="text-white display-3 pt-sm-5 my5">Ready to take off?</h1>
-               </div>
-           </div>
-           
-        <!-- Booking from START -->
-        <form class="bg-mode position-relative px-3 px-sm-4 pt-4 mb-4 mb-sm-0" action="/flight-list" method="post">
-          <!-- Svg decoration -->
-          <figure class="position-absolute top-0 start-0 h-100 ms-n2 ms-sm-n1">
-            <svg
-              class="h-100"
-              viewBox="0 0 12.9 324"
-              style="enable-background: new 0 0 12.9 324"
-            >
-              <path
-                class="fill-mode"
-                d="M9.8,316.4c1.1-26.8,2-53.4,1.9-80.2c-0.1-18.2-0.8-36.4-1.2-54.6c-0.2-8.9-0.2-17.7,0.8-26.6 c0.5-4.5,1.1-9,1.4-13.6c0.1-1.9,0.1-3.7,0.1-5.6c-0.2-0.2-0.6-1.5-0.2-3.1c-0.3-1.8-0.4-3.7-0.4-5.5c-1.2-3-1.8-6.3-1.7-9.6 c0.9-19,0.5-38.1,0.8-57.2c0.3-17.1,0.6-34.2,0.2-51.3c-0.1-0.6-0.1-1.2-0.1-1.7c0-0.8,0-1.6,0-2.4c0-0.5,0-1.1,0-1.6 c0-1.2,0-2.3,0.2-3.5H0v11.8c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1V31c3.3,0,6.1,2.7,6.1,6.1S3.3,43.3,0,43.3v6.9 c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1 s-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9 c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1 c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.7,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9 c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.7,6.1,6.1 c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1V324h9.5C9.6,321.4,9.7,318.8,9.8,316.4z"
-              />
-            </svg>
-          </figure>
+      <section class="position-relative py-8 py-lg-9"
+        style="background-image:url(assets/images/bg/20.jpg); background-position: center left; background-size: cover;">
+        <% if (userId) { %>
+          <% if (user.kyc !=="Completed" ) { %>
+            <p class="alert alert-info text-center mx-auto shadow-sm rounded" style="max-width: 80%;  z-index: 10;">
+              <a href="/kyc"><strong>Complete your KYC</strong></a> to enable transactions securely.
+            </p>
+            <% } %>
+              <% } %>
 
-          <!-- Svg decoration -->
-          <figure
-            class="position-absolute top-0 end-0 h-100 rotate-180 me-n2 me-sm-n1"
-          >
-            <svg
-              class="h-100"
-              viewBox="0 0 21 324"
-              style="enable-background: new 0 0 21 324"
-            >
-              <path
-                class="fill-mode"
-                d="M9.8,316.4c1.1-26.8,2-53.4,1.9-80.2c-0.1-18.2-0.8-36.4-1.2-54.6c-0.2-8.9-0.2-17.7,0.8-26.6 c0.5-4.5,1.1-9,1.4-13.6c0.1-1.9,0.1-3.7,0.1-5.6c-0.2-0.2-0.6-1.5-0.2-3.1c-0.3-1.8-0.4-3.7-0.4-5.5c-1.2-3-1.8-6.3-1.7-9.6 c0.9-19,0.5-38.1,0.8-57.2c0.3-17.1,0.6-34.2,0.2-51.3c-0.1-0.6-0.1-1.2-0.1-1.7c0-0.8,0-1.6,0-2.4c0-0.5,0-1.1,0-1.6 c0-1.2,0-2.3,0.2-3.5H0v11.8c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1V31c3.3,0,6.1,2.7,6.1,6.1S3.3,43.3,0,43.3v6.9 c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1 s-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9 c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1 c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.7,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9 c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.7,6.1,6.1 c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1V324h9.5C9.6,321.4,9.7,318.8,9.8,316.4z"
-              />
-            </svg>
-          </figure>
+                <!-- Background dark overlay -->
+                <div class="bg-overlay bg-dark opacity-7"></div>
+                <div class="container z-index-9 position-relative"> <!-- Banner title -->
+                  <div class="row">
+                    <div class="col-md-10 mx-auto text-center">
+                      <h1 class="text-white display-3 pt-sm-5 my5">Ready to take off?</h1>
+                    </div>
+                  </div>
 
-          <div class="row g-4 position-relative">
-            <!-- Nav tabs START -->
-            <div class="col-lg-5">
-              <ul class="nav nav-pills nav-pills-dark" id="pills-tab" role="tablist">
-                <li class="nav-item" role="presentation">
-                  <button
-                    class="nav-link rounded-start rounded-0 mb-0 active"
-                    id="pills-one-way-tab"
-                    data-bs-toggle="pill"
-                    data-bs-target="#pills-one-way"
-                    type="button"
-                    role="tab"
-                    aria-selected="true"
-                    onclick="toggleCheckbox(false)"
-                  >
-                    Fixed Date
-                  </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                  <button
-                    class="nav-link rounded-end rounded-0 mb-0"
-                    id="pills-round-trip-tab"
-                    data-bs-toggle="pill"
-                    data-bs-target="#pills-round-trip"
-                    type="button"
-                    role="tab"
-                    aria-selected="false"
-                    onclick="toggleCheckbox(true)"
-                  >
-                    Flexible Date
-                  </button>
-                </li>
-              </ul>
-            </div>
-            
-            <!-- Hidden Checkbox -->
-            <input type="checkbox" id="dateTypeCheckbox" name="dateTypeCheckbox" hidden />
-            
-            <script>
-              function toggleCheckbox(isChecked) {
-                document.getElementById("dateTypeCheckbox").checked = isChecked;
-              }
-            </script>
-            
-            <!-- Nav tabs END -->
+                  <!-- Booking from START -->
+                  <form class="bg-mode position-relative px-3 px-sm-4 pt-4 mb-4 mb-sm-0" action="/flight-list"
+                    method="post">
+                    <!-- Svg decoration -->
+                    <figure class="position-absolute top-0 start-0 h-100 ms-n2 ms-sm-n1">
+                      <svg class="h-100" viewBox="0 0 12.9 324" style="enable-background: new 0 0 12.9 324">
+                        <path class="fill-mode"
+                          d="M9.8,316.4c1.1-26.8,2-53.4,1.9-80.2c-0.1-18.2-0.8-36.4-1.2-54.6c-0.2-8.9-0.2-17.7,0.8-26.6 c0.5-4.5,1.1-9,1.4-13.6c0.1-1.9,0.1-3.7,0.1-5.6c-0.2-0.2-0.6-1.5-0.2-3.1c-0.3-1.8-0.4-3.7-0.4-5.5c-1.2-3-1.8-6.3-1.7-9.6 c0.9-19,0.5-38.1,0.8-57.2c0.3-17.1,0.6-34.2,0.2-51.3c-0.1-0.6-0.1-1.2-0.1-1.7c0-0.8,0-1.6,0-2.4c0-0.5,0-1.1,0-1.6 c0-1.2,0-2.3,0.2-3.5H0v11.8c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1V31c3.3,0,6.1,2.7,6.1,6.1S3.3,43.3,0,43.3v6.9 c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1 s-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9 c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1 c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.7,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9 c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.7,6.1,6.1 c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1V324h9.5C9.6,321.4,9.7,318.8,9.8,316.4z" />
+                      </svg>
+                    </figure>
 
-            <!-- Ticket Travelers -->
-            <div class="col-lg-4 ms-auto">
-              <div class="form-control-bg-light form-fs-md d-flex">
-                <div class="w-100">
-                  <div class="dropdown guest-selector me-2">
-                      <input type="text" class="form-guest-selector form-control flight-result"
-                          value="1 Passengers" data-bs-auto-close="outside" data-bs-toggle="dropdown">
-                      <ul class="dropdown-menu guest-selector-dropdown">
-                          <li class="d-flex justify-content-between">
-                              <div>
-                                  <h6 class="mb-0">Adults</h6>
-                                  <small>Ages 13 or above</small>
-                              </div>
-                              <div class="hstack gap-1 align-items-center">
-                                  <button type="button" class="btn btn-link adult-remove p-0 mb-0"><i
-                                          class="bi bi-dash-circle fs-5 fa-fw"></i></button>
-                                  <h6 class="guest-selector-count mb-0 adults" value="1" id="adults" name="adults">1</h6>
-                                  <button type="button" class="btn btn-link adult-add p-0 mb-0"><i
-                                          class="bi bi-plus-circle fs-5 fa-fw"></i></button>
-                              </div>
+                    <!-- Svg decoration -->
+                    <figure class="position-absolute top-0 end-0 h-100 rotate-180 me-n2 me-sm-n1">
+                      <svg class="h-100" viewBox="0 0 21 324" style="enable-background: new 0 0 21 324">
+                        <path class="fill-mode"
+                          d="M9.8,316.4c1.1-26.8,2-53.4,1.9-80.2c-0.1-18.2-0.8-36.4-1.2-54.6c-0.2-8.9-0.2-17.7,0.8-26.6 c0.5-4.5,1.1-9,1.4-13.6c0.1-1.9,0.1-3.7,0.1-5.6c-0.2-0.2-0.6-1.5-0.2-3.1c-0.3-1.8-0.4-3.7-0.4-5.5c-1.2-3-1.8-6.3-1.7-9.6 c0.9-19,0.5-38.1,0.8-57.2c0.3-17.1,0.6-34.2,0.2-51.3c-0.1-0.6-0.1-1.2-0.1-1.7c0-0.8,0-1.6,0-2.4c0-0.5,0-1.1,0-1.6 c0-1.2,0-2.3,0.2-3.5H0v11.8c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1V31c3.3,0,6.1,2.7,6.1,6.1S3.3,43.3,0,43.3v6.9 c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1 s-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9 c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1 c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.7,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9 c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.7,6.1,6.1 c0,3.4-2.8,6.1-6.1,6.1v6.9c3.3,0,6.1,2.8,6.1,6.1c0,3.4-2.8,6.1-6.1,6.1V324h9.5C9.6,321.4,9.7,318.8,9.8,316.4z" />
+                      </svg>
+                    </figure>
+
+                    <div class="row g-4 position-relative">
+                      <!-- Nav tabs START -->
+                      <div class="col-lg-5">
+                        <ul class="nav nav-pills nav-pills-dark" id="pills-tab" role="tablist">
+                          <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-start rounded-0 mb-0 active" id="pills-one-way-tab"
+                              data-bs-toggle="pill" data-bs-target="#pills-one-way" type="button" role="tab"
+                              aria-selected="true" onclick="toggleCheckbox(false)">
+                              Fixed Date
+                            </button>
                           </li>
-              
-                          <li class="dropdown-divider"></li>
-              
-                          <li class="d-flex justify-content-between">
-                              <div>
-                                  <h6 class="mb-0">Children</h6>
-                                  <small>Ages 13 below</small>
-                              </div>
-              
-                              <div class="hstack gap-1 align-items-center">
-                                  <button type="button" class="btn btn-link child-remove p-0 mb-0"><i
-                                          class="bi bi-dash-circle fs-5 fa-fw"></i></button>
-                                  <h6 class="guest-selector-count mb-0 child" id="children" name="children">0</h6>
-                                  <button type="button" class="btn btn-link child-add p-0 mb-0"><i
-                                          class="bi bi-plus-circle fs-5 fa-fw"></i></button>
-                              </div>
+                          <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-end rounded-0 mb-0" id="pills-round-trip-tab"
+                              data-bs-toggle="pill" data-bs-target="#pills-round-trip" type="button" role="tab"
+                              aria-selected="false" onclick="toggleCheckbox(true)">
+                              Flexible Date
+                            </button>
                           </li>
-              
-                          <li class="dropdown-divider"></li>
-              
-                          <li class="d-flex justify-content-between">
-                              <div>
-                                  <h6 class="mb-0">Infants</h6>
-                                  <small>Ages 2 below</small>
+                        </ul>
+                      </div>
+
+                      <!-- Hidden Checkbox -->
+                      <input type="checkbox" id="dateTypeCheckbox" name="dateTypeCheckbox" hidden />
+
+                      <script>
+                        function toggleCheckbox(isChecked) {
+                          document.getElementById("dateTypeCheckbox").checked = isChecked;
+                        }
+                      </script>
+
+                      <!-- Nav tabs END -->
+
+                      <!-- Ticket Travelers -->
+                      <div class="col-lg-4 ms-auto">
+                        <div class="form-control-bg-light form-fs-md d-flex">
+                          <div class="w-100">
+                            <div class="dropdown guest-selector me-2">
+                              <input type="text" class="form-guest-selector form-control flight-result"
+                                value="1 Passengers" data-bs-auto-close="outside" data-bs-toggle="dropdown">
+                              <ul class="dropdown-menu guest-selector-dropdown">
+                                <li class="d-flex justify-content-between">
+                                  <div>
+                                    <h6 class="mb-0">Adults</h6>
+                                    <small>Ages 13 or above</small>
+                                  </div>
+                                  <div class="hstack gap-1 align-items-center">
+                                    <button type="button" class="btn btn-link adult-remove p-0 mb-0"><i
+                                        class="bi bi-dash-circle fs-5 fa-fw"></i></button>
+                                    <h6 class="guest-selector-count mb-0 adults" value="1" id="adults" name="adults">1
+                                    </h6>
+                                    <button type="button" class="btn btn-link adult-add p-0 mb-0"><i
+                                        class="bi bi-plus-circle fs-5 fa-fw"></i></button>
+                                  </div>
+                                </li>
+
+                                <li class="dropdown-divider"></li>
+
+                                <li class="d-flex justify-content-between">
+                                  <div>
+                                    <h6 class="mb-0">Children</h6>
+                                    <small>Ages 13 below</small>
+                                  </div>
+
+                                  <div class="hstack gap-1 align-items-center">
+                                    <button type="button" class="btn btn-link child-remove p-0 mb-0"><i
+                                        class="bi bi-dash-circle fs-5 fa-fw"></i></button>
+                                    <h6 class="guest-selector-count mb-0 child" id="children" name="children">0</h6>
+                                    <button type="button" class="btn btn-link child-add p-0 mb-0"><i
+                                        class="bi bi-plus-circle fs-5 fa-fw"></i></button>
+                                  </div>
+                                </li>
+
+                                <li class="dropdown-divider"></li>
+
+                                <li class="d-flex justify-content-between">
+                                  <div>
+                                    <h6 class="mb-0">Infants</h6>
+                                    <small>Ages 2 below</small>
+                                  </div>
+
+                                  <div class="hstack gap-1 align-items-center">
+                                    <button type="button" class="btn btn-link infant-remove p-0 mb-0"><i
+                                        class="bi bi-dash-circle fs-5 fa-fw"></i></button>
+                                    <h6 class="guest-selector-count mb-0 infant" id="infants" name="infants">0</h6>
+                                    <button type="button" class="btn btn-link infant-add p-0 mb-0"><i
+                                        class="bi bi-plus-circle fs-5 fa-fw"></i></button>
+                                  </div>
+                                </li>
+                                <input type="hidden" name="adults" id="adultsInput" value="1" />
+                                <input type="hidden" name="children" id="childrenInput" value="0" />
+                                <input type="hidden" name="infants" id="infantsInput" value="0" />
+
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Tab content START -->
+                      <div class="tab-content mt-4" id="pills-tabContent">
+                        <!-- One way tab START -->
+                        <div class="tab-pane fade show active" id="pills-one-way" role="tabpanel"
+                          aria-labelledby="pills-one-way-tab">
+                          <div class="row g-4">
+                            <!-- Leaving From -->
+                            <div class="col-md-6 col-lg-4 position-relative">
+                              <div class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3">
+                                <!-- Input field -->
+                                <label class="mb-1"><i class="bi bi-geo-alt me-2"></i>From</label>
+                                <select class="form-select js-airport" id="fixedFrom" name="fixedFrom"
+                                  placeholder="Select from">
+                                  <option value="">Select location</option>
+                                </select>
                               </div>
-              
-                              <div class="hstack gap-1 align-items-center">
-                                  <button type="button" class="btn btn-link infant-remove p-0 mb-0"><i
-                                          class="bi bi-dash-circle fs-5 fa-fw"></i></button>
-                                  <h6 class="guest-selector-count mb-0 infant" id="infants" name="infants">0</h6>
-                                  <button type="button" class="btn btn-link infant-add p-0 mb-0"><i
-                                          class="bi bi-plus-circle fs-5 fa-fw"></i></button>
+
+                              <!-- Auto fill button -->
+                              <div class="btn-flip-icon mt-3 mt-md-0">
+                                <button class="btn btn-white shadow btn-round mb-0" type="button" onclick="swapValues()"
+                                  id="swap-btn">
+                                  <i class="fa-solid fa-right-left"></i>
+                                </button>
                               </div>
-                          </li>
-                          <input type="hidden" name="adults" id="adultsInput" value="1" />
-<input type="hidden" name="children" id="childrenInput" value="0" />
-<input type="hidden" name="infants" id="infantsInput" value="0" />
- 
-                      </ul>
-                  </div>
+
+                            </div>
+
+                            <!-- Going To -->
+                            <div class="col-md-6 col-lg-4">
+                              <div class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3">
+                                <!-- Input field -->
+                                <label class="mb-1"><i class="bi bi-send me-2"></i>To</label>
+
+                                <select class="form-select js-airport" id="fixedTo" name="fixedTo"
+                                  placeholder="Select to">
+                                  <option value="">Select location</option>
+                                </select>
+                              </div>
+                            </div>
+
+                            <!-- Departure -->
+                            <div class="col-lg-4">
+                              <div class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3">
+                                <label class="mb-1"><i class="bi bi-calendar me-2"></i>Departure</label>
+                                <input type="text" class="form-control flatpickr" data-date-format="d M Y"
+                                  placeholder="Select date" id="departure" name="departure" />
+                              </div>
+                            </div>
+
+                            <div class="col-12 text-end pt-0">
+                              <button class="btn btn-primary mb-n4" type="submit">
+                                Find ticket <i class="bi bi-arrow-right ps-3"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- One way tab END -->
+
+                        <!-- Round way tab END -->
+                        <div class="tab-pane fade" id="pills-round-trip" role="tabpanel"
+                          aria-labelledby="pills-round-trip-tab">
+                          <div class="row g-4">
+                            <!-- Leaving From -->
+                            <div class="col-md-6 col-xl-3 position-relative">
+                              <div class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3">
+                                <!-- Input field -->
+                                <label class="mb-1"><i class="bi bi-geo-alt me-2"></i>From</label>
+
+                                <select class="form-select js-airport" id="from" name="from" placeholder="Select from">
+                                  <option value="">Select location</option>
+                                </select>
+                              </div>
+
+                              <!-- Auto fill button -->
+                              <div class="btn-flip-icon mt-3 mt-md-0">
+                                <button class="btn btn-white shadow btn-round mb-0" type="button" onclick="swapValues()"
+                                  id="swap-btn">
+                                  <i class="fa-solid fa-right-left"></i>
+                                </button>
+                              </div>
+                            </div>
+
+                            <!-- Going To -->
+                            <div class="col-md-6 col-xl-3">
+                              <div class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3">
+                                <!-- Input field -->
+                                <label class="mb-1"><i class="bi bi-send me-2"></i>To</label>
+
+                                <select class="form-select js-airport" id="to" name="to" placeholder="Select from">
+                                  <option value="">Select location</option>
+
+                                </select>
+                              </div>
+                            </div>
+
+                            <!-- Departure -->
+                            <div class="col-md-6 col-xl-3">
+                              <div class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3">
+                                <label class="mb-1"><i class="bi bi-calendar me-2"></i>Departure</label>
+                                <input type="text" class="form-control flatpickr" data-date-format="d M Y"
+                                  placeholder="Select date" id="departure" name="departureDate" />
+                              </div>
+                            </div>
+
+                            <!-- Return -->
+                            <div class="col-md-6 col-xl-3">
+                              <div class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3">
+                                <label class="mb-1"><i class="bi bi-calendar me-2"></i>Return</label>
+                                <input type="text" class="form-control flatpickr" data-date-format="d M Y"
+                                  placeholder="Select date" id="returnDate" name="returnDate" />
+                              </div>
+                            </div>
+
+                            <div class="col-12 text-end pt-0">
+                              <button class="btn btn-primary mb-n4" type="submit">
+                                Find ticket <i class="bi bi-arrow-right ps-3"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Round way tab END -->
+                      </div>
+                      <!-- Tab content END -->
+                    </div>
+                  </form>
+                  <!-- Booking from END -->
                 </div>
-              </div>
-            </div>
 
-            <!-- Tab content START -->
-            <div class="tab-content mt-4" id="pills-tabContent">
-              <!-- One way tab START -->
-              <div
-                class="tab-pane fade show active"
-                id="pills-one-way"
-                role="tabpanel"
-                aria-labelledby="pills-one-way-tab"
-              >
-                <div class="row g-4">
-                  <!-- Leaving From -->
-                  <div class="col-md-6 col-lg-4 position-relative">
-                    <div
-                      class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3">
-                      <!-- Input field -->
-                      <label class="mb-1"
-                        ><i class="bi bi-geo-alt me-2"></i>From</label
-                      >
-                      <select class="form-select js-airport" id="fixedFrom" name="fixedFrom" placeholder="Select from">
-                      <option value="">Select location</option>
-                      </select>
-                    </div>
+      </section>
 
-                    <!-- Auto fill button -->
-                    <div class="btn-flip-icon mt-3 mt-md-0">
-                      <button class="btn btn-white shadow btn-round mb-0" type="button" onclick="swapValues()" id="swap-btn">
-                        <i class="fa-solid fa-right-left"></i>
-                      </button>
-                    </div>
-                
-                  </div>
-
-                  <!-- Going To -->
-                  <div class="col-md-6 col-lg-4">
-                    <div
-                      class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3"
-                    >
-                      <!-- Input field -->
-                      <label class="mb-1"
-                        ><i class="bi bi-send me-2"></i>To</label
-                      >
-                      
-                      <select class="form-select js-airport" id="fixedTo"
-                      name="fixedTo" placeholder="Select to">
-                        <option value="">Select location</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <!-- Departure -->
-                  <div class="col-lg-4">
-                    <div
-                      class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3"
-                    >
-                      <label class="mb-1"
-                        ><i class="bi bi-calendar me-2"></i>Departure</label
-                      >
-                      <input
-                        type="text"
-                        class="form-control flatpickr"
-                        data-date-format="d M Y"
-                        placeholder="Select date"
-                        id="departure"
-                        name="departure"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="col-12 text-end pt-0">
-                    <button
-                      class="btn btn-primary mb-n4"
-                      type="submit"
-                    >
-                      Find ticket <i class="bi bi-arrow-right ps-3"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <!-- One way tab END -->
-
-              <!-- Round way tab END -->
-              <div
-                class="tab-pane fade"
-                id="pills-round-trip"
-                role="tabpanel"
-                aria-labelledby="pills-round-trip-tab"
-              >
-                <div class="row g-4">
-                  <!-- Leaving From -->
-                  <div class="col-md-6 col-xl-3 position-relative">
-                    <div
-                      class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3"
-                    >
-                      <!-- Input field -->
-                      <label class="mb-1"
-                        ><i class="bi bi-geo-alt me-2"></i>From</label
-                      >
-                      
-                      <select class="form-select js-airport" id="from"
-                      name="from" placeholder="Select from">
-                      <option value="">Select location</option>
-                      </select>
-                    </div>
-
-                    <!-- Auto fill button -->
-                    <div class="btn-flip-icon mt-3 mt-md-0">
-                      <button class="btn btn-white shadow btn-round mb-0" type="button" onclick="swapValues()" id="swap-btn" >
-                        <i class="fa-solid fa-right-left"></i>
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- Going To -->
-                  <div class="col-md-6 col-xl-3">
-                    <div
-                      class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3"
-                    >
-                      <!-- Input field -->
-                      <label class="mb-1"
-                        ><i class="bi bi-send me-2"></i>To</label
-                      >
-                      
-                      <select class="form-select js-airport" id="to"
-                      name="to" placeholder="Select from">
-                      <option value="">Select location</option>
-                      
-                    </select>
-                    </div>
-                  </div>
-
-                  <!-- Departure -->
-                  <div class="col-md-6 col-xl-3">
-                    <div
-                      class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3"
-                    >
-                      <label class="mb-1"
-                        ><i class="bi bi-calendar me-2"></i>Departure</label
-                      >
-                      <input
-                        type="text"
-                        class="form-control flatpickr"
-                        data-date-format="d M Y"
-                        placeholder="Select date"
-                        id="departure"
-                        name="departureDate"
-                      />
-                    </div>
-                  </div>
-
-                  <!-- Return -->
-                  <div class="col-md-6 col-xl-3">
-                    <div
-                      class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3"
-                    >
-                      <label class="mb-1"
-                        ><i class="bi bi-calendar me-2"></i>Return</label
-                      >
-                      <input
-                        type="text"
-                        class="form-control flatpickr"
-                        data-date-format="d M Y"
-                        placeholder="Select date"
-                        id="returnDate"
-                        name="returnDate"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="col-12 text-end pt-0">
-                    <button
-                      class="btn btn-primary mb-n4"
-                      type="submit"
-                    >
-                      Find ticket <i class="bi bi-arrow-right ps-3"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <!-- Round way tab END -->
-            </div>
-            <!-- Tab content END -->
-          </div>
-        </form>
-        <!-- Booking from END -->
-      </div>
-    
-  </section>
-
-  <!-- =======================
+      <!-- =======================
     Main Banner END -->
 
-    <script>
-      function swapValues() {
+      <script>
+        function swapValues() {
           console.log("Swap button clicked!");
-      
+
           const isFlexible = document.getElementById("dateTypeCheckbox").checked;
           let fromSelect = isFlexible ? document.getElementById("from") : document.getElementById("fixedFrom");
           let toSelect = isFlexible ? document.getElementById("to") : document.getElementById("fixedTo");
-      
+
           // Swap values
           let tempValue = fromSelect.value;
           fromSelect.value = toSelect.value;
           toSelect.value = tempValue;
 
-      }
+        }
       </script>
-        
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Normalize time
 
-    const departureInputs = document.querySelectorAll("[id='departure']"); // Select multiple departure inputs
-    const returnInput = document.querySelector("#returnDate"); // Only one return input
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0); // Normalize time
 
-    // Initialize Departure Date Pickers
-    departureInputs.forEach((departureInput) => {
-        flatpickr(departureInput, {
-            dateFormat: "d M Y",
-            minDate: today, // ✅ Ensure minDate is today
-            disableMobile: true,
-            onChange: function (selectedDates) {
+          const departureInputs = document.querySelectorAll("[id='departure']"); // Select multiple departure inputs
+          const returnInput = document.querySelector("#returnDate"); // Only one return input
+
+          // Initialize Departure Date Pickers
+          departureInputs.forEach((departureInput) => {
+            flatpickr(departureInput, {
+              dateFormat: "d M Y",
+              minDate: today, // ✅ Ensure minDate is today
+              disableMobile: true,
+              onChange: function (selectedDates) {
                 const departureDate = selectedDates[0];
 
                 // Ensure return date is after the selected departure date
                 if (returnInput) {
-                    returnPicker.set("minDate", departureDate);
+                  returnPicker.set("minDate", departureDate);
                 }
-            },
-        });
-    });
-
-    // Initialize Return Date Picker
-    const returnPicker = flatpickr(returnInput, {
-        dateFormat: "d M Y",
-        minDate: today, // ✅ Ensure minDate is today
-        disableMobile: true,
-        onChange: function (selectedDates) {
-            const returnDate = selectedDates[0];
-
-            // Ensure departure date is before return date
-            departureInputs.forEach((departureInput) => {
-                if (departureInput.value && new Date(departureInput.value) >= returnDate) {
-                    departureInput._flatpickr.setDate(returnDate, true);
-                }
+              },
             });
-        },
-    });
-});
+          });
 
-  </script>
+          // Initialize Return Date Picker
+          const returnPicker = flatpickr(returnInput, {
+            dateFormat: "d M Y",
+            minDate: today, // ✅ Ensure minDate is today
+            disableMobile: true,
+            onChange: function (selectedDates) {
+              const returnDate = selectedDates[0];
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const adultsCountElement = document.getElementById("adults");
-        const childrenCountElement = document.getElementById("children");
-        const infantsCountElement = document.getElementById("infants");
-        const adultAddButton = document.querySelector(".adult-add");
-        const adultRemoveButton = document.querySelector(".adult-remove");
-        const childAddButton = document.querySelector(".child-add");
-        const childRemoveButton = document.querySelector(".child-remove");
-        const infantAddButton = document.querySelector(".infant-add");
-        const infantRemoveButton = document.querySelector(".infant-remove");
-        const guestSelectorInput = document.querySelector(".form-guest-selector");
+              // Ensure departure date is before return date
+              departureInputs.forEach((departureInput) => {
+                if (departureInput.value && new Date(departureInput.value) >= returnDate) {
+                  departureInput._flatpickr.setDate(returnDate, true);
+                }
+              });
+            },
+          });
+        });
 
-        let adults = parseInt(adultsCountElement.textContent);
-        let children = parseInt(childrenCountElement.textContent);
-        let infants = parseInt(infantsCountElement.textContent);
+      </script>
 
-        function updateGuestCount() {
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const adultsCountElement = document.getElementById("adults");
+          const childrenCountElement = document.getElementById("children");
+          const infantsCountElement = document.getElementById("infants");
+          const adultAddButton = document.querySelector(".adult-add");
+          const adultRemoveButton = document.querySelector(".adult-remove");
+          const childAddButton = document.querySelector(".child-add");
+          const childRemoveButton = document.querySelector(".child-remove");
+          const infantAddButton = document.querySelector(".infant-add");
+          const infantRemoveButton = document.querySelector(".infant-remove");
+          const guestSelectorInput = document.querySelector(".form-guest-selector");
+
+          let adults = parseInt(adultsCountElement.textContent);
+          let children = parseInt(childrenCountElement.textContent);
+          let infants = parseInt(infantsCountElement.textContent);
+
+          function updateGuestCount() {
             adultsCountElement.textContent = adults;
-            adultsCountElement.value= adults
+            adultsCountElement.value = adults
             childrenCountElement.textContent = children;
             infantsCountElement.textContent = infants;
             const totalPassengers = adults + children + infants;
@@ -446,829 +362,558 @@
             document.getElementById("adultsInput").value = adults;
             document.getElementById("childrenInput").value = children;
             document.getElementById("infantsInput").value = infants;
-        }
+          }
 
-        adultAddButton.addEventListener("click", function () {
+          adultAddButton.addEventListener("click", function () {
             adults++;
             updateGuestCount();
-        });
+          });
 
-        adultRemoveButton.addEventListener("click", function () {
+          adultRemoveButton.addEventListener("click", function () {
             if (adults > 0) { // Ensure at least 1 adult
-                adults--;
-                updateGuestCount();
+              adults--;
+              updateGuestCount();
             }
-        });
+          });
 
-        childAddButton.addEventListener("click", function () {
+          childAddButton.addEventListener("click", function () {
             children++;
             updateGuestCount();
-        });
+          });
 
-        childRemoveButton.addEventListener("click", function () {
+          childRemoveButton.addEventListener("click", function () {
             if (children > 0) {
-                children--;
-                updateGuestCount();
+              children--;
+              updateGuestCount();
             }
-        });
+          });
 
-        infantAddButton.addEventListener("click", function () {
+          infantAddButton.addEventListener("click", function () {
             infants++;
             updateGuestCount();
-        });
+          });
 
-        infantRemoveButton.addEventListener("click", function () {
+          infantRemoveButton.addEventListener("click", function () {
             if (infants > 0) {
-                infants--;
-                updateGuestCount();
+              infants--;
+              updateGuestCount();
             }
+          });
+
+          updateGuestCount(); // Initialize count on load
+
+
         });
+      </script>
 
-        updateGuestCount(); // Initialize count on load
+      <script>
+        async function findTicket(e) {
+          e.preventDefault();
+          // Get values from the form
+          const activeTab = document.querySelector(".tab-pane.active");
 
+          // Get values from the active tab
+          const from = activeTab.querySelector('[name="from"]').value;
+          const to = activeTab.querySelector('[name="to"]').value;
+          const fixedFrom = activeTab.querySelector('[name="fixedFrom"]').value;
+          const fixedTo = activeTab.querySelector('[name="fixedTo"]').value;
+          const departure = activeTab.querySelector('[name="departure"]').value;
+          const departureDate = activeTab.querySelector('[name="departureDate"]').value;
+          const returnDate = activeTab.querySelector('[name="returnDate"]').value;
+          const adults = parseInt(document.querySelector("#adults")?.textContent?.trim() || "1");
+          const children = parseInt(document.querySelector("#children")?.textContent?.trim() || "0");
+          const infants = parseInt(document.querySelector("#infants")?.textContent?.trim() || "0");
 
-    });
-</script>
+          // Determine if the "Flexible Date" tab is selected
+          const isFlexible = document
+            .getElementById("pills-round-trip-tab")
+            .classList.contains("active");
 
-  <script>
-    async function findTicket(e) {
-      e.preventDefault();
-      // Get values from the form
-      const activeTab = document.querySelector(".tab-pane.active");
+          // Validate input
+          if (!isFlexible && !fixedFrom || !fixedTo || !departure) {
+            alert("Please fill in all required fields!!.");
+            return;
+          }
 
-      // Get values from the active tab
-      const from = activeTab.querySelector('[name="from"]').value;
-      const to = activeTab.querySelector('[name="to"]').value;
-      const fixedFrom = activeTab.querySelector('[name="fixedFrom"]').value;
-      const fixedTo = activeTab.querySelector('[name="fixedTo"]').value;
-      const departure = activeTab.querySelector('[name="departure"]').value;
-      const departureDate = activeTab.querySelector('[name="departureDate"]').value;
-      const returnDate = activeTab.querySelector('[name="returnDate"]').value;
-      const adults = parseInt(document.querySelector("#adults")?.textContent?.trim() || "1");
-      const children = parseInt(document.querySelector("#children")?.textContent?.trim() || "0");
-      const infants = parseInt(document.querySelector("#infants")?.textContent?.trim() || "0");
+          // If flexible date is selected, ensure return date is provided
+          if (isFlexible && !from || !to || !departureDate || !returnDate) {
+            alert("Please select a return date for flexible trips.");
+            return;
+          }
 
-      // Determine if the "Flexible Date" tab is selected
-      const isFlexible = document
-        .getElementById("pills-round-trip-tab")
-        .classList.contains("active");
+          const requestData = {
+            fixedFrom: fixedFrom,
+            fixedTo: fixedTo,
+            from: from,
+            to: to,
+            departure: departure,
+            departureDate: departureDate,
+            returnDate: returnDate,
+            flexible: isFlexible,
+            adults: adults,
+            children: children,
+            infants: infants,
+          };
 
-      // Validate input
-      if (!isFlexible && !fixedFrom || !fixedTo || !departure) {
-        alert("Please fill in all required fields!!.");
-        return;
-      }
+          // If flexible, add returnDate to requestData
+          if (isFlexible) {
+            requestData.returnDate = returnDate;
+          }
 
-      // If flexible date is selected, ensure return date is provided
-      if (isFlexible && !from || !to || !departureDate || !returnDate) {
-        alert("Please select a return date for flexible trips.");
-        return;
-      }
+          // sessionStorage.setItem("requestData", JSON.stringify(requestData)); 
+          console.log(requestData)
 
-      const requestData = {
-        fixedFrom: fixedFrom,
-        fixedTo: fixedTo,
-        from: from,
-        to: to,
-        departure: departure,
-        departureDate: departureDate,
-        returnDate: returnDate,
-        flexible: isFlexible,
-        adults: adults,
-        children: children,
-        infants: infants,
-      };
+          try {
+            alert("Passenger counts being sent:\n" + JSON.stringify({ adults, children, infants }, null, 2));
 
-      // If flexible, add returnDate to requestData
-      if (isFlexible) {
-        requestData.returnDate = returnDate;
-      }
-      
-      // sessionStorage.setItem("requestData", JSON.stringify(requestData)); 
-      console.log(requestData)
+            // Send POST request to the API
+            const response = await fetch("/flight-list", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(requestData),
+            });
 
-      try {
-        alert("Passenger counts being sent:\n" + JSON.stringify({ adults, children, infants }, null, 2));
+            if (!response.ok) {
+              throw new Error("Failed to fetch flight data");
+            }
 
-        // Send POST request to the API
-        const response = await fetch("/flight-list", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestData),
-        });
+            const responseData = await response.json();
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch flight data");
+            console.log(responseData);
+
+          } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred while searching for flights.");
+          }
         }
+      </script>
 
-        const responseData = await response.json();
-
-        console.log(responseData);
-
-      } catch (error) {
-        console.error("Error:", error);
-        alert("An error occurred while searching for flights.");
-      }
-    }
-  </script>
-
-  <!-- =======================
-    Popular Destinations START -->
-  <section class="pt-0 pt-lg-5">
-    <div class="container">
-      <!-- Title -->
-      <div class="row mb-4">
-        <div class="col-12 text-center">
-          <h2 class="mb-0">Top Flight Routes</h2>
-        </div>
-      </div>
-
-      <div class="row g-4">
-        <!-- Destination item START -->
-        <div class="col-sm-6 col-lg-4">
-          <!-- Card START -->
-          <div class="card card-img-scale overflow-hidden bg-transparent">
-
-            <!-- Image -->
-            <div class="card-img-scale-wrapper rounded-3" style="height: 240px;">
-              <img
-                src="/assets/images/category/flight/mumbai.jpeg"
-                class="card-img"
-                alt="hotel image"
-                 style="min-height: 240px;"
-              />
-            </div>
-
-            <!-- Card body -->
-            <div class="card-body px-2">
-              <!-- Title -->
-              <div class="d-flex align-items-center">
-                <h5 class="card-title">
-                  <a href="#" class="flightLink stretched-link"  data-from="Chennai" data-to="Mumbai">Chennai <i class="fa-solid fa-fw fa-plane rtl-flip"></i> Mumbai</a>
-                </h5>
-                
-              </div>
-              <!-- Content -->
-              <span class="mb-0">MAA - BOM</span>
+      <!-- =======================
+    Popular Flight START -->
+      <section class="pt-0 pt-lg-5">
+        <div class="container">
+          <!-- Title -->
+          <div class="row mb-4">
+            <div class="col-12 text-center">
+              <h2 class="mb-0">Top Flight Routes</h2>
             </div>
           </div>
-          <!-- Card END -->
-        </div>
-        <!-- Destination item END -->
 
-        <!-- Destination item START -->
-        <div class="col-sm-6 col-lg-4">
-          <!-- Card START -->
-          <div class="card card-img-scale overflow-hidden bg-transparent">
-            <!-- Image -->
-            <div class="card-img-scale-wrapper rounded-3" style="height: 240px;">
-              <img
-                src="/assets/images/category/flight/ahmedabad.webp"
-                class="card-img"
-                alt="hotel image"
-                 style="min-height: 240px;"
-              />
-            </div>
+          <div class="row g-4">
+            <% popularFlights.forEach((flight)=> { %>
+              <% if(popularFlights.length> 0) { %>
 
-            <!-- Card body -->
-            <div class="card-body px-2">
-              <!-- Title -->
-              <div class="d-flex align-items-center">
-                <h5 class="card-title">
-                  <a href="#" class="flightLink stretched-link"  data-from="Delhi" data-to="Ahmedabad"
-                    >Delhi <i class="fa-solid fa-fw fa-plane rtl-flip"></i> Ahmedabad</a
-                  >
-                </h5>
-                
-              </div>
-              <!-- Content -->
-              <p class="mb-0">DEL - AMD</p>
-            </div>
+                <!-- Destination item START -->
+                <div class="col-sm-6 col-lg-4">
+                  <!-- Card START -->
+                  <div class="card card-img-scale overflow-hidden bg-transparent">
+
+                    <!-- Image -->
+                    <div class="card-img-scale-wrapper rounded-3" style="height: 240px;">
+                      <img src="<%= flight.image %>" class="card-img" alt="hotel image" style="min-height: 240px;" />
+                    </div>
+
+                    <!-- Card body -->
+                    <div class="card-body px-2">
+                      <!-- Title -->
+                      <div class="d-flex align-items-center">
+                        <h5 class="card-title">
+                          <a href="#" class="flightLink stretched-link" data-from="<%= flight.fromCity %>"
+                            data-to="<%= flight.toCity %>">
+                            <%= flight.fromCity %> <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
+                              <%= flight.toCity %>
+                          </a>
+                        </h5>
+
+                      </div>
+                      <!-- Content -->
+                      <span class="mb-0">
+                        <%= flight.fromCode %> - <%= flight.toCode %>
+                      </span>
+                    </div>
+                  </div>
+                  <!-- Card END -->
+                </div>
+                <!-- Destination item END -->
+
+                <% } else { %>
+                  <p></p>
+                  <% } %>
+                    <% }) %>
+
           </div>
-          <!-- Card END -->
+          <!-- Row END -->
         </div>
-        <!-- Destination item END -->
 
-        <!-- Destination item START -->
-        <div class="col-sm-6 col-lg-4">
-          <!-- Card START -->
-          <div class="card card-img-scale overflow-hidden bg-transparent">
-            
-            <!-- Image -->
-            <div class="card-img-scale-wrapper rounded-3" style="height: 240px;">
-              <img
-                src="/assets/images/category/flight/lucknow.jpeg"
-                class="card-img"
-                alt="hotel image"
-                 style="min-height: 240px;"
-              />
-            </div>
+        <!-- Hidden form for submitting flight details -->
+        <form id="flightForm" method="POST" action="/flight-list">
+          <input type="hidden" name="from" id="fromInput">
+          <input type="hidden" name="to" id="toInput">
+          <input type="hidden" name="departureDate" id="departureDateInput">
+          <input type="hidden" name="returnDate" id="returnDateInput">
+          <input type="checkbox" id="dateTypeCheckbox" name="dateTypeCheckbox" checked hidden />
+          <input type="hidden" name="adults" id="adults">
+          <input type="hidden" name="children" id="children">
+          <input type="hidden" name="infants" id="infants">
+        </form>
 
-            <!-- Card body -->
-            <div class="card-body px-2">
-              <!-- Title -->
-              <div class="d-flex align-items-center">
-                <h5 class="card-title">
-                  <a href="#" class="flightLink stretched-link"  data-from="Delhi" data-to="Lucknow">Delhi <i class="fa-solid fa-fw fa-plane rtl-flip"></i> Lucknow</a>
-                </h5>
-              </div>
-              <!-- Content -->
-              <p class="mb-0">DEL - LKO</p>
-            </div>
-          </div>
-          <!-- Card END -->
-        </div>
-        <!-- Destination item END -->
+      </section>
 
-        <!-- Destination item START -->
-        <div class="col-sm-6 col-lg-4">
-          <!-- Card START -->
-          <div class="card card-img-scale overflow-hidden bg-transparent">
-            <!-- Image -->
-            <div class="card-img-scale-wrapper rounded-3" style="height: 240px;">
-              <img
-                src="/assets/images/category/flight/chennai.jpeg"
-                class="card-img"
-                alt="hotel image"
-                 style="min-height: 240px;"
-              />
-            </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          document.querySelectorAll(".flightLink").forEach((link) => {
+            link.addEventListener("click", function (event) {
+              event.preventDefault(); // Prevent default anchor behavior
 
-            <!-- Card body -->
-            <div class="card-body px-2">
-              <!-- Title -->
-              <div class="d-flex align-items-center">
-                <h5 class="card-title">
-                  <a href="#" class="flightLink stretched-link"  data-from="Mumbai" data-to="Chennai">Mumbai <i class="fa-solid fa-fw fa-plane rtl-flip"></i> Chennai</a
-                  >
-                </h5>
-                
-              </div>
-              <!-- Content -->
-              <p class="mb-0">BOM - MAA</p>
-            </div>
-          </div>
-          <!-- Card END -->
-        </div>
-        <!-- Destination item END -->
+              // Get from and to values
+              const from = this.getAttribute("data-from");
+              const to = this.getAttribute("data-to");
 
-        <!-- Destination item START -->
-        <div class="col-sm-6 col-lg-4">
-          <!-- Card START -->
-          <div class="card card-img-scale overflow-hidden bg-transparent">
-            <!-- Card format icon -->
-            
-            <!-- Image -->
-            <div class="card-img-scale-wrapper rounded-3" style="height: 240px;">
-              <img
-                src="/assets/images/category/flight/dubai.jpg"
-                class="card-img"
-                alt="hotel image"
-                 style="min-height: 240px;"
-              />
-            </div>
+              // Get today's date and a week later
+              const today = new Date();
+              const weekLater = new Date();
+              weekLater.setDate(today.getDate() + 7);
 
-            <!-- Card body -->
-            <div class="card-body px-2">
-              <!-- Title -->
-              <div class="d-flex align-items-center">
-                <h5 class="card-title">
-                  <a href="#" class="flightLink stretched-link"  data-from="Mumbai" data-to="Dubai">Mumbai <i class="fa-solid fa-fw fa-plane rtl-flip"></i> Dubai</a>
-                </h5>
-                
-              </div>
-              <!-- Content -->
-              <span class="mb-0">BOM - DXB</span>
-            </div>
-          </div>
-          <!-- Card END -->
-        </div>
-        <!-- Destination item END -->
+              console.log(today);
+              console.log(weekLater);
 
-        <!-- Destination item START -->
-        <div class="col-sm-6 col-lg-4">
-          <!-- Card START -->
-          <div class="card card-img-scale overflow-hidden bg-transparent">
-            <!-- Image -->
-            <div class="card-img-scale-wrapper rounded-3" style="height: 240px;">
-              <img
-                src="/assets/images/category/flight/kolkata.png"
-                class="card-img"
-                alt="hotel image"
-                 style="min-height: 240px;"
-              />
-            </div>
+              // Format dates to dd Mon Year
 
-            <!-- Card body -->
-            <div class="card-body px-2">
-              <!-- Title -->
-              <div class="d-flex align-items-center">
-                <h5 class="card-title">
-                  <a href="#" class="flightLink stretched-link"  data-from="Mumbai" data-to="Kolkata">
-                    Mumbai <i class="fa-solid fa-fw fa-plane rtl-flip"></i> Kolkata</a
-                  >
-                </h5>
-                
-              </div>
-              <!-- Content -->
-              <p class="mb-0">BOM - CCU</p>
-            </div>
-          </div>
-          <!-- Card END -->
-        </div>
-        <!-- Destination item END -->
+              const formatDate = (date) => {
+                const day = date.getDate().toString().padStart(2, "0");
+                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                const month = monthNames[date.getMonth()];
+                const year = date.getFullYear();
+                return `${day} ${month} ${year}`;
+              };
+              console.log(formatDate(today));
+              console.log(formatDate(weekLater));
 
-        <!-- Destination item START -->
-        <div class="col-sm-6 col-lg-4">
-          <!-- Card START -->
-          <div class="card card-img-scale overflow-hidden bg-transparent">
-            
-            <!-- Image -->
-            <div class="card-img-scale-wrapper rounded-3" style="height: 240px;">
-              <img
-                src="/assets/images/category/flight/bangalore.avif"
-                class="card-img"
-                alt="hotel image"
-                 style="min-height: 240px;"
-              />
-            </div>
+              // Set form values
+              document.getElementById("fromInput").value = from;
+              document.getElementById("toInput").value = to;
+              document.getElementById("departureDateInput").value = formatDate(today);
+              document.getElementById("returnDateInput").value = formatDate(weekLater);
 
-            <!-- Card body -->
-            <div class="card-body px-2">
-              <!-- Title -->
-              <div class="d-flex align-items-center">
-                <h5 class="card-title">
-                  <a href="#" class="flightLink stretched-link"  data-from="Hyderabad" data-to="Bangalore">
-                  </a>Hyderabad <i class="fa-solid fa-fw fa-plane rtl-flip"></i> Bangalore</a>
-                </h5>
-              </div>
-              <!-- Content -->
-              <p class="mb-0">HYD - BLR</p>
-            </div>
-          </div>
-          <!-- Card END -->
-        </div>
-        <!-- Destination item END -->
-
-        <!-- Destination item START -->
-        <div class="col-sm-6 col-lg-4">
-          <!-- Card START -->
-          <div class="card card-img-scale overflow-hidden bg-transparent">
-            <!-- Image -->
-            <div class="card-img-scale-wrapper rounded-3" style="height: 240px;">
-              <img
-                src="/assets/images/category/flight/jaipur.jpg"
-                class="card-img"
-                alt="hotel image"
-                 style="min-height: 240px;"
-              />
-            </div>
-
-            <!-- Card body -->
-            <div class="card-body px-2">
-              <!-- Title -->
-              <div class="d-flex align-items-center">
-                <h5 class="card-title">
-                  <a href="#" class="flightLink stretched-link"  data-from="Mumai" data-to="Jaipur">Mumbai <i class="fa-solid fa-fw fa-plane rtl-flip"></i> Jaipur</a
-                  >
-                </h5>
-                
-              </div>
-              <!-- Content -->
-              <p class="mb-0">BOM - JAI</p>
-            </div>
-          </div>
-          <!-- Card END -->
-        </div>
-        <!-- Destination item END -->
-
-        <!-- Destination item START -->
-        <div class="col-sm-6 col-lg-4">
-          <!-- Card START -->
-          <div class="card card-img-scale overflow-hidden bg-transparent">
-            <!-- Image -->
-            <div class="card-img-scale-wrapper rounded-3" style="height: 240px;">
-              <img
-                src="/assets/images/category/flight/dubai.jpg"
-                class="card-img"
-                alt="hotel image"
-                   style="min-height: 240px;"
-              />
-            </div>
-
-            <!-- Card body -->
-            <div class="card-body px-2">
-              <!-- Title -->
-              <div class="d-flex align-items-center">
-                <h5 class="card-title">
-                  <a href="#" class="flightLink stretched-link"  data-from="Delhi" data-to="Dubai">Delhi <i class="fa-solid fa-fw fa-plane rtl-flip"></i> Dubai</a
-                  >
-                </h5>
-                
-              </div>
-              <!-- Content -->
-              <p class="mb-0">DEL - DXB</p>
-            </div>
-          </div>
-          <!-- Card END -->
-        </div>
-        <!-- Destination item END -->
-
-      </div>
-      <!-- Row END -->
-    </div>
-
-<!-- Hidden form for submitting flight details -->
-<form id="flightForm" method="POST" action="/flight-list">
-  <input type="hidden" name="from" id="fromInput">
-  <input type="hidden" name="to" id="toInput">
-  <input type="hidden" name="departureDate" id="departureDateInput">
-  <input type="hidden" name="returnDate" id="returnDateInput">
-  <input type="checkbox" id="dateTypeCheckbox" name="dateTypeCheckbox" checked hidden />
-  <input type="hidden" name="adults" id="adults">
-  <input type="hidden" name="children" id="children">
-  <input type="hidden" name="infants" id="infants">
-</form>
-
-  </section>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      document.querySelectorAll(".flightLink").forEach((link) => {
-        link.addEventListener("click", function (event) {
-          event.preventDefault(); // Prevent default anchor behavior
-  
-          // Get from and to values
-          const from = this.getAttribute("data-from");
-          const to = this.getAttribute("data-to");
-  
-          // Get today's date and a week later
-          const today = new Date();
-          const weekLater = new Date();
-          weekLater.setDate(today.getDate() + 7);
-
-          console.log(today);
-          console.log(weekLater);
-        
-          // Format dates to dd Mon Year
-          
-          const formatDate = (date) => {
-        const day = date.getDate().toString().padStart(2, "0"); 
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const month = monthNames[date.getMonth()];
-        const year = date.getFullYear();
-        return `${day} ${month} ${year}`;
-      };
-          console.log(formatDate(today));
-          console.log(formatDate(weekLater));
-          
-          // Set form values
-          document.getElementById("fromInput").value = from;
-          document.getElementById("toInput").value = to;
-          document.getElementById("departureDateInput").value = formatDate(today);
-          document.getElementById("returnDateInput").value = formatDate(weekLater);
-  
-          // Submit form
-          document.getElementById("flightForm").submit();
+              // Submit form
+              document.getElementById("flightForm").submit();
+            });
+          });
         });
-      });
-    });
-  </script>
-    
-  <!-- =======================
+      </script>
+
+      <!-- =======================
     Popular Destinations END -->
 
-  <!-- =======================
+      <!-- =======================
     Steps START -->
-  <section class="pt-0">
-    <div class="container">
-      <div class="row g-4 g-lg-5 justify-content-center">
-        <!-- Step item -->
-        <div class="col-sm-6 col-md-4 text-center position-relative">
-          <!-- SVG decoration -->
-          <figure
-            class="position-absolute top-0 start-100 translate-middle mt-8 d-none d-lg-block"
-          >
-            <svg width="154px" height="83px">
-              <path
-                class="fill-secondary opacity-4"
-                d="M142.221,83.016 L140.251,81.082 L148.020,73.376 C146.847,73.405 145.665,73.402 144.479,73.353 L144.548,70.637 C145.888,70.692 147.217,70.676 148.535,70.628 L139.384,62.839 L141.165,60.792 L153.787,71.539 L142.221,83.016 ZM131.667,71.378 L132.327,68.751 C134.373,69.284 136.418,69.712 138.402,70.022 L138.015,72.707 C135.938,72.383 133.803,71.936 131.667,71.378 ZM119.489,67.036 L120.594,64.564 C122.531,65.433 124.480,66.221 126.383,66.905 L125.482,69.458 C123.509,68.751 121.493,67.935 119.489,67.036 ZM108.113,60.978 L109.540,58.677 C111.340,59.784 113.170,60.834 114.978,61.800 L113.698,64.186 C111.840,63.193 109.961,62.115 108.113,60.978 ZM99.302,55.005 C98.712,54.567 98.124,54.125 97.540,53.680 L99.203,51.541 C99.776,51.978 100.352,52.412 100.933,52.843 C102.031,53.657 103.148,54.459 104.282,55.243 L102.729,57.461 C101.568,56.659 100.426,55.841 99.302,55.005 ZM87.631,45.617 L89.413,43.574 C91.015,44.943 92.626,46.298 94.258,47.629 L92.525,49.714 C90.877,48.369 89.247,47.000 87.631,45.617 ZM78.063,37.231 L79.883,35.221 L84.635,39.423 L82.823,41.439 L78.063,37.231 ZM68.521,28.905 L70.295,26.853 C71.914,28.227 73.520,29.618 75.118,31.017 L73.310,33.038 C71.724,31.648 70.130,30.268 68.521,28.905 ZM58.688,21.003 L60.328,18.848 C62.036,20.128 63.717,21.440 65.378,22.781 L63.659,24.875 C62.023,23.557 60.369,22.263 58.688,21.003 ZM48.288,13.967 L49.683,11.647 C51.494,12.727 53.321,13.891 55.111,15.108 L53.575,17.340 C51.832,16.155 50.053,15.019 48.288,13.967 ZM38.981,9.077 C38.372,8.799 37.760,8.531 37.146,8.268 L38.204,5.775 C38.838,6.046 39.469,6.325 40.098,6.611 C41.429,7.216 42.746,7.854 44.046,8.521 L42.810,10.930 C41.547,10.283 40.272,9.664 38.981,9.077 ZM25.330,4.320 L25.934,1.679 C27.985,2.168 30.080,2.771 32.161,3.471 L31.314,6.042 C29.311,5.369 27.298,4.791 25.330,4.320 ZM13.076,2.706 L13.084,-0.012 C15.208,0.029 17.387,0.197 19.559,0.487 L19.234,3.180 C17.166,2.905 15.094,2.745 13.076,2.706 ZM0.759,1.270 C2.660,0.821 4.623,0.487 6.593,0.273 L6.939,2.975 C5.080,3.177 3.230,3.493 1.439,3.914 L0.759,1.270 Z"
-              />
-            </svg>
-          </figure>
+      <section class="pt-0">
+        <div class="container">
+          <div class="row g-4 g-lg-5 justify-content-center">
+            <!-- Step item -->
+            <div class="col-sm-6 col-md-4 text-center position-relative">
+              <!-- SVG decoration -->
+              <figure class="position-absolute top-0 start-100 translate-middle mt-8 d-none d-lg-block">
+                <svg width="154px" height="83px">
+                  <path class="fill-secondary opacity-4"
+                    d="M142.221,83.016 L140.251,81.082 L148.020,73.376 C146.847,73.405 145.665,73.402 144.479,73.353 L144.548,70.637 C145.888,70.692 147.217,70.676 148.535,70.628 L139.384,62.839 L141.165,60.792 L153.787,71.539 L142.221,83.016 ZM131.667,71.378 L132.327,68.751 C134.373,69.284 136.418,69.712 138.402,70.022 L138.015,72.707 C135.938,72.383 133.803,71.936 131.667,71.378 ZM119.489,67.036 L120.594,64.564 C122.531,65.433 124.480,66.221 126.383,66.905 L125.482,69.458 C123.509,68.751 121.493,67.935 119.489,67.036 ZM108.113,60.978 L109.540,58.677 C111.340,59.784 113.170,60.834 114.978,61.800 L113.698,64.186 C111.840,63.193 109.961,62.115 108.113,60.978 ZM99.302,55.005 C98.712,54.567 98.124,54.125 97.540,53.680 L99.203,51.541 C99.776,51.978 100.352,52.412 100.933,52.843 C102.031,53.657 103.148,54.459 104.282,55.243 L102.729,57.461 C101.568,56.659 100.426,55.841 99.302,55.005 ZM87.631,45.617 L89.413,43.574 C91.015,44.943 92.626,46.298 94.258,47.629 L92.525,49.714 C90.877,48.369 89.247,47.000 87.631,45.617 ZM78.063,37.231 L79.883,35.221 L84.635,39.423 L82.823,41.439 L78.063,37.231 ZM68.521,28.905 L70.295,26.853 C71.914,28.227 73.520,29.618 75.118,31.017 L73.310,33.038 C71.724,31.648 70.130,30.268 68.521,28.905 ZM58.688,21.003 L60.328,18.848 C62.036,20.128 63.717,21.440 65.378,22.781 L63.659,24.875 C62.023,23.557 60.369,22.263 58.688,21.003 ZM48.288,13.967 L49.683,11.647 C51.494,12.727 53.321,13.891 55.111,15.108 L53.575,17.340 C51.832,16.155 50.053,15.019 48.288,13.967 ZM38.981,9.077 C38.372,8.799 37.760,8.531 37.146,8.268 L38.204,5.775 C38.838,6.046 39.469,6.325 40.098,6.611 C41.429,7.216 42.746,7.854 44.046,8.521 L42.810,10.930 C41.547,10.283 40.272,9.664 38.981,9.077 ZM25.330,4.320 L25.934,1.679 C27.985,2.168 30.080,2.771 32.161,3.471 L31.314,6.042 C29.311,5.369 27.298,4.791 25.330,4.320 ZM13.076,2.706 L13.084,-0.012 C15.208,0.029 17.387,0.197 19.559,0.487 L19.234,3.180 C17.166,2.905 15.094,2.745 13.076,2.706 ZM0.759,1.270 C2.660,0.821 4.623,0.487 6.593,0.273 L6.939,2.975 C5.080,3.177 3.230,3.493 1.439,3.914 L0.759,1.270 Z" />
+                </svg>
+              </figure>
 
-          <div class="px-4">
-            <!-- Image -->
-            <img
-              src="/assets/images/element/step-3.svg"
-              class="w-150px mb-3"
-              alt=""
-            />
-            <!-- Title -->
-            <h5>Search Choice</h5>
-            <p class="mb-0">Total 630+ destinations that we work with</p>
+              <div class="px-4">
+                <!-- Image -->
+                <img src="/assets/images/element/step-3.svg" class="w-150px mb-3" alt="" />
+                <!-- Title -->
+                <h5>Search Choice</h5>
+                <p class="mb-0">Total 630+ destinations that we work with</p>
+              </div>
+            </div>
+
+            <!-- Step item -->
+            <div class="col-sm-6 col-md-4 position-relative text-center pt-0 pt-lg-5">
+              <!-- SVG decoration -->
+              <figure class="position-absolute top-100 start-100 translate-middle d-none d-lg-block mt-n9">
+                <svg class="fill-secondary opacity-4" width="161px" height="79px">
+                  <path
+                    d="M158.107,15.463 L157.135,5.449 C156.369,6.347 155.573,7.235 154.736,8.101 L152.599,6.579 C153.544,5.600 154.425,4.592 155.272,3.574 L142.859,6.243 L142.411,3.796 L159.535,0.118 L160.985,15.028 L158.107,15.463 ZM131.614,21.310 C133.615,20.323 135.558,19.284 137.387,18.222 L138.833,20.282 C136.938,21.383 134.927,22.459 132.858,23.479 L131.614,21.310 ZM119.450,26.438 C121.550,25.684 123.624,24.876 125.616,24.039 L126.674,26.293 C124.626,27.153 122.496,27.983 120.340,28.758 L119.450,26.438 ZM107.366,32.761 L106.764,30.352 C107.500,30.158 108.237,29.959 108.974,29.755 C110.367,29.370 111.762,28.963 113.155,28.535 L113.894,30.904 C112.468,31.343 111.042,31.759 109.615,32.153 C108.867,32.359 108.116,32.563 107.366,32.761 ZM93.778,33.405 C95.956,32.941 98.128,32.461 100.295,31.955 L100.806,34.386 C98.616,34.898 96.421,35.383 94.222,35.850 L93.778,33.405 ZM80.657,36.053 L87.229,34.752 L87.633,37.206 L81.049,38.509 L80.657,36.053 ZM67.485,38.736 C69.678,38.262 71.876,37.807 74.074,37.362 L74.484,39.816 C72.299,40.256 70.119,40.708 67.942,41.181 L67.485,38.736 ZM54.349,41.900 C56.526,41.309 58.711,40.754 60.906,40.230 L61.433,42.656 C59.274,43.174 57.122,43.718 54.979,44.301 L54.349,41.900 ZM41.404,46.011 C43.490,45.232 45.654,44.489 47.835,43.801 L48.597,46.164 C46.472,46.834 44.363,47.557 42.331,48.315 L41.404,46.011 ZM30.259,53.613 L28.967,51.468 C29.611,51.137 30.259,50.813 30.912,50.495 C32.293,49.821 33.691,49.176 35.102,48.558 L36.207,50.792 C34.838,51.392 33.483,52.016 32.143,52.670 C31.511,52.978 30.883,53.292 30.259,53.613 ZM17.425,58.480 C19.198,57.202 21.090,55.953 23.052,54.765 L24.549,56.794 C22.662,57.937 20.844,59.138 19.142,60.364 L17.425,58.480 ZM7.428,67.231 C8.888,65.655 10.488,64.107 12.182,62.630 L14.128,64.332 C12.516,65.738 10.995,67.211 9.607,68.707 L7.428,67.231 ZM0.172,77.195 C1.089,75.523 2.140,73.865 3.293,72.267 L5.697,73.469 C4.610,74.977 3.620,76.539 2.755,78.114 L0.172,77.195 ZM149.871,12.613 C148.214,13.999 146.419,15.364 144.535,16.669 L142.867,14.750 C144.671,13.499 146.390,12.194 147.973,10.869 L149.871,12.613 Z" />
+                </svg>
+              </figure>
+
+              <div class="px-4">
+                <!-- Image -->
+                <img src="/assets/images/element/step-2.svg" class="w-150px mb-3" alt="" />
+
+                <!-- Title -->
+                <h5>Select Destination</h5>
+                <p class="mb-0">Insipidity the sufficient discretion imprudence</p>
+              </div>
+            </div>
+
+            <!-- Step item -->
+            <div class="col-sm-6 col-md-4 text-center">
+              <div class="px-4">
+                <!-- Image -->
+                <img src="/assets/images/element/step-1.svg" class="w-150px mb-3" alt="" />
+
+                <!-- Title -->
+                <h5>Easy to Book</h5>
+                <p class="mb-0">With an easy and fast ticket purchase process</p>
+              </div>
+            </div>
           </div>
         </div>
-
-        <!-- Step item -->
-        <div
-          class="col-sm-6 col-md-4 position-relative text-center pt-0 pt-lg-5"
-        >
-          <!-- SVG decoration -->
-          <figure
-            class="position-absolute top-100 start-100 translate-middle d-none d-lg-block mt-n9"
-          >
-            <svg class="fill-secondary opacity-4" width="161px" height="79px">
-              <path
-                d="M158.107,15.463 L157.135,5.449 C156.369,6.347 155.573,7.235 154.736,8.101 L152.599,6.579 C153.544,5.600 154.425,4.592 155.272,3.574 L142.859,6.243 L142.411,3.796 L159.535,0.118 L160.985,15.028 L158.107,15.463 ZM131.614,21.310 C133.615,20.323 135.558,19.284 137.387,18.222 L138.833,20.282 C136.938,21.383 134.927,22.459 132.858,23.479 L131.614,21.310 ZM119.450,26.438 C121.550,25.684 123.624,24.876 125.616,24.039 L126.674,26.293 C124.626,27.153 122.496,27.983 120.340,28.758 L119.450,26.438 ZM107.366,32.761 L106.764,30.352 C107.500,30.158 108.237,29.959 108.974,29.755 C110.367,29.370 111.762,28.963 113.155,28.535 L113.894,30.904 C112.468,31.343 111.042,31.759 109.615,32.153 C108.867,32.359 108.116,32.563 107.366,32.761 ZM93.778,33.405 C95.956,32.941 98.128,32.461 100.295,31.955 L100.806,34.386 C98.616,34.898 96.421,35.383 94.222,35.850 L93.778,33.405 ZM80.657,36.053 L87.229,34.752 L87.633,37.206 L81.049,38.509 L80.657,36.053 ZM67.485,38.736 C69.678,38.262 71.876,37.807 74.074,37.362 L74.484,39.816 C72.299,40.256 70.119,40.708 67.942,41.181 L67.485,38.736 ZM54.349,41.900 C56.526,41.309 58.711,40.754 60.906,40.230 L61.433,42.656 C59.274,43.174 57.122,43.718 54.979,44.301 L54.349,41.900 ZM41.404,46.011 C43.490,45.232 45.654,44.489 47.835,43.801 L48.597,46.164 C46.472,46.834 44.363,47.557 42.331,48.315 L41.404,46.011 ZM30.259,53.613 L28.967,51.468 C29.611,51.137 30.259,50.813 30.912,50.495 C32.293,49.821 33.691,49.176 35.102,48.558 L36.207,50.792 C34.838,51.392 33.483,52.016 32.143,52.670 C31.511,52.978 30.883,53.292 30.259,53.613 ZM17.425,58.480 C19.198,57.202 21.090,55.953 23.052,54.765 L24.549,56.794 C22.662,57.937 20.844,59.138 19.142,60.364 L17.425,58.480 ZM7.428,67.231 C8.888,65.655 10.488,64.107 12.182,62.630 L14.128,64.332 C12.516,65.738 10.995,67.211 9.607,68.707 L7.428,67.231 ZM0.172,77.195 C1.089,75.523 2.140,73.865 3.293,72.267 L5.697,73.469 C4.610,74.977 3.620,76.539 2.755,78.114 L0.172,77.195 ZM149.871,12.613 C148.214,13.999 146.419,15.364 144.535,16.669 L142.867,14.750 C144.671,13.499 146.390,12.194 147.973,10.869 L149.871,12.613 Z"
-              />
-            </svg>
-          </figure>
-
-          <div class="px-4">
-            <!-- Image -->
-            <img
-              src="/assets/images/element/step-2.svg"
-              class="w-150px mb-3"
-              alt=""
-            />
-
-            <!-- Title -->
-            <h5>Select Destination</h5>
-            <p class="mb-0">Insipidity the sufficient discretion imprudence</p>
-          </div>
-        </div>
-
-        <!-- Step item -->
-        <div class="col-sm-6 col-md-4 text-center">
-          <div class="px-4">
-            <!-- Image -->
-            <img
-              src="/assets/images/element/step-1.svg"
-              class="w-150px mb-3"
-              alt=""
-            />
-
-            <!-- Title -->
-            <h5>Easy to Book</h5>
-            <p class="mb-0">With an easy and fast ticket purchase process</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- =======================
+      </section>
+      <!-- =======================
     Steps END -->
 
-  <!-- =======================
+      <!-- =======================
     Why book START -->
-    <section class="py-5">
-      <div class="container">
-        <div class="position-relative">
-          <!-- Title and TrustPilot Badge -->
-          <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3">
-            <h3 class="mb-0">Why Book With Us?</h3>
-            <!-- <div class="d-flex align-items-center gap-2 bg-white border rounded px-3 py-2 shadow-sm">
+      <section class="py-5">
+        <div class="container">
+          <div class="position-relative">
+            <!-- Title and TrustPilot Badge -->
+            <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3">
+              <h3 class="mb-0">Why Book With Us?</h3>
+              <!-- <div class="d-flex align-items-center gap-2 bg-white border rounded px-3 py-2 shadow-sm">
               <span class="fw-semibold me-2">Great</span>
               <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Trustpilot_star_rating_4_of_5.svg" alt="Rating" style="height: 24px;">
               <span class="ms-2 text-muted">11,242 reviews on</span>
               <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/Trustpilot_logo_2022.svg" alt="Trustpilot" style="height: 20px;">
             </div> -->
-          </div>
-    
-          <!-- Features -->
-          <div class="row text-center g-4">
-            <div class="col-6 col-md-4 col-lg-2 offset-lg-1">
-              <div>
-                <img src="/assets/images/element/flight-schedule.png" alt="Easy Booking" width="50">
-                <h6 class="mt-3">Easy Booking</h6>
-                <p class="small text-muted">We offer easy and convenient flight bookings with attractive offers.</p>
-              </div>
             </div>
-    
-            <div class="col-6 col-md-4 col-lg-2">
-              <div>
-                <img src="/assets/images/element/affordable.png" alt="Lowest Price" width="50">
-                <h6 class="mt-3">Lowest Price</h6>
-                <p class="small text-muted">We ensure low rates on hotel reservation, holiday packages and on flight tickets.</p>
+
+            <!-- Features -->
+            <div class="row text-center g-4">
+              <div class="col-6 col-md-4 col-lg-2 offset-lg-1">
+                <div>
+                  <img src="/assets/images/element/flight-schedule.png" alt="Easy Booking" width="50">
+                  <h6 class="mt-3">Easy Booking</h6>
+                  <p class="small text-muted">We offer easy and convenient flight bookings with attractive offers.</p>
+                </div>
               </div>
-            </div>
-    
-            <div class="col-6 col-md-4 col-lg-2">
-              <div>
-                <img src="/assets/images/element/money-back.png" alt="Instant Refund" width="50">
-                <h6 class="mt-3">Instant Refund</h6>
-                <p class="small text-muted">Get instant refunds effortlessly on your travel bookings with us.</p>
+
+              <div class="col-6 col-md-4 col-lg-2">
+                <div>
+                  <img src="/assets/images/element/affordable.png" alt="Lowest Price" width="50">
+                  <h6 class="mt-3">Lowest Price</h6>
+                  <p class="small text-muted">We ensure low rates on hotel reservation, holiday packages and on flight
+                    tickets.</p>
+                </div>
               </div>
-            </div>
-    
-            <div class="col-6 col-md-4 col-lg-2">
-              <div>
-                <img src="/assets/images/element/24-7.png" alt="24/7 Support" width="50">
-                <h6 class="mt-3">24/7 Support</h6>
-                <p class="small text-muted">Get assistance 24/7 on any kind of travel related query. We are happy to assist you.</p>
+
+              <div class="col-6 col-md-4 col-lg-2">
+                <div>
+                  <img src="/assets/images/element/money-back.png" alt="Instant Refund" width="50">
+                  <h6 class="mt-3">Instant Refund</h6>
+                  <p class="small text-muted">Get instant refunds effortlessly on your travel bookings with us.</p>
+                </div>
               </div>
-            </div>
-    
-            <div class="col-6 col-md-4 col-lg-2">
-              <div>
-                <img src="/assets/images/element/hot-deal.png" alt="24/7 Support" width="50">
-                <h6 class="mt-3">Exciting Deals</h6>
-                <p class="small text-muted">Enjoy exciting deals on flights, hotels, buses, car rental and tour packages.</p>
+
+              <div class="col-6 col-md-4 col-lg-2">
+                <div>
+                  <img src="/assets/images/element/24-7.png" alt="24/7 Support" width="50">
+                  <h6 class="mt-3">24/7 Support</h6>
+                  <p class="small text-muted">Get assistance 24/7 on any kind of travel related query. We are happy to
+                    assist you.</p>
+                </div>
+              </div>
+
+              <div class="col-6 col-md-4 col-lg-2">
+                <div>
+                  <img src="/assets/images/element/hot-deal.png" alt="24/7 Support" width="50">
+                  <h6 class="mt-3">Exciting Deals</h6>
+                  <p class="small text-muted">Enjoy exciting deals on flights, hotels, buses, car rental and tour
+                    packages.</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
-    
-  <!-- =======================
+      </section>
+
+      <!-- =======================
     Why book END -->
 
-  <!-- =======================
+      <!-- =======================
     Blog START-->
-  <section>
-    <div class="container">
-      <!-- Title -->
-      <div class="row mb-3 mb-sm-4">
-        <div class="col-12 text-center">
-          <h2 class="mb-0">Latest Blogs & News</h2>
-        </div>
-      </div>
-
-      <div class="row g-4 g-xl-5 justify-content-between">
-        <div class="col-md-6">
-          <!-- Card START -->
-          <div class="card bg-transparent">
-            <!-- Image -->
-            <img src="/assets/images/blog/01.jpg" class="card-img" alt="" />
-
-            <!-- Card body -->
-            <div class="card-body px-3">
-              <h4>
-                <a href="blog-detail.html" class="stretched-link"
-                  >10 Ways on How to Improve your Hotel Operations</a
-                >
-              </h4>
+      <section>
+        <div class="container">
+          <!-- Title -->
+          <div class="row mb-3 mb-sm-4">
+            <div class="col-12 text-center">
+              <h2 class="mb-0">Latest Blogs & News</h2>
             </div>
           </div>
-          <!-- Card END -->
-        </div>
 
-        <div class="col-md-6">
-          <!-- Card START -->
-          <div class="card bg-transparent mb-4 mb-md-5">
-            <div class="row align-items-center">
-              <!-- Images -->
-              <div class="col-sm-4">
-                <img src="/assets/images/blog/02.jpg" class="card-img" alt="" />
-              </div>
-              <div class="col-sm-8">
-                <!-- card body -->
-                <div class="card-body p-sm-0">
-                  <h5 class="card-title">
-                    <a href="blog-detail.html" class="stretched-link"
-                      >Story of water world adventure</a
-                    >
-                  </h5>
-                  <p class="mb-0">Jacqueline Miller</p>
+          <div class="row g-4 g-xl-5 justify-content-between">
+            <div class="col-md-6">
+              <!-- Card START -->
+              <div class="card bg-transparent">
+                <!-- Image -->
+                <img src="/assets/images/blog/01.jpg" class="card-img" alt="" />
+
+                <!-- Card body -->
+                <div class="card-body px-3">
+                  <h4>
+                    <a href="blog-detail.html" class="stretched-link">10 Ways on How to Improve your Hotel
+                      Operations</a>
+                  </h4>
                 </div>
               </div>
+              <!-- Card END -->
             </div>
-          </div>
-          <!-- Card END -->
 
-          <!-- Card START -->
-          <div class="card bg-transparent mb-4 mb-md-5">
-            <div class="row align-items-center">
-              <!-- Images -->
-              <div class="col-sm-4">
-                <img src="/assets/images/blog/03.jpg" class="card-img" alt="" />
-              </div>
-              <div class="col-sm-8">
-                <!-- card body -->
-                <div class="card-body p-sm-0">
-                  <h5 class="card-title">
-                    <a href="blog-detail.html" class="stretched-link"
-                      >How Hotel Technology Can Help Small Hotel Businesses</a
-                    >
-                  </h5>
-                  <p class="mb-0">Frances Guerrero</p>
+            <div class="col-md-6">
+              <!-- Card START -->
+              <div class="card bg-transparent mb-4 mb-md-5">
+                <div class="row align-items-center">
+                  <!-- Images -->
+                  <div class="col-sm-4">
+                    <img src="/assets/images/blog/02.jpg" class="card-img" alt="" />
+                  </div>
+                  <div class="col-sm-8">
+                    <!-- card body -->
+                    <div class="card-body p-sm-0">
+                      <h5 class="card-title">
+                        <a href="blog-detail.html" class="stretched-link">Story of water world adventure</a>
+                      </h5>
+                      <p class="mb-0">Jacqueline Miller</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <!-- Card END -->
+              <!-- Card END -->
 
-          <!-- Card START -->
-          <div class="card bg-transparent mb-0 mb-md-5">
-            <div class="row align-items-center">
-              <!-- Images -->
-              <div class="col-sm-4">
-                <img src="/assets/images/blog/04.jpg" class="card-img" alt="" />
-              </div>
-              <div class="col-sm-8">
-                <!-- card body -->
-                <div class="card-body p-sm-0">
-                  <h5 class="card-title">
-                    <a href="blog-detail.html" class="stretched-link"
-                      >Hotel Service - Become a Guide for Your Guests</a
-                    >
-                  </h5>
-                  <p class="mb-0">Louis Ferguson</p>
+              <!-- Card START -->
+              <div class="card bg-transparent mb-4 mb-md-5">
+                <div class="row align-items-center">
+                  <!-- Images -->
+                  <div class="col-sm-4">
+                    <img src="/assets/images/blog/03.jpg" class="card-img" alt="" />
+                  </div>
+                  <div class="col-sm-8">
+                    <!-- card body -->
+                    <div class="card-body p-sm-0">
+                      <h5 class="card-title">
+                        <a href="blog-detail.html" class="stretched-link">How Hotel Technology Can Help Small Hotel
+                          Businesses</a>
+                      </h5>
+                      <p class="mb-0">Frances Guerrero</p>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <!-- Card END -->
+
+              <!-- Card START -->
+              <div class="card bg-transparent mb-0 mb-md-5">
+                <div class="row align-items-center">
+                  <!-- Images -->
+                  <div class="col-sm-4">
+                    <img src="/assets/images/blog/04.jpg" class="card-img" alt="" />
+                  </div>
+                  <div class="col-sm-8">
+                    <!-- card body -->
+                    <div class="card-body p-sm-0">
+                      <h5 class="card-title">
+                        <a href="blog-detail.html" class="stretched-link">Hotel Service - Become a Guide for Your
+                          Guests</a>
+                      </h5>
+                      <p class="mb-0">Louis Ferguson</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Card END -->
             </div>
           </div>
-          <!-- Card END -->
+          <!-- Row END -->
         </div>
-      </div>
-      <!-- Row END -->
-    </div>
-  </section>
-  <!-- =======================
+      </section>
+      <!-- =======================
     Blog START-->
 
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const staticSelectors = [
-        "#fixedFrom",
-        "#fixedTo",
-        "#from",
-        "#to"
-        ];
-      
-        const doneTypingInterval = 100;
-      
-        function initChoicesForElement(element) {
-        if (!element || element.classList.contains('choices-initialized')) return;
-        element.classList.add('choices-initialized');
-      
-        const choices = new Choices(element, {
-          searchEnabled: true,
-          placeholderValue: "Select Airport",
-          searchChoices: false,
-          shouldSort: false,
-          allowHTML: true
-        });
-      
-        element._choicesInstance = choices;
-  
-        let defaultLoaded = false;
-        let typingTimer;
-      
-        element.addEventListener('showDropdown', async () => {
-          if (!defaultLoaded) {
-          try {
-            const res = await fetch("/search-airports");
-            const airports = await res.json();
-            choices.setChoices(
-            airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
-            "value",
-            "label",
-            true
-            );
-            defaultLoaded = true;
-          } catch (err) {
-            console.error("Error loading default airports:", err);
-          }
-          }
-        });
-      
-        element.addEventListener('search', function (e) {
-          clearTimeout(typingTimer);
-          const searchTerm = e.detail.value.trim();
-          if (searchTerm.length >= 2) {
-          typingTimer = setTimeout(async () => {
-            try {
-            const res = await fetch(`/search-airports?q=${encodeURIComponent(searchTerm)}`);
-            const airports = await res.json();
-            choices.setChoices(
-              airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
-              "value",
-              "label",
-              true
-            );
-            } catch (err) {
-            console.error("Error searching airports:", err);
-            }
-          }, doneTypingInterval);
-          }
-        });
-        }
-      
-        // ✅ Init static selects
-        staticSelectors.forEach(selector => {
-        const element = document.querySelector(selector);
-        if (element) initChoicesForElement(element);
-        });
-      
-     
-        observer.observe(document.body, { childList: true, subtree: true });
-      });
-    </script>
-</main>
-<!-- **************** MAIN CONTENT END **************** -->
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const staticSelectors = [
+            "#fixedFrom",
+            "#fixedTo",
+            "#from",
+            "#to"
+          ];
 
-<%- include('./partials/footer') %>
+          const doneTypingInterval = 100;
+
+          function initChoicesForElement(element) {
+            if (!element || element.classList.contains('choices-initialized')) return;
+            element.classList.add('choices-initialized');
+
+            const choices = new Choices(element, {
+              searchEnabled: true,
+              placeholderValue: "Select Airport",
+              searchChoices: false,
+              shouldSort: false,
+              allowHTML: true
+            });
+
+            element._choicesInstance = choices;
+
+            let defaultLoaded = false;
+            let typingTimer;
+
+            element.addEventListener('showDropdown', async () => {
+              if (!defaultLoaded) {
+                try {
+                  const res = await fetch("/search-airports");
+                  const airports = await res.json();
+                  choices.setChoices(
+                    airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
+                    "value",
+                    "label",
+                    true
+                  );
+                  defaultLoaded = true;
+                } catch (err) {
+                  console.error("Error loading default airports:", err);
+                }
+              }
+            });
+
+            element.addEventListener('search', function (e) {
+              clearTimeout(typingTimer);
+              const searchTerm = e.detail.value.trim();
+              if (searchTerm.length >= 2) {
+                typingTimer = setTimeout(async () => {
+                  try {
+                    const res = await fetch(`/search-airports?q=${encodeURIComponent(searchTerm)}`);
+                    const airports = await res.json();
+                    choices.setChoices(
+                      airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
+                      "value",
+                      "label",
+                      true
+                    );
+                  } catch (err) {
+                    console.error("Error searching airports:", err);
+                  }
+                }, doneTypingInterval);
+              }
+            });
+          }
+
+          // ✅ Init static selects
+          staticSelectors.forEach(selector => {
+            const element = document.querySelector(selector);
+            if (element) initChoicesForElement(element);
+          });
+
+
+          observer.observe(document.body, { childList: true, subtree: true });
+        });
+      </script>
+    </main>
+    <!-- **************** MAIN CONTENT END **************** -->
+
+    <%- include('./partials/footer') %>

@@ -167,11 +167,11 @@
 																			style="display: none;">
 																			<td colspan="5">
 																				<div class="row g-3">
-																					<div class="col-md-4">
+																					<div class="col-md-3">
 																						<strong>Title:</strong>
 																						<%= traveler.title %>
 																					</div>
-																					<div class="col-md-4"><strong>Date
+																					<div class="col-md-5"><strong>Date
 																							of Birth:</strong>
 																						<%= new
 																							Date(traveler.dob).toLocaleDateString('en-US',
@@ -183,12 +183,11 @@
 																						<strong>Nationality:</strong>
 																						<%= traveler.nationality %>
 																					</div>
-																					<div class="col-md-4">
-																						<strong>Passport
-																							Number:</strong>
-																						<%= traveler.passport_number %>
+																					<div class="col-md-3"><strong>PAX
+																						Type:</strong>
+																					<%= traveler.type %>
 																					</div>
-																					<div class="col-md-4">
+																					<div class="col-md-5">
 																						<strong>Passport
 																							Expiry:</strong>
 																						<%= new
@@ -197,9 +196,10 @@
 																							month: 'long' ,
 																							day: 'numeric' }) %>
 																					</div>
-																					<div class="col-md-4"><strong>PAX
-																							Type:</strong>
-																						<%= traveler.type %>
+																					<div class="col-md-4">
+																						<strong>Passport
+																							Number:</strong>
+																						<%= traveler.passport_number %>
 																					</div>
 																				</div>
 																			</td>

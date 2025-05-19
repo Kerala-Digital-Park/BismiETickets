@@ -26,272 +26,1814 @@
 					</section>
 					<!-- ======================= Page Banner END -->
 
-					<!-- ======================= Main content START -->
-					<section>
-						<div class="container">
-							<div class="row">
-								<div class="col-lg-10 mx-auto">
-									<form class="vstack gap-4">
+								<!-- ======================= Main content START -->
+			<section>
+				<div class="container">
+					<div class="row">
+						<div class="col-lg-12 mx-auto">
+							<!-- Inventory Detail START -->
+							<div class="card shadow">
+								<!-- Card header -->
 
-										<!-- Owner Detail START -->
-										<div class="card shadow">
-											<!-- Card header -->
+								<% if (userId) { %>
+									<input type="hidden" id="userId" value="<%= userId %>">
+								  <% } %>								  
+
+								<ul class="nav nav-tabs" id="myTab" role="tablist">
+									<li class="nav-item">
+										<a class="nav-link active" id="one-way-tab" data-toggle="tab" href="#one-way"
+											role="tab" aria-controls="one-way" aria-selected="true">One Way</a>
+									</li>
+									<li class="nav-item">
+										<a class="nav-link" id="connecting-tab" data-toggle="tab" href="#connecting"
+											role="tab" aria-controls="connecting" aria-selected="false">Connecting
+											Flight</a>
+									</li>
+								</ul>
+
+								<div class="tab-content" id="myTabContent">
+									<!-- One way -->
+									<div class="tab-pane fade show active" id="one-way" role="tabpanel"
+										aria-labelledby="one-way-tab">
+										<form id="onewayForm">
+
 											<div class="card-header border-bottom">
-												<h5 class="mb-0">Owner Detail</h5>
+												<h5 class="mb-0">Add Flight Details</h5>
 											</div>
 
 											<!-- Card body -->
 											<div class="card-body">
 												<div class="row g-3">
-													<!-- Owner name -->
-													<div class="col-12">
-														<label class="form-label">Owner name</label>
-														<div class="input-group">
-															<input type="text" class="form-control"
-																placeholder="First name">
-															<input type="text" class="form-control"
-																placeholder="Last name">
-														</div>
+													<!-- Inventory name -->
+													<!-- <div class="col-md-3">
+														<label class="form-label">Inventory Name</label>
+														<input type="text" class="form-control"
+															placeholder="Inventory name">
+													</div> -->
+
+													<!-- FROM -->
+													<div class="col-md-4">
+														<label class="form-label">From</label>
+														<select class="form-select js-airport" id="fromSelect" placeholder="Select from"></select>
+													  </div>
+  
+													<!-- TO -->
+													<div class="col-md-4">
+														<label class="form-label">To</label>
+														<select class="form-select js-airport" id="toSelect" placeholder="Select to"></select>
 													</div>
 
-													<!-- Contact number -->
-													<div class="col-md-6">
-														<label class="form-label">Contact number</label>
-														<input class="form-control" type="text"
-															placeholder="Enter contact number">
+													<!-- Airline -->
+													<div class="col-md-4">
+														<label class="form-label">Airline</label>
+														<select class="form-select js-airline searchAirlineSelect" id="airlineSelect" placeholder="Select Airline"></select>
 													</div>
 
-													<!-- Email -->
-													<div class="col-md-6">
-														<label class="form-label">Email address</label>
-														<input class="form-control" type="email"
-															placeholder="Enter email address">
+													<!-- Flight Number -->
+													<div class="col-md-4">
+														<label class="form-label">Flight Number</label>
+														<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control searchFlightNumber" maxlength="4" placeholder="Flight number" required>
 													</div>
 
-													<!-- Address -->
-													<div class="col-12">
-														<label class="form-label">Address</label>
-														<textarea class="form-control" rows="2"
-															placeholder="Enter keywords"></textarea>
+													<!-- Dates -->
+													<div class="col-md-4">
+														<label class="form-label">Inventory Departure Date</label>
+														<input class="form-control oneWayDepartureDate dateInput" type="text"
+															placeholder="Enter departure date"  />
 													</div>
 
-													<!-- State -->
-													<div class="col-md-6">
-														<label class="form-label">State</label>
-														<select class="form-select js-choice"
+													<!-- Disable -->
+													<div class="col-md-4">
+														<label class="form-label">Disable Before Departure
+															(Days)</label>
+														<select class="form-select js-choice" id="oneWayDisable"
 															data-search-enabled="true">
-															<option value="">Select state</option>
-															<option>India</option>
-															<option>Usa</option>
-															<option>Japan</option>
-															<option>United Kingdom</option>
+															<option value="">Select days</option>
+															<option>1</option>
+															<option>2</option>
+															<option>3</option>
+															<option>4</option>
+															<option>5</option>
 														</select>
 													</div>
 
-													<!-- City -->
-													<div class="col-md-6">
-														<label class="form-label">City</label>
-														<input class="form-control" type="text"
-															placeholder="Enter city">
+													<button class="btn btn-primary align-items-center"
+														id="searchOneWayFlightBtn">Search Flight</button>
+
+													<!-- Departure Time -->
+													<div class="col-md-3">
+														<label class="form-label">Departure Time</label>
+														<input type="time" class="form-control" id="oneWayDepartureTime"
+															placeholder="Select Time">
+													</div>
+
+													<!-- Arrival Time -->
+													<div class="col-md-3">
+														<label class="form-label">Arrival Time</label>
+														<input type="time" class="form-control" id="oneWayArrivalTime"
+															placeholder="Select Time">
+													</div>
+
+													<!-- Arrival Day -->
+													<div class="col-md-3">
+														<label class="form-label">Arrival Day</label>
+														<input type="text" class="form-control oneWayArrivalDay dateInput"
+															placeholder="Select Arrival Day"  />
 													</div>
 												</div>
-											</div>
-										</div>
-										<!-- Owner Detail END -->
 
-										<!-- Cab Detail START -->
-										<div class="card shadow">
-											<!-- Card header -->
-											<div class="card-header border-bottom">
-												<h5 class="mb-0">Cab Detail</h5>
-											</div>
-
-											<!-- Card body -->
-											<div class="card-body">
+												<input type="hidden" class="form-control" id="oneWayTotalDuration" >
+												<input type="hidden" class="form-control" id="oneWayAirlineCode" >
+												<input type="hidden" class="form-control" id="oneWayDepartureCity" >
+												<input type="hidden" class="form-control" id="oneWayArrivalCity" >
+												<input type="hidden" class="form-control" id="oneWayAirlineLogo" >
+												<input type="hidden" class="form-control" id="departureName" >
+												<input type="hidden" class="form-control" id="arrivalName" >
+												<input type="hidden" class="form-control" id="fromCity" >
+												<input type="hidden" class="form-control" id="toCity" >
+												<input type="hidden" class="form-control" id="fromCountry" >
+												<input type="hidden" class="form-control" id="toCountry" >
+												
 												<div class="row g-3">
-													<!-- Car name -->
-													<div class="col-md-6">
-														<label class="form-label">Car name</label>
-														<input class="form-control" type="text"
-															placeholder="Enter car name">
-													</div>
-
-													<!-- car type -->
-													<div class="col-md-6">
-														<label class="form-label">Car type *</label>
-														<div class="d-sm-flex">
-															<!-- Radio -->
-															<div class="form-check radio-bg-light me-4">
-																<input class="form-check-input" type="radio"
-																	name="flexRadioDefault" id="flexRadioDefault1"
-																	checked="">
-																<label class="form-check-label" for="flexRadioDefault1">
-																	Ac
-																</label>
-															</div>
-															<!-- Radio -->
-															<div class="form-check radio-bg-light me-4">
-																<input class="form-check-input" type="radio"
-																	name="flexRadioDefault" id="flexRadioDefault2">
-																<label class="form-check-label" for="flexRadioDefault2">
-																	Non Ac
-																</label>
-															</div>
-														</div>
-													</div>
-
-													<!-- State -->
-													<div class="col-md-6">
-														<label class="form-label">Car model</label>
-														<select class="form-select js-choice"
-															data-search-enabled="true">
-															<option value="">Select item</option>
-															<option>Sedan</option>
-															<option>Micro</option>
-															<option>CUV</option>
-															<option>SUV</option>
-															<option>Pick up</option>
-															<option>Coupe</option>
-														</select>
-													</div>
-
-													<!-- Model Year -->
-													<div class="col-md-6">
-														<label class="form-label">Model Year</label>
-														<input class="form-control" type="text"
-															placeholder="Enter car model year">
-													</div>
-
-													<!-- Image Gallery -->
 													<div class="col-12">
-														<label class="form-label">Upload image *</label>
-														<div class="dropzone dropzone-custom"
-															data-dropzone='{"maxFiles": 5, "addRemoveLinks": false}'>
-															<div class="dz-message needsclick">
-																<i class="bi bi-upload display-3"></i>
-																<p>Drop files here or click to upload.</p>
-															</div>
-															<div class="dz-preview row g-4">
-																<div class="col-xl-2 col-md-4 col-sm-6">
-																	<div
-																		class="card p-2 mb-0 shadow-none border position-relative h-100">
-																		<!-- Image -->
-																		<img data-dz-thumbnail src="#"
-																			class="rounded bg-light" alt="">
-																		<!-- info -->
-																		<div class="mt-2">
-																			<a href="javascript:void(0);"
-																				class="text-body-secondary fw-bold"
-																				data-dz-name></a>
-																			<p class="mb-0 small" data-dz-size></p>
-																		</div>
-																		<!-- Close btn -->
-																		<div
-																			class="position-absolute top-0 start-100 translate-middle">
-																			<a href="#!"
-																				class="btn btn-danger rounded-circle icon-sm p-0"
-																				data-dz-remove>
-																				<i class="fas fa-times"></i>
-																			</a>
-																		</div>
-																	</div>
+														<div class="position-relative my-4 mt-4 mb-3 mt-3">
+															<hr />
+															<p class="position-absolute top-50 translate-middle start-0 bg-mode px-2 "
+																style="left: 57px !important;">
+																Baggage Details
+															</p>
+														</div>
+														<div class="row g-3">
+															<div class="baggage col-12 mb-1 align-items-center"
+																style="font-size: 0.9em; gap: 10px;background-color: #f8f9fa; padding: 10px;">
+																<!-- Passenger Type -->
+																<div class="col-md-1"
+																	style="border-right: 1px solid #dee2e6;">
+																	<i class="fa-solid fa-person fa-fw me-1"></i>
+																	<label class="form-label mb-0">Adult</label>
+																</div>
+
+																<!-- Check-In Baggage -->
+																<div>
+																	<label class="form-label mb-0">Check In</label>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="adultCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="adultCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
+																</div>
+
+																<!-- Cabin Baggage -->
+																<div>
+																	<label class="form-label mb-0">Cabin</label>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="adultCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="adultCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
 																</div>
 															</div>
+
+															<div class="baggage col-12 mb-1 align-items-center"
+																style="font-size: 0.9em; gap: 10px;background-color: #f8f9fa; padding: 10px;">
+																<!-- Passenger Type -->
+																<div class="col-md-1"
+																	style="border-right: 1px solid #dee2e6;">
+																	<i class="fa-solid fa-child fa-fw me-1"></i>
+																	<label class="form-label mb-0">Child</label>
+																</div>
+
+																<div>
+																	<label class="form-label mb-0">Check In</label>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="childCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="childCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
+																</div>
+
+																<!-- Cabin Baggage -->
+																<div>
+																	<label class="form-label mb-0">Cabin</label>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="childCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="childCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
+																</div>
+															</div>
+
+															<div class="baggage col-12 mb-2 align-items-center"
+																style="font-size: 0.9em; gap: 10px;background-color: #f8f9fa; padding: 10px;">
+																<!-- Passenger Type -->
+																<div class="col-md-1"
+																	style="border-right: 1px solid #dee2e6;">
+																	<i class="fa-solid fa-baby fa-fw me-1"></i>
+																	<label class="form-label mb-0">Infant</label>
+																</div>
+
+																<div>
+																	<label class="form-label mb-0">Check In</label>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="infantCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="infantCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
+																</div>
+
+																<!-- Cabin Baggage -->
+																<div>
+																	<label class="form-label mb-0">Cabin</label>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="infantCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="infantCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
+																</div>
+															</div>
+
 														</div>
-														<p class="small mb-0 mt-2"><b>Note:</b> Only JPG, JPEG, and PNG.
-															Our suggested dimensions are 600px * 450px. The larger image
-															will be cropped to 4:3 to fit our thumbnails/previews.</p>
 													</div>
 												</div>
-											</div>
-										</div>
-										<!-- Cab Detail END -->
 
-										<!-- Driver Detail START -->
-										<div class="card shadow">
-											<!-- Card header -->
+												<!-- PNR and Fare -->
+												<div class="row g-3">
+													<div class="col-12">
+														<div class="position-relative my-4 mt-4 mb-4">
+															<hr />
+															<p class="position-absolute top-50 translate-middle start-0 bg-mode px-2"
+																style="left: 90px !important;">
+																Add PNR and Fare Details
+															</p>
+														</div>
+														<div class="row">
+															<div class="table-responsive">
+
+																<table class="table custom-border text-center p-0"
+																	style="font-size: 0.9em;">
+																	<thead class="table-light">
+																		<tr>
+																			<th>Inventory Name</th>
+																			<th>PNR</th>
+																			<th>Number of Seats</th>
+																			<th>Fare-Adults(12y+)</th>
+																			<th>Fare-Infant(Below 2y)</th>
+																		</tr>
+																	</thead>
+																	<tbody>
+																		<tr>
+																			<td>
+																				<!-- <div class="d-flex">
+																					<span
+																						class="input-group-text rounded-0"><i
+																							class="bi bi-calendar"></i></span>
+																					<input type="text" 
+																						class="form-control oneWayInventoryDate dateInput"
+																						placeholder="Select date" disabled>
+																				</div> -->
+																				<%= inventoryId %>
+																			</td>
+																			<td>
+																				<input type="text" class="form-control oneWayPnr" style="width: 100px;"
+																					placeholder="Enter PNR">
+																			</td>
+																			<td>
+																				<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control oneWaySeats" placeholder="Number of seats" required>
+																			</td>
+																			<td>
+																				<div class="d-flex">
+																					<span
+																						class="input-group-text rounded-0"><i
+																							class="fa-solid fa-indian-rupee-sign"></i></span>
+																					<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control oneWayAdultFare" placeholder="Price" required>
+																				</div>
+																			</td>
+																			<td>
+																				<div class="d-flex">
+																					<span
+																						class="input-group-text rounded-0">
+																						<i class="fa-solid fa-indian-rupee-sign"></i></span>
+																					<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control oneWayInfantFare" placeholder="Price" required>
+																				</div>
+																			</td>
+																		</tr>
+																	</tbody>
+																</table>
+															</div>
+														</div>
+
+													</div>
+												</div>
+												<!-- Inventory Detail END -->
+
+												<!-- Button -->
+												<div class="text-end">
+													<button onclick="addOneWay(event)" class="btn btn-primary mb-0">Add
+														listing</button>
+												</div>
+											</div>
+
+										</form>
+									</div>
+
+									<!-- Connecting -->
+									<div class="tab-pane fade" id="connecting" role="tabpanel"
+										aria-labelledby="connecting-tab">
+										<form id="connectingForm">
+
 											<div class="card-header border-bottom">
-												<h5 class="mb-0">Driver Detail</h5>
+												<h5 class="mb-0">Add Connecting Flight</h5>
 											</div>
 
 											<!-- Card body -->
 											<div class="card-body">
 												<div class="row g-3">
-													<!-- Select item -->
-													<div class="col-md-3">
-														<label class="form-label">Title</label>
-														<select class="form-select js-choice">
-															<option>Mr</option>
-															<option>Mrs</option>
-														</select>
-													</div>
-
-													<!-- Owner name -->
-													<div class="col-md-9">
-														<label class="form-label">Driver Name</label>
-														<div class="input-group">
-															<input type="text" class="form-control"
-																placeholder="First name">
-															<input type="text" class="form-control"
-																placeholder="Last name">
-														</div>
-													</div>
-
-													<!-- Contact number -->
-													<div class="col-md-6">
-														<label class="form-label">Contact Number</label>
-														<input class="form-control" type="text"
-															placeholder="Enter contact number">
-													</div>
-
-													<!-- License number -->
-													<div class="col-md-6">
-														<label class="form-label">License Number</label>
-														<input class="form-control" type="email"
-															placeholder="Enter license number">
-													</div>
-
-													<!-- State -->
-													<div class="col-md-6">
-														<label class="form-label">State</label>
-														<select class="form-select js-choice"
-															data-search-enabled="true">
-															<option value="">Select state</option>
-															<option>India</option>
-															<option>Usa</option>
-															<option>Japan</option>
-															<option>United Kingdom</option>
-														</select>
-													</div>
-
-													<!-- City -->
-													<div class="col-md-6">
-														<label class="form-label">City</label>
-														<input class="form-control" type="text"
-															placeholder="Enter city">
-													</div>
-
-													<!-- Address -->
 													<div class="col-12">
-														<label class="form-label">Address</label>
-														<textarea class="form-control" rows="2"
-															placeholder="Enter keywords"></textarea>
+														<div class="position-relative my-4 mb-3">
+															<hr />
+															<p class="position-absolute top-50 translate-middle start-0 bg-mode px-2"
+																style="left: 69px !important; font-weight: bold;">
+																Enter Flight Details
+															</p>
+														</div>
+
+														<div class="row g-3 mb-3">
+															<!-- FROM -->
+  															<div class="col-md-6">
+ 																<label class="form-label">From</label>
+ 																<select class="form-select js-airport" id="fromConnectingSelect" placeholder="Select from"></select>
+ 															</div>
+  
+	 														<!-- TO -->
+ 															<div class="col-md-6">
+ 																<label class="form-label">To</label>
+ 																<select class="form-select js-airport" id="toConnectingSelect" placeholder="Select to"></select>
+ 															</div>
+														</div>
+
+														<div class="row g-3 mb-3">
+															<!-- Inventory name -->
+															<!-- <div class="col-md-3">
+																<label class="form-label">Inventory Name</label>
+																<input type="text" class="form-control"
+																	placeholder="Inventory name">
+															</div> -->
+		
+															<!-- Dates -->
+															<div class="col-md-4">
+																<label class="form-label">Inventory Departure Date</label>
+																<input class="form-control connectingDepartureDate dateInput" type="text"
+																	placeholder="Select date"  />
+															</div>
+		
+															<!-- Disable -->
+															<div class="col-md-4">
+																<label class="form-label">Disable Before Departure
+																</label>
+																<select class="form-select js-choice" id="days"
+																	data-search-enabled="true">
+																	<option value="">Select days</option>
+																	<option>1</option>
+																	<option>2</option>
+																	<option>3</option>
+																	<option>4</option>
+																	<option>5</option>
+																</select>
+															</div>
+		
+															<!-- Stops -->
+															<div class="col-md-4">
+																<label class="form-label">No of Stops</label>
+																<select class="form-select js-choice" data-search-enabled="true"
+																	id="no_of_stops">
+																	<option>1</option>
+																	<option>2</option>
+																	<option>3</option>
+																	<option>4</option>
+																	<option>5</option>
+																</select>
+															</div>
+														</div>
+
+														<!-- Flight header -->
+
+														<div class="row g-3" id="flightHeaderContainer">
+															<div class="flight col-12 mb-1 align-items-center"
+																style="font-size: 0.9em; gap: 10px;background-color: #f8f9fa; padding: 10px;">
+																<div class="col-md-2"
+																	style="border-right: 1px solid #dee2e6;">
+																	<i class="bi bi-airplane fa-fw me-1"></i>
+																	<label class="form-label mb-0">Flight 1
+																		Details</label>
+																</div>
+
+																<div>
+																	<label class="form-label mb-0">Airline</label>
+																</div>
+																<div class="col-md-3">
+																	<select class="form-select js-airline searchAirlineSelect" id="airlineSelect" placeholder="Select Airline"></select>
+																</div>
+																<div>
+																	<label class="form-label mb-0">Flight Number</label>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control searchFlightNumber" maxlength="4" placeholder="Flight number" required>
+																</div>
+															</div>
+															<div class="flight col-12 mb-1 align-items-center"
+																style="font-size: 0.9em; gap: 10px;background-color: #f8f9fa; padding: 10px;">
+																<div class="col-md-2"
+																	style="border-right: 1px solid #dee2e6;">
+																	<i class="bi bi-airplane fa-fw me-1"></i>
+																	<label class="form-label mb-0"> Flight 2
+																		Details</label>
+																</div>
+
+																<div>
+																	<label class="form-label mb-0">Airline</label>
+																</div>
+																<div class="col-md-3">
+																	<select class="form-select js-airline searchAirlineSelect" id="airlineSelect" placeholder="Select Airline"></select>
+																</div>
+																<div>
+																	<label class="form-label mb-0">Flight Number</label>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control searchFlightNumber" maxlength="4" placeholder="Flight number" required>
+																</div>
+															</div>
+
+														</div>
+
 													</div>
 												</div>
-											</div>
-										</div>
-										<!-- Driver Detail END -->
 
-										<!-- Button -->
-										<div class="text-end">
-											<a href="listing-added.html" class="btn btn-primary mb-0">Add listing</a>
-										</div>
-									</form>
+												<button class="btn btn-primary align-items-center"
+													id="searchFlightBtn">Search Flight</button>
+
+												<input type="hidden" class="form-control" id="connectingTotalDuration">
+												<input type="hidden" class="form-control" id="connectDepartureTime">
+												<input type="hidden" class="form-control" id="connectArrivalTime">
+												<input type="hidden" class="form-control" id="connectingDepartureName" >
+												<input type="hidden" class="form-control" id="connectingArrivalName" >
+												<input type="hidden" class="form-control" id="connectingFromCity" >
+												<input type="hidden" class="form-control" id="connectingToCity" >
+												<input type="hidden" class="form-control" id="connectingFromCountry" >
+												<input type="hidden" class="form-control" id="connectingToCountry" >
+
+												<div class="row g-3" id="flightDetailsContainer">
+													<div class="col-12 flight-details-wrapper">
+														<div class="row g-3">
+															<div>
+																Sector 1
+															</div>
+															
+															<!-- From -->
+															<div class="col-md-3">
+																<label class="form-label">Departure Airport</label>
+																<select class="form-select js-airport connectDeparture" placeholder="Departure Airport"></select>
+															</div>
+
+															<!-- From Terminal -->
+															<div class="col-md-3">
+																<label class="form-label">Terminal Number</label>
+																<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control fromTerminal" maxlength="4" placeholder="Departure Terminal" required>
+															</div>
+
+															<!-- To -->
+															<div class="col-md-3">
+																<label class="form-label">Arrival Airport</label>
+																<select class="form-select js-airport connectArrival" placeholder="Arrival Airport"></select>
+															</div>
+
+															<!-- To Terminal -->
+															<div class="col-md-3">
+																<label class="form-label">Terminal Number</label>
+																<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control toTerminal" maxlength="4" placeholder="Arrival Terminal" required>
+															</div>
+
+															<!-- Airline -->
+															<div class="col-md-2">
+																<label class="form-label">Airline</label>
+																<select class="form-select js-airline airlineSelect" placeholder="Select Airline"></select>
+															</div>
+
+															<!-- Flight Number -->
+															<div class="col-md-2">
+																<label class="form-label">Flight Number</label>
+																<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control flightNumber" maxlength="4" placeholder="Flight number" required>
+															</div>
+
+															<!-- Departure Time -->
+															<div class="col-md-2">
+																<label class="form-label">Departure Time</label>
+																<input type="time" class="form-control departureTime"
+																	placeholder="Select Time">
+															</div>
+
+															<!-- Arrival Time -->
+															<div class="col-md-2">
+																<label class="form-label">Arrival Time</label>
+																<input type="time" class="form-control arrivalTime"
+																	placeholder="Select Time">
+															</div>
+
+															<!-- Arrival Day -->
+															<div class="col-md-2">
+																<label class="form-label">Arrival Day</label>
+																<input type="text" class="form-control arrivalDay dateInput"
+																	placeholder="Select Arrival Day"  />
+															</div>
+														</div>
+														<input type="hidden" class="form-control connectingDuration">
+														<input type="hidden" class="form-control connectingAirlineCode">
+														<input type="hidden" class="form-control departureCity">
+														<input type="hidden" class="form-control arrivalCity">
+														<input type="hidden" class="form-control airlineLogo">
+														<input type="hidden" class="form-control fromCode" >
+														<input type="hidden" class="form-control toCode" >
+
+													</div>
+
+													<div class="col-12 flight-details-wrapper">
+														<div class="row g-3">
+															<div>
+																Sector 2
+															</div>
+															<!-- From -->
+															<div class="col-md-3">
+																<label class="form-label">Departure Airport</label>
+																<select class="form-select js-airport connectDeparture" placeholder="Departure Airport"></select>
+															</div>
+
+															<!-- From Terminal -->
+															<div class="col-md-3">
+																<label class="form-label">Terminal Number</label>
+																<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control fromTerminal" maxlength="4" placeholder="Departure Terminal" required>
+															</div>
+
+															<!-- To -->
+															<div class="col-md-3">
+																<label class="form-label">Arrival Airport</label>
+																<select class="form-select js-airport connectArrival" placeholder="Arrival Airport"></select>
+															</div>
+
+															<!-- To Terminal -->
+															<div class="col-md-3">
+																<label class="form-label">Terminal Number</label>
+																<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control toTerminal" maxlength="4" placeholder="Arrival Terminal" required>
+															</div>
+
+															<!-- Airline -->
+															<div class="col-md-2">
+																<label class="form-label">Airline</label>
+																<select class="form-select js-airline airlineSelect" placeholder="Select Airline"></select>
+															</div>
+
+															<!-- Flight Number -->
+															<div class="col-md-2">
+																<label class="form-label">Flight Number</label>
+																<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control flightNumber" maxlength="4" placeholder="Flight number" required>
+															</div>
+
+															<!-- Departure Day -->
+															<div class="col-md-2">
+																<label class="form-label">Departure Day</label>
+																<input type="text" class="form-control departureDay dateInput"
+																	placeholder="Select Departure Day" >
+															</div>
+
+															<!-- Departure Time -->
+															<div class="col-md-2">
+																<label class="form-label">Departure Time</label>
+																<input type="time" class="form-control departureTime"
+																	placeholder="Select Time">
+															</div>
+															<!-- Arrival Time -->
+															<div class="col-md-2">
+																<label class="form-label">Arrival Time</label>
+																<input type="time" class="form-control arrivalTime"
+																	placeholder="Select Time">
+															</div>
+
+															<!-- Arrival Day -->
+															<div class="col-md-2">
+																<label class="form-label">Arrival Day</label>
+																<input type="text" class="form-control arrivalDay dateInput"
+																	placeholder="Select Arrival Day"  />
+															</div>
+														</div>
+														<input type="hidden" class="form-control connectingDuration">
+														<input type="hidden" class="form-control connectingAirlineCode">
+														<input type="hidden" class="form-control departureCity">
+														<input type="hidden" class="form-control arrivalCity">
+														<input type="hidden" class="form-control airlineLogo">
+														<input type="hidden" class="form-control fromCode" >
+														<input type="hidden" class="form-control toCode" >
+
+													</div>
+												</div>
+
+
+												<!-- Baggage Details -->
+
+
+												<div class="row g-3">
+													<div class="col-12">
+														<div class="position-relative my-4 mt-4 mb-3">
+															<hr />
+															<p class="position-absolute top-50 translate-middle start-0 bg-mode px-2"
+																style="left: 57px !important;">
+																Baggage Details
+															</p>
+														</div>
+														<div class="row g-3">
+															<div class="baggage col-12 mb-1 align-items-center"
+																style="font-size: 0.9em; gap: 10px;background-color: #f8f9fa; padding: 10px;">
+																<!-- Passenger Type -->
+																<div class="col-md-1"
+																	style="border-right: 1px solid #dee2e6;">
+																	<i class="fa-solid fa-person fa-fw me-1"></i>
+																	<label class="form-label mb-0">Adult</label>
+																</div>
+
+																<!-- Check-In Baggage -->
+																<div>
+																	<label class="form-label mb-0">Check In</label>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="adultConnectCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="adultConnectCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
+																</div>
+
+																<!-- Cabin Baggage -->
+																<div>
+																	<label class="form-label mb-0">Cabin</label>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="adultConnectCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="adultConnectCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
+																</div>
+															</div>
+
+															<div class="baggage col-12 mb-1 align-items-center"
+																style="font-size: 0.9em; gap: 10px;background-color: #f8f9fa; padding: 10px;">
+																<!-- Passenger Type -->
+																<div class="col-md-1"
+																	style="border-right: 1px solid #dee2e6;">
+																	<i class="fa-solid fa-child fa-fw me-1"></i>
+																	<label class="form-label mb-0">Child</label>
+																</div>
+
+																<!-- Check-In Baggage -->
+																<div>
+																	<label class="form-label mb-0">Check In</label>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="childConnectCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="childConnectCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
+																</div>
+
+																<!-- Cabin Baggage -->
+																<div>
+																	<label class="form-label mb-0">Cabin</label>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="childConnectCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="childConnectCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
+																</div>
+															</div>
+
+															<div class="baggage col-12 mb-2 align-items-center"
+																style="font-size: 0.9em; gap: 10px;background-color: #f8f9fa; padding: 10px;">
+																<!-- Passenger Type -->
+																<div class="col-md-1"
+																	style="border-right: 1px solid #dee2e6;">
+																	<i class="fa-solid fa-baby fa-fw me-1"></i>
+																	<label class="form-label mb-0">Infant</label>
+																</div>
+
+																<!-- Check-In Baggage -->
+																<div>
+																	<label class="form-label mb-0">Check In</label>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="infantConnectCheckinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="infantConnectCheckinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
+																</div>
+
+																<!-- Cabin Baggage -->
+																<div>
+																	<label class="form-label mb-0">Cabin</label>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="infantConnectCabinNumber" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Number of Pieces" required>
+																</div>
+																<div class="col-md-2">
+																	<input type="text" id="infantConnectCabinWeight" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" maxlength="3" placeholder="Weight(KG) per Pc" required>
+																</div>
+															</div>
+
+														</div>
+													</div>
+												</div>
+
+												<!-- PNR and Fare -->
+												<div class="row g-3">
+													<div class="col-12">
+														<div class="position-relative my-4 mt-4 mb-4">
+															<hr />
+															<p class="position-absolute top-50 translate-middle start-0 bg-mode px-2"
+																style="left: 90px !important;">
+																Add PNR and Fare Details
+															</p>
+														</div>
+														<div class="row">
+															<div class="table-responsive">
+
+																<table class="table custom-border text-center p-0"
+																	style="font-size: 0.9em;">
+																	<thead class="table-light">
+																		<tr>
+																			<th>Inventory Name</th>
+																			<th>PNR</th>
+																			<th>Number of Seats</th>
+																			<th>Fare-Adults(12y+)</th>
+																			<th>Fare-Infant(Below 2y)</th>
+																		</tr>
+																	</thead>
+																	<tbody>
+																		<tr>
+																			<td>
+																				<!-- <div class="d-flex">
+																					<span
+																						class="input-group-text rounded-0"><i
+																							class="bi bi-calendar"></i></span>
+																					<input type="text" 
+																						class="form-control connectingInventoryDate dateInput"
+																						placeholder="Select date" disabled>
+																				</div> -->
+																				<%= inventoryId %>
+																			</td>
+																			<td>
+																				<input type="text" class="form-control connectingPnr" style="width: 100px;"
+																					placeholder="Enter PNR">
+																			</td>
+																			<td>
+																				<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control connectingSeats" placeholder="Number of seats" required>
+																			</td>
+																			<td>
+																				<div class="d-flex">
+																					<span
+																						class="input-group-text rounded-0"><i
+																							class="fa-solid fa-indian-rupee-sign"></i></span>
+																							<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control connectingAdultFare" placeholder="Price" required>
+																				</div>
+																			</td>
+																			<td>
+																				<div class="d-flex">
+																					<span
+																						class="input-group-text rounded-0"><i
+																							class="fa-solid fa-indian-rupee-sign"></i></span>
+																							<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control connectingInfantFare" placeholder="Price" required>
+																				</div>
+																			</td>
+																		</tr>
+																	</tbody>
+																</table>
+															</div>
+														</div>
+
+													</div>
+												</div>
+												<!-- Inventory Detail END -->
+
+												<!-- Button -->
+												<div class="text-end">
+													<button onclick="addConnecting(event)" type="submit"
+														class="btn btn-primary mb-0">Add
+														listing</button>
+												</div>
+											</div>
+										</form>
+									</div>
 								</div>
 							</div>
 						</div>
-					</section>
-					<!-- ======================= Main content END -->
+					</div>
+				</div>
+			</section>
+			<!-- ======================= Main content END -->
+
+			<style>
+				input::-webkit-input-placeholder {
+					font-size: 0.8em;
+				}
+
+				.custom-border {
+					border: 2px solid #dee2e6;
+					border-collapse: separate;
+					border-spacing: 0;
+				}
+
+				.custom-border th,
+				.custom-border td {
+					border: none;
+				}
+
+				.form-control {
+					border-radius: 0;
+				}
+
+				@media screen and (max-width: 768px) {
+					.baggage {
+						display: block;
+					}
+
+					.flight {
+						display: block;
+					}
+
+				}
+
+				@media screen and (min-width: 768px) {
+					.baggage {
+						display: flex;
+					}
+
+					.flight {
+						display: flex;
+					}
+
+				}
+			</style>
+
+			<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+			<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+			<script src="//cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+			<script src="//stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+			<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+			<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+			<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+			<script>
+				$(document).ready(function () {
+					$('#myTab a').on('click', function (e) {
+						e.preventDefault();
+						$(this).tab('show');
+					});
+				});
+			</script>
+
+			<script>
+				document.getElementById('no_of_stops').addEventListener('change', function () {
+					const stops = parseInt(this.value);
+					const container = document.getElementById('flightDetailsContainer');
+					const headerContainer = document.getElementById('flightHeaderContainer');
+
+					const totalFlightsRequired = stops + 1;
+
+					let flightHeaders = headerContainer.querySelectorAll('.flight');
+					let flightDetails = container.querySelectorAll('.col-12');
+
+					// Add more flights if needed
+					for (let i = flightHeaders.length; i < totalFlightsRequired; i++) {
+						const flightNumber = i + 1;
+
+						const flightHeader = document.createElement('div');
+						flightHeader.className = 'flight col-12 mb-1 align-items-center';
+						flightHeader.style.cssText = 'font-size: 0.9em; gap: 10px; background-color: #f8f9fa; padding: 10px;';
+						flightHeader.innerHTML = `
+							<div class="col-md-2" style="border-right: 1px solid #dee2e6;">
+								<i class="bi bi-airplane fa-fw me-1"></i>
+								<label class="form-label mb-0">Flight ${flightNumber} Details</label>
+							</div>
+							<div>
+								<label class="form-label mb-0">Airline</label>
+							</div>
+							<div class="col-md-3">
+								<select class="form-select js-airline searchAirlineSelect" id="airlineSelect" placeholder="Select Airline"></select>
+							</div>
+							<div>
+								<label class="form-label mb-0">Flight Number</label>
+							</div>
+							<div class="col-md-2">
+								<input type="number" class="form-control searchFlightNumber" placeholder="Flight Number">
+							</div>
+						`;
+						headerContainer.appendChild(flightHeader);
+
+						const flightDetailWrapper = document.createElement('div');
+						flightDetailWrapper.className = 'col-12 flight-details-wrapper'; // Added class for easy selection
+						flightDetailWrapper.innerHTML = `
+							<div class="row g-3">
+								<div>Sector ${flightNumber}</div>
+			
+								<div class="col-md-3">
+									<label class="form-label">Departure Airport</label>
+									<select class="form-select js-airport connectDeparture" placeholder="Departure Airport"></select>
+								</div>
+
+								<div class="col-md-3">
+									<label class="form-label">Terminal Number</label>
+									<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control fromTerminal" maxlength="4" placeholder="Departure Terminal" required>
+								</div>
+
+								<div class="col-md-3">
+									<label class="form-label">Arrival Airport</label>
+									<select class="form-select js-airport connectArrival" placeholder="Arrival Airport"></select>
+								</div>
+			
+								<div class="col-md-3">
+									<label class="form-label">Terminal Number</label>
+									<input type="number" class="form-control toTerminal" placeholder="Arrival Terminal">
+								</div>
+			
+								<div class="col-md-2">
+									<label class="form-label">Airline</label>
+									<select class="form-select js-airline airlineSelect" placeholder="Select Airline"></select>
+								</div>
+			
+								<div class="col-md-2">
+									<label class="form-label">Flight Number</label>
+									<input type="text" class="form-control" placeholder="Flight number">
+								</div>
+			
+								<div class="col-md-2">
+									<label class="form-label">Departure Day</label>
+									<input type="text" class="form-control departureDay dateInput" placeholder="Select Departure Day" >
+								</div>
+
+								<div class="col-md-2">
+									<label class="form-label">Departure Time</label>
+									<input type="time" class="form-control departureTime" placeholder="Select Time">
+								</div>
+			
+								<div class="col-md-2">
+									<label class="form-label">Arrival Time</label>
+									<input type="time" class="form-control arrivalTime" placeholder="Select Time">
+								</div>
+				
+								<div class="col-md-2">
+									<label class="form-label">Arrival Day</label>
+									<input type="text" class="form-control arrivalDay dateInput" placeholder="Select Arrival Day" >
+								</div>
+								<input type="hidden" class="form-control connectingDuration" >
+								<input type="hidden" class="form-control connectingAirlineCode" >
+								<input type="hidden" class="form-control departureCity" >
+								<input type="hidden" class="form-control arrivalCity" >
+								<input type="hidden" class="form-control airlineLogo" >
+								<input type="hidden" class="form-control fromCode" >
+								<input type="hidden" class="form-control toCode" >
+							</div>
+						`;
+						container.appendChild(flightDetailWrapper);
+						flatpickr(".dateInput", {
+  							dateFormat: "d M Y",
+  							defaultDate: "today",
+  							allowInput: true
+						});
+					}
+
+					// Update references after any new ones have been added
+					flightHeaders = headerContainer.querySelectorAll('.flight');
+					flightDetails = container.querySelectorAll('.flight-details-wrapper'); // Updated selector
+
+					// Show only the required flights, hide the rest
+					for (let i = 0; i < flightHeaders.length; i++) {
+						const isVisible = i < totalFlightsRequired;
+						flightHeaders[i].style.display = isVisible ? 'flex' : 'none';
+						flightDetails[i].style.display = isVisible ? 'block' : 'none';
+					}
+				});
+
+				document.addEventListener("DOMContentLoaded", () => {
+					document.getElementById("searchFlightBtn").addEventListener("click", searchFlight);
+				});
+
+				async function searchFlight(event) {
+					event.preventDefault();
+
+					const form = document.getElementById("connectingForm");
+					if (!form) {
+						console.error("Form element not found!");
+						return;
+					}
+
+					const requestData = {
+						departureDate: document.querySelector('.connectingDepartureDate')?.value || "",
+						from: document.getElementById('fromConnectingSelect')?.value.toUpperCase() || "",
+						to: document.getElementById('toConnectingSelect')?.value.toUpperCase() || ""
+					};
+
+					const airlineSelects = form.querySelectorAll('.searchAirlineSelect');
+					const flightNumberInputs = form.querySelectorAll('.searchFlightNumber');
+
+					const airlines = Array.from(airlineSelects).map(select => select.value);
+					const flightNumbers = Array.from(flightNumberInputs).map(input => input.value);
+
+					requestData.airlines = airlines;
+					requestData.flightNumbers = flightNumbers;
+
+					console.log("Airlines:", airlines);
+					console.log("Flight Numbers:", flightNumbers);
+					console.log("Request Data:", requestData);
+
+					try {
+						const response = await fetch("/admin/api/flights", {
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json"
+							},
+							body: JSON.stringify(requestData)
+						});
+
+						const result = await response.json();
+						const filtered_flights = result.flights;
+						console.log("filtered", filtered_flights);
+
+						// Populate the flight details
+						populateFlightDetails(filtered_flights);
+
+					} catch (error) {
+						console.error("Error fetching or filtering flights:", error);
+					}
+				}
+
+				function populateFlightDetails(flights) {
+					if (!Array.isArray(flights) || flights.length === 0) {
+    						alert("❗ No matching flights found. Please add manually!");
+    						return;
+					}
+
+					//   console.log("Structured Flights:", flights);
+
+					const flightDetailWrappers = document.querySelectorAll('.flight-details-wrapper');
+					//   console.log("Flight Detail Wrappers:", flightDetailWrappers);
+
+					flights.forEach((flight, flightIndex) => {
+						const { legs, checkedLuggage, cabinLuggage, totalTime, departureTime, arrivalTime, departureAirport, arrivalAirport } = flight;
+
+						const flatFlights = Array.isArray(flights[0]) ? flights.flat() : flights;
+						console.log(flatFlights);
+
+						const durationInput = document.getElementById('connectingTotalDuration');
+						if (durationInput && totalTime) {
+							durationInput.value = formatDuration(totalTime);
+						} else {
+							console.warn(" 'connectingTotalDuration' element not found in DOM.");
+						}
+
+						const connectDepartureTime = document.getElementById('connectDepartureTime');
+						if (connectDepartureTime) {
+							connectDepartureTime.value = departureTime.split('T')[1]?.slice(0, 5);
+						} else {
+							console.warn(" 'connectDepartureTime' element not found in DOM.");
+						}
+
+						const connectArrivalTime = document.getElementById('connectArrivalTime');
+						if (connectArrivalTime) {
+							connectArrivalTime.value = arrivalTime.split('T')[1]?.slice(0, 5);
+						} else {
+							console.warn(" 'connectArrivalTime' element not found in DOM.");
+						}
+
+						legs.forEach((leg, legIndex) => {
+							const wrapperIndex = flightIndex * legs.length + legIndex;
+							const wrapper = flightDetailWrappers[wrapperIndex];
+
+							if (!wrapper) return;
+
+							const getFormattedDay = (datetimeStr) => {
+								if (!datetimeStr) return "";
+								const [year, month, day] = datetimeStr.split('T')[0].split('-');
+								const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+								return `${day} ${months[parseInt(month) - 1]} ${year}`;
+							};
+
+							// Set departure and arrival days
+							const formattedDepartureDay = getFormattedDay(leg.departureTime);
+							const formattedArrivalDay = getFormattedDay(leg.arrivalTime);
+
+							// ✅ These need to be .querySelector with appropriate class
+							const departureDayInput = wrapper.querySelector('.departureDay');
+							const arrivalDayInput = wrapper.querySelector('.arrivalDay');
+
+							if (departureDayInput) departureDayInput.value = formattedDepartureDay;
+							if (arrivalDayInput) arrivalDayInput.value = formattedArrivalDay;
+
+
+							// wrapper.querySelector('.connectDeparture').value = leg.departureAirport?.name || "";
+							// wrapper.querySelector('.connectDeparture').innerHTML = leg.departureAirport?.name || "";
+
+							// wrapper.querySelector('.connectArrival').value = leg.arrivalAirport?.name || "";
+							// wrapper.querySelector('.connectArrival').innerHTML = leg.arrivalAirport?.name || "";
+
+							wrapper.querySelector('.departureTime').value = leg.departureTime?.split('T')[1]?.slice(0, 5) || "";
+							wrapper.querySelector('.departureTime').innerHTML = leg.departureTime?.split('T')[1]?.slice(0, 5) || "";
+							wrapper.querySelector('.arrivalTime').value = leg.arrivalTime?.split('T')[1]?.slice(0, 5) || "";
+							wrapper.querySelector('.arrivalTime').innerHTML = leg.arrivalTime?.split('T')[1]?.slice(0, 5) || "";
+
+							wrapper.querySelector('.fromTerminal').value = leg.departureTerminal || "";
+							wrapper.querySelector('.fromTerminal').innerHTML = leg.departureTerminal || "";
+							wrapper.querySelector('.toTerminal').value = leg.arrivalTerminal || "";
+							wrapper.querySelector('.toTerminal').innerHTML = leg.arrivalTerminal || "";
+
+							// wrapper.querySelector('.airlineSelect').value = leg.carriersData?.[0]?.name || "";
+							// wrapper.querySelector('.airlineSelect').innerHTML = leg.carriersData?.[0]?.name || "";
+
+							wrapper.querySelector('.flightNumber').value = leg.flightInfo?.flightNumber || "";
+							wrapper.querySelector('.flightNumber').innerHTML = leg.flightInfo?.flightNumber || "";
+
+							wrapper.querySelector('.connectingDuration').value = formatDuration(leg.totalTime) || "";
+							
+							wrapper.querySelector('.connectingAirlineCode').value = leg.carriersData?.[0]?.code || "";
+							wrapper.querySelector('.airlineLogo').value = leg.carriersData?.[0]?.logo || "";
+
+							wrapper.querySelector('.departureCity').value = leg.departureAirport?.cityName || "";
+							wrapper.querySelector('.arrivalCity').value = leg.arrivalAirport?.cityName || "";
+
+							wrapper.querySelector('.fromCode').value = leg.departureAirport?.code || "";
+							wrapper.querySelector('.toCode').value = leg.arrivalAirport?.code || "";
+							
+							const connectDepartureSelect = wrapper.querySelector('.connectDeparture');
+							const connectArrivalSelect = wrapper.querySelector('.connectArrival');
+							const airlineSelect = wrapper.querySelector('.airlineSelect');
+
+							setSelectValue(connectDepartureSelect, leg.departureAirport?.name || "", leg.departureAirport?.code || "");
+							setSelectValue(connectArrivalSelect, leg.arrivalAirport?.name || "", leg.arrivalAirport?.code || "");
+							setSelectValue(airlineSelect, leg.carriersData?.[0]?.name || "", leg.carriersData?.[0]?.code || "");
+
+						});
+
+						// const inventoryDate = document.querySelector('.connectingInventoryDate');
+						// inventoryDate.value = document.querySelector('.connectingDepartureDate')?.value;
+
+						document.getElementById('connectingDepartureName').value = departureAirport?.name || "";
+						document.getElementById('connectingArrivalName').value = arrivalAirport?.name || "";
+						document.getElementById('connectingFromCity').value = departureAirport?.cityName || "";
+						document.getElementById('connectingToCity').value = arrivalAirport?.cityName || "";
+						document.getElementById('connectingFromCountry').value = departureAirport?.countryName || "";
+						document.getElementById('connectingToCountry').value = arrivalAirport?.countryName || "";
+
+						if (flights.length > 0) {
+							const checked = flights[0].checkedLuggage?.[0]?.luggageAllowance;
+							const cabin = flights[0].cabinLuggage?.[0]?.luggageAllowance;
+
+							if (checked) {
+								document.getElementById("adultConnectCheckinNumber").value = checked.maxPiece || 0;
+								document.getElementById("adultConnectCheckinWeight").value = checked.maxTotalWeight || 0;
+
+								// Assuming same baggage for all pax types — customize if needed:
+								document.getElementById("childConnectCheckinNumber").value = checked.maxPiece || 0;
+								document.getElementById("childConnectCheckinWeight").value = checked.maxTotalWeight || 0;
+
+								document.getElementById("infantConnectCheckinNumber").value = checked.maxPiece || 0;
+								document.getElementById("infantConnectCheckinWeight").value = checked.maxTotalWeight || 0;
+							}
+
+							if (cabin) {
+								document.getElementById("adultConnectCabinNumber").value = cabin.maxPiece || 0;
+								document.getElementById("adultConnectCabinWeight").value = cabin.maxWeightPerPiece || 0;
+
+								document.getElementById("childConnectCabinNumber").value = cabin.maxPiece || 0;
+								document.getElementById("childConnectCabinWeight").value = cabin.maxWeightPerPiece || 0;
+
+								document.getElementById("infantConnectCabinNumber").value = cabin.maxPiece || 0;
+								document.getElementById("infantConnectCabinWeight").value = cabin.maxWeightPerPiece || 0;
+							}
+						}
+
+					});
+				}
+			</script>
+
+			<script>
+				document.addEventListener("DOMContentLoaded", () => {
+					document.getElementById("searchOneWayFlightBtn").addEventListener("click", searchOneWayFlight);
+
+					async function searchOneWayFlight(event) {
+						event.preventDefault();
+
+						const form = document.getElementById("onewayForm");
+						if (!form) {
+							console.error("Form element not found!");
+							return;
+						}
+
+						const requestData = {
+							departureDate: document.querySelector('.oneWayDepartureDate')?.value || "",
+							from: document.getElementById('fromSelect')?.value.toUpperCase() || "",
+							to: document.getElementById('toSelect')?.value.toUpperCase() || ""
+						};
+
+						const airlineSelects = form.querySelectorAll('.searchAirlineSelect');
+						const flightNumberInputs = form.querySelectorAll('.searchFlightNumber');
+
+						const airlines = Array.from(airlineSelects).map(select => select.value);
+						const flightNumbers = Array.from(flightNumberInputs).map(input => input.value);
+
+						requestData.airlines = airlines;
+						requestData.flightNumbers = flightNumbers;
+
+						try {
+							const response = await fetch("/admin/api/flights", {
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json"
+								},
+								body: JSON.stringify(requestData)
+							});
+
+							const result = await response.json();
+							const filtered_flights = result.flights;
+							console.log("filtered", filtered_flights);
+
+							// Populate the flight details
+							populateOneWayFlightDetails(filtered_flights);
+
+						} catch (error) {
+							console.error("Error fetching or filtering flights:", error);
+						}
+					}
+
+					function populateOneWayFlightDetails(flights) {
+
+						if (!Array.isArray(flights) || flights.length === 0) {
+    						alert("❗ No matching flights found. Please add manually!");
+    						return;
+						}
+
+						flights.forEach((flight, flightIndex) => {
+							const { legs, checkedLuggage, cabinLuggage, totalTime, departureTime, arrivalTime, departureAirport, arrivalAirport } = flight;
+
+							const flatFlights = Array.isArray(flights[0]) ? flights.flat() : flights;
+							console.log(flatFlights);
+
+							const durationInput = document.getElementById('oneWayTotalDuration');
+							if (durationInput && totalTime) {
+								durationInput.value = formatDuration(totalTime);
+							} else {
+								console.warn(" 'oneWayTotalDuration' element not found in DOM.");
+							}
+
+							const oneWayDepartureTime = document.getElementById('oneWayDepartureTime');
+							if (oneWayDepartureTime) {
+								oneWayDepartureTime.value = departureTime.split('T')[1]?.slice(0, 5);
+							} else {
+								console.warn(" 'oneWayDepartureTime' element not found in DOM.");
+							}
+
+							const oneWayArrivalTime = document.getElementById('oneWayArrivalTime');
+							const oneWayArrivalDay = document.querySelector('.oneWayArrivalDay');
+
+							if (oneWayArrivalTime && oneWayArrivalDay && arrivalTime) {
+								const [year, month, day] = arrivalTime.split('T')[0].split('-');
+								const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+								const formattedDate = `${day} ${months[parseInt(month) - 1]} ${year}`;
+
+								oneWayArrivalTime.value = arrivalTime.split('T')[1]?.slice(0, 5);
+								oneWayArrivalDay.value = formattedDate;
+								oneWayArrivalDay.innerHTML = formattedDate;
+
+								console.log("Formatted Arrival Date:", formattedDate);
+
+							} else {
+								console.warn(" 'oneWayArrivalTime' element not found in DOM.");
+							}
+
+							// const inventoryDate = document.querySelector('.oneWayInventoryDate');
+							// inventoryDate.value = document.querySelector('.oneWayDepartureDate')?.value;
+
+							document.getElementById('departureName').value = departureAirport?.name || "";
+							document.getElementById('arrivalName').value = arrivalAirport?.name || "";
+							document.getElementById('fromCity').value = departureAirport?.cityName || "";
+							document.getElementById('toCity').value = arrivalAirport?.cityName || "";
+							document.getElementById('fromCountry').value = departureAirport?.countryName || "";
+							document.getElementById('toCountry').value = arrivalAirport?.countryName || "";
+
+							legs.forEach((leg, legIndex) => {
+								const airlineSelect = document.getElementById('airlineSelect');
+								setSelectValue(airlineSelect, leg.carriersData?.[0]?.name || "");
+
+								// document.getElementById('airlineSelect').value = leg.carriersData?.[0]?.name || "";
+
+								document.getElementById('oneWayAirlineCode').value = leg.carriersData?.[0]?.code || "";
+								document.getElementById('oneWayAirlineLogo').value = leg.carriersData?.[0]?.logo || "";
+								document.getElementById('oneWayDepartureCity').value = leg.departureAirport?.cityName || "";
+								document.getElementById('oneWayArrivalCity').value = leg.arrivalAirport?.cityName || "";
+							});
+
+							if (flights.length > 0) {
+								const checked = flights[0].checkedLuggage?.[0]?.luggageAllowance;
+								const cabin = flights[0].cabinLuggage?.[0]?.luggageAllowance;
+
+								if (checked) {
+									document.getElementById("adultCheckinNumber").value = checked.maxPiece || "";
+									document.getElementById("adultCheckinWeight").value = checked.maxWeightPerPiece || "";
+
+									document.getElementById("childCheckinNumber").value = checked.maxPiece || "";
+									document.getElementById("childCheckinWeight").value = checked.maxWeightPerPiece || "";
+
+									document.getElementById("infantCheckinNumber").value = checked.maxPiece || "";
+									document.getElementById("infantCheckinWeight").value = checked.maxWeightPerPiece || "";
+								}
+
+								if (cabin) {
+									document.getElementById("adultCabinNumber").value = cabin.maxPiece || 0;
+									document.getElementById("adultCabinWeight").value = cabin.maxWeightPerPiece || 0;
+
+									document.getElementById("childCabinNumber").value = cabin.maxPiece || 0;
+									document.getElementById("childCabinWeight").value = cabin.maxWeightPerPiece || 0;
+
+									document.getElementById("infantCabinNumber").value = cabin.maxPiece || 0;
+									document.getElementById("infantCabinWeight").value = cabin.maxWeightPerPiece || 0;
+								}
+							}
+
+						});
+					}
+				})
+			</script>
+
+			<script>
+				function formatDuration(seconds) {
+  					const hours = Math.floor(seconds / 3600);
+  					const minutes = Math.floor((seconds % 3600) / 60);
+  					return `${hours}h ${minutes}m`;
+				}
+
+				function setSelectValue(selectElement, value, label) {
+  if (!selectElement) return;
+
+  const choices = selectElement._choicesInstance;
+
+  if (choices) {
+    // If Choices.js is attached, use Choices.js API
+    choices.setChoices(
+      [
+        {
+          value: value,
+          label: label,
+          selected: true
+        }
+      ],
+      'value',
+      'label',
+      true
+    );
+  } else {
+    // If no Choices.js, fallback to normal select
+    let option = Array.from(selectElement.options).find(opt => opt.value === value);
+    if (!option) {
+      option = new Option(label, value, true, true);
+      selectElement.add(option);
+    } else {
+      selectElement.value = value;
+    }
+  }
+}
+
+
+
+			</script>
+			<script>
+				async function addOneWay(event) {
+					event.preventDefault(); 
+					const inventoryName = "<%= inventoryId %>"
+
+					const form = document.getElementById("onewayForm");
+
+					const getValue = (selector) => form.querySelector(selector)?.value || "";
+					
+					const stops = [];
+					stops.push({
+						from: getValue('#departureName') || getValue('#fromSelect'),
+						to: getValue('#arrivalName') || getValue('#toSelect'),
+						fromCode: getValue('#fromSelect'),
+						toCode: getValue('#toSelect'),
+						fromTerminal: "",
+						toTerminal: "",
+						airline: getValue('#airlineSelect'),
+						flightNumber: getValue('.searchFlightNumber'),
+						departureDay: getValue('.oneWayDepartureDate'),
+						departureTime: document.getElementById("oneWayDepartureTime").value,
+						arrivalDay: getValue(".oneWayArrivalDay"),
+						arrivalTime: document.getElementById("oneWayArrivalTime").value,
+						stopDuration: document.getElementById('oneWayTotalDuration').value,
+						airlineCode: document.getElementById('oneWayAirlineCode').value,
+						departureCity: document.getElementById('oneWayDepartureCity').value,
+						arrivalCity: document.getElementById('oneWayArrivalCity').value,
+						airlineLogo: document.getElementById('oneWayAirlineLogo').value,
+					})
+
+					const oneWayFlight = {
+						sellerId: document.getElementById('userId').value,
+						inventoryName: inventoryName,
+						from: getValue('#fromSelect'),
+						to: getValue('#toSelect'),
+						departureName: getValue('#departureName'),
+						arrivalName: getValue('#arrivalName'),
+  						fromCity: getValue('#fromCity'),
+  						toCity: getValue('#toCity'),
+  						fromCountry: getValue('#fromCountry'),
+  						toCountry: getValue('#toCountry'),
+						totalDuration: document.getElementById('oneWayTotalDuration').value,
+						departureDate: getValue('.oneWayDepartureDate'),
+						departureTime: document.getElementById("oneWayDepartureTime").value,
+						arrivalDate: getValue(".oneWayArrivalDay"),
+						arrivalTime: document.getElementById("oneWayArrivalTime").value,
+						disableBeforeDays: document.getElementById('oneWayDisable').value,
+						stops: stops,
+						adultCheckinNumber: document.getElementById('adultCheckinNumber').value,
+						adultCheckinWeight: document.getElementById('adultCheckinWeight').value,
+						adultCabinNumber: document.getElementById('adultCabinNumber').value,
+						adultCabinWeight: document.getElementById('adultCabinWeight').value,
+						childCheckinNumber: document.getElementById('childCheckinNumber').value,
+						childCheckinWeight: document.getElementById('childCheckinWeight').value,
+						childCabinNumber: document.getElementById('childCabinNumber').value,
+						childCabinWeight: document.getElementById('childCabinWeight').value,
+						infantCheckinNumber: document.getElementById('infantCheckinNumber').value,
+						infantCheckinWeight: document.getElementById('infantCheckinWeight').value,
+						infantCabinNumber: document.getElementById('infantCabinNumber').value,
+						infantCabinWeight: document.getElementById('infantCabinWeight').value,
+						inventoryDates: [{
+							// date: getValue('.oneWayInventoryDate'),
+							pnr: getValue('.oneWayPnr'),
+							seats: getValue('.oneWaySeats'),
+							fare: {
+								adults: getValue('.oneWayAdultFare'),
+								infants: getValue('.oneWayInfantFare'),
+							}
+						}],
+						refundable: true
+					}
+					console.log(oneWayFlight)
+					try {
+						const response = await fetch("/admin/add-flight", {
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json"
+							},
+							body: JSON.stringify(oneWayFlight)
+						});
+
+						if (!response.ok) {
+							throw new Error("Failed to submit flight details");
+						}
+
+						const result = await response.json();
+						console.log("Success:", result);
+						alert("Flight detail submitted successfully!");
+						window.location.href = result.redirectUrl;
+
+						// Optional: Reset form after success
+						form.reset();
+
+					} catch (error) {
+						console.error("Error:", error);
+						alert("There was an error submitting the flight details.");
+					}
+				}
+			</script>
+
+<script>
+	flatpickr(".dateInput", {
+		dateFormat: "d M Y",
+		defaultDate: "today",
+		allowInput: true
+	});
+</script>
+
+<script>
+	async function addConnecting(event) {
+		event.preventDefault();
+
+		const inventoryName = "<%= inventoryId %>"
+		
+		const form = document.getElementById("connectingForm");
+		const getValue = (selector) => form.querySelector(selector)?.value || "";
+
+		const noOfStops = parseInt(document.getElementById('no_of_stops').value);
+
+		const stops = [];
+		const froms = form.querySelectorAll('.connectDeparture');
+		const tos = form.querySelectorAll('.connectArrival');
+		const fromCodes = form.querySelectorAll('.fromCode');
+		const toCodes = form.querySelectorAll('.toCode');
+		const fromTerminals = form.querySelectorAll('.fromTerminal');
+		const toTerminals = form.querySelectorAll('.toTerminal');
+		const airlines = form.querySelectorAll('.airlineSelect');
+		const flightNumbers = form.querySelectorAll('.flightNumber');
+		const departureTimes = form.querySelectorAll('.departureTime');
+		const arrivalTimes = form.querySelectorAll('.arrivalTime');
+		const arrivalDays = form.querySelectorAll('.arrivalDay');
+		const departureDays = form.querySelectorAll('.departureDay');
+		const stopDurations = form.querySelectorAll('.connectingDuration');
+		const airlineCodes = form.querySelectorAll('.connectingAirlineCode');
+		const departureCities = form.querySelectorAll('.departureCity');
+		const arrivalCities = form.querySelectorAll('.arrivalCity');
+		const airlineLogos = form.querySelectorAll('.airlineLogo');
+
+
+		for (let i = 0; i <= noOfStops; i++) {
+			stops.push({
+				from: froms[i]?.value || "",
+				to: tos[i]?.value || "",
+				fromCode: fromCodes[i]?.value || "",
+				toCode: toCodes[i]?.value || "",
+				fromTerminal: fromTerminals[i]?.value || "",
+				toTerminal: toTerminals[i]?.value || "",
+				airline: airlines[i]?.value || "",
+				flightNumber: flightNumbers[i]?.value || "",
+				departureTime: departureTimes[i]?.value || "",
+				arrivalTime: arrivalTimes[i]?.value || "",
+				arrivalDay: arrivalDays[i]?.value || "",
+				departureDay: i === 0 ? getValue('.connectingDepartureDate') : departureDays[i - 1]?.value || "",
+				stopDuration: stopDurations[i]?.value || "",
+				airlineCode: airlineCodes[i]?.value || "",
+				departureCity: departureCities[i]?.value || "",
+				arrivalCity: arrivalCities[i]?.value || "",
+				airlineLogo: airlineLogos[i]?.value || "",
+			});
+
+		}
+
+		const oneWayFlight = {
+			sellerId: document.getElementById('userId').value,
+			inventoryName: inventoryName,
+			from: getValue('#fromConnectingSelect'),
+			to: getValue('#toConnectingSelect'),
+			departureName: getValue('#connectingDepartureName'),
+			arrivalName: getValue('#connectingArrivalName'),
+			  fromCity: getValue('#connectingFromCity'),
+			  toCity: getValue('#connectingToCity'),
+			  fromCountry: getValue('#connectingFromCountry'),
+			  toCountry: getValue('#connectingToCountry'),
+			totalDuration: document.getElementById('connectingTotalDuration').value,
+			departureDate: getValue('.connectingDepartureDate'),
+			departureTime: document.getElementById('connectDepartureTime').value,
+			arrivalDate: stops[noOfStops]?.arrivalDay || "",
+			arrivalTime: document.getElementById('connectArrivalTime').value,
+			disableBeforeDays: getValue('#days'),
+			stops: stops,
+			adultCheckinNumber: document.getElementById('adultConnectCheckinNumber').value,
+			adultCheckinWeight: document.getElementById('adultConnectCheckinWeight').value,
+			adultCabinNumber: document.getElementById('adultConnectCabinNumber').value,
+			adultCabinWeight: document.getElementById('adultConnectCabinWeight').value,
+			childCheckinNumber: document.getElementById('childConnectCheckinNumber').value,
+			childCheckinWeight: document.getElementById('childConnectCheckinWeight').value,
+			childCabinNumber: document.getElementById('childConnectCabinNumber').value,
+			childCabinWeight: document.getElementById('childConnectCabinWeight').value,
+			infantCheckinNumber: document.getElementById('infantConnectCheckinNumber').value,
+			infantCheckinWeight: document.getElementById('infantConnectCheckinWeight').value,
+			infantCabinNumber: document.getElementById('infantConnectCabinNumber').value,
+			infantCabinWeight: document.getElementById('infantConnectCabinWeight').value,
+			inventoryDates: [{
+				// date: getValue('.connectingInventoryDate'),
+				pnr: getValue('.connectingPnr'),
+				seats: getValue('.connectingSeats'),
+				fare: {
+					adults: getValue('.connectingAdultFare'),
+					infants: getValue('.connectingInfantFare'),
+				}
+			}],
+			refundable: false,
+		};
+
+		try {
+			const response = await fetch("/admin/add-flight", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(oneWayFlight)
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to submit connecting flight");
+			}
+
+			const result = await response.json();
+			console.log("Success:", result);
+			alert("Connecting flight added successfully!");
+			window.location.href = result.redirectUrl;
+
+			form.reset();
+
+		} catch (error) {
+			console.error("Error:", error);
+			alert("Error submitting the connecting flight.");
+		}
+	}
+</script>
+
+<!-- airports dropdown -->
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+		  const staticSelectors = [
+			"#fromSelect",
+			"#toSelect",
+			"#fromConnectingSelect",
+			"#toConnectingSelect"
+		  ];
+		
+		  const dynamicSelectors = [
+			".connectDeparture",
+			".connectArrival"
+		  ];
+		
+		  const doneTypingInterval = 100;
+		
+		  function initChoicesForElement(element) {
+			if (!element || element.classList.contains('choices-initialized')) return;
+			element.classList.add('choices-initialized');
+		
+			const choices = new Choices(element, {
+			  searchEnabled: true,
+			  placeholderValue: "Select Airport",
+			  searchChoices: false,
+			  shouldSort: false,
+			  allowHTML: true
+			});
+		
+			element._choicesInstance = choices;
+
+			let defaultLoaded = false;
+			let typingTimer;
+		
+			element.addEventListener('showDropdown', async () => {
+			  if (!defaultLoaded) {
+				try {
+				  const res = await fetch("/search-airports");
+				  const airports = await res.json();
+				  choices.setChoices(
+					airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
+					"value",
+					"label",
+					true
+				  );
+				  defaultLoaded = true;
+				} catch (err) {
+				  console.error("Error loading default airports:", err);
+				}
+			  }
+			});
+		
+			element.addEventListener('search', function (e) {
+			  clearTimeout(typingTimer);
+			  const searchTerm = e.detail.value.trim();
+			  if (searchTerm.length >= 2) {
+				typingTimer = setTimeout(async () => {
+				  try {
+					const res = await fetch(`/search-airports?q=${encodeURIComponent(searchTerm)}`);
+					const airports = await res.json();
+					choices.setChoices(
+					  airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
+					  "value",
+					  "label",
+					  true
+					);
+				  } catch (err) {
+					console.error("Error searching airports:", err);
+				  }
+				}, doneTypingInterval);
+			  }
+			});
+		  }
+		
+		  // ✅ Init static selects
+		  staticSelectors.forEach(selector => {
+			const element = document.querySelector(selector);
+			if (element) initChoicesForElement(element);
+		  });
+		
+		  // ✅ Init already existing sectors (like Sector 1 & 2 already in HTML)
+		  dynamicSelectors.forEach(selector => {
+			document.querySelectorAll(selector).forEach(el => {
+			  initChoicesForElement(el);
+			});
+		  });
+		
+		  // ✅ Watch for dynamically added future selects (Sector 3, 4, etc)
+		  const observer = new MutationObserver(mutations => {
+			mutations.forEach(mutation => {
+			  mutation.addedNodes.forEach(node => {
+				if (node.nodeType === 1) {
+				  dynamicSelectors.forEach(sel => {
+					if (node.matches(sel)) {
+					  initChoicesForElement(node);
+					}
+					node.querySelectorAll(sel).forEach(inner => initChoicesForElement(inner));
+				  });
+				}
+			  });
+			});
+		  });
+		
+		  observer.observe(document.body, { childList: true, subtree: true });
+		});
+	</script>
+
+	<!-- airlines dropdown -->
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+	  const selectorsStatic  = [".searchAirlineSelect", ".airlineSelect"];
+	  const selectorsDynamic = [".searchAirlineSelect", ".airlineSelect"];
+	  const delay            = 100; // ms debounce
+	
+	  function initAirlineSelect(el) {
+		if (!el || el.classList.contains('choices-initialized')) return;
+		el.classList.add('choices-initialized');
+	
+		const choices = new Choices(el, {
+		  searchEnabled: true,
+		  placeholderValue: "Select Airline",
+		  searchChoices: false,
+		  shouldSort: false,
+		  allowHTML: true
+		});
+	
+		el._choicesInstance = choices;
+
+		let loadedDefault = false;
+		let timer;
+	
+		// load default list on open
+		el.addEventListener('showDropdown', async () => {
+		  if (loadedDefault) return;
+		  try {
+			const res = await fetch('/search-airlines');
+			const arr = await res.json();
+			choices.setChoices(
+			  arr.map(a => ({ value: a.Value, label: `${a.Name} (${a.Value})` })),
+			  'value','label',
+			  true
+			);
+			loadedDefault = true;
+		  } catch(err) {
+			console.error('Error loading airlines:', err);
+		  }
+		});
+	
+		// live search on typing
+		el.addEventListener('search', e => {
+		  clearTimeout(timer);
+		  const term = e.detail.value.trim();
+		  if (term.length < 2) return;
+		  timer = setTimeout(async () => {
+			try {
+			  const res = await fetch(`/search-airlines?q=${encodeURIComponent(term)}`);
+			  const arr = await res.json();
+			  choices.setChoices(
+				arr.map(a => ({ value: a.Value, label: `${a.Name} (${a.Value})` })),
+				'value','label',
+				true
+			  );
+			} catch(err) {
+			  console.error('Error searching airlines:', err);
+			}
+		  }, delay);
+		});
+	  }
+	
+	  // initialize all existing selects
+	  selectorsStatic.forEach(sel =>
+		document.querySelectorAll(sel).forEach(el => initAirlineSelect(el))
+	  );
+	
+	  // watch for dynamically added ones
+	  const obs = new MutationObserver(muts => {
+		muts.forEach(m => {
+		  m.addedNodes.forEach(node => {
+			if (node.nodeType !== 1) return;
+			selectorsDynamic.forEach(sel => {
+			  if (node.matches(sel)) initAirlineSelect(node);
+			  node.querySelectorAll(sel).forEach(inner => initAirlineSelect(inner));
+			});
+		  });
+		});
+	  });
+	  obs.observe(document.body, { childList: true, subtree: true });
+	});
+	</script>
 
 					<!-- Page main content END -->
 			</div>

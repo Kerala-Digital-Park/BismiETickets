@@ -1,4 +1,8 @@
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const fs = require("fs");
+const path = require("path");
 const Coupon = require("../models/couponModel");
 const Flight = require("../models/flightModel");
 const Subscription = require("../models/subscriptionModel");
@@ -7,7 +11,9 @@ const Booking = require("../models/bookingModel");
 const BankUpdates = require("../models/bankUpdateModel");
 const KycUpdates = require("../models/kycUpdateModel");
 const Transaction = require("../models/transactionModel");
-const Support = require("../models/supportModel")
+const Support = require("../models/supportModel");
+const Airport = require("../models/airportModel");
+const PopularFlight = require("../models/popularFlightModel");
 
 const viewLogin = async (req, res) => {
   try {
@@ -21,20 +27,37 @@ const viewLogin = async (req, res) => {
 const loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (email === "admin@gmail.com" && password === "admin@gmail.com") {
-      req.session.admin = email;
-      res.redirect("/admin");
-    } else {
-      res.render("admin/login", {
-        message: "Invalid email or password",
-        messageType: "error",
+    console.log(email, password)
+    const admin = await User.findOne({ email, userRole: "Admin" });
+    if (!admin) {
+      return res.render("admin/login", {
+        message: "Invalid email or not an admin",
+        messageType: "danger",
       });
     }
+
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) {
+      return res.render("admin/login", {
+        message: "Invalid password",
+        messageType: "danger",
+      });
+    }
+
+    const token = jwt.sign({ id: admin._id }, process.env.SECRET_KEY, {
+      expiresIn: "7d",
+    });
+
+    req.session.admin = token;
+    req.session.adminId = admin._id;
+    
+    res.redirect("/admin/");
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal Server error" });
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
 const logoutAdmin = async (req, res) => {
   try {
     req.session.destroy();
@@ -47,7 +70,28 @@ const logoutAdmin = async (req, res) => {
 
 const viewDashboard = async (req, res) => {
   try {
-    res.render("admin/dashboard", {});
+    const bookings = await Booking.find()
+    .populate("userId")
+    .populate("flight")
+    .sort({ createdAt: -1 }); 
+
+    const flights = await Flight.find()
+    .sort({ createdAt: -1 });
+
+    const users = await User.find({userRole:"User"});
+    const sellers = await User.find({userRole:"Agent"});
+
+    const popularFlights = await PopularFlight.find().limit(4);
+
+    const airports = await Airport.find()
+
+    res.render("admin/dashboard", {
+      bookings,
+      flights,
+      users,
+      sellers,
+      popularFlights,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
@@ -55,17 +99,110 @@ const viewDashboard = async (req, res) => {
 };
 
 const viewBookings = async (req, res) => {
+  const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
   try {
-    res.render("admin/bookings", {});
+    const matchStage = {};
+
+    if (search) {
+      matchStage.$or = [
+        { bookingId: { $regex: search, $options: "i" } },
+        { status: { $regex: search, $options: "i" } },
+        { "flightData.from": { $regex: search, $options: "i" } },
+        { "flightData.to": { $regex: search, $options: "i" } },
+        { "userData.userId": { $regex: search, $options: "i" } }
+      ];
+    }
+
+    const pipeline = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userData"
+        }
+      },
+      {
+        $unwind: {
+          path: "$userData",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "flights",
+          localField: "flight",
+          foreignField: "_id",
+          as: "flightData"
+        }
+      },
+      {
+        $unwind: {
+          path: "$flightData",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $match: matchStage
+      },
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: limit }
+          ],
+          total: [{ $count: "count" }]
+        }
+      }
+    ];
+
+    const result = await Booking.aggregate(pipeline);
+    const bookings = result[0].data;
+    const totalCount = result[0].total[0]?.count || 0;
+    const totalPages = Math.ceil(totalCount / limit);
+
+    const today = new Date();
+    let upcomingBookings = 0;
+    let completedBookings = 0;
+    let cancelledBookings = 0;
+
+    bookings.forEach((booking) => {
+      if (!booking.flightData) return;
+      const departureDate = new Date(booking.flightData.departureDate);
+      if (booking.status === "cancelled") cancelledBookings++;
+      else if (departureDate > today) upcomingBookings++;
+      else completedBookings++;
+    });
+
+    res.render("admin/bookings", {
+      bookings,
+      totalBookings: totalCount,
+      upcomingBookings,
+      completedBookings,
+      cancelledBookings,
+      currentPage: page,
+      totalPages,
+      search,
+      limit,
+      totalCount
+    });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
   }
 };
 
 const viewBookingDetail = async (req, res) => {
+  const bookingId = req.params.id;
   try {
-    res.render("admin/bookingDetail", {});
+    const booking = await Booking.findById(bookingId)
+      .populate("userId")
+      .populate("flight");
+    res.render("admin/bookingDetail", { booking });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
@@ -201,10 +338,32 @@ const viewSettings = async (req, res) => {
 
 const viewAddFlight = async (req, res) => {
   try {
-    res.render("admin/addFlight", {});
+    const admin = await User.findOne({userRole: "Admin"});
+    const adminId = admin._id;
+    // Get the flight with the highest inventoryId
+    const lastFlight = await Flight.findOne({})
+      .sort({ createdAt: -1 })
+      .select("inventoryId");
+
+    let nextInventoryId;
+
+    if (lastFlight && lastFlight.inventoryId) {
+      // Extract numeric part (e.g., from 'INV00123')
+      const lastSeq = parseInt(lastFlight.inventoryId.replace("INV", ""), 10);
+      const newSeq = lastSeq + 1;
+      nextInventoryId = `INV${String(newSeq).padStart(5, "0")}`;
+    } else {
+      // Default to INV00001 if no flights exist
+      nextInventoryId = "INV00001";
+    }
+
+    res.render("admin/addFlight", {
+      inventoryId: nextInventoryId,
+      userId: adminId,
+    });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal Server error" });
+    console.error("Error generating inventoryId:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
@@ -1139,7 +1298,7 @@ const viewTransactions = async (req, res) => {
 };
 
 const viewWithdrawalsById = async (req, res) => {
-  console.log("Inside get withdrawals")
+  console.log("Inside get withdrawals");
   const sellerId = req.params.sellerId;
   const flightId = req.params.flightId;
 
@@ -1155,7 +1314,9 @@ const viewWithdrawalsById = async (req, res) => {
         booking.flight._id.toString() === flightId &&
         booking.flight.sellerId.toString() === sellerId
       ) {
-        const transaction = await Transaction.findOne({ bookingId: booking._id });
+        const transaction = await Transaction.findOne({
+          bookingId: booking._id,
+        });
         const paymentStatus = transaction ? transaction.paymentStatus : null;
 
         withdrawalList.push({
@@ -1171,7 +1332,6 @@ const viewWithdrawalsById = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
 
 const withdrawalPayment = async (req, res) => {
   const bookingId = req.params.id;
@@ -1256,7 +1416,7 @@ const viewMessages = async (req, res) => {
 
     const totalCount = countResult[0]?.total || 0;
     const totalPages = Math.ceil(totalCount / limit);
-    
+
     res.render("admin/messages", {
       messages,
       search,
@@ -1269,26 +1429,7 @@ const viewMessages = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
-}
-
-// const sendResponse = async (req, res) => {
-//   const { messageId, reply } = req.body;
-
-//   try {
-//     const message = await Support.findById(messageId);
-//     if (!message) return res.status(404).json({ success: false, message: "Message not found" });
-
-//     if (!message.reply) message.reply = [];
-
-//     message.reply.push(reply);
-//     await message.save();
-
-//     res.json({ success: true });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// }
+};
 
 const sendResponse = async (req, res) => {
   const { messageId, reply } = req.body;
@@ -1296,7 +1437,9 @@ const sendResponse = async (req, res) => {
   try {
     const messageDoc = await Support.findById(messageId);
     if (!messageDoc) {
-      return res.status(404).json({ success: false, message: "Message not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Message not found" });
     }
 
     // Initialize reply array if not already
@@ -1317,7 +1460,319 @@ const sendResponse = async (req, res) => {
     console.error(err);
     res.status(500).json({ success: false, message: "Server error" });
   }
-}
+};
+
+const addFlight = async (req, res) => {
+  console.log("Adding flights");
+  const oneWayFlight = req.body;
+  console.log(oneWayFlight);
+
+  try {
+    const newFlight = new Flight({
+      sellerId: oneWayFlight.sellerId,
+      inventoryId: oneWayFlight.inventoryName,
+      from: oneWayFlight.from,
+      to: oneWayFlight.to,
+      departureName: oneWayFlight.departureName,
+      arrivalName: oneWayFlight.arrivalName,
+      fromCity: oneWayFlight.fromCity,
+      toCity: oneWayFlight.toCity,
+      fromCountry: oneWayFlight.fromCountry,
+      toCountry: oneWayFlight.toCountry,
+      departureTime: oneWayFlight.departureTime,
+      departureDate: oneWayFlight.departureDate,
+      arrivalTime: oneWayFlight.arrivalTime,
+      arrivalDate: oneWayFlight.arrivalDate,
+      duration: oneWayFlight.totalDuration,
+      disableBeforeDays: oneWayFlight.disableBeforeDays,
+      stops: oneWayFlight.stops,
+      baggage: {
+        adult: {
+          checkIn: {
+            numberOfPieces: oneWayFlight.adultCheckinNumber,
+            weightPerPiece: oneWayFlight.adultCheckinWeight,
+          },
+          cabin: {
+            pieces: oneWayFlight.adultCabinNumber,
+            weightPerPiece: oneWayFlight.adultCabinWeight,
+          },
+        },
+        child: {
+          checkIn: {
+            numberOfPieces: oneWayFlight.childCheckinNumber,
+            weightPerPiece: oneWayFlight.childCheckinWeight,
+          },
+          cabin: {
+            pieces: oneWayFlight.childCabinNumber,
+            weightPerPiece: oneWayFlight.childCabinWeight,
+          },
+        },
+        infant: {
+          checkIn: {
+            numberOfPieces: oneWayFlight.infantCheckinNumber,
+            weightPerPiece: oneWayFlight.infantCheckinWeight,
+          },
+          cabin: {
+            pieces: oneWayFlight.infantCabinNumber,
+            weightPerPiece: oneWayFlight.infantCabinWeight,
+          },
+        },
+      },
+      inventoryDates: [
+        {
+          // date: oneWayFlight.inventoryDates[0]?.date,
+          pnr: oneWayFlight.inventoryDates[0]?.pnr,
+          seats: oneWayFlight.inventoryDates[0]?.seats,
+          fare: {
+            adults: oneWayFlight.inventoryDates[0]?.fare.adults,
+            infants: oneWayFlight.inventoryDates[0]?.fare.infants,
+          },
+        },
+      ],
+      refundable: oneWayFlight.refundable,
+    });
+
+    await newFlight.save();
+    return res.json({
+      message: "Flight added successfully",
+      success: true,
+      redirectUrl: "/admin/",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+};
+
+const getApiFlights = async (req, res) => {
+  console.log("Api flights");
+  const {
+    from,
+    to,
+    departureDate,
+    airlines = [],
+    flightNumbers = [],
+  } = req.body;
+
+  console.log("Get flights");
+  console.log(req.body);
+  console.log("From", from);
+  console.log("To", to);
+  console.log("Departure Date", departureDate);
+  console.log("Airlines", airlines);
+  console.log("Flight Numbers", flightNumbers);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return null;
+
+    const parts = dateString.trim().split(" ");
+    if (parts.length !== 3) return null;
+
+    const day = parts[0].padStart(2, "0");
+    const monthMap = {
+      Jan: "01",
+      Feb: "02",
+      Mar: "03",
+      Apr: "04",
+      May: "05",
+      Jun: "06",
+      Jul: "07",
+      Aug: "08",
+      Sep: "09",
+      Oct: "10",
+      Nov: "11",
+      Dec: "12",
+    };
+
+    const month = monthMap[parts[1]];
+    const year = parts[2];
+
+    return month ? `${year}-${month}-${day}` : null;
+  };
+
+  const formattedDate = formatDate(departureDate);
+  if (!from || !to || !formattedDate) {
+    return res.status(400).json({ error: "Missing or invalid parameters" });
+  }
+
+  const apiUrl = `https://flights.booking.com/api/flights/?type=ONEWAY&from=${from}.AIRPORT&to=${to}.AIRPORT&cabinClass=ECONOMY&sort=BEST&depart=${formattedDate}&adults=1&locale=en-us&salesCurrency=INR&customerCurrency=INR&aid=2215350&salesChannel=gfsapi&salesIdentifier=24323047&salesCountry=in&enableVI=1`;
+
+  try {
+    const response = await fetch(apiUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+        Accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      return res
+        .status(response.status)
+        .json({ error: `Booking API error: ${response.statusText}` });
+    }
+
+    const data = await response.json();
+    const flightOffers = data.flightOffers;
+
+    const filteredFlights = [];
+
+    flightOffers.forEach((offer) => {
+      offer.segments.forEach((segment) => {
+        const legs = segment.legs;
+
+        if (
+          airlines.length === legs.length &&
+          flightNumbers.length === legs.length
+        ) {
+          let allMatch = true;
+
+          for (let i = 0; i < legs.length; i++) {
+            const leg = legs[i];
+            const flightInfo = leg.flightInfo;
+            const carrierData = leg.carriersData;
+
+            if (
+              flightInfo.flightNumber !== parseInt(flightNumbers[i]) ||
+              carrierData[0].code.toLowerCase() !== airlines[i].toLowerCase()
+            ) {
+              allMatch = false;
+              break;
+            }
+          }
+
+          if (allMatch) {
+            filteredFlights.push({
+              legs,
+              checkedLuggage: segment.travellerCheckedLuggage || [],
+              cabinLuggage: segment.travellerCabinLuggage || [],
+              totalTime: segment.totalTime || "",
+              departureTime: segment.departureTime || "",
+              arrivalTime: segment.arrivalTime || "",
+              departureAirport: segment.departureAirport || {},
+              arrivalAirport: segment.arrivalAirport || {},
+            });
+          }
+        }
+      });
+    });
+
+    console.log("filteredFlights", filteredFlights);
+
+    res.json({ total: filteredFlights.length, flights: filteredFlights });
+  } catch (err) {
+    console.error("Fetch error:", err.message);
+    res.status(500).json({ error: "Failed to fetch flights" });
+  }
+};
+
+const viewPopularFlights = async (req, res) => {
+  try {
+    const popularFlights = await PopularFlight.find();
+    res.render("admin/popularFlights", { popularFlights });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+};
+
+const getAirports = async (req, res) => {
+  try {
+    const { q } = req.query;
+
+    const query = q ? { Name: { $regex: q, $options: "i" } } : {};
+
+    const airports = await Airport.find(query, { Name: 1, _id: 0 })
+      .sort({ Name: 1 })
+      .limit(q ? 100 : 25);
+
+    res.json(airports);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch airports" });
+  }
+};
+
+
+const addPopularFlights = async (req, res) => {
+  try {
+    const { from, to } = req.body;
+
+    if (!req.file) {
+      return res.status(400).json({ error: "File upload required" });
+    }
+
+    const parseLocation = (input) => {
+      const match = input.match(/^(.*)\s\((.*)\)$/);
+      if (!match) throw new Error(`Invalid location format: ${input}`);
+      return { city: match[1].trim(), code: match[2].trim() };
+    };
+
+    const fromParsed = parseLocation(from);
+    const toParsed = parseLocation(to);
+    const imagePath = "/uploads/" + req.file.filename; 
+
+    const newFlight = new PopularFlight({
+      fromCity: fromParsed.city,
+      fromCode: fromParsed.code,
+      toCity: toParsed.city,
+      toCode: toParsed.code,
+      image: imagePath,
+    });
+
+    await newFlight.save();
+
+    res.redirect("/admin/popular-flights");
+  } catch (err) {
+    console.error("Error adding popular flight:", err);
+    res.status(500).json({ error: "Failed to add popular flight" });
+  }
+};
+
+const deletePopularFlight = async (req, res) => {
+  try {
+    const flightId = req.params.id;
+
+    // 1. Find the flight document
+    const flight = await PopularFlight.findById(flightId);
+    if (!flight) {
+      return res.status(404).json({ error: "Flight not found" });
+    }
+
+    // 2. Construct image file path
+    const imagePath = path.join(__dirname, "..", "public", "uploads", flight.image);
+
+    // 3. Delete the image file
+    fs.unlink(imagePath, (err) => {
+      if (err && err.code !== "ENOENT") {
+        console.error("Error deleting image file:", err);
+      }
+    });
+
+    // 4. Delete the flight document
+    await PopularFlight.findByIdAndDelete(flightId);
+
+    res.redirect("/admin/popular-flights");
+  } catch (err) {
+    console.error("Error deleting popular flight:", err);
+    res.status(500).json({ error: "Failed to delete popular flight" });
+  }
+};
+
+const cancelBooking = async (req, res) => {
+  const { bookingId, reason } = req.body;
+
+  try {
+    await Booking.findByIdAndUpdate(bookingId, {
+      status: "cancelled",
+      cancellationReason: reason, // optional: store the reason
+    });
+
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false });
+  }
+};
+
 
 module.exports = {
   viewLogin,
@@ -1351,5 +1806,12 @@ module.exports = {
   withdrawalPayment,
   viewMessages,
   sendResponse,
-
+  addFlight,
+  getApiFlights,
+  viewPopularFlights,
+  getAirports,
+  addPopularFlights,
+  deletePopularFlight,
+  cancelBooking,
+  
 };

@@ -18,30 +18,114 @@
 					<li class="nav-item"><a href="/admin" class="nav-link">Dashboard</a></li>
 
 					<!-- Title -->
-					<li class="nav-item ms-2 my-2">Pages</li>
+					<li class="nav-item ms-2 my-2">Customer Pages</li>
 
-					<li class="nav-item">
+					<!-- <li class="nav-item">
 						<a class="nav-link" href="/admin/bookings" role="button">Bookings</a>
+					</li> -->
+					<li class="nav-item">
+						<a class="nav-link" data-bs-toggle="collapse" href="#collapsebooking"
+							role="button" aria-expanded="false" aria-controls="collapsebooking">
+							Bookings
+						</a>
+						<!-- Submenu -->
+						<ul class="nav collapse flex-column" id="collapsebooking"
+							data-bs-parent="#navbar-sidebar">
+							<li class="nav-item"> <a class="nav-link"
+									href="admin-booking-list.html">Upcoming Trip Orders</a></li>
+							<li class="nav-item"> <a class="nav-link"
+									href="admin-booking-detail.html">Past Trip Orders</a></li>
+							<li class="nav-item"> <a class="nav-link"
+									href="admin-booking-detail.html">Cancelled Trip Orders</a></li>
+							<li class="nav-item"> <a class="nav-link"
+									href="admin-booking-detail.html">Failed Trip Orders</a></li>
+							<li class="nav-item"> <a class="nav-link"
+									href="admin-booking-detail.html">Initiated to Cancel</a></li>
+						</ul>
 					</li>
 
 					<li class="nav-item">
-						<a class="nav-link" href="/admin/users" role="button">Users</a>
+						<a class="nav-link" data-bs-toggle="collapse" href="#collapseguest"
+							role="button" aria-expanded="false" aria-controls="collapseguest">
+							Customers
+						</a>
+						<!-- Submenu -->
+						<ul class="nav collapse flex-column" id="collapseguest"
+							data-bs-parent="#navbar-sidebar">
+							<li class="nav-item"> <a class="nav-link"
+									href="/admin/users">Customers List</a></li>
+							<li class="nav-item"> <a class="nav-link"
+									href="/admin/kyc-updates">Customers Kyc</a></li>
+							<li class="nav-item"> <a class="nav-link"
+									href="/admin/subscriptions">Subscription</a></li>
+						</ul>
+					</li>
+					
+					<!-- <li class="nav-item">
+						<a class="nav-link" href="/admin/users" role="button">Customers</a>
+					</li> -->
+
+					<li class="nav-item">
+						<a class="nav-link" href="/admin/transactions" role="button">Customer Transactions</a>
+					</li>
+
+					<li class="nav-item ms-2 my-2">Seller Pages</li>
+
+					<li class="nav-item">
+						<a class="nav-link" data-bs-toggle="collapse" href="#collapseagent"
+							role="button" aria-expanded="false" aria-controls="collapseagent">
+							Sellers
+						</a>
+						<!-- Submenu -->
+						<ul class="nav collapse flex-column" id="collapseagent"
+							data-bs-parent="#navbar-sidebar">
+							<li class="nav-item"> <a class="nav-link"
+									href="/admin/agents">Sellers List</a></li>
+							<li class="nav-item"> <a class="nav-link"
+									href="/admin/kyc-updates">Sellers KYC</a></li>
+							<li class="nav-item"> <a class="nav-link"
+									href="/admin/subscriptions">Subscription</a></li>
+						</ul>
+					</li>
+					
+					<!-- <li class="nav-item">
+						<a class="nav-link" href="/admin/agents" role="button">Sellers</a>
+					</li> -->
+
+					<li class="nav-item">
+						<a class="nav-link" data-bs-toggle="collapse" href="#collapseagent"
+							role="button" aria-expanded="false" aria-controls="collapseagent">
+							Inventory Orders
+						</a>
+						<!-- Submenu -->
+						<ul class="nav collapse flex-column" id="collapseagent"
+							data-bs-parent="#navbar-sidebar">
+							<li class="nav-item"> <a class="nav-link"
+									href="admin-agent-list.html">Active Inventory</a></li>
+							<li class="nav-item"> <a class="nav-link"
+									href="admin-agent-detail.html">Past Inventory</a></li>
+							<li class="nav-item"> <a class="nav-link"
+									href="admin-agent-detail.html">Closed Inventory</a></li>
+							<li class="nav-item"> <a class="nav-link"
+									href="admin-agent-list.html">Inventory Payout</a></li>
+							<li class="nav-item"> <a class="nav-link"
+									href="admin-agent-detail.html">Payout Bank List</a></li>
+
+						</ul>
+					</li>
+
+					<li class="nav-item ms-2 my-2">Help & Support</li>
+
+					<li class="nav-item">
+						<a class="nav-link" href="/admin/messages" role="button">Support Task</a>
 					</li>
 
 					<li class="nav-item">
-						<a class="nav-link" href="/admin/agents" role="button">Agents</a>
+						<a class="nav-link" href="/admin/settings" role="button">Admin Settings</a>
 					</li>
 
 					<li class="nav-item">
 						<a class="nav-link" href="/admin/coupons" role="button">Coupons</a>
-					</li>
-
-					<li class="nav-item">
-						<a class="nav-link" href="/admin/subscriptions" role="button">Subscriptions</a>
-					</li>
-
-					<li class="nav-item">
-						<a class="nav-link" href="/admin/transactions" role="button">Transactions</a>
 					</li>
 
 					<li>
@@ -49,16 +133,29 @@
 					</li>
 
 					<li>
-						<a class="nav-link" href="/admin/kyc-updates" role="button">KYC Updates</a>
+						<a class="nav-link" href="/admin/earnings" role="button">Earnings</a>
 					</li>
 
-					<li>
+					<!-- <li class="nav-item">
+						<a class="nav-link" href="/admin/subscriptions" role="button">Subscriptions</a>
+					</li> -->
+
+					<!-- <li class="nav-item">
+						<a class="nav-link" href="/admin/transactions" role="button">Transactions</a>
+					</li> -->
+
+
+					<!-- <li>
+						<a class="nav-link" href="/admin/kyc-updates" role="button">KYC Updates</a>
+					</li> -->
+
+					<!-- <li>
 						<a class="nav-link" href="/admin/messages" role="button">Messages</a>
 					</li>
 
 					<li class="nav-item">
 						<a class="nav-link" href="/admin/settings" role="button">Settings</a>
-					</li>
+					</li> -->
 					
 					
 				</ul>
@@ -69,7 +166,7 @@
 					<a class="h6 fw-light mb-0 text-body"  href="/admin/logout" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Sign out">
 						<i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
 					</a>
-					<a class="h6 mb-0 text-body" href="#" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Settings">
+					<a class="h6 mb-0 text-body" href="/admin/settings" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Settings">
 						<i class="bi bi-gear-fill"></i>
 					</a>
 				</div>

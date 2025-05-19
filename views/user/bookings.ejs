@@ -76,7 +76,7 @@ Content START -->
                                                                         </h6>
                                                                         <ul class="nav nav-divider small">
                                                                             <li class="nav-item">Booking ID: <%=
-                                                                                    booking._id %>
+                                                                                    booking.bookingId %>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -85,8 +85,14 @@ Content START -->
                                                                 <!-- Button -->
                                                                 <div class="mt-2 mt-md-0">
                                                                     <a href="/manage-booking?id=<%= booking._id %>"
-                                                                        class="btn btn-primary-soft mb-0">Manage
-                                                                        Booking</a>
+                                                                        class="btn btn-primary-soft mb-0">Booking</a>
+                                                                    <button type="button" 
+                                                                        class="btn btn-primary-soft mb-0 open-cancel-modal" 
+                                                                        data-id="<%= booking._id %>" 
+                                                                        data-booking-id="<%= booking.bookingId %>" 
+                                                                        data-bs-toggle="modal" 
+                                                                        data-bs-target="#cancelBookingModal">
+                                                                    Cancel</button>
                                                                 </div>
                                                             </div>
 
@@ -143,79 +149,87 @@ Content START -->
                                             </div>
 
                                             <!-- Tab content item START -->
-                                            <!-- <% if (upcomingBookings.length > 0) { %>
-        <% upcomingBookings.forEach((booking)=> { %> -->
                                             <div class="tab-pane fade" id="tab-2">
-                                                <h6>Cancelled booking (<%= upcomingBookings.length %>)</h6>
+                                                <!-- <div class="bg-mode shadow p-4 rounded overflow-hidden"> -->
+                                                <% if (cancelledBookings.length> 0) { %>
+                                                    <h6>Cancelled booking (<%= cancelledBookings.length %>)</h6>
 
-                                                <!-- Card item START -->
-                                                <div class="card border">
-                                                    <!-- Card header -->
-                                                    <div
-                                                        class="card-header border-bottom d-md-flex justify-content-md-between align-items-center">
-                                                        <!-- Icon and Title -->
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="icon-lg bg-light rounded-circle flex-shrink-0">
-                                                                <i class="fa-solid fa-hotel"></i>
+                                                    <% cancelledBookings.forEach((booking)=> { %>
+                                                        <!-- Completed Booking Card -->
+                                                        <div class="card border mb-4">
+                                                            <div
+                                                                class="card-header border-bottom d-md-flex justify-content-md-between align-items-center">
+                                                                <div class="d-flex align-items-center">
+                                                                    <div
+                                                                        class="icon-lg bg-light rounded-circle flex-shrink-0">
+                                                                        <img src="<%= booking.flightDetails.stops[0].airlineLogo %>" alt="">                                                                    </div>
+                                                                    <div class="ms-2">
+                                                                        <h6 class="card-title mb-0">
+                                                                            <%= booking.flightDetails.from %> to <%=
+                                                                                    booking.flightDetails.to %>
+                                                                        </h6>
+                                                                        <ul class="nav nav-divider small">
+                                                                            <li class="nav-item">Booking
+                                                                                ID: <%= booking.bookingId %>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- Button -->
+                                                                <div class="mt-2 mt-md-0">
+                                                                    <a href="/manage-booking?id=<%= booking._id %>"
+                                                                        class="btn btn-primary-soft mb-0">Manage
+                                                                        Booking</a>
+                                                                </div>
                                                             </div>
-                                                            <!-- Title -->
-                                                            <div class="ms-2">
-                                                                <h6 class="card-title mb-0">Courtyard by
-                                                                    Marriott New York</h6>
-                                                                <ul class="nav nav-divider small">
-                                                                    <li class="nav-item">Booking ID:
-                                                                        CGDSUAHA12548</li>
-                                                                    <li class="nav-item">AC</li>
-                                                                </ul>
+                                                            <div class="card-body">
+                                                                <div class="row g-3">
+                                                                    <div class="col-sm-6 col-md-4">
+                                                                        <span>Departure time</span>
+                                                                        <h6 class="mb-0">
+                                                                            <%= booking.flightDetails.departureDate %>
+                                                                                <%= booking.flightDetails.departureTime
+                                                                                    %>
+                                                                        </h6>
+                                                                    </div>
+                                                                    <div class="col-sm-6 col-md-4">
+                                                                        <span>Arrival time</span>
+                                                                        <h6 class="mb-0">
+                                                                            <%= booking.flightDetails.arrivalDate %>
+                                                                                <%= booking.flightDetails.arrivalTime %>
+                                                                        </h6>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <span>Booked by</span>
+                                                                        <h6 class="mb-0">
+                                                                            <%= booking.flightDetails.stops[0].airline %> | <%= booking.flightDetails.stops[0].airlineCode %>
+                                                                        </h6>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
+                                                    <% }) %>
+                                                <% } else { %>
+                                                                <!-- No completed bookings message -->
+                                                                <div class="row g-4 align-items-center">
+                                                                    <div class="col-md-9">
+                                                                        <h6>Looks like you have never
+                                                                            booked with BOOKING</h6>
+                                                                        <h4 class="mb-2">When you book
+                                                                            your trip, it will be shown
+                                                                            here.</h4>
+                                                                        <a href="/flight-list"
+                                                                            class="btn btn-primary-soft mb-0">Start
+                                                                            booking now</a>
+                                                                    </div>
+                                                                    <div class="col-md-3 text-end">
+                                                                        <img src="/assets/images/element/17.svg"
+                                                                            class="mb-n5" alt="">
+                                                                    </div>
+                                                                </div>
 
-                                                        <!-- Button -->
-                                                        <div class="mt-2 mt-md-0">
-                                                            <a href="#" class="btn btn-primary-soft mb-0">Manage
-                                                                Booking</a>
-                                                            <p class="text-danger text-md-end mb-0">Booking
-                                                                cancelled</p>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Card body -->
-                                                    <div class="card-body">
-                                                        <div class="row g-3">
-                                                            <div class="col-sm-6 col-md-4">
-                                                                <span>Check in time</span>
-                                                                <h6 class="mb-0">Tue 05 Aug 12:00 AM</h6>
-                                                            </div>
-
-                                                            <div class="col-sm-6 col-md-4">
-                                                                <span>Check out time</span>
-                                                                <h6 class="mb-0">Tue 12 Aug 4:00 PM</h6>
-                                                            </div>
-
-                                                            <div class="col-md-4">
-                                                                <span>Booked by</span>
-                                                                <h6 class="mb-0">Frances Guerrero</h6>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <!-- Card item END -->
+                                                <% } %>
                                             </div>
-                                            <!-- <% }) %>
-    <% } else { %>
-      <div class="row g-4 align-items-center">
-            Content
-            <div class="col-md-9">
-                <h6>Looks like you have never booked with BOOKING</h6>
-                <h4 class="mb-2">When you book your trip will be shown here.</h4>
-                <a href="/flight-list" class="btn btn-primary-soft mb-0">Start booking now</a>
-            </div>
-            Image
-            <div class="col-md-3 text-end">
-                <img src="/assets/images/element/17.svg" class="mb-n5" alt="">
-            </div>
-        </div>
-    <% } %> -->
                                             <!-- Tabs content item END -->
 
                                             <!-- Tab content item START -->
@@ -240,7 +254,7 @@ Content START -->
                                                                         </h6>
                                                                         <ul class="nav nav-divider small">
                                                                             <li class="nav-item">Booking
-                                                                                ID: <%= booking._id %>
+                                                                                ID: <%= booking.bookingId %>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -300,7 +314,6 @@ Content START -->
 
                                                                 <% } %>
                                             </div>
-
                                             <!-- Tabs content item END -->
                                         </div>
 
@@ -315,6 +328,70 @@ Content START -->
             </section>
             <!-- =======================
 Content END -->
+
+<!-- Cancel Booking Modal -->
+<div class="modal fade" id="cancelBookingModal" tabindex="-1" aria-labelledby="cancelBookingLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form action="/cancel-booking" method="POST" enctype="multipart/form-data" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cancelBookingLabel">Booking Cancellation Request</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+  
+        <div class="modal-body">
+          <!-- Hidden: bookingId -->
+          <input type="hidden" name="bookingId" id="modalBookingId">
+  
+          <!-- Hidden: enquiryType, category, priority -->
+          <input type="hidden" name="enquiryType" value="problem">
+          <input type="hidden" name="category" value="Cancellation">
+          <input type="hidden" name="priority" value="Important">
+  
+          <!-- Subject -->
+          <div class="mb-3">
+            <label class="form-label">Subject</label>
+            <input type="text" id="modalSubject" class="form-control" name="subject" disabled>
+          </div>
+  
+          <!-- Reason -->
+          <div class="mb-3">
+            <label class="form-label">Reason for Cancellation <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="message" required>
+          </div>
+  
+          <!-- Optional File Upload -->
+          <div class="mb-3">
+            <label class="form-label">Upload File (optional)</label>
+            <input type="file" class="form-control" name="attachment">
+          </div>
+        </div>
+  
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Submit Request</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const buttons = document.querySelectorAll(".open-cancel-modal");
+      const bookingIdInput = document.getElementById("modalBookingId");
+      const subjectInput = document.getElementById("modalSubject");
+  
+      buttons.forEach(button => {
+        button.addEventListener("click", () => {
+          const bookingId = button.getAttribute("data-id");
+          const bookingCode = button.getAttribute("data-booking-id");
+  
+          bookingIdInput.value = bookingCode;
+          subjectInput.value = `Cancellation request for booking ${bookingCode}`;
+        });
+      });
+    });
+  </script>
+  
 
         </main>
         <!-- **************** MAIN CONTENT END **************** -->

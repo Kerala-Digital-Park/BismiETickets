@@ -92,6 +92,15 @@ const bookingSchema = mongoose.Schema(
       type: Boolean,
       required: true,
     },
+    status: {
+      type: String,
+      enum: ["active", "cancelled"],
+      default: "active",
+    }, 
+    cancellationReason: {
+      type: String,
+      required: false
+    }, 
   },
   { timestamps: true }
 );

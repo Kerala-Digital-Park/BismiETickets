@@ -25,7 +25,7 @@ const userSchema = mongoose.Schema(
     aadhaarCardBack: { type: String, default: null },
     userRole: {
       type: String,
-      enum: ["Agent", "User"],
+      enum: ["Agent", "User", "Admin"],
       default: "User",
     },
     subscription: {
