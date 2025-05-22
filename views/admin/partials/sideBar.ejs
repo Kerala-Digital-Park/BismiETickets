@@ -3,8 +3,8 @@
 		<!-- Navbar brand for xl START -->
 		<div class="d-flex align-items-center">
 			<a class="navbar-brand" href="index.html">
-				<img class="light-mode-item navbar-brand-item" src="/assets/images/logo.jpg" alt="logo">
-				<img class="dark-mode-item navbar-brand-item" src="/assets/images/logo.jpg" alt="logo">
+				<img class="light-mode-item navbar-brand-item" src="/assets/images/logo.svg" alt="logo">
+				<img class="dark-mode-item navbar-brand-item" src="/assets/images/logo.svg" alt="logo">
 			</a>
 		</div>
 		<!-- Navbar brand for xl END -->
@@ -32,15 +32,17 @@
 						<ul class="nav collapse flex-column" id="collapsebooking"
 							data-bs-parent="#navbar-sidebar">
 							<li class="nav-item"> <a class="nav-link"
-									href="admin-booking-list.html">Upcoming Trip Orders</a></li>
+								href="/admin/bookings/latest">Latest Orders History</a></li>
 							<li class="nav-item"> <a class="nav-link"
-									href="admin-booking-detail.html">Past Trip Orders</a></li>
+									href="/admin/bookings/upcoming">Upcoming Trip Orders</a></li>
 							<li class="nav-item"> <a class="nav-link"
-									href="admin-booking-detail.html">Cancelled Trip Orders</a></li>
+									href="/admin/bookings/past">Past Trip Orders</a></li>
 							<li class="nav-item"> <a class="nav-link"
-									href="admin-booking-detail.html">Failed Trip Orders</a></li>
+									href="/admin/bookings/cancelled">Cancelled Trip Orders</a></li>
 							<li class="nav-item"> <a class="nav-link"
-									href="admin-booking-detail.html">Initiated to Cancel</a></li>
+									href="/admin/bookings/failed">Failed Trip Orders</a></li>
+							<li class="nav-item"> <a class="nav-link"
+									href="/admin/bookings/initiated">Initiated to Cancel</a></li>
 						</ul>
 					</li>
 
@@ -55,7 +57,7 @@
 							<li class="nav-item"> <a class="nav-link"
 									href="/admin/users">Customers List</a></li>
 							<li class="nav-item"> <a class="nav-link"
-									href="/admin/kyc-updates">Customers Kyc</a></li>
+									href="/admin/user-kyc-updates">Customers Kyc</a></li>
 							<li class="nav-item"> <a class="nav-link"
 									href="/admin/subscriptions">Subscription</a></li>
 						</ul>
@@ -82,7 +84,7 @@
 							<li class="nav-item"> <a class="nav-link"
 									href="/admin/agents">Sellers List</a></li>
 							<li class="nav-item"> <a class="nav-link"
-									href="/admin/kyc-updates">Sellers KYC</a></li>
+									href="/admin/agent-kyc-updates">Sellers KYC</a></li>
 							<li class="nav-item"> <a class="nav-link"
 									href="/admin/subscriptions">Subscription</a></li>
 						</ul>
@@ -93,12 +95,12 @@
 					</li> -->
 
 					<li class="nav-item">
-						<a class="nav-link" data-bs-toggle="collapse" href="#collapseagent"
-							role="button" aria-expanded="false" aria-controls="collapseagent">
+						<a class="nav-link" data-bs-toggle="collapse" href="#collapseinventory"
+							role="button" aria-expanded="false" aria-controls="collapseinventory">
 							Inventory Orders
 						</a>
 						<!-- Submenu -->
-						<ul class="nav collapse flex-column" id="collapseagent"
+						<ul class="nav collapse flex-column" id="collapseinventory"
 							data-bs-parent="#navbar-sidebar">
 							<li class="nav-item"> <a class="nav-link"
 									href="admin-agent-list.html">Active Inventory</a></li>

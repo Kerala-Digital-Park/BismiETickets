@@ -1,0 +1,443 @@
+<%- include('./partials/header') %>
+
+<!-- **************** MAIN CONTENT START **************** -->
+
+	<main>
+
+	<!-- Sidebar START -->
+	<%- include('./partials/sideBar') %>
+	<!-- Sidebar END -->
+
+		<!-- Page content START -->
+		<div class="page-content">
+
+			<!-- Top bar START -->
+		<%- include('./partials/topBar') %>
+		<!-- Top bar END -->
+
+			<!-- Page main content START -->
+			<div class="page-content-wrapper p-xxl-4">
+
+				<!-- Title -->
+				<div class="row">
+					<div class="col-12 mb-5">
+						<div class="d-sm-flex justify-content-between align-items-center">
+							<h1 class="h4 mb-2 mb-sm-0">Latest Booking History</h1>
+							<div class="d-grid"><a href="/" class="btn btn-primary-soft mb-0"><i
+										class="bi bi-plus-lg fa-fw"></i> Add New Booking</a></div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Counter START -->
+				<div class="row g-4 mb-5">
+					<!-- Counter item -->
+					<div class="col-md-6 col-xxl-3">
+						<div class="card card-body shadow p-4">
+							<div class="d-flex justify-content-between align-items-center mb-3">
+								<!-- Number -->
+								<div class="me-2">
+									<span>Upcoming <br>booking</span>
+									<h3 class="mb-0 mt-2"><%= upcomingBookings %></h3>
+								</div>
+								<!-- Icon -->
+								<div
+									class="icon-lg rounded-circle flex-shrink-0 bg-primary bg-opacity-10 text-primary mb-0">
+									<i class="bi bi-ticket fa-fw"></i>
+								</div>
+							</div>
+							<!-- Progress bar -->
+							<!-- <div class="progress progress-xs bg-primary bg-opacity-10 mb-2">
+								<div class="progress-bar bg-primary" role="progressbar"
+									style="width: 60%" aria-valuenow="60" aria-valuemin="0"
+									aria-valuemax="100">
+								</div>
+							</div>
+							<span><span class="text-primary">50 Upcoming</span> on May 2025</span> -->
+						</div>
+					</div>
+
+					<!-- Counter item -->
+					<div class="col-md-6 col-xxl-3">
+						<div class="card card-body shadow p-4">
+							<div class="d-flex justify-content-between align-items-center mb-3">
+								<!-- Number -->
+								<div class="me-2">
+									<span>Completed <br> booking</span>
+									<h3 class="mb-0 mt-2"><%= completedBookings %></h3>
+								</div>
+								<!-- Icon -->
+								<div
+									class="icon-lg rounded-circle flex-shrink-0 bg-success bg-opacity-10 text-success mb-0">
+									<i class="bi bi-ticket-perforated-fill fa-fw"></i>
+								</div>
+							</div>
+							<!-- Progress bar -->
+							<!-- <div class="progress progress-xs bg-success bg-opacity-10 mb-2">
+								<div class="progress-bar bg-success" role="progressbar"
+									style="width: 60%" aria-valuenow="60" aria-valuemin="0"
+									aria-valuemax="100">
+								</div>
+							</div>
+							<span><span class="text-success">125 Completed bookings</span> on May
+								2025</span> -->
+						</div>
+					</div>
+
+					<!-- Counter item -->
+					<div class="col-md-6 col-xxl-3">
+						<div class="card card-body shadow p-4">
+							<div class="d-flex justify-content-between align-items-center mb-3">
+								<!-- Number -->
+								<div class="me-2">
+									<span>Cancelled <br> booking</span>
+									<h3 class="mb-0 mt-2"><%= cancelledBookings %></h3>
+								</div>
+								<!-- Icon -->
+								<div
+									class="icon-lg rounded-circle flex-shrink-0 bg-danger bg-opacity-10 text-danger mb-0">
+									<i class="bi bi-ticket-detailed fa-fw"></i>
+								</div>
+							</div>
+							<!-- Progress bar -->
+							<!-- <div class="progress progress-xs bg-danger bg-opacity-10 mb-2">
+								<div class="progress-bar bg-danger" role="progressbar"
+									style="width: 60%" aria-valuenow="60" aria-valuemin="0"
+									aria-valuemax="100">
+								</div>
+							</div>
+							<span><span class="text-danger">2 Cancelled bookings</span> on May
+								2025</span> -->
+						</div>
+					</div>
+
+					<!-- Counter item -->
+					<div class="col-md-6 col-xxl-3">
+						<div class="card card-body shadow p-4">
+							<div class="d-flex justify-content-between align-items-center mb-3">
+								<!-- Number -->
+								<div class="me-2">
+									<span>Failed <br> booking</span>
+									<h3 class="mb-0 mt-2"><%= failedBookings %></h3>
+								</div>
+								<!-- Icon -->
+								<div
+									class="icon-lg rounded-circle flex-shrink-0 bg-orange bg-opacity-10 text-orange mb-0">
+									<i class="bi bi-ticket-perforated fa-fw"></i>
+								</div>
+							</div>
+							<!-- Progress bar -->
+							<!-- <div class="progress progress-xs bg-orange bg-opacity-10 mb-2">
+								<div class="progress-bar bg-orange" role="progressbar"
+									style="width: 60%" aria-valuenow="60" aria-valuemin="0"
+									aria-valuemax="100">
+								</div>
+							</div>
+							<span><span class="text-orange">2 Failed bookings</span> on May
+								2025</span> -->
+						</div>
+					</div>
+				</div>
+				<!-- Counter END -->
+
+				<!-- Tabs and search START -->
+				<div class="row g-4 justify-content-between align-items-center">
+					<div class="col-lg-4">
+						<!-- Tabs -->
+
+						<form class="rounded position-relative" method="get" action="/admin/bookings/latest">
+								<input class="form-control bg-transparent pe-5" type="search" name="search"
+									placeholder="Search" aria-label="Search" value="<%= search %>">
+								<button
+									class="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover "
+									type="submit">
+									<i class="fas fa-search fs-6"></i>
+								</button>
+							</form>			
+
+					</div>
+
+					<div class="col-lg-6 col-xxl-8">
+						<div
+							class="d-sm-flex gap-4 justify-content-between justify-content-lg-end">
+							<!-- Search -->
+
+							<!-- Tabs -->
+							<div class="d-flex justify-content-end mt-2 mt-sm-0">
+								<ul class="nav nav-pills nav-pills-dark" id="room-pills-tab"
+									role="tablist">
+									<!-- Tab item -->
+									<li class="nav-item">
+										<button class="nav-link rounded-start rounded-0 " id="grid-tab"
+											data-bs-toggle="tab" data-bs-target="#grid-tab-pane" type="button"
+											role="tab" aria-controls="grid-tab-pane" aria-selected="true"><i
+												class="bi fa-fw bi-list-ul"></i> All bookings</button>
+									</li>
+									<!-- Tab item -->
+									<li class="nav-item">
+										<button class="nav-link rounded-end rounded-0 active" id="list-tab"
+											data-bs-toggle="tab" data-bs-target="#list-tab-pane" type="button"
+											role="tab" aria-controls="list-tab-pane" aria-selected="false"><i
+												class="bi fa-fw bi-calendar"></i> Today Travel</button>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Tabs and search END -->
+
+				<!-- Tab content START -->
+				<div class="tab-content mt-5" id="myTabContent">
+					<!-- Content item START -->
+					<div class="tab-pane fade  " id="grid-tab-pane">
+						<!-- Rooms START -->
+						<div class="card shadow">
+							<!-- Card body START -->
+							<div class="card-body">
+								<!-- Table head -->
+								<div class="bg-light rounded p-3 d-none d-xxl-block">
+									<div class="row row-cols-6 g-4">
+										<div class="col "><h6 class="mb-0">Trip Details</h6></div>
+										<div class="col"><h6 class="mb-0">Trip Date</h6></div>
+										<div class="col"><h6 class="mb-0">Ref & User</h6></div>
+										<div class="col"><h6 class="mb-0">Amount</h6></div>
+										<div class="col"><h6 class="mb-0">Status</h6></div>
+										<div class="col"><h6 class="mb-0">Action</h6></div>
+									</div>
+								</div>
+								<% if (bookings.length === 0) { %>
+									<div class="col">
+									  <h6 class="mb-0 fw-normal text-center p-4">No bookings</h6>
+									</div>
+								  <% } else { %>
+									<% bookings.forEach((booking) => { %>
+									  <!-- Booking card row -->
+									  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 row-cols-xxl-6 g-2 g-sm-4 align-items-md-center border-bottom px-2 py-4">
+										<!-- Trip Details -->
+										<div class="col">
+										  <small class="d-block d-xxl-none">Trip Details</small>
+										  <div class="d-flex align-items-center">
+											<div class="avatar avatar-md flex-shrink-0">
+											  <img class="rounded-circle" src="<%= booking.flightData?.stops[0]?.airlineLogo %>" alt="Airline Logo">
+											</div>
+											<h6 class="mb-0 ms-2"><%= booking.flightData?.fromCity %> ➝ <%= booking.flightData?.toCity %> on <%= booking.flightData?.stops[0]?.airline %></h6>
+										  </div>
+										</div>
+								  
+										<!-- Trip Date -->
+										<div class="col">
+										  <small class="d-block d-xxl-none">Trip Date</small>
+										  <h6 class="mb-0 fw-normal"><%= booking.flightData?.departureDate %></h6>
+										</div>
+								  
+										<!-- Ref & User -->
+										<div class="col">
+										  <small class="d-block d-xxl-none">Ref & User</small>
+										  <h6 class="mb-0 fw-normal"><%= booking.bookingId %> <br> <%= booking.userData?.name %></h6>
+										</div>
+								  
+										<!-- Amount -->
+										<div class="col">
+										  <small class="d-block d-xxl-none">Amount:</small>
+										  <h6 class="text-success mb-0">₹ <%= booking.amount %></h6>
+										</div>
+								  
+										<!-- Status -->
+										<div class="col">
+										  <small class="d-block d-xxl-none">Status:</small>
+										  <%
+											let status, badgeClass;
+											const today = new Date();
+											const bookingDate = new Date(booking.flightData?.departureDate);
+								  
+											if ((booking.status || '').toLowerCase() === 'cancelled') {
+											  status = 'Cancelled';
+											  badgeClass = 'text-bg-danger';
+											} else if (bookingDate > today) {
+											  status = 'Upcoming';
+											  badgeClass = 'text-bg-info';
+											} else {
+											  status = 'Completed';
+											  badgeClass = 'text-bg-success';
+											}
+										  %>
+										  <span class="badge <%= badgeClass %>"><%= status %></span>
+										</div>
+								  
+										<!-- View button -->
+										<div class="col">
+										  <a href="/admin/booking-detail/<%= booking._id %>" class="btn btn-sm btn-light mb-0">View</a>
+										</div>
+									  </div>
+									<% }); %>
+								  <% } %>
+							</div>
+							<!-- Card body END -->
+
+							<!-- Card footer START -->
+							<div class="card-footer pt-0">
+								<!-- Pagination and content -->
+								<div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+									<p class="mb-sm-0 text-center text-sm-start">
+									  Showing <%= (currentPage - 1) * limit + 1 %> to
+									  <%= Math.min(currentPage * limit, totalCount) %> of
+									  <%= totalCount %> entries
+									</p>
+									<nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
+									  <ul class="pagination pagination-sm pagination-primary-soft mb-0">
+										<li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+										  <a class="page-link" href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
+										</li>
+								  
+										<% for (let i = 1; i <= totalPages; i++) { %>
+										  <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+											<a class="page-link" href="?search=<%= search %>&page=<%= i %>"><%= i %></a>
+										  </li>
+										<% } %>
+								  
+										<li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+										  <a class="page-link" href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
+										</li>
+									  </ul>
+									</nav>
+								</div>								  
+							</div>
+							<!-- Card footer END -->
+						</div>
+						<!-- Rooms END -->
+
+						
+					</div>
+					<!-- Content item END -->
+
+					<!-- Content item START -->
+					<div class="tab-pane fade show active" id="list-tab-pane">
+						<div class="card shadow">
+							<!-- Card body START -->
+							<div class="card-body">
+								<!-- Table head -->
+								<div class="bg-light rounded p-3 d-none d-xxl-block">
+									<div class="row row-cols-6 g-4">
+										<div class="col "><h6 class="mb-0">Trip Details</h6></div>
+										<div class="col"><h6 class="mb-0">Trip Date</h6></div>
+										<div class="col"><h6 class="mb-0">Ref & User</h6></div>
+										<div class="col"><h6 class="mb-0">Amount</h6></div>
+										<div class="col"><h6 class="mb-0">Status</h6></div>
+										<div class="col"><h6 class="mb-0">Action</h6></div>
+									</div>
+								</div>
+
+								<% if (bookings.length === 0) { %>
+									<div class="col">
+									  <h6 class="mb-0 fw-normal text-center p-4">No bookings</h6>
+									</div>
+								  <% } else { %>
+									<% bookings.forEach((booking) => { %>
+									  <!-- Booking card row -->
+									  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 row-cols-xxl-6 g-2 g-sm-4 align-items-md-center border-bottom px-2 py-4">
+										<!-- Trip Details -->
+										<div class="col">
+										  <small class="d-block d-xxl-none">Trip Details</small>
+										  <div class="d-flex align-items-center">
+											<div class="avatar avatar-md flex-shrink-0">
+											  <img class="rounded-circle" src="<%= booking.flightData?.stops[0]?.airlineLogo %>" alt="Airline Logo">
+											</div>
+											<h6 class="mb-0 ms-2"><%= booking.flightData?.fromCity %> ➝ <%= booking.flightData?.toCity %> on <%= booking.flightData?.stops[0]?.airline %></h6>
+										  </div>
+										</div>
+								  
+										<!-- Trip Date -->
+										<div class="col">
+										  <small class="d-block d-xxl-none">Trip Date</small>
+										  <h6 class="mb-0 fw-normal"><%= booking.flightData?.departureDate %></h6>
+										</div>
+								  
+										<!-- Ref & User -->
+										<div class="col">
+										  <small class="d-block d-xxl-none">Ref & User</small>
+										  <h6 class="mb-0 fw-normal"><%= booking.bookingId %> <br> <%= booking.userData?.name %></h6>
+										</div>
+								  
+										<!-- Amount -->
+										<div class="col">
+										  <small class="d-block d-xxl-none">Amount:</small>
+										  <h6 class="text-success mb-0">₹ <%= booking.amount %></h6>
+										</div>
+								  
+										<!-- Status -->
+										<div class="col">
+										  <small class="d-block d-xxl-none">Status:</small>
+										  <%
+											let status, badgeClass;
+											const today = new Date();
+											const bookingDate = new Date(booking.flightData?.departureDate);
+								  
+											if ((booking.status || '').toLowerCase() === 'cancelled') {
+											  status = 'Cancelled';
+											  badgeClass = 'text-bg-danger';
+											} else if (bookingDate > today) {
+											  status = 'Upcoming';
+											  badgeClass = 'text-bg-info';
+											} else {
+											  status = 'Completed';
+											  badgeClass = 'text-bg-success';
+											}
+										  %>
+										  <span class="badge <%= badgeClass %>"><%= status %></span>
+										</div>
+								  
+										<!-- View button -->
+										<div class="col">
+										  <a href="/admin/booking-detail/<%= booking._id %>" class="btn btn-sm btn-light mb-0">View</a>
+										</div>
+									  </div>
+									<% }); %>
+								  <% } %>
+
+							</div>
+							<!-- Card body END -->
+
+							<!-- Card footer START -->
+							<div class="card-footer pt-0">
+								<!-- Pagination and content -->
+								<div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+									<p class="mb-sm-0 text-center text-sm-start">
+									  Showing <%= (currentPage - 1) * limit + 1 %> to
+									  <%= Math.min(currentPage * limit, totalCount) %> of
+									  <%= totalCount %> entries
+									</p>
+									<nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
+									  <ul class="pagination pagination-sm pagination-primary-soft mb-0">
+										<li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+										  <a class="page-link" href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
+										</li>
+								  
+										<% for (let i = 1; i <= totalPages; i++) { %>
+										  <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+											<a class="page-link" href="?search=<%= search %>&page=<%= i %>"><%= i %></a>
+										  </li>
+										<% } %>
+								  
+										<li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+										  <a class="page-link" href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
+										</li>
+									  </ul>
+									</nav>
+								</div>								  
+							</div>
+							<!-- Card footer END -->
+						</div>
+					</div>
+					<!-- Content item END -->
+				</div>
+				<!-- Tab content END -->
+			</div>
+			<!-- Page main content END -->
+		</div>
+		<!-- Page content END -->
+
+	</main>
+<!-- **************** MAIN CONTENT END **************** -->
+
+<%- include('./partials/footer') %>

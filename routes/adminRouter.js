@@ -20,14 +20,20 @@ adminRouter.get('/coupons',isLogin, adminController.viewCoupons);
 adminRouter.get('/subscriptions',isLogin, adminController.viewSubscriptions);
 adminRouter.get('/edit-subscription/:id',isLogin, adminController.viewEditSubscription)
 adminRouter.get('/bank-updates',isLogin, adminController.viewBankUpdates);
-adminRouter.get('/kyc-updates',isLogin, adminController.viewKycUpdates);
+adminRouter.get('/user-kyc-updates',isLogin, adminController.viewUserKycUpdates);
+adminRouter.get('/agent-kyc-updates',isLogin, adminController.viewAgentKycUpdates);
 adminRouter.get('/transactions', isLogin, adminController.viewTransactions);
 adminRouter.get('/withdrawal/:flightId/:sellerId',isLogin, adminController.viewWithdrawalsById);
 adminRouter.get('/messages', isLogin, adminController.viewMessages)
 adminRouter.get('/popular-flights', isLogin, adminController.viewPopularFlights)
 adminRouter.get('/airports', adminController.getAirports);
-// adminRouter.get("/airports", adminController.viewAllAirports);
-// adminRouter.get("/airports/search", adminController.searchAirports);
+adminRouter.get("/bookings/latest", isLogin, adminController.viewLatestBookings);
+adminRouter.get("/bookings/upcoming", isLogin, adminController.viewUpcomingBookings);
+adminRouter.get("/bookings/cancelled", isLogin, adminController.viewCancelledBookings);
+adminRouter.get("/bookings/past", isLogin, adminController.viewPastBookings);
+adminRouter.get("/bookings/failed", isLogin, adminController.viewFailedBookings);
+adminRouter.get("/bookings/initiated", isLogin, adminController.viewInitiatedBookings);
+
 
 
 
@@ -36,19 +42,22 @@ adminRouter.post('/add-coupon',isLogin, adminController.viewAddCoupon);
 adminRouter.post('/delete-coupon/:id',isLogin, adminController.deleteCoupon);
 adminRouter.post('/add-subscription',isLogin, adminController.addSubscription);
 adminRouter.post('/edit-subscription/:id',isLogin, adminController.editSubscription);
-adminRouter.post('/delete-subscription/:id',isLogin, adminController.deleteSubscription)
+adminRouter.post('/delete-subscription/:id',isLogin, adminController.deleteSubscription);
 adminRouter.post('/update-bank-detail/:id',isLogin, adminController.updateBankDetail);
 adminRouter.post('/update-kyc-detail/:id',isLogin, adminController.updateKycDetail);
-adminRouter.post('/withdrawal-payment/:id', isLogin, adminController.withdrawalPayment)
-adminRouter.post('/send-response', isLogin, adminController.sendResponse)
+adminRouter.post('/withdrawal-payment/:id', isLogin, adminController.withdrawalPayment);
+adminRouter.post('/send-response', isLogin, adminController.sendResponse);
 adminRouter.post("/add-flight", isLogin, adminController.addFlight);
 adminRouter.post("/api/flights", isLogin, adminController.getApiFlights);
-adminRouter.post("/popular-flights", upload.single("file"), isLogin, adminController.addPopularFlights)
+adminRouter.post("/popular-flights", upload.single("file"), isLogin, adminController.addPopularFlights);
 adminRouter.post("/cancel-booking", isLogin, adminController.cancelBooking);
+adminRouter.post("/edit-user", isLogin, adminController.editUser);
+adminRouter.post("/add-airport", isLogin, adminController.addAirport);
+adminRouter.post("/update-airport", isLogin, adminController.updateAirport);
+adminRouter.post('/delete-popular-flight/:id', isLogin, adminController.deletePopularFlight);
 
 
 adminRouter.delete('/delete-user/:id',isLogin, adminController.deleteUser);
 adminRouter.delete('/delete-agent/:id',isLogin, adminController.deleteAgent);
-adminRouter.post('/delete-popular-flight/:id', isLogin, adminController.deletePopularFlight)
 
 module.exports = adminRouter;

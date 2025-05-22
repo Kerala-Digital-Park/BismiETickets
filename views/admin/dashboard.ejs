@@ -322,14 +322,13 @@
 								<div class="card-header border-bottom d-flex justify-content-between align-items-center p-3">
 									<h5 class="card-header-title">IATA Codes</h5>
 									<div class="d-flex gap-2">
-										<a href="/admin/airports" class="btn btn-link p-0 mb-0">View all</a>
-									  <a href="#" class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#changePassword">
-										<i class="bi bi-plus-lg fa-fw"></i> Add New Code
-									  </a>
+										<a href="#" class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#addAirportModal">
+											<i class="bi bi-plus-lg fa-fw"></i> Add New Code
+										  </a>
+										  
 									</div>
-								  </div>
+								</div>
 								  
-
 								<!-- Card body START -->
 								<div class="card-body p-3">
 
@@ -342,12 +341,10 @@
 										</div>
 										<!-- Button -->
 										<div>
-											<form class="d-flex" method="GET" action="/admin/airports/search">
+											<form class="d-flex" method="GET" action="/admin/">
 												<input name="code" class="form-control border-1 me-1" type="text" maxlength="3" placeholder="Search Airport Code">
 												<button type="submit" class="btn btn-dark btn-round mb-0"><i class="bi bi-search fa-fw"></i></button>
-											  </form>
-											  
-
+											</form>
 										</div>
 									</div>
 
@@ -366,44 +363,32 @@
 
 											<!-- Table body START -->
 											<tbody>
-
-												<!-- Table row -->
-												<tr>
-													<!-- Table data -->
-													<td>COK</td>
-
-													<!-- Table data -->
-													<td>Kochi</td>
-
-													<!-- Table data -->
-													<td>Cochin International Airport</td>
-
-													<!-- Table data -->
-													<td>
+												<% if (airports && airports.length > 0) { %>
+												  <% airports.forEach(airport => { %>
+													<tr>
+													  <td><%= airport.Value %></td>
+													  <td>
+														<%= airport.Name ? airport.Name.split('(')[0].trim().toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : '' %>
+													  </td>
+													  <td><%= airport.Airport %></td>
+													  <td>
 														<button
-															class="btn btn-sm btn-danger-soft me-1 mb-1 mb-md-0">Update</button>
-													</td>
-												</tr>
-
-												<!-- Table row -->
-												<tr>
-													<!-- Table data -->
-													<td>CCJ</td>
-
-													<!-- Table data -->
-													<td>Calicut</td>
-
-													<!-- Table data -->
-													<td>Calicut Airport</td>
-
-													<!-- Table data -->
-													<td>
-														<button
-															class="btn btn-sm btn-danger-soft me-1 mb-1 mb-md-0">Update</button>
-													</td>
-												</tr>
-
-											</tbody>
+														class="btn btn-sm btn-danger-soft me-1 mb-1 mb-md-0 update-airport-btn"
+														data-bs-toggle="modal"
+														data-bs-target="#updateAirportModal"
+														data-airport='<%- JSON.stringify(airport) %>'
+													    >
+														Update
+													  	</button>
+													  </td>
+													</tr>
+												  <% }) %>
+												<% } else { %>
+												  <tr>
+													<td colspan="4" class="text-center">No airports found.</td>
+												  </tr>
+												<% } %>
+											  </tbody>											  
 											<!-- Table body END -->
 										</table>
 									</div>
@@ -413,6 +398,7 @@
 							</div>
 						</div>
 						<!-- Reviews END -->
+
 						<!-- Reviews START -->
 						<div class="col-lg-6 col-xxl-6">
 							<div class="card shadow h-100">
@@ -474,6 +460,167 @@
 			</div>
 			<!-- Page content END -->
 
+<!-- Add Airport Modal -->
+<div class="modal fade" id="addAirportModal" tabindex="-1" aria-labelledby="addAirportModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+	  <div class="modal-content">
+		<form id="addAirportForm">
+		  <div class="modal-header">
+			<h5 class="modal-title" id="addAirportModalLabel">Add New Airport Code</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		  </div>
+		  <div class="modal-body">
+			<div class="row g-3">
+			  <div class="col-md-6">
+				<label class="form-label">IATA Code (Value)</label>
+				<input type="text" class="form-control" name="Value" maxlength="3" required />
+			  </div>
+			  <div class="col-md-6">
+				<label class="form-label">Type</label>
+				<input type="text" class="form-control" name="Type" />
+			  </div>
+			  <div class="col-md-6">
+				<label class="form-label">Name</label>
+				<input type="text" class="form-control" name="Name" />
+			  </div>
+			  <div class="col-md-6">
+				<label class="form-label">PopCity</label>
+				<input type="text" class="form-control" name="PopCity" />
+			  </div>
+			  <div class="col-md-6">
+				<label class="form-label">Country Code</label>
+				<input type="text" class="form-control" name="CountryCode" />
+			  </div>
+			  <div class="col-md-6">
+				<label class="form-label">Currency Code</label>
+				<input type="text" class="form-control" name="CurrencyCode" />
+			  </div>
+			  <div class="col-md-6">
+				<label class="form-label">Airport</label>
+				<input type="text" class="form-control" name="Airport" />
+			  </div>
+			  <div class="col-md-6">
+				<label class="form-label">Country Name</label>
+				<input type="text" class="form-control" name="CountryName" />
+			  </div>
+			</div>
+		  </div>
+		  <div class="modal-footer">
+			<button type="submit" class="btn btn-primary">Add Airport</button>
+		  </div>
+		</form>
+	  </div>
+	</div>
+  </div>
+  
+  <script>
+	document.getElementById("addAirportForm").addEventListener("submit", async function (e) {
+	  e.preventDefault();
+  
+	  const formData = new FormData(this);
+	  const airportData = Object.fromEntries(formData.entries());
+  
+	  try {
+		const response = await fetch("/admin/add-airport", {
+		  method: "POST",
+		  headers: {
+			"Content-Type": "application/json"
+		  },
+		  body: JSON.stringify(airportData)
+		});
+  
+		const result = await response.json();
+  
+		if (response.ok) {
+		  alert("Airport added successfully!");
+		  location.reload(); // or dynamically append to table
+		} else {
+		  alert(result.error || "Something went wrong.");
+		}
+	  } catch (error) {
+		console.error("Error adding airport:", error);
+		alert("Failed to add airport.");
+	  }
+	});
+  </script>
+
+  <!-- Update Airport Modal -->
+<div class="modal fade" id="updateAirportModal" tabindex="-1" aria-labelledby="updateAirportModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+	  <div class="modal-content">
+		<form id="updateAirportForm">
+		  <div class="modal-header">
+			<h5 class="modal-title" id="updateAirportModalLabel">Update Airport Code</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		  </div>
+		  <div class="modal-body">
+			<input type="hidden" name="_id" />
+			<div class="row g-3">
+			  <!-- Reuse the same fields from Add Modal -->
+			  <div class="col-md-6"><label class="form-label">IATA Code (Value)</label><input type="text" class="form-control" name="Value" maxlength="3" required /></div>
+			  <div class="col-md-6"><label class="form-label">Type</label><input type="text" class="form-control" name="Type" /></div>
+			  <div class="col-md-6"><label class="form-label">Name</label><input type="text" class="form-control" name="Name" /></div>
+			  <div class="col-md-6"><label class="form-label">PopCity</label><input type="text" class="form-control" name="PopCity" /></div>
+			  <div class="col-md-6"><label class="form-label">Country Code</label><input type="text" class="form-control" name="CountryCode" /></div>
+			  <div class="col-md-6"><label class="form-label">Currency Code</label><input type="text" class="form-control" name="CurrencyCode" /></div>
+			  <div class="col-md-6"><label class="form-label">Airport</label><input type="text" class="form-control" name="Airport" /></div>
+			  <div class="col-md-6"><label class="form-label">Country Name</label><input type="text" class="form-control" name="CountryName" /></div>
+			</div>
+		  </div>
+		  <div class="modal-footer">
+			<button type="submit" class="btn btn-primary">Update Airport</button>
+		  </div>
+		</form>
+	  </div>
+	</div>
+  </div>
+
+  <script>
+	// Prefill update modal
+	document.querySelectorAll(".update-airport-btn").forEach((btn) => {
+	  btn.addEventListener("click", function () {
+		const airport = JSON.parse(this.dataset.airport);
+		const form = document.getElementById("updateAirportForm");
+  
+		Object.keys(airport).forEach((key) => {
+		  if (form.elements[key]) {
+			form.elements[key].value = airport[key];
+		  }
+		});
+	  });
+	});
+  
+	// Handle update form submission
+	document.getElementById("updateAirportForm").addEventListener("submit", async function (e) {
+	  e.preventDefault();
+  
+	  const formData = new FormData(this);
+	  const updatedAirport = Object.fromEntries(formData.entries());
+  
+	  try {
+		const response = await fetch("/admin/update-airport", {
+		  method: "POST",
+		  headers: {
+			"Content-Type": "application/json"
+		  },
+		  body: JSON.stringify(updatedAirport)
+		});
+  
+		const result = await response.json();
+  
+		if (response.ok) {
+		  alert("Airport updated successfully!");
+		  location.reload();
+		} else {
+		  alert(result.error || "Something went wrong.");
+		}
+	  } catch (error) {
+		console.error("Error updating airport:", error);
+		alert("Failed to update airport.");
+	  }
+	});
+  </script>  
+  
 	</main>
 	<!-- **************** MAIN CONTENT END **************** -->
 

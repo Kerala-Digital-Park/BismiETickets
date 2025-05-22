@@ -80,10 +80,15 @@ const viewDashboard = async (req, res) => {
 
     const users = await User.find({userRole:"User"});
     const sellers = await User.find({userRole:"Agent"});
-
     const popularFlights = await PopularFlight.find().limit(4);
 
-    const airports = await Airport.find()
+    let airports;
+    if (req.query.code) {
+      const searchCode = req.query.code.toUpperCase();
+      airports = await Airport.find({ Value: { $regex: searchCode, $options: "i" } });
+    } else {
+      airports = await Airport.find().limit(2);
+    }
 
     res.render("admin/dashboard", {
       bookings,
@@ -91,6 +96,7 @@ const viewDashboard = async (req, res) => {
       users,
       sellers,
       popularFlights,
+      airports,
     });
   } catch (error) {
     console.log(error);
@@ -629,7 +635,7 @@ const updateBankDetail = async (req, res) => {
   }
 };
 
-const viewKycUpdates = async (req, res) => {
+const viewUserKycUpdates = async (req, res) => {
   const search = req.query.search || "";
   const page = parseInt(req.query.page) || 1;
   const limit = 10;
@@ -649,6 +655,100 @@ const viewKycUpdates = async (req, res) => {
         ],
       };
     }
+
+    matchStage["user.userRole"] = "User";
+
+    const pipeline = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $lookup: {
+          from: "subscriptions",
+          localField: "subscription",
+          foreignField: "_id",
+          as: "subscription",
+        },
+      },
+      { $unwind: "$subscription" },
+      { $match: matchStage },
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+    ];
+
+    // Aggregation pipeline for total count
+    const countPipeline = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $lookup: {
+          from: "subscriptions",
+          localField: "subscription",
+          foreignField: "_id",
+          as: "subscription",
+        },
+      },
+      { $unwind: "$subscription" },
+      { $match: matchStage },
+      { $count: "totalCount" },
+    ];
+
+    // Execute aggregation
+    const updates = await KycUpdates.aggregate(pipeline);
+    const countResult = await KycUpdates.aggregate(countPipeline);
+    const totalCount = countResult[0]?.totalCount || 0;
+    const totalPages = Math.ceil(totalCount / limit);
+
+    res.render("admin/kycUpdates", {
+      updates,
+      search,
+      currentPage: page,
+      totalPages,
+      totalCount,
+      limit,
+    });
+  } catch (error) {
+    console.error("Aggregation error:", error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+};
+
+const viewAgentKycUpdates = async (req, res) => {
+  const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  try {
+    // Build the match stage conditionally
+    let matchStage = {};
+    if (search) {
+      const regex = new RegExp(search, "i");
+      matchStage = {
+        $or: [
+          { "user.name": regex },
+          { "user._id": { $regex: search, $options: "i" } }, // _id must be string
+          { kyc: regex },
+          { "subscription.subscription": regex },
+        ],
+      };
+    }
+
+    matchStage["user.userRole"] = "Agent";
 
     const pipeline = [
       {
@@ -1773,6 +1873,619 @@ const cancelBooking = async (req, res) => {
   }
 };
 
+const editUser = async (req, res) => {
+  try {
+    const updatedData = req.body;
+    const { userId } = updatedData;
+
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required.' });
+    }
+
+    // Optional: remove fields you don't want to update directly
+    // delete updatedData._id;
+
+    const user = await User.findOneAndUpdate(
+      { userId: userId },
+      { $set: updatedData },
+      { new: true } // return updated document
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    res.status(200).json({ message: 'User updated successfully.', user });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+}
+
+const addAirport = async (req, res) => {
+  try {
+    const airportData = req.body;
+
+    if (!airportData.Value) {
+      return res.status(400).json({ error: "IATA code (Value) is required." });
+    }
+
+    // Check if airport with the same Value already exists
+    const existing = await Airport.findOne({ Value: airportData.Value.toUpperCase().trim() });
+
+    if (existing) {
+      return res.status(409).json({ error: "Airport with this IATA code already exists." });
+    }
+
+    // Optional: Ensure Value is stored uppercase
+    airportData.Value = airportData.Value.toUpperCase().trim();
+
+    const newAirport = new Airport(airportData);
+    await newAirport.save();
+
+    res.status(201).json({ message: "Airport added successfully.", airport: newAirport });
+  } catch (error) {
+    console.error("Error adding airport:", error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+}
+
+const updateAirport = async (req, res) => {
+  try {
+    const { _id, ...updates } = req.body;
+    await Airport.findByIdAndUpdate(_id, updates);
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Update error:", error);
+    res.status(500).json({ error: "Failed to update airport." });
+  }
+}
+
+const viewLatestBookings = async (req, res) => {
+  const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  try {
+    const matchStage = {};
+
+    if (search) {
+      matchStage.$or = [
+        { bookingId: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const pipeline = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userData"
+        }
+      },
+      {
+        $unwind: {
+          path: "$userData",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "flights",
+          localField: "flight",
+          foreignField: "_id",
+          as: "flightData"
+        }
+      },
+      {
+        $unwind: {
+          path: "$flightData",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $match: matchStage
+      },
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: limit }
+          ],
+          total: [{ $count: "count" }]
+        }
+      }
+    ];
+
+    const result = await Booking.aggregate(pipeline);
+    const bookings = result[0].data;
+    const totalCount = result[0].total[0]?.count || 0;
+    const totalPages = Math.ceil(totalCount / limit);
+
+    const today = new Date();
+    let upcomingBookings = 0;
+    let completedBookings = 0;
+    let cancelledBookings = 0;
+    let failedBookings = 0;
+
+    bookings.forEach((booking) => {
+      if (!booking.flightData) return;
+      const departureDate = new Date(booking.flightData.departureDate);
+      if (booking.status === "cancelled") cancelledBookings++;
+      else if (departureDate > today) upcomingBookings++;
+      else completedBookings++;
+    });
+
+    res.render("admin/latest-booking", {
+      bookings,
+      totalBookings: totalCount,
+      upcomingBookings,
+      completedBookings,
+      cancelledBookings,
+      failedBookings,
+      currentPage: page,
+      totalPages,
+      search,
+      limit,
+      totalCount
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+}
+
+const viewUpcomingBookings = async (req, res) => {
+  const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+
+  try {
+    const matchStage = {};
+
+    if (search) {
+      matchStage.$or = [
+        { bookingId: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const pipeline = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userData"
+        }
+      },
+      { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "flights",
+          localField: "flight",
+          foreignField: "_id",
+          as: "flightData"
+        }
+      },
+      { $unwind: { path: "$flightData", preserveNullAndEmptyArrays: true } },
+      { $match: matchStage }
+    ];
+
+    const allResults = await Booking.aggregate(pipeline);
+
+    const today = new Date();
+    let upcomingBookings = 0;
+    let completedBookings = 0;
+    let cancelledBookings = 0;
+    let failedBookings = 0;
+
+    // Filter for upcoming bookings only
+    const upcomingOnlyBookings = allResults.filter((booking) => {
+      if (!booking.flightData) return false;
+      const departureDate = new Date(booking.flightData.departureDate);
+
+      if (booking.status === "cancelled") {
+        cancelledBookings++;
+        return false;
+      } else if (departureDate > today) {
+        upcomingBookings++;
+        return true;
+      } else {
+        completedBookings++;
+        return false;
+      }
+    });
+
+    const totalCount = upcomingOnlyBookings.length;
+    const totalPages = Math.ceil(totalCount / limit);
+    const skip = (page - 1) * limit;
+
+    const paginatedBookings = upcomingOnlyBookings.slice(skip, skip + limit);
+
+    res.render("admin/upcoming-booking", {
+      bookings: paginatedBookings,
+      totalBookings: totalCount,
+      upcomingBookings,
+      completedBookings,
+      cancelledBookings,
+      failedBookings,
+      currentPage: page,
+      totalPages,
+      search,
+      limit,
+      totalCount
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+const viewCancelledBookings = async (req, res) => {
+  const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+
+  try {
+    const matchStage = {};
+
+    if (search) {
+      matchStage.$or = [
+        { bookingId: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const pipeline = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userData"
+        }
+      },
+      { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "flights",
+          localField: "flight",
+          foreignField: "_id",
+          as: "flightData"
+        }
+      },
+      { $unwind: { path: "$flightData", preserveNullAndEmptyArrays: true } },
+      { $match: matchStage }
+    ];
+
+    const allResults = await Booking.aggregate(pipeline);
+
+    const today = new Date();
+    let upcomingBookings = 0;
+    let completedBookings = 0;
+    let cancelledBookings = 0;
+    let failedBookings = 0;
+
+    // Filter for upcoming bookings only
+    const upcomingOnlyBookings = allResults.filter((booking) => {
+      if (!booking.flightData) return false;
+      const departureDate = new Date(booking.flightData.departureDate);
+
+      if (booking.status === "cancelled") {
+        cancelledBookings++;
+        return true;
+      } else if (departureDate > today) {
+        upcomingBookings++;
+        return false;
+      } else {
+        completedBookings++;
+        return false;
+      }
+    });
+
+    const totalCount = upcomingOnlyBookings.length;
+    const totalPages = Math.ceil(totalCount / limit);
+    const skip = (page - 1) * limit;
+
+    const paginatedBookings = upcomingOnlyBookings.slice(skip, skip + limit);
+
+    res.render("admin/cancelled-booking", {
+      bookings: paginatedBookings,
+      totalBookings: totalCount,
+      upcomingBookings,
+      completedBookings,
+      cancelledBookings,
+      failedBookings,
+      currentPage: page,
+      totalPages,
+      search,
+      limit,
+      totalCount
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+}
+
+const viewPastBookings = async (req, res) => {
+  const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+
+  try {
+    const matchStage = {};
+
+    if (search) {
+      matchStage.$or = [
+        { bookingId: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const pipeline = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userData"
+        }
+      },
+      { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "flights",
+          localField: "flight",
+          foreignField: "_id",
+          as: "flightData"
+        }
+      },
+      { $unwind: { path: "$flightData", preserveNullAndEmptyArrays: true } },
+      { $match: matchStage }
+    ];
+
+    const allResults = await Booking.aggregate(pipeline);
+
+    const today = new Date();
+    let upcomingBookings = 0;
+    let completedBookings = 0;
+    let cancelledBookings = 0;
+    let failedBookings = 0;
+
+    // Filter for upcoming bookings only
+    const pastOnlyBookings = allResults.filter((booking) => {
+      if (!booking.flightData) return false;
+      const departureDate = new Date(booking.flightData.departureDate);
+
+      if (booking.status === "cancelled") {
+        cancelledBookings++;
+        return false;
+      } else if (departureDate > today) {
+        upcomingBookings++;
+        return false;
+      } else {
+        completedBookings++;
+        return true;
+      }
+    });
+
+    const totalCount = pastOnlyBookings.length;
+    const totalPages = Math.ceil(totalCount / limit);
+    const skip = (page - 1) * limit;
+
+    const paginatedBookings = pastOnlyBookings.slice(skip, skip + limit);
+
+    res.render("admin/past-booking", {
+      bookings: paginatedBookings,
+      totalBookings: totalCount,
+      upcomingBookings,
+      completedBookings,
+      cancelledBookings,
+      failedBookings,
+      currentPage: page,
+      totalPages,
+      search,
+      limit,
+      totalCount
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+}
+
+const viewFailedBookings = async (req, res) => {
+  const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  try {
+    const matchStage = {};
+
+    if (search) {
+      matchStage.$or = [
+        { bookingId: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const pipeline = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userData"
+        }
+      },
+      {
+        $unwind: {
+          path: "$userData",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "flights",
+          localField: "flight",
+          foreignField: "_id",
+          as: "flightData"
+        }
+      },
+      {
+        $unwind: {
+          path: "$flightData",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $match: matchStage
+      },
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: limit }
+          ],
+          total: [{ $count: "count" }]
+        }
+      }
+    ];
+
+    const result = await Booking.aggregate(pipeline);
+    const bookings = result[0].data;
+    const totalCount = result[0].total[0]?.count || 0;
+    const totalPages = Math.ceil(totalCount / limit);
+
+    const today = new Date();
+    let upcomingBookings = 0;
+    let completedBookings = 0;
+    let cancelledBookings = 0;
+    let failedBookings = 0;
+
+    bookings.forEach((booking) => {
+      if (!booking.flightData) return;
+      const departureDate = new Date(booking.flightData.departureDate);
+      if (booking.status === "cancelled") cancelledBookings++;
+      else if (departureDate > today) upcomingBookings++;
+      else completedBookings++;
+    });
+
+    res.render("admin/failed-booking", {
+      bookings,
+      totalBookings: totalCount,
+      upcomingBookings,
+      completedBookings,
+      cancelledBookings,
+      failedBookings,
+      currentPage: page,
+      totalPages,
+      search,
+      limit,
+      totalCount
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+}
+
+const viewInitiatedBookings = async (req, res) => {
+  const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  try {
+    const matchStage = {};
+
+    if (search) {
+      matchStage.$or = [
+        { bookingId: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const pipeline = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userData"
+        }
+      },
+      {
+        $unwind: {
+          path: "$userData",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "flights",
+          localField: "flight",
+          foreignField: "_id",
+          as: "flightData"
+        }
+      },
+      {
+        $unwind: {
+          path: "$flightData",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $match: matchStage
+      },
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: limit }
+          ],
+          total: [{ $count: "count" }]
+        }
+      }
+    ];
+
+    const result = await Booking.aggregate(pipeline);
+    const bookings = result[0].data;
+    const totalCount = result[0].total[0]?.count || 0;
+    const totalPages = Math.ceil(totalCount / limit);
+
+    const today = new Date();
+    let upcomingBookings = 0;
+    let completedBookings = 0;
+    let cancelledBookings = 0;
+    let failedBookings = 0;
+
+    bookings.forEach((booking) => {
+      if (!booking.flightData) return;
+      const departureDate = new Date(booking.flightData.departureDate);
+      if (booking.status === "cancelled") cancelledBookings++;
+      else if (departureDate > today) upcomingBookings++;
+      else completedBookings++;
+    });
+
+    res.render("admin/initiated-booking", {
+      bookings,
+      totalBookings: totalCount,
+      upcomingBookings,
+      completedBookings,
+      cancelledBookings,
+      failedBookings,
+      currentPage: page,
+      totalPages,
+      search,
+      limit,
+      totalCount
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+}
 
 module.exports = {
   viewLogin,
@@ -1799,7 +2512,8 @@ module.exports = {
   deleteAgent,
   viewBankUpdates,
   updateBankDetail,
-  viewKycUpdates,
+  viewUserKycUpdates,
+  viewAgentKycUpdates,
   updateKycDetail,
   viewTransactions,
   viewWithdrawalsById,
@@ -1813,5 +2527,14 @@ module.exports = {
   addPopularFlights,
   deletePopularFlight,
   cancelBooking,
-  
+  editUser,
+  addAirport,
+  updateAirport,
+  viewUpcomingBookings,
+  viewCancelledBookings,
+  viewPastBookings,
+  viewFailedBookings,
+  viewInitiatedBookings,
+  viewLatestBookings,
+
 };
