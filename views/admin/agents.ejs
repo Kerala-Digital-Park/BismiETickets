@@ -36,70 +36,156 @@
                             </div>
                         </div>
 
-                        <!-- agent list START -->
-                        <div class="row g-4">
-                            <% if(agents && agents.length> 0) { %>
-                                <% agents.forEach((agent, index)=> { %>
-                                    <!-- Card item -->
-                                    <div class="col-md-6 col-lg-4 col-xxl-3">
-                                        <div class="card border h-100">
-                                            <!-- Dropdown button -->
-                                            <!-- <div class="dropdown position-absolute top-0 end-0 m-3">
-                    <a href="#" class="btn btn-sm btn-light btn-round small mb-0" role="button" id="dropdownShare1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-three-dots fa-fw"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded" aria-labelledby="dropdownShare1">
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-pencil-square fa-fw me-2"></i>Edit</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-trash fa-fw me-2"></i>Remove</a></li>
-                    </ul>
-                </div> -->
-                                            <!-- Card body -->
-                                            <div class="card-body text-center pb-0">
-                                                <!-- Avatar Image -->
-                                                <div class="avatar avatar-xl flex-shrink-0 mb-3">
-                                                    <img class="avatar-img rounded-circle"
-                                                        src="<%= agent.image ? agent.image : '/assets/images/avatar/09.jpg' %>"
-                                                        alt="avatar">
-                                                </div>
-                                                <!-- Title -->
-                                                <h5 class="mb-1">
-                                                    <%= agent.name %>
-                                                </h5>
-                                                <small>
-                                                    <%= agent.userId %>
-                                                </small>
-                                                <!-- Info and rating -->
-                                                <div class="d-flex justify-content-between mt-3">
-                                                    <h6 class="mb-0 small"><span class="fw-light">Total listings:</span>
-                                                        <%= agent.flightCount %>
-                                                    </h6>
-                                                    <!-- <h6 class="mb-0 small">4.5<i class="fa-solid fa-star text-warning ms-1"></i></h6> -->
-                                                </div>
-                                            </div>
-                                            <!-- card footer -->
-                                            <div class="card-footer d-flex gap-3 align-items-center">
-                                                <a href="/admin/agent-detail/<%= agent._id %>" class="btn btn-sm btn-primary-soft mb-0 w-100 view-agent-btn"
-                                                    >View detail</a>
-                                                <button class="btn btn-sm btn-light flex-shrink-0 mb-0 delete-agent-btn"
-                                                    data-agent-id="<%= agent._id %>" title="Delete"
-                                                    data-bs-toggle="tooltip" data-bs-placement="bottom"><i
-                                                        class="bi bi-trash text-danger"></i></button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <% }) %>
-                                        <% } else { %>
-                                            <tr>
-                                                <td colspan="9" class="text-center">
-                                                    <p class="mb-0">No agents found.</p>
-                                                </td>
-                                            </tr>
-                                            <% } %>
-                        </div>
+                        <!-- agent list START --> 
+                        <div class="card shadow mt-3">
+							<div class="card-body">
+								<div class="table-responsive">
+									<table class="table align-middle">
+										<thead class="bg-light">
+											<tr>
+												<th>Seller</th>
+												<th>Seller ID</th>
+												<th>Email</th>
+												<th>Mobile</th>
+												<!-- <th>Nationality</th> -->
+												<th>KYC</th>
+												<th>Subscription</th>
+												<th>Status</th>
+												<th>Action</th>
+											</tr>
+										</thead>
+										<tbody class="list">
+											<% if(agents && agents.length> 0) { %>
+												<% agents.forEach((agent, index)=> { %>
+													<tr>
+														<td>
+															<div class="d-flex align-items-center">
+																<div class="avatar avatar-xs flex-shrink-0">
+																	<img class="avatar-img rounded-circle"
+																		src="<%= agent.image ? agent.image : '/assets/images/avatar/09.jpg' %>"
+																		alt="avatar">
+																</div>
+																<div class="ms-2">
+																	<small class="mb-0 fw-light">
+																		<%= agent.name %>
+																	</small>
+																</div>
+															</div>
+														</td>
+														<td>
+															<h6 class="mb-0 fw-normal">
+																<%= agent.userId %>
+															</h6>
+														</td>
+														<td>
+															<h6 class="mb-0 fw-normal">
+																<%= agent.email %>
+															</h6>
+														</td>
+														<td>
+															<h6 class="mb-0 fw-normal">
+																<%= agent.mobile %>
+															</h6>
+														</td>
+														<!-- <td>
+															<h6 class="mb-0 fw-normal">
+																<%= agent.nationality %>
+															</h6>
+														</td> -->
+														<td>
+															<h6 class="mb-0 fw-normal">
+																<%= agent.kyc %>
+															</h6>
+														</td>
+														<td>
+															<h6 class="mb-0 fw-normal">
+																<%= agent.subscription ? agent.subscription.subscription
+																	: 'N/A' %>
+															</h6>
+														</td>
+														<% const today=new Date(); const expiryDate=new
+															Date(agent.expiryDate); let statusClass; let statusText; if
+															(expiryDate> today) {
+															statusClass = 'text-success';
+															statusText = 'Active';
+															} else {
+															statusClass = 'text-danger';
+															statusText = 'Inactive';
+															}
+															%>
+															<td>
+																<h6 class="mb-0 fw-normal <%= statusClass %>">
+																	<%= statusText %>
+																</h6>
+															</td>
+															<td>
+																<!-- <button class="btn btn-sm btn-primary view-user-btn"
+																	data-user='<%= JSON.stringify(agent) %>' title="View"
+																	data-bs-toggle="tooltip" data-bs-placement="top">
+																	<i class="fa-solid fa-eye"></i>
+																</button> -->
+                                                                <a href="/admin/agent-detail/<%= agent._id %>" class="btn btn-sm btn-primary view-agent-btn"
+                                                                    ><i class="fa-solid fa-eye"></i></a>
+																<button class="btn btn-sm btn-primary edit-user-btn"
+																	data-user='<%= JSON.stringify(agent) %>' title="Edit"
+																	data-bs-toggle="tooltip" data-bs-placement="top">
+																	<i class="fa-solid fa-pen-to-square"></i>
+																</button>
+																<!-- <button
+																	class="btn btn-sm btn-danger delete-user-btn ms-2"
+																	data-user-id="<%= agent._id %>" title="Delete"
+																	data-bs-toggle="tooltip" data-bs-placement="top">
+																	<i class="fa-solid fa-trash"></i>
+																</button> -->
+															</td>
+													</tr>
+													<% }) %>
+														<% } else { %>
+															<tr>
+																<td colspan="9" class="text-center">
+																	<p class="mb-0">No sellers found.</p>
+																</td>
+															</tr>
+															<% } %>
+										</tbody>
+									</table>
+								</div>
+							</div>
+
+							<!-- Card footer START -->
+							<div class="card-footer pt-0">
+								<!-- Pagination and content -->
+								<div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+									<p class="mb-sm-0 text-center text-sm-start">
+									  Showing <%= (currentPage - 1) * limit + 1 %> to
+									  <%= Math.min(currentPage * limit, totalCount) %> of
+									  <%= totalCount %> entries
+									</p>
+									<nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
+									  <ul class="pagination pagination-sm pagination-primary-soft mb-0">
+										<li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+										  <a class="page-link" href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
+										</li>
+								  
+										<% for (let i = 1; i <= totalPages; i++) { %>
+										  <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+											<a class="page-link" href="?search=<%= search %>&page=<%= i %>"><%= i %></a>
+										  </li>
+										<% } %>
+								  
+										<li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+										  <a class="page-link" href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
+										</li>
+									  </ul>
+									</nav>
+								</div>								  
+							</div>
+							<!-- Card footer END -->
+						</div>
                         <!-- agent list END -->
 
                         <!-- Pagination START -->
-                        <div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+                        <!-- <div class="d-sm-flex justify-content-sm-between align-items-sm-center">
                             <p class="mb-sm-0 text-center text-sm-start">
                                 Showing <%= (currentPage - 1) * limit + 1 %> to
                                     <%= Math.min(currentPage * limit, totalCount) %> of
@@ -126,7 +212,7 @@
                                             </li>
                                 </ul>
                             </nav>
-                        </div>
+                        </div> -->
                         <!-- Pagination END -->
 
                     </div>

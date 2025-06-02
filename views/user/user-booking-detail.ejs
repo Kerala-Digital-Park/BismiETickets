@@ -1,0 +1,1473 @@
+<%- include('./partials/header') %>
+    <%- include('./partials/userHeader') %>
+
+        <!-- **************** MAIN CONTENT START **************** -->
+        <main>
+            <!-- ======================= Title and notice board START -->
+            <section class="pt-0 ">
+                <div class="container">
+                    <div class="row">
+                        <div class="container position-relative col-xl-12 col-xxl-12">
+                            <!-- Title and button START -->
+                            <div class="row">
+                                <div class="col-xl-12 col-xxl-12">
+                                    <div class="vstack">
+                                        <div id="flight-list">
+                                            <% if(bookings) { %>
+                                                <!-- Title and content START -->
+                                                <div class="ms-3">
+                                                    <!-- Title -->
+                                                    <ul class="list-inline mb-2">
+                                                        <li class="list-inline-item me-2">
+                                                            <h4 class="mb-0">Booking ID: <%= bookings.bookingId %>
+                                                            </h4>
+                                                        </li>
+                                                        <li class="list-inline-item me-0">
+                                                            <h4 class="mb-0">[User: <%=
+                                                                    bookings.userId.name.toUpperCase() %>]</h4>
+                                                        </li>
+                                                    </ul>
+
+                                                    <div class="nav h6 fw-bold text-body mb-2">
+                                                        Sector: <%= bookings.flight.fromCity %> (<%=
+                                                                bookings.flight.from.toUpperCase() %>) &nbsp;
+                                                                <i class="bi bi-arrow-right"></i> &nbsp;
+                                                                <%= bookings.flight.toCity %> (<%=
+                                                                        bookings.flight.to.toUpperCase() %>) on <%=
+                                                                            bookings.flight.departureDate %>
+                                                    </div>
+
+                                                    <% const createdDate=new Date(bookings.createdAt); const options={
+                                                        weekday: 'short' , year: 'numeric' , month: 'short' ,
+                                                        day: '2-digit' }; const
+                                                        day=createdDate.getDate().toString().padStart(2, '0' ); const
+                                                        month=createdDate.toLocaleString('default', { month: 'short' });
+                                                        const weekday=createdDate.toLocaleString('default', {
+                                                        weekday: 'short' }); const year=createdDate.getFullYear(); let
+                                                        hours=createdDate.getHours(); const
+                                                        minutes=createdDate.getMinutes().toString().padStart(2, '0' );
+                                                        const ampm=hours>= 12 ? 'pm' : 'am';
+                                                        hours = hours % 12 || 12;
+                                                        %>
+
+                                                        <div class="nav h6 fw-normal text-body mb-2">
+                                                            Booked At: <%= `${day} ${month}, ${weekday} ${year}
+                                                                ${hours}:${minutes} ${ampm}` %>
+                                                        </div>
+
+                                                        <% const today=new Date(); const depDate=new
+                                                            Date(bookings.flight.departureDate); let statusText='' ; let
+                                                            badgeClass='' ; if (bookings.status==="active" ) { if
+                                                            (depDate> today) {
+                                                            statusText = "Upcoming";
+                                                            badgeClass = "bg-success"; // green
+                                                            } else {
+                                                            statusText = "Completed";
+                                                            badgeClass = "bg-warning text-dark"; // orange
+                                                            }
+                                                            } else {
+                                                            statusText = "Cancelled";
+                                                            badgeClass = "bg-danger"; // red
+                                                            }
+                                                            %>
+
+                                                            <div class="nav fw-small mb-2">
+                                                                Status: &nbsp;
+                                                                <span class="badge <%= badgeClass %>">
+                                                                    <%= statusText %>
+                                                                </span>
+                                                            </div>
+
+                                                </div>
+                                                <!-- Title and content END -->
+                                        </div>
+                                        <!-- Title END -->
+
+                                        <!-- Booking Tabs Navigation -->
+<ul class="nav nav-tabs mb-4 mt-4" id="bookingTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">Booking Overview</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="activities-tab" data-bs-toggle="tab" data-bs-target="#activities" type="button" role="tab">Activities</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="transactions-tab" data-bs-toggle="tab" data-bs-target="#transactions" type="button" role="tab">Transactions</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="edit-tab" data-bs-toggle="tab" data-bs-target="#edit" type="button" role="tab">Edit & Updates</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="help-tab" data-bs-toggle="tab" data-bs-target="#help" type="button" role="tab">Help Desk</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="bookingTabContent">
+    <!-- Overview Tab -->
+    <div class="tab-pane fade show active" id="overview" role="tabpanel">
+      <!-- Ticket item START -->
+      <div class="card border mt-0">
+        <!-- Card header -->
+        <div class="card-header">
+            <div class="d-md-flex justify-content-md-between">
+                <!-- Airline Name -->
+                <div class="d-flex align-items-center mb-2 mb-md-0">
+                    <img src="<%= bookings.flight.stops[0].airlineLogo %>"
+                        class="w-30px me-2" alt="">
+                    <h6 class="fw-normal mb-0">
+                        <%= bookings.flight.stops[0].airline %> (<%=
+                                bookings.flight.stops[0].flightNumber %>)
+                    </h6>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Ticket START -->
+        <div>
+
+
+            <% if (bookings.flight.stops && bookings.flight.stops.length> 1) { %>
+                <!-- Multi-stop Flight Layout -->
+                <div class="card-body p-4">
+                    <% for (let i=0; i < bookings.flight.stops.length; i++) { %>
+                        <div class="row g-4">
+                            <!-- Airline Info -->
+                            <div class="col-md-3">
+                                <img src="<%= bookings.flight.stops[i].airlineLogo %>"
+                                    class="w-80px mb-3" alt="" />
+                                <h6 class="fw-normal mb-0">
+                                    <%= bookings.flight.stops[i].airline %>
+                                </h6>
+                                <h6 class="fw-normal mb-0">
+                                    <%= bookings.flight.stops[i].airlineCode %> -
+                                        <%= bookings.flight.stops[i].flightNumber %>
+                                </h6>
+                            </div>
+
+                            <!-- From Airport -->
+                            <div class="col-sm-4 col-md-3">
+                                <h4>
+                                    <%= bookings.flight.stops[i].fromCode.toUpperCase()
+                                        %>
+                                </h4>
+                                <h6>
+                                    <%= bookings.flight.stops[i].departureTime %>
+                                </h6>
+
+                                <p class="mb-2">
+                                    <%= new
+                                        Date(bookings.flight.stops[i].departureDay).toDateString()
+                                        %>
+                                </p>
+                                <p class="mb-2">
+                                    <%= bookings.flight.stops[i].from %>
+                                </p>
+                                <% if (bookings.flight.stops[i].fromTerminal) { %>
+                                    <p class="mb-0">Terminal - <%=
+                                            bookings.flight.stops[i].fromTerminal %>
+                                    </p>
+                                    <% } %>
+                            </div>
+
+                            <!-- Duration Between Stops -->
+                            <div class="col-sm-4 col-md-3 text-center my-sm-auto">
+
+                                <h5>
+                                    <%= bookings.flight.stops[i].stopDuration || 0
+                                        %>
+                                </h5>
+                                <div class="position-relative my-4">
+                                    <hr
+                                        class="bg-primary opacity-5 position-relative" />
+                                    <div
+                                        class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
+                                        <i
+                                            class="fa-solid fa-fw fa-plane rtl-flip"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- To Airport -->
+                            <div class="col-sm-4 col-md-3">
+                                <h4>
+                                    <%= bookings.flight.stops[i].toCode.toUpperCase()
+                                        %>
+                                </h4>
+                                <h6>
+                                    <%= bookings.flight.stops[i].arrivalTime %>
+                                </h6>
+                                <p class="mb-2">
+                                    <%= new
+                                        Date(bookings.flight.stops[i].arrivalDay).toDateString()
+                                        %>
+                                </p>
+                                <p class="mb-2">
+                                    <%= bookings.flight.stops[i].to %>
+                                </p>
+                                <% if (bookings.flight.stops[i].toTerminal) { %>
+                                    <p class="mb-0">Terminal - <%=
+                                            bookings.flight.stops[i].toTerminal %>
+                                    </p>
+                                    <% } %>
+                            </div>
+                        </div>
+
+                        <% if (i < bookings.flight.stops.length - 1) { const
+                            stopSec=parseInt(bookings.flight.stops[i +
+                            1].stopDuration || 0); const
+                            layoverHr=Math.floor(stopSec / 3600); const
+                            layoverMin=Math.floor((stopSec % 3600) / 60); %>
+                            <!-- Layover Info -->
+                            <div
+                                class="bg-light rounded-2 text-center text-danger p-2 my-4">
+                                Layover:
+                                <% if (layoverHr> 0) { %><%= layoverHr %> hr <% } %>
+                                            <% if (layoverMin> 0 || layoverHr === 0)
+                                                { %><%= layoverMin %> min<% } %>
+                                                        in <%=
+                                                            bookings.flight.stops[i
+                                                            + 1].departureCity %>
+                            </div>
+                            <% } %>
+
+                                <% } %>
+                </div>
+                <% } else { %>
+                    <!-- One-stop / Direct Flight Layout -->
+                    <div class="card-body p-4">
+                        <div class="row g-4">
+                            <div class="col-md-3">
+                                <img src="<%= bookings.flight.stops[0]?.airlineLogo || '/assets/images/element/09.svg' %>"
+                                    class="w-80px mb-3" alt="" />
+                                <h6 class="fw-normal mb-0">
+                                    <%= bookings.flight.stops[0]?.airline?.toUpperCase()
+                                        || bookings.flight.airline?.toUpperCase() %>
+                                </h6>
+                                <h6 class="fw-normal mb-0">
+                                    <%= bookings.flight.stops[0]?.airlineCode ||
+                                        bookings.flight.airlineCode %> - <%=
+                                            bookings.flight.stops[0]?.flightNumber
+                                            || bookings.flight.flightNumber %>
+                                </h6>
+                            </div>
+
+                            <div class="col-sm-4 col-md-3">
+                                <h4>
+                                    <%= bookings.flight.stops[0]?.fromCode.toUpperCase()
+                                        %>
+                                </h4>
+                                <h6>
+                                    <%= bookings.flight.stops[0]?.departureTime %>
+                                </h6>
+                                <p class="mb-2">
+                                    <%= bookings.flight.stops[0]?.departureDay
+                                        || "-" %>
+                                </p>
+                                <p class="mb-2">
+                                    <%= bookings.flight.stops[0]?.from %>
+                                </p>
+                                <% if (bookings.flight.stops[0]?.fromTerminal) { %>
+                                    <p class="mb-0">Terminal - <%=
+                                            bookings.flight.stops[0].fromTerminal %>
+                                    </p>
+                                    <% } %>
+                            </div>
+
+                            <div class="col-sm-4 col-md-3 text-center my-sm-auto">
+
+                                <h5>
+                                    <%= bookings.flight.duration || 0 %>
+                                </h5>
+                                <div class="position-relative my-4">
+                                    <hr
+                                        class="bg-primary opacity-5 position-relative" />
+                                    <div
+                                        class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
+                                        <i
+                                            class="fa-solid fa-fw fa-plane rtl-flip"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 col-md-3">
+                                <h4>
+                                    <%= bookings.flight.stops[0]?.toCode.toUpperCase()
+                                        %>
+                                </h4>
+                                <h6>
+                                    <%= bookings.flight.stops[0]?.arrivalTime %>
+                                </h6>
+                                <p class="mb-2">
+                                    <%= bookings.flight.stops[0]?.arrivalDay ||
+                                        bookings.flight.arrivalDate %>
+                                </p>
+                                <p class="mb-2">
+                                    <%= bookings.flight.stops[0]?.to %>
+                                </p>
+                                <% if (bookings.flight.stops[0]?.toTerminal) { %>
+                                    <p class="mb-0">Terminal - <%=
+                                            bookings.flight.stops[0].toTerminal %>
+                                    </p>
+                                    <% } %>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+
+        </div>
+        <!-- Ticket END -->
+
+        
+    </div>
+    <!-- Card footer -->
+    <div class="card-footer pt-4 mt-3">
+        <div class="bg-light p-2">
+            <h6>Passengers</h6>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Given Name</th>
+                        <th>Surname</th>
+                        <th>Birth</th>
+                        <th>Passport No</th>
+                        <th>Expiry</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% bookings.travelers.forEach((traveler, index)=> {
+                        %>
+                        <tr class="traveler-summary">
+                            <td><%= index+1 %></td>
+                            <td><%= traveler.title %></td>
+                            <td><%= traveler.type %></td>
+                            <td><%= traveler.first_name %></td>
+                            <td><%= traveler.last_name %></td>
+                            <td><%= new Date(traveler.dob).toISOString().slice(0, 10) %></td>
+                            <td><%= traveler.passport_number %></td>
+                            <td><%= new Date(traveler.passport_expiry).toISOString().slice(0, 10) %></td>
+                            <td>
+                                <button
+  class="btn btn-primary btn-sm edit-traveler"
+  data-traveler='<%- JSON.stringify(traveler) %>'
+  data-bookingid="<%= bookings.bookingId %>">
+  <i class="fa-solid fa-fw fa-pen-to-square"></i>
+</button>
+
+                                <!-- <button class="btn btn-danger btn-sm">
+                                    <i class="fa-solid fa-fw fa-trash"></i>
+                                </button> -->
+                        </tr>
+
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Passport Information Modal -->
+<div class="modal fade" id="passportModal" tabindex="-1" aria-labelledby="passportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form id="passportForm">
+          <div class="modal-header">
+            <h5 class="modal-title" id="passportModalLabel">Passport Informations</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-3">
+              <input type="hidden" id="traveler-index" />
+  
+              <div class="col-md-2">
+                <label class="form-label">Title</label>
+                <input type="text" class="form-control" id="modal-title">
+              </div>
+  
+              <div class="col-md-2">
+                <label class="form-label">Type</label>
+                <select class="form-select" id="modal-type">
+                  <option>Adult</option>
+                  <option>Child</option>
+                  <option>Infant</option>
+                </select>
+              </div>
+  
+              <div class="col-md-4">
+                <label class="form-label">Given Name</label>
+                <input type="text" class="form-control" id="modal-first-name">
+              </div>
+  
+              <div class="col-md-4">
+                <label class="form-label">Surname</label>
+                <input type="text" class="form-control" id="modal-last-name">
+              </div>
+  
+              <div class="col-md-4">
+                <label class="form-label">Date of Birth</label>
+                <input type="date" class="form-control" id="modal-dob">
+              </div>
+  
+              <div class="col-md-4">
+                <label class="form-label">Passport Number</label>
+                <input type="text" class="form-control" id="modal-passport-number">
+              </div>
+  
+              <div class="col-md-4">
+                <label class="form-label">Passport Expiry</label>
+                <input type="date" class="form-control" id="modal-passport-expiry">
+              </div>
+  
+              <div class="col-md-4">
+                <label class="form-label">Booking ID</label>
+                <input type="text" class="form-control" id="modal-booking-id" readonly>
+              </div>
+  
+              <div class="col-md-4">
+                <label class="form-label">Associate</label>
+                <input type="text" class="form-control" id="modal-associate">
+              </div>
+  
+              <div class="col-md-4">
+                <label class="form-label">Remarks</label>
+                <input type="text" class="form-control" id="modal-remarks">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Confirm</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const passportModal = new bootstrap.Modal(document.getElementById('passportModal'));
+  
+      document.querySelectorAll(".edit-traveler").forEach(button => {
+        button.addEventListener("click", function () {
+          const traveler = JSON.parse(this.dataset.traveler);
+          const bookingId = this.dataset.bookingid;
+  
+          // Fill modal fields
+          document.getElementById("traveler-index").value = traveler.index || '';
+          document.getElementById("modal-title").value = traveler.title || '';
+          document.getElementById("modal-type").value = traveler.type || '';
+          document.getElementById("modal-first-name").value = traveler.first_name || '';
+          document.getElementById("modal-last-name").value = traveler.last_name || '';
+          document.getElementById("modal-dob").value = traveler.dob
+            ? new Date(traveler.dob).toISOString().slice(0, 10)
+            : '';
+          document.getElementById("modal-passport-number").value = traveler.passport_number || '';
+          document.getElementById("modal-passport-expiry").value = traveler.passport_expiry
+            ? new Date(traveler.passport_expiry).toISOString().slice(0, 10)
+            : '';
+          document.getElementById("modal-booking-id").value = bookingId || '';
+  
+          // Optional fields
+          document.getElementById("modal-associate").value = '';
+          document.getElementById("modal-remarks").value = '';
+  
+          passportModal.show();
+        });
+      });
+  
+      // Optional: handle modal form submission
+      document.getElementById("passportForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        // TODO: handle form data
+        console.log("Form submitted");
+        passportModal.hide();
+      });
+    });
+  </script>  
+
+        <div class="bg-light p-2 mt-3">
+            <h6>Reservations</h6>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>PNR</th>
+                        <th>E-Ticket Number</th>
+                        <th>Seat</th>
+                        <th>Check in</th>
+                        <th>Cab</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% bookings.travelers.forEach((traveler, index)=> {
+                        %>
+                        <tr class="traveler-summary">
+                            <td><%= index+1 %></td>
+                            <td><%= bookings.flight.inventoryDates[0].pnr %></td>
+                            <td><%=  %></td>
+                            <td><%=  %></td>
+                            <td><%= bookings.flight.baggage.adult.checkIn.weightPerPiece %></td>
+                            <td><%= bookings.flight.baggage.adult.cabin.weightPerPiece %></td>
+                            <td><%= bookings.status %></td>
+                            <td>
+                                <button
+                                class="btn btn-primary btn-sm reservation-edit"
+                                data-traveler='<%- JSON.stringify(traveler) %>'>
+                                <i class="fa-solid fa-fw fa-pen-to-square"></i>
+                              </button>
+                              
+                                <!-- <button class="btn btn-danger btn-sm">
+                                    <i class="fa-solid fa-fw fa-trash"></i>
+                                </button> -->
+                        </tr>
+
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Ticket item END -->
+      <!-- End of ticket content -->
+    </div>
+  
+    <!-- Reservation Info Modal -->
+<div class="modal fade" id="reservationModal" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form id="reservationForm">
+          <div class="modal-header">
+            <h5 class="modal-title" id="reservationModalLabel">Reservations Informations</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <label class="form-label">PNR</label>
+                <input type="text" class="form-control" id="modal-pnr">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">E-Ticket Number</label>
+                <input type="text" class="form-control" id="modal-eticket">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Seat</label>
+                <input type="text" class="form-control" id="modal-seat">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Status</label>
+                <input type="text" class="form-control" id="modal-status">
+              </div>
+  
+              <div class="col-md-3">
+                <label class="form-label">Segment</label>
+                <input type="text" class="form-control" id="modal-segment">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Checkin</label>
+                <input type="text" class="form-control" id="modal-checkin">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Cab</label>
+                <input type="text" class="form-control" id="modal-cab">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Issuer Tracking</label>
+                <input type="text" class="form-control" id="modal-issuer-tracking">
+              </div>
+  
+              <div class="col-md-6">
+                <label class="form-label">Issuer</label>
+                <input type="text" class="form-control" id="modal-issuer">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Addon</label>
+                <input type="text" class="form-control" id="modal-addon">
+              </div>
+  
+              <div class="col-12">
+                <label class="form-label">Remarks</label>
+                <input type="text" class="form-control" id="modal-remarks">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Confirm</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const reservationModal = new bootstrap.Modal(document.getElementById('reservationModal'));
+  
+      document.querySelectorAll('.reservation-edit').forEach((button, index) => {
+        button.addEventListener('click', function () {
+          const traveler = JSON.parse(this.dataset.traveler);
+  
+          // You can access flight and booking info via a globally exposed `bookings` object if available
+          const bookingStatus = "<%= bookings.status %>";
+          const bookingPNR = "<%= bookings.flight.inventoryDates[0]?.pnr || '' %>";
+          const checkIn = "<%= bookings.flight.baggage.adult.checkIn.weightPerPiece || '0 KG' %>";
+          const cab = "<%= bookings.flight.baggage.adult.cabin.weightPerPiece || '0 KG' %>";
+  
+          // Update modal title
+          document.getElementById('reservationModalLabel').textContent = `${traveler.first_name} ${traveler.last_name} Reservations Informations`;
+  
+          // Fill modal fields
+          document.getElementById('modal-pnr').value = bookingPNR;
+          document.getElementById('modal-eticket').value = ''; // Replace with dynamic if available
+          document.getElementById('modal-seat').value = '-'; // Replace with dynamic if available
+          document.getElementById('modal-status').value = bookingStatus;
+          document.getElementById('modal-segment').value = ''; // Replace if available
+          document.getElementById('modal-checkin').value = checkIn;
+          document.getElementById('modal-cab').value = cab;
+          document.getElementById('modal-issuer-tracking').value = 'ORDER NO.: 1078-6'; // example
+          document.getElementById('modal-issuer').value = 'Flight Network';
+          document.getElementById('modal-addon').value = '';
+          document.getElementById('modal-remarks').value = '';
+  
+          reservationModal.show();
+        });
+      });
+  
+      document.getElementById('reservationForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        // Submit logic here
+        alert('Reservation updated (submit logic goes here)');
+        reservationModal.hide();
+      });
+    });
+  </script>
+  
+    <!-- Activities Tab -->
+    <div class="tab-pane fade" id="activities" role="tabpanel">
+      <div class="card card-body">
+        <h6>Location History</h6>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Pax Name</th>
+                        <th>Type</th>
+                        <th>Supplier</th>
+                        <th>Account</th>
+                        <th>Tracking ID</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% bookings.travelers.forEach((traveler, index)=> {
+                        %>
+                        <tr class="traveler-summary" data-index="<%= index %>"
+                            style="cursor: pointer;">
+                            <td>
+                                <%= traveler.first_name %>
+                                    <%= traveler.last_name %>
+                            </td>
+                            <td>One way</td>
+                            <td><%= seller.name %></td>
+                            <td>ETickets</td>
+                            <td>Not available</td>
+                            <td><%= bookings.status %></td>
+                            <td>
+                                <button
+                                class="btn btn-primary btn-sm tracking-edit"
+                                data-track='<%- JSON.stringify(traveler) %>'>
+                                <i class="fa-solid fa-fw fa-pen-to-square"></i>
+                              </button>                              
+                                <button class="btn btn-danger btn-sm">
+                                    <i class="fa-solid fa-fw fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+      </div>
+
+      <!-- Update Tracking Modal -->
+<div class="modal fade" id="trackingModal" tabindex="-1" aria-labelledby="trackingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form id="trackingForm">
+          <div class="modal-header">
+            <h5 class="modal-title" id="trackingModalLabel">Update Tracking history</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label">Pax name</label>
+                <input type="text" class="form-control" id="modal-pax" readonly>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Supplier</label>
+                <input type="text" class="form-control" id="modal-supplier">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Tracking Id</label>
+                <input type="text" class="form-control" id="modal-tracking-id">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Account</label>
+                <input type="text" class="form-control" id="modal-account">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Type</label>
+                <input type="text" class="form-control" id="modal-type">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Status</label>
+                <select class="form-select" id="modal-status">
+                  <option value="active">active</option>
+                  <option value="inactive">inactive</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Details</label>
+                <textarea class="form-control" id="modal-details" rows="2"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const trackingModal = new bootstrap.Modal(document.getElementById('trackingModal'));
+  
+      const bookings = {
+        status: "<%= bookings.status %>",
+        fromCity: "<%= bookings.flight.fromCity %>",
+        toCity: "<%= bookings.flight.toCity %>"
+      };
+  
+      const supplierName = "<%= seller.name %>";
+  
+      document.querySelectorAll('.tracking-edit').forEach(button => {
+        button.addEventListener('click', function () {
+          const traveler = JSON.parse(this.dataset.track);
+  
+          const paxName = `${traveler.first_name} ${traveler.last_name}`;
+          const details = `${paxName} Booked ${bookings.fromCity} to ${bookings.toCity} through ${supplierName} and Etickets account`;
+  
+          // Fill the modal
+          document.getElementById('modal-pax').value = paxName;
+          document.getElementById('modal-supplier').value = supplierName;
+          document.getElementById('modal-tracking-id').value = 'ORDER NO.: 1078-'; // set dynamically if needed
+          document.getElementById('modal-account').value = 'Etickets';
+          document.getElementById('modal-type').value = 'Onword Trip';
+          document.getElementById('modal-status').value = bookings.status;
+          document.getElementById('modal-details').value = details;
+  
+          trackingModal.show();
+        });
+      });
+  
+      document.getElementById('trackingForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        // Add AJAX/form submission logic here if needed
+        alert('Tracking updated!');
+        trackingModal.hide();
+      });
+    });
+  </script>  
+  
+      <div class="card card-body">
+        <h6>All Actions and activities</h6>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Content</th>
+                        <th>Amount</th>
+                        <th>Staff</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        <tr class="traveler-summary"
+                            style="cursor: pointer;">
+                            <td></td>
+                            <td></td>
+                            <td><%= bookings.amount %></td>
+                            <td><%= bookings.userId.name %></td>
+                            <td>
+                                <button class="btn btn-danger btn-sm">
+                                    <i class="fa-solid fa-fw fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                </tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+  
+<!-- Transactions Tab -->
+<div class="tab-pane fade" id="transactions" role="tabpanel">
+    <div class="card card-body bg-light">
+      
+      <!-- Top Action Buttons -->
+      <div class="mb-3 d-flex flex-wrap gap-2">
+        <button class="btn btn-primary">
+          <i class="bi bi-plus-circle"></i> Create Add Additional Service
+        </button>
+        <button class="btn btn-danger">
+          <i class="bi bi-arrow-counterclockwise"></i> Refund to Customer Account
+        </button>
+        <button class="btn btn-danger">
+          <i class="bi bi-link-45deg"></i> Active Payment Link
+        </button>
+      </div>
+  
+      <!-- Transactions Table -->
+        <h5 class="mb-3">Transactions</h5>
+      <div class="table-responsive border rounded bg-white">
+        <table class="table table-bordered mb-0">
+          <thead class="table-light">
+            <tr class="fw-bold">
+              <th>Purchase Amount</th>
+              <th>Sold Amount</th>
+              <th>Paid Amount</th>
+              <th>Refund</th>
+              <th>Deducted</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% transactions.forEach((transaction, index)=> { %>
+            <tr>
+              <td>₹ <%= transaction.baseFare %></td>
+              <td>₹ <%= transaction.totalAmount %></td>
+              <td>₹ <%= transaction.totalAmount %></td>
+              <td>- ₹ 0</td>
+              <td>₹ 0</td>
+            </tr>
+            <tr class="table-light fw-semibold">
+              <td>Cashback</td>
+              <td>Rewards</td>
+              <td>Net Amount</td>
+              <td>Con- fee</td>
+              <td>Staff</td>
+            </tr>
+            <tr>
+              <td>- ₹ 0</td>
+              <td>₹ <%= transaction.discount %></td>
+              <% let netAmt;
+                if (transaction.totalAmount) {
+                    netAmt = transaction.totalAmount - transaction.tax;
+                } else {
+                    netAmt = 0;
+                } %>
+              %>
+              <td>₹ <%= netAmt %></td>
+              <td>₹ <%= transaction.tax %></td>
+              <td><%= bookings.userId.name %></td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+       <!-- Wallet Transactions History -->
+       <h5 class="mb-3 mt-3">Wallet Transactions History</h5>
+       <div class="table-responsive border rounded bg-white">
+         <table class="table table-bordered mb-0">
+           <thead class="table-light">
+             <tr class="fw-bold">
+               <th>ID</th>
+               <th>Date</th>
+               <th>Particulars</th>
+               <th>Debit</th>
+               <th>Credit</th>
+               <th>Balance</th>
+               <th>Action</th>
+             </tr>
+           </thead>
+           <tbody>
+             <tr>
+               <td>TRS23435</td>
+               <td>26-May-2025</td>
+               <td>Purchased ACC to DEL on 30 May 2025 (ID:BFL11859)</td>
+               <td>83500</td>
+               <td>₹ 0</td>
+               <td>-143041</td>
+               <td>
+                  <button class="btn btn-primary btn-sm">
+                     <i class="fa-solid fa-fw fa-pen-to-square"></i>
+                  </button>
+                  <button class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-fw fa-pen-to-square"></i>
+                 </button>
+               </td>
+             </tr>
+             
+           </tbody>
+         </table>
+       </div>
+
+       <!-- Supplier Transactions History -->
+       <h5 class="mb-3 mt-3">Supplier Transactions History</h5>
+       <div class="table-responsive border rounded bg-white">
+         <table class="table table-bordered mb-0">
+           <thead class="table-light">
+             <tr class="fw-bold">
+               <th>ID</th>
+               <th>Date</th>
+               <th>Particulars</th>
+               <th>Debit</th>
+               <th>Credit</th>
+               <th>Action</th>
+             </tr>
+           </thead>
+           <tbody>
+             <tr>
+               <td>TRS23435</td>
+               <td>26-May-2025</td>
+               <td>Purchased ACC to DEL on 30 May 2025 (ID:BFL11859)</td>
+               <td>83500</td>
+               <td>-143041</td>
+               <td>
+                  <button class="btn btn-primary btn-sm">
+                     <i class="fa-solid fa-fw fa-pen-to-square"></i>
+                  </button>
+                  <button class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-fw fa-print"></i>
+                 </button>
+               </td>
+             </tr>
+             
+           </tbody>
+         </table>
+       </div>
+
+       <!-- Price History Table -->
+       <h5 class="mb-3">Price History</h5>
+       <div class="table-responsive border rounded bg-white">
+         <table class="table table-bordered mb-0">
+           <thead class="table-light">
+             <tr class="fw-bold">
+                <th>ID</th>
+                <th>Date</th>
+                <th>Payment Purpose</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+             </tr>
+           </thead>
+           <tbody>
+            <% transactions.forEach((transaction, index)=> { %>
+             <tr>
+               <td><%= index+1 %></td>
+               <% 
+  const createdDate = new Date(transaction.createdAt);
+  const day = createdDate.getDate().toString().padStart(2, '0');
+  const month = createdDate.toLocaleString('en-US', { month: 'short' });
+  const year = createdDate.getFullYear();
+%>
+<td><%= `${day}-${month}-${year}` %></td>
+               <td>Fare Total</td>
+               <td>₹ <%= transaction.totalAmount %></td>
+               <td>
+                <%= transaction.status === 'paid' ? 'successful' : 'unsuccessful' %>
+              </td>
+                             <td>
+                <button class="btn btn-primary btn-sm">
+                   <i class="fa-solid fa-fw fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-primary btn-sm">
+                  <i class="fa-solid fa-fw fa-trash"></i>
+               </button>
+             </td>
+             </tr>
+             <% }) %>
+           </tbody>
+         </table>
+       </div>
+
+       <!-- Payment History Table -->
+       <h5 class="mb-3">Payment History</h5>
+       <div class="table-responsive border rounded bg-white">
+        <table class="table table-bordered mb-0">
+          <thead class="table-light">
+            <tr class="fw-bold">
+               <th>ID</th>
+               <th>Date</th>
+               <th>Payment Method</th>
+               <th>Reference No</th>
+               <th>lastfor</th>
+               <th>Amount</th>
+               <th>Status</th>
+               <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% transactions.forEach((transaction, index)=> { %>
+            <tr>
+              <td><%= index+1 %></td>
+              <% 
+              const dateCreated = new Date(transaction.createdAt);
+              const day1 = dateCreated.getDate().toString().padStart(2, '0');
+              const month1 = dateCreated.toLocaleString('en-US', { month: 'short' });
+              const year1 = dateCreated.getFullYear();
+              %>
+              <td><%= `${day1}-${month1}-${year1}` %></td>
+              <td>Bismi Wallet</td>
+              <td><%= transaction.transactionId %></td>
+              <td><%= transaction.transactionId %></td>
+              <td>₹ <%= transaction.totalAmount %></td>
+              <td>
+                <%= transaction.status === 'paid' ? 'active' : 'inactive' %>
+              </td>
+                            <td>
+               <button class="btn btn-primary btn-sm">
+                  <i class="fa-solid fa-fw fa-pen-to-square"></i>
+               </button>
+               <button class="btn btn-danger btn-sm">
+                 <i class="fa-solid fa-fw fa-trash"></i>
+              </button>
+            </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+  
+  
+    <!-- Edit & Updates Tab -->
+<div class="tab-pane fade" id="edit" role="tabpanel">
+    <div class="card">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">Basic Informations</h5>
+      </div>
+      <div class="card-body">
+        <form>
+          <div class="row g-3">
+            <!-- Row 1 -->
+            <%
+            const adults = bookings.travelers.filter(t => t.type === 'Adult').length;
+            const children = bookings.travelers.filter(t => t.type === 'Child').length;
+            const infants = bookings.travelers.filter(t => t.type === 'Infant').length;
+          %>
+          
+            <div class="col-md-2">
+              <label class="form-label">Adult *</label>
+              <input type="number" class="form-control" value="<%= adults %>">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Child *</label>
+              <input type="number" class="form-control" value="<%= children %>">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Infant *</label>
+              <input type="number" class="form-control" value="<%= infants %>">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Depart *</label>
+              <input type="text" class="form-control" value="<%= bookings.flight.from %>">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Arrival *</label>
+              <input type="text" class="form-control" value="<%= bookings.flight.to %>">
+            </div>
+            <% function formatLocalDateTime(date, time) {
+                if (!date || !time) return '';
+              
+                const months = {
+                  Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
+                  Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12'
+                };
+              
+                const formatParts = date.split(' '); // ["27", "Oct", "2025"]
+                const formatDay = formatParts[0].padStart(2, '0');
+                const formatMonth = months[formatParts[1]];
+                const formatYear = formatParts[2];
+              
+                return `${formatYear}-${formatMonth}-${formatDay}T${time}`;
+              }
+              %>
+            <!-- Row 2 -->
+            <div class="col-md-4">
+              <label class="form-label">Depart Date *</label>
+              <input type="datetime-local" class="form-control" value="<%= formatLocalDateTime(bookings.flight.departureDate, bookings.flight.departureTime) %>">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Arrival Date *</label>
+              <input type="datetime-local" class="form-control" value="<%= formatLocalDateTime(bookings.flight.arrivalDate, bookings.flight.arrivalTime) %>">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Flight *</label>
+              <input type="text" class="form-control" value="<%= bookings.flight.stops[0].airline %>">
+            </div>
+  
+            <!-- Row 3 -->
+            <div class="col-md-4">
+              <label class="form-label">Email *</label>
+              <input type="email" class="form-control" value="<%= bookings.email %>">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Mobile *</label>
+              <input type="text" class="form-control" value="<%= bookings.mobile_number %>">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">FI Code *</label>
+              <input type="text" class="form-control" value="<%= bookings.flight.stops[0].airlineCode %>-<%= bookings.flight.stops[0].flightNumber %>">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">FI Image *</label>
+              <input type="text" class="form-control" value="<%= bookings.flight.stops[0].airlineCode %>">
+            </div>
+  
+            <!-- Row 4 -->
+            <div class="col-md-3">
+              <label class="form-label">Duration *</label>
+              <input type="text" class="form-control" value="<%= bookings.flight.duration %>">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Flight Type *</label>
+              <select class="form-select">
+                <option selected>GDS</option>
+                <option>NDC</option>
+              </select>
+            </div>
+            <%
+  const stopLength = bookings.flight.stops.length;
+  const stopText =
+    stopLength === 1 ? "Non-stop" :
+    stopLength === 2 ? "One stop" :
+    stopLength === 3 ? "Two stop" :
+    stopLength === 4 ? "Three stop" : "";
+%>
+
+<div class="col-md-3">
+  <label class="form-label">Booking Stops *</label>
+  <select class="form-select" name="bookingStops">
+    <option <%= stopText === "Non-stop" ? "selected" : "" %>>Non-stop</option>
+    <option <%= stopText === "One stop" ? "selected" : "" %>>One stop</option>
+    <option <%= stopText === "Two stop" ? "selected" : "" %>>Two stop</option>
+    <option <%= stopText === "Three stop" ? "selected" : "" %>>Three stop</option>
+  </select>
+</div>
+            <div class="col-md-3">
+              <label class="form-label">Sold Amount *</label>
+              <input type="text" class="form-control" value="<%= bookings.amount %>">
+            </div>
+  
+            <!-- Row 5 -->
+            <div class="col-md-3">
+              <label class="form-label">Fare Class *</label>
+              <select class="form-select">
+                <option>Economic</option>
+                <option>Business</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">T. Segment *</label>
+              <input type="text" class="form-control" value="6">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Given Name *</label>
+              <input type="text" class="form-control" value="<%= bookings.userId.name %>">
+            </div>
+            <!-- <div class="col-md-3">
+              <label class="form-label">Surname *</label>
+              <input type="text" class="form-control" value="SADASIVAN PILLAI">
+            </div> -->
+  
+            <!-- Row 6 -->
+            <div class="col-md-3">
+                <label class="form-label">Pay Status *</label>
+                <select class="form-select" name="payment_status">
+                  <option value="true" <%= bookings.payment_status ? 'selected' : '' %>>Paid</option>
+                  <option value="false" <%= !bookings.payment_status ? 'selected' : '' %>>Unpaid</option>
+                </select>
+            </div>              
+            <div class="col-md-3">
+              <label class="form-label">PNR *</label>
+              <input type="text" class="form-control" value="<%= bookings.flight.inventoryDates[0].pnr %>">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Return *</label>
+              <select class="form-select">
+                <option>Yes</option>
+                <option selected>No</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Whatsapp *</label>
+              <input type="text" class="form-control" value="<%= bookings.mobile_number %>">
+            </div>
+  
+            <!-- Row 7 -->
+            <div class="col-md-3">
+              <label class="form-label">Fare Type *</label>
+              <select class="form-select">
+                <option selected>Regular</option>
+                <option>Special</option>
+              </select>
+            </div>
+            <!-- <div class="col-md-3">
+              <label class="form-label">Return Depart Date *</label>
+              <input type="datetime-local" class="form-control" value="2026-01-03T08:40">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Return Arrival Date *</label>
+              <input type="datetime-local" class="form-control" value="2026-01-03T11:20">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">R. Depart *</label>
+              <input type="text" class="form-control" value="ADD">
+            </div>
+  
+            Row 8
+            <div class="col-md-3">
+              <label class="form-label">R. Arrival *</label>
+              <input type="text" class="form-control" value="ACC">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">R. Duration *</label>
+              <input type="text" class="form-control" value="21 Hrs 35 Min">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Return Stops *</label>
+              <select class="form-select">
+                <option selected>One stop</option>
+                <option>Two stop</option>
+                <option>Non-stop</option>
+              </select>
+            </div> -->
+          </div>
+
+          <% for (let i = 0; i < bookings.flight.stops.length; i++) { 
+            const stop = bookings.flight.stops[i];
+          %>
+            <div class="accordion mt-4" id="flightSegmentAccordion<%= i %>">
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#segment<%= i %>">
+                    <%= stop.fromCode %> to <%= stop.toCode %> - <%= stop.airlineCode %>-<%= stop.flightNumber %> on <%= stop.departureDay %>
+                  </button>
+                </h2>
+                <div id="segment<%= i %>" class="accordion-collapse collapse">
+                  <div class="accordion-body">
+                    <div class="row g-3">
+                      <div class="col-md-3">
+                        <label>Depart Code *</label>
+                        <input type="text" class="form-control" value="<%= stop.fromCode %>">
+                      </div>
+                      <div class="col-md-3">
+                        <label>Arrival Code *</label>
+                        <input type="text" class="form-control" value="<%= stop.toCode %>">
+                      </div>
+                      <div class="col-md-3">
+                        <label>D_Terminal *</label>
+                        <input type="text" class="form-control" value="<%= stop.fromTerminal %>">
+                      </div>
+                      <div class="col-md-3">
+                        <label>A_Terminal *</label>
+                        <input type="text" class="form-control" value="<%= stop.toTerminal %>">
+                      </div>
+                      <%
+function formatDateTimeLocal(departureDay, departureTime) {
+  if (!departureDay || !departureTime) return '';
+
+  const months = {
+    Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
+    Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12'
+  };
+
+  const parts = departureDay.split(' '); // ["27", "Oct", "2025"]
+  const day = parts[0].padStart(2, '0');
+  const month = months[parts[1]];
+  const year = parts[2];
+
+  return `${year}-${month}-${day}T${departureTime}`;
+}
+%>
+
+                      <div class="col-md-3">
+                        <label>Depart Date *</label>
+                        <input type="datetime-local" class="form-control" value="<%= formatDateTimeLocal(stop.departureDay, stop.departureTime) %>">
+                    </div>
+                      <div class="col-md-3">
+                        <label>Arrival Date *</label>
+                        <input type="datetime-local" class="form-control" value="<%= formatDateTimeLocal(stop.arrivalDay, stop.arrivalTime) %>">
+                    </div>
+                      <div class="col-md-3">
+                        <label>FI Code *</label>
+                        <input type="text" class="form-control" value="<%= stop.airlineCode %>-<%= stop.flightNumber %>">
+                      </div>
+                      <div class="col-md-3">
+                        <label>Flight *</label>
+                        <input type="text" class="form-control" value="<%= stop.airline %>">
+                      </div>
+                      <div class="col-md-3">
+                        <label>Duration *</label>
+                        <input type="text" class="form-control" value="<%= stop.stopDuration %>">
+                      </div>
+                      <div class="col-md-3">
+                        <label>Show by *</label>
+                        <input type="text" class="form-control" value="<%= i + 1 %>">
+                      </div>
+                      <div class="col-md-3">
+                        <label>Segment *</label>
+                        <input type="text" class="form-control" value="<%= i + 1 %>">
+                      </div>
+                      <div class="col-md-3">
+                        <label>Lay Over *</label>
+                        <input type="text" class="form-control" value="0">
+                      </div>
+                      <div class="col-md-3">
+                        <label>Status *</label>
+                        <input type="text" class="form-control" value="active">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% } %>                 
+  
+          <!-- Submit -->
+          <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Update Service Details</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+    <!-- Help Desk Tab -->
+    <div class="tab-pane fade" id="help" role="tabpanel">
+      <div class="card card-body">
+        <div class="mb-3 mt-0">
+            <strong class="text-uppercase small text-muted">Create a support under: <span class="text-dark"><%= bookings.bookingId %></span></strong>
+          </div>
+          <form class="mt-4" method="POST" action="/support-booking/<%= bookings._id %>" enctype="multipart/form-data">
+          <!-- Support Type Options -->
+          <div class="d-flex flex-wrap gap-4 mb-4">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="enquiryType" id="supportAirline" checked>
+              <label class="form-check-label" for="supportAirline">Airline Updates</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="enquiryType" id="supportNotes">
+              <label class="form-check-label" for="supportNotes">Internal Notes</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="enquiryType" id="supportEnquiry">
+              <label class="form-check-label" for="supportEnquiry">Enquiry of Tickets</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="enquiryType" id="supportFresh">
+              <label class="form-check-label" for="supportFresh">Fresh Response</label>
+            </div>
+          </div>
+        
+          <!-- Email & Subject Row -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <label for="supportEmail" class="form-label">Email Address</label>
+              <input type="email" id="supportEmail" class="form-control" value="<%= bookings.email %>" placeholder="Enter your email..." name="email">
+            </div>
+            <div class="col-md-8">
+              <label for="supportSubject" class="form-label">Describe the problem you have <small class="text-muted">(Subject)</small></label>
+              <input type="text" id="supportSubject" class="form-control" placeholder="Write your problem..." name="subject">
+            </div>
+          </div>
+        
+          <!-- Footer Info -->
+          <div class="text-muted small">
+            <strong>Give us the details</strong><br>
+            If you’re experiencing a personal crisis, are unable to cope and need support send message.
+            We will always try to respond to texters as quickly as possible.
+          </div>
+
+           <!-- Simple Textarea -->
+           <div class="mb-4">
+            <textarea class="form-control" rows="6" placeholder="Give us the details..." name="message"></textarea>
+          </div>
+  
+          <!-- File Attachment -->
+          <div class="mb-4">
+            <label class="mb-2" for="fileUpload">📎 Attach file</label>
+            <input type="file" id="fileUpload" class="form-control" name="file">
+          </div>
+  
+          <!-- Submit Button -->
+          <div>
+            <button class="btn btn-primary btn-lg" type="submit">Submit</button>
+          </div>
+          </form>
+      </div>
+    </div>
+  </div>
+  
+  
+                                        
+                                        <% } else { %>
+                                            <div class="alert alert-warning mb-0" role="alert">
+                                                <i class="fa-solid fa-exclamation-triangle me-2"></i>
+                                                No bookings found
+                                            </div>
+                                            <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Title and button END -->
+                    </div>
+                </div>
+                </div>
+
+            </section>
+
+            <!-- =======================
+    Title and notice board END -->
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    document.querySelectorAll(".traveler-summary").forEach(row => {
+                        row.addEventListener("click", function () {
+                            const index = row.getAttribute("data-index");
+                            const detailsRow = document.getElementById("details-" + index);
+                            const isVisible = detailsRow.style.display === "table-row";
+                            detailsRow.style.display = isVisible ? "none" : "table-row";
+                        });
+                    });
+                });
+            </script>
+
+            <!-- =======================
+    Flight list END -->
+        </main>
+        <!-- **************** MAIN CONTENT END **************** -->
+
+        <%- include('./partials/footer') %>

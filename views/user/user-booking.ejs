@@ -72,7 +72,9 @@
                                                         </tr>
                                                         <% } else { %>
                                                             <% bookings.forEach((booking, index)=> { %>
-                                                                <tr class="align-middle border-top">
+                                                                <tr class="align-middle border-top"
+                                                                style="cursor: pointer;"
+                                                                onclick="window.location.href='/user-bookings/<%= booking._id %>'">
                                                                     <td class="d-flex align-items-center gap-2">
                                                                         <div>
                                                                             <img src="<%= booking.flight.stops[0].airlineLogo %>"
@@ -130,7 +132,8 @@
 
                                                                     <td>
                                                                         <a href="/manage-booking?id=<%= booking._id %>"
-                                                                            class="btn btn-sm btn-light">
+                                                                            class="btn btn-sm btn-light"
+                                                                            onclick="event.stopPropagation();">
                                                                             <i class="fas fa-plus"></i>
                                                                         </a>
                                                                     </td>

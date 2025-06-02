@@ -340,12 +340,18 @@
 
 										</div>
 										<!-- Button -->
-										<div>
+										<!-- <div>
 											<form class="d-flex" method="GET" action="/admin/">
 												<input name="code" class="form-control border-1 me-1" type="text" maxlength="3" placeholder="Search Airport Code">
 												<button type="submit" class="btn btn-dark btn-round mb-0"><i class="bi bi-search fa-fw"></i></button>
 											</form>
-										</div>
+										</div> -->
+										<div class="d-flex" id="airportSearchForm">
+											<input id="searchCode" class="form-control border-1 me-1" type="text" maxlength="3" placeholder="Search Airport Code">
+											<button id="searchBtn" class="btn btn-dark btn-round mb-0" type="button">
+											  <i class="bi bi-search fa-fw"></i>
+											</button>
+										</div> 
 									</div>
 
 									<div class="table-responsive border-0">
@@ -399,6 +405,47 @@
 						</div>
 						<!-- Reviews END -->
 
+						<script>
+							document.getElementById("searchBtn").addEventListener("click", async () => {
+							  const code = document.getElementById("searchCode").value.trim().toUpperCase();
+							  if (!code) return;
+						  
+							  try {
+								const response = await fetch(`/admin/api/airports?code=${code}`);
+								const data = await response.json();
+						  
+								const tableBody = document.querySelector("table tbody");
+								tableBody.innerHTML = "";
+						  
+								if (data.airports.length > 0) {
+								  data.airports.forEach(airport => {
+									const city = airport.Name ? airport.Name.split('(')[0].trim().toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : '';
+									const row = `
+									  <tr>
+										<td>${airport.Value}</td>
+										<td>${city}</td>
+										<td>${airport.Airport}</td>
+										<td>
+										  <button class="btn btn-sm btn-danger-soft me-1 mb-1 mb-md-0 update-airport-btn"
+												  data-bs-toggle="modal"
+												  data-bs-target="#updateAirportModal"
+												  data-airport='${JSON.stringify(airport)}'>
+											Update
+										  </button>
+										</td>
+									  </tr>
+									`;
+									tableBody.insertAdjacentHTML("beforeend", row);
+								  });
+								} else {
+								  tableBody.innerHTML = `<tr><td colspan="4" class="text-center">No airports found.</td></tr>`;
+								}
+							  } catch (error) {
+								console.error("Search failed:", error);
+							  }
+							});
+						  </script>
+						  
 						<!-- Reviews START -->
 						<div class="col-lg-6 col-xxl-6">
 							<div class="card shadow h-100">

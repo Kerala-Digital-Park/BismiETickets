@@ -81,14 +81,7 @@ const viewDashboard = async (req, res) => {
     const users = await User.find({userRole:"User"});
     const sellers = await User.find({userRole:"Agent"});
     const popularFlights = await PopularFlight.find().limit(4);
-
-    let airports;
-    if (req.query.code) {
-      const searchCode = req.query.code.toUpperCase();
-      airports = await Airport.find({ Value: { $regex: searchCode, $options: "i" } });
-    } else {
-      airports = await Airport.find().limit(2);
-    }
+    const airports = await Airport.find().limit(2);
 
     res.render("admin/dashboard", {
       bookings,
@@ -1791,6 +1784,16 @@ const getAirports = async (req, res) => {
   }
 };
 
+const getAirportsApi = async (req, res) => {
+  try {
+    const searchCode = req.query.code?.toUpperCase() || '';
+    const airports = await Airport.find({ Value: { $regex: searchCode, $options: "i" } });
+    res.json({ airports });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+}
 
 const addPopularFlights = async (req, res) => {
   try {
@@ -2536,5 +2539,6 @@ module.exports = {
   viewFailedBookings,
   viewInitiatedBookings,
   viewLatestBookings,
+  getAirportsApi,
 
 };

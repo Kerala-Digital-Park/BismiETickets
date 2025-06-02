@@ -16,7 +16,7 @@ const supportSchema = mongoose.Schema(
     },
     enquiryType: {
       type: String,
-      enum: ["general", "problem"],
+      enum: ["general", "problem", "airline", "internal", "ticket", "other"],
       default: "general",
       required: true,
     },

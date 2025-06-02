@@ -95,6 +95,7 @@ userRouter.get("/listings", isLogin, userController.viewListings);
 userRouter.get("/add-listing", isLogin, userController.viewAddListing);
 userRouter.get("/join-us", userController.viewJoinUs);
 userRouter.get("/user-bookings", isLogin, userController.viewUserBookings);
+userRouter.get("/user-bookings/:id", isLogin, userController.viewUserBookingDetail);
 userRouter.get("/api/countries", userController.getApiCountries);
 userRouter.get("/search-airports", userController.searchAirports);
 userRouter.get("/search-airlines", userController.searchAirlines);
@@ -140,7 +141,7 @@ userRouter.post("/add-bank", isLogin, userController.addBank);
 userRouter.post("/support-ticket", upload.single('file'), isLogin, userController.addSupportTicket);
 userRouter.post("/contact", userController.contact);
 userRouter.post("/cancel-booking", upload.single('file'), isLogin, userController.cancelBooking);
-
+userRouter.post("/support-booking/:id", upload.single('file'), isLogin, userController.bookingSupportTicket);
 
 
 userRouter.put("/update-listing", isLogin, userController.updateListingById);

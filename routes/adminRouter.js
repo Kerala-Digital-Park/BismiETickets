@@ -33,7 +33,8 @@ adminRouter.get("/bookings/cancelled", isLogin, adminController.viewCancelledBoo
 adminRouter.get("/bookings/past", isLogin, adminController.viewPastBookings);
 adminRouter.get("/bookings/failed", isLogin, adminController.viewFailedBookings);
 adminRouter.get("/bookings/initiated", isLogin, adminController.viewInitiatedBookings);
-
+adminRouter.get("/api/airports", adminController.getAirportsApi);
+  
 
 
 

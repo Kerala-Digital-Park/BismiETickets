@@ -49,6 +49,8 @@ const userSchema = mongoose.Schema(
       bankName: { type: String, default: null, required: false },
       branchName: { type: String, default: null, required: false },
     },
+    daysOfInactivity: { type: Number, default: 0 },
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

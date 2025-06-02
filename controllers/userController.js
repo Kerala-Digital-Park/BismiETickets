@@ -17,6 +17,7 @@ const { countries } = require('countries-list');
 const nodemailer = require("nodemailer");
 const path = require("path");
 const fs = require("fs");
+const ejs = require('ejs');
 const Razorpay = require("razorpay");
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
 
@@ -32,6 +33,15 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
+
+const renderTemplate = (templatePath, data) => {
+  return new Promise((resolve, reject) => {
+    ejs.renderFile(templatePath, data, (err, html) => {
+      if (err) reject(err);
+      else resolve(html);
+    });
+  });
+};
 
 const viewHomepage = async (req, res) => {
   try {
@@ -295,8 +305,118 @@ const viewSupportTicket = async (req, res) => {
   }
 };
 
+// const findTicket = async (req, res) => {
+//   console.log("Find flights");
+//   try {
+//     const {
+//       fixedFrom,
+//       fixedTo,
+//       from,
+//       to,
+//       departure,
+//       departureDate,
+//       returnDate,
+//       adults,
+//       children,
+//       infants,
+//       dateTypeCheckbox,
+//     } = req.body;
+
+//     const flexible = dateTypeCheckbox === "on";
+
+//     if (flexible && (!from || !to || !departureDate || !returnDate)) {
+//       res.redirect("/");
+//     }
+
+//     if (!flexible && (!fixedFrom || !fixedTo || !departure)) {
+//       res.redirect("/");
+//     }
+
+//     const requestDetails = {
+//       from,
+//       to,
+//       fixedFrom,
+//       fixedTo,
+//       departure,
+//       returnDate,
+//       departureDate,
+//       flexible: flexible === true, // Convert back to boolean
+//       adults: (adults) || 1,
+//       children: parseInt(children) || 0,
+//       infants: parseInt(infants) || 0,
+//     };
+    
+//     const flights = await Flights.find();
+
+//     // Function to check if a date falls within a range
+//     const isDateInRange = (dateStr, startDateStr, endDateStr) => {
+//       const date = new Date(dateStr);
+//       const startDate = new Date(startDateStr);
+//       const endDate = new Date(endDateStr);
+//       return date >= startDate && date <= endDate;
+//     };
+
+//     // Filter flights based on from, to, and flexible criteria
+//     const filteredFlights = flights.filter((flight) => {
+//       if (flexible) {
+//         return (
+//           isDateInRange(
+//             flight.departureDate,
+//             departureDate,
+//             returnDate
+//           ) &&
+//           flight.from.toUpperCase() === from &&
+//           flight.to.toUpperCase() === to
+//         );
+//       } else {
+//         return (
+//           flight.departureDate === departure &&
+//           flight.from.toUpperCase() === fixedFrom &&
+//           flight.to.toUpperCase() === fixedTo
+//         );
+//       }
+//     });
+
+//     // Total passengers
+// const totalPassengers =
+// parseInt(requestDetails.adults) +
+// parseInt(requestDetails.children) +
+// parseInt(requestDetails.infants);
+
+// // Create a map to track the lowest fare per airline for flights with enough seats
+// const airlineMap = new Map();
+
+// filteredFlights.forEach(flight => {
+// const inventory = flight.inventoryDates?.[0];
+// const airline = flight.stops?.[0]?.airline || "Unknown";
+// const fare = inventory?.fare?.adults || Infinity;
+// const seatsAvailable = inventory?.seats || 0;
+
+// if (seatsAvailable >= totalPassengers) {
+//   if (!airlineMap.has(airline) || fare < airlineMap.get(airline).fare) {
+//     airlineMap.set(airline, { flight, fare });
+//   }
+// }
+// });
+
+// // Extract the best fare flight for each airline
+// const refilteredFlights = Array.from(airlineMap.values()).map(entry => entry.flight);
+
+// res.render("user/flight-list", {
+//   flights: filteredFlights,          
+//   refilteredFlights,                 
+//   requestDetails,
+// });
+
+//   } catch (error) {
+//     console.error(error);
+//     res.render("error", { error });
+//   }
+// };
+
 const findTicket = async (req, res) => {
   console.log("Find flights");
+
   try {
     const {
       fixedFrom,
@@ -311,20 +431,19 @@ const findTicket = async (req, res) => {
       infants,
       dateTypeCheckbox,
     } = req.body;
-console.log(req.body);
 
-    console.log(adults, children, infants)
     const flexible = dateTypeCheckbox === "on";
-    console.log(flexible);
 
+    // Validate basic input
     if (flexible && (!from || !to || !departureDate || !returnDate)) {
-      res.redirect("/");
+      return res.redirect("/");
     }
 
     if (!flexible && (!fixedFrom || !fixedTo || !departure)) {
-      res.redirect("/");
+      return res.redirect("/");
     }
 
+    // Default passenger counts
     const requestDetails = {
       from,
       to,
@@ -333,16 +452,18 @@ console.log(req.body);
       departure,
       returnDate,
       departureDate,
-      flexible: flexible === true, // Convert back to boolean
-      adults: (adults) || 1,
+      flexible: flexible === true,
+      adults: parseInt(adults) || 1,
       children: parseInt(children) || 0,
       infants: parseInt(infants) || 0,
     };
 
-    const flights = await Flights.find();
-    console.log("flights", flights[0].departureDate);
+    const totalPassengers =
+      requestDetails.adults + requestDetails.children + requestDetails.infants;
 
-    // Function to check if a date falls within a range
+    const flights = await Flights.find();
+
+    // Helper to check if date is within range
     const isDateInRange = (dateStr, startDateStr, endDateStr) => {
       const date = new Date(dateStr);
       const startDate = new Date(startDateStr);
@@ -350,65 +471,63 @@ console.log(req.body);
       return date >= startDate && date <= endDate;
     };
 
-    // Filter flights based on from, to, and flexible criteria
+    // Filter flights by route, date, and seat availability
     const filteredFlights = flights.filter((flight) => {
-      if (flexible) {
-        return (
-          isDateInRange(
-            flight.departureDate,
-            departureDate,
-            returnDate
-          ) &&
-          flight.from.toUpperCase() === from &&
-          flight.to.toUpperCase() === to
-        );
-      } else {
-        return (
-          flight.departureDate === departure &&
-          flight.from.toUpperCase() === fixedFrom &&
-          flight.to.toUpperCase() === fixedTo
-        );
+      const inventory = flight.inventoryDates?.[0];
+      if (!inventory) return false;
+
+      const availableSeats = inventory.seats || 0;
+      const bookedSeats = inventory.seatsBooked || 0;
+      const remainingSeats = availableSeats - bookedSeats;
+
+      const matchesRoute = flexible
+        ? (
+            isDateInRange(flight.departureDate, departureDate, returnDate) &&
+            flight.from.toUpperCase() === from &&
+            flight.to.toUpperCase() === to
+          )
+        : (
+            flight.departureDate === departure &&
+            flight.from.toUpperCase() === fixedFrom &&
+            flight.to.toUpperCase() === fixedTo
+          );
+
+      return matchesRoute && remainingSeats >= totalPassengers;
+    });
+
+    // Build airline → best fare map
+    const airlineMap = new Map();
+
+    filteredFlights.forEach((flight) => {
+      const inventory = flight.inventoryDates?.[0];
+      const airline = flight.stops?.[0]?.airline || "Unknown";
+      const fare = inventory?.fare?.adults || Infinity;
+
+      const availableSeats = inventory.seats || 0;
+      const bookedSeats = inventory.seatsBooked || 0;
+      const remainingSeats = availableSeats - bookedSeats;
+
+      if (remainingSeats >= totalPassengers) {
+        if (!airlineMap.has(airline) || fare < airlineMap.get(airline).fare) {
+          airlineMap.set(airline, { flight, fare });
+        }
       }
     });
-    console.log(filteredFlights);
-    console.log(requestDetails);
 
-    // Total passengers
-const totalPassengers =
-parseInt(requestDetails.adults) +
-parseInt(requestDetails.children) +
-parseInt(requestDetails.infants);
+    // Extract flights with best fare per airline
+    const refilteredFlights = Array.from(airlineMap.values()).map(
+      (entry) => entry.flight
+    );
 
-// Create a map to track the lowest fare per airline for flights with enough seats
-const airlineMap = new Map();
-
-filteredFlights.forEach(flight => {
-const inventory = flight.inventoryDates?.[0];
-const airline = flight.stops?.[0]?.airline || "Unknown";
-const fare = inventory?.fare?.adults || Infinity;
-const seatsAvailable = inventory?.seats || 0;
-
-if (seatsAvailable >= totalPassengers) {
-  if (!airlineMap.has(airline) || fare < airlineMap.get(airline).fare) {
-    airlineMap.set(airline, { flight, fare });
-  }
-}
-});
-
-console.log(airlineMap);
-
-// Extract the best fare flight for each airline
-const refilteredFlights = Array.from(airlineMap.values()).map(entry => entry.flight);
-console.log(refilteredFlights);
-
-res.render("user/flight-list", {
-  flights: filteredFlights,          
-  refilteredFlights,                 
-  requestDetails,
-});
+    // Render results
+    res.render("user/flight-list", {
+      flights: filteredFlights,
+      refilteredFlights,
+      requestDetails,
+    });
 
   } catch (error) {
-    console.error(error);
+    console.error("Error in findTicket:", error);
     res.render("error", { error });
   }
 };
@@ -1082,7 +1201,6 @@ const flightBooking = async (req, res) => {
 
     await newBooking.save();
 
-
     // Create a new transaction
     const newTransaction = new Transactions({
       bookingId: newBooking._id,
@@ -1117,6 +1235,28 @@ const flightBooking = async (req, res) => {
 
     if (!updatedFlight) {
       return res.status(404).json({ message: "Flight or inventory date not found" });
+    }
+
+    try {
+      const templatePath = path.join(__dirname, '../views/user/bookingConfirmationMail.ejs');
+      const html = await renderTemplate(templatePath, {
+        travelers,
+        flightDetails,
+        totalFare,
+        baseFare,
+        otherServices,
+        discount,
+        bookingId: newBooking._id,
+      });
+
+      await transporter.sendMail({
+        from: process.env.EMAIL,
+        to: email,
+        subject: 'Your Flight Booking Confirmation',
+        html,
+      });
+    } catch (emailErr) {
+      console.error('Error sending confirmation email:', emailErr);
     }
 
     return res
@@ -2235,6 +2375,43 @@ const viewUserBookings = async (req, res) => {
   }
 };
 
+const viewUserBookingDetail = async (req, res) => {
+  try{
+    const bookingId = req.params.id; // Get booking ID from URL parameter
+    const userId = req.session.userId; // Get seller's user ID from session
+
+    // Find the booking by ID and populate flight and user details
+    const bookings = await Bookings.findById(bookingId)
+      .populate("flight")
+      .populate("userId");
+
+    if (!bookings) {
+      return res.status(404).json({ success: false, message: "Booking not found" });
+    }
+
+    const sellerId = bookings.flight.sellerId;
+    const seller = await Users.findById(sellerId);
+    if (!seller) {
+      return res.status(404).json({ success: false, message: "Seller not found" });
+    }
+
+    const transactions = await Transactions.find({ bookingId: bookings._id });
+    if (!transactions) {
+      return res.status(404).json({ success: false, message: "Transactions not found" });
+    }
+
+    // Check if the booking belongs to the seller
+    if (bookings.flight.sellerId.toString() !== userId) {
+      return res.status(403).json({ success: false, message: "Unauthorized access" });
+    }
+
+    res.render("user/user-booking-detail", { bookings, seller, transactions });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
 const addFlight = async (req, res) => {
   console.log("Adding flights");
   const oneWayFlight = req.body;
@@ -2763,6 +2940,55 @@ const cancelBooking = async (req, res) => {
   }
 };
 
+const bookingSupportTicket = async (req, res) => {
+  try { 
+    const {
+      enquiryType,
+      category,
+      priority,
+      subject,
+      message
+    } = req.body;
+ 
+    const userId = req.session.userId; // Assumes session is set up
+    if (!userId) return res.status(401).send('Unauthorized');
+
+    const bookingId = req.params.id; // Get booking ID from URL parameter
+    if (!bookingId) return res.status(400).send('Booking ID is required');
+    let enquiry;
+
+    if(enquiryType === "A general enquiry"){
+      enquiry = "general"
+    }else if (enquiryType === " I have a problem need help"){
+      enquiry = "problem"
+    }else if (enquiryType === "Airline Updates"){
+      enquiry = "airline"
+    }else if (enquiryType === "Internal Notes"){
+      enquiry = "internal"
+    }else if (enquiryType === "Enquiry of Tickets"){
+      enquiry = "ticket"
+    }else{
+      enquiry= "other"
+    }
+
+    const newTicket = new Support({
+      userId,
+      enquiryType : enquiry,
+      category,
+      priority,
+      subject,
+      message,
+      fileUrl: req.file ? `/uploads/${req.file.filename}` : null,
+    });
+
+    await newTicket.save();
+    res.redirect(`/user-bookings/${bookingId}`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+}
+
 module.exports = {
   viewHomepage,
   viewDashboard,
@@ -2822,6 +3048,7 @@ module.exports = {
   viewAddListing,
   viewJoinUs,
   viewUserBookings,
+  viewUserBookingDetail,
   addFlight,
   getApiFlights,
   getApiCountries,
@@ -2838,5 +3065,6 @@ module.exports = {
   viewNotifications,
   contact,
   cancelBooking,
-
+  bookingSupportTicket,
+   
 };
