@@ -590,6 +590,8 @@ const updateBankDetail = async (req, res) => {
         ifscCode: update.bankDetails.ifscCode,
         accountHolderName: update.bankDetails.accountHolderName,
         branchName: update.bankDetails.branchName,
+        isActive: true, // Set to true when accepting the update
+        status: "approved", // Set status to approved
       };
 
       const updatedUser = await User.findByIdAndUpdate(
@@ -605,7 +607,7 @@ const updateBankDetail = async (req, res) => {
       }
 
       // Remove approved bank update request
-      await BankUpdates.findByIdAndDelete(bankUpdateId);
+      await BankUpdates.findByIdAndUpdate(bankUpdateId, {$set: { "status": "approved" }}, { new: true });
       return res.json({
         success: true,
         message: "Bank details accepted successfully",
@@ -614,7 +616,13 @@ const updateBankDetail = async (req, res) => {
 
     if (status === "reject") {
       // Optional: Set a status or delete it
-      await BankUpdates.findByIdAndDelete(bankUpdateId);
+      // await BankUpdates.findByIdAndDelete(bankUpdateId);
+      await User.findByIdAndUpdate(userId, {
+        $set: {
+          "bankDetails.status": "rejected", // Set status to rejected
+        },
+      });
+      await BankUpdates.findByIdAndUpdate(bankUpdateId, {$set: { "status": "rejected" }}, { new: true });
       return res.json({
         success: true,
         message: "Bank details rejected successfully",
@@ -2490,6 +2498,205 @@ const viewInitiatedBookings = async (req, res) => {
   }
 }
 
+const viewActiveInventory = async (req, res) => {
+  const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  try {
+    const searchQuery = search
+      ? { inventoryId: { $regex: search, $options: "i" } }
+      : {};
+
+    // Step 1: Get paginated active flights
+    const activeFlights = await Flight.find({
+      ...searchQuery,
+      isActive: true,
+      status: "pending"
+    })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    // Step 2: Extract sellerIds
+    const sellerIds = [...new Set(activeFlights.map(flight => flight.sellerId))];
+
+    // Step 3: Get user details
+    const sellers = await User.find({ _id: { $in: sellerIds } })
+      .select("userId name") // adjust fields as needed
+      .lean();
+
+    const sellerMap = sellers.reduce((acc, seller) => {
+      acc[seller._id.toString()] = seller;
+      return acc;
+    }, {});
+
+    // Step 4: Attach seller info to flights
+    activeFlights.forEach(flight => {
+      flight.seller = sellerMap[flight.sellerId] || null;
+    });
+
+    // Step 5: Get counts
+    const [allFlights, activeCount, closedCount, pastCount] = await Promise.all([
+      Flight.countDocuments(),
+      Flight.countDocuments({ isActive: true }),
+      Flight.countDocuments({ isActive: false }),
+      Flight.countDocuments({ status: "completed" }),
+    ]);
+
+    const totalPages = Math.ceil(activeCount / limit);
+
+    res.render("admin/active-inventory", {
+      flights: activeFlights,
+      totalFlights: allFlights,
+      activeFlights: activeCount,
+      closedFlights: closedCount,
+      pastFlights: pastCount,
+      currentPage: page,
+      totalPages,
+      search,
+      limit,
+      totalCount: activeCount,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+const viewPastInventory = async (req, res) => {
+  const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  try {
+    const searchQuery = search
+      ? { inventoryId: { $regex: search, $options: "i" } }
+      : {};
+
+    // Step 1: Get paginated active flights
+    const activeFlights = await Flight.find({
+      ...searchQuery,
+      status: "completed"
+    })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    // Step 2: Extract sellerIds
+    const sellerIds = [...new Set(activeFlights.map(flight => flight.sellerId))];
+
+    // Step 3: Get user details
+    const sellers = await User.find({ _id: { $in: sellerIds } })
+      .select("userId name") // adjust fields as needed
+      .lean();
+
+    const sellerMap = sellers.reduce((acc, seller) => {
+      acc[seller._id.toString()] = seller;
+      return acc;
+    }, {});
+
+    // Step 4: Attach seller info to flights
+    activeFlights.forEach(flight => {
+      flight.seller = sellerMap[flight.sellerId] || null;
+    });
+
+    // Step 5: Get counts
+    const [allFlights, activeCount, closedCount, pastCount] = await Promise.all([
+      Flight.countDocuments(),
+      Flight.countDocuments({ isActive: true }),
+      Flight.countDocuments({ isActive: false }),
+      Flight.countDocuments({ status: "completed" }),
+    ]);
+
+    const totalPages = Math.ceil(activeCount / limit);
+
+    res.render("admin/past-inventory", {
+      flights: activeFlights,
+      totalFlights: allFlights,
+      activeFlights: activeCount,
+      closedFlights: closedCount,
+      pastFlights: pastCount,
+      currentPage: page,
+      totalPages,
+      search,
+      limit,
+      totalCount: activeCount,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+}
+
+const viewClosedInventory = async (req, res) => {
+  const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  try {
+    const searchQuery = search
+      ? { inventoryId: { $regex: search, $options: "i" } }
+      : {};
+
+    // Step 1: Get paginated active flights
+    const activeFlights = await Flight.find({
+      ...searchQuery,
+      isActive: false,
+    })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    // Step 2: Extract sellerIds
+    const sellerIds = [...new Set(activeFlights.map(flight => flight.sellerId))];
+
+    // Step 3: Get user details
+    const sellers = await User.find({ _id: { $in: sellerIds } })
+      .select("userId name") // adjust fields as needed
+      .lean();
+
+    const sellerMap = sellers.reduce((acc, seller) => {
+      acc[seller._id.toString()] = seller;
+      return acc;
+    }, {});
+
+    // Step 4: Attach seller info to flights
+    activeFlights.forEach(flight => {
+      flight.seller = sellerMap[flight.sellerId] || null;
+    });
+
+    // Step 5: Get counts
+    const [allFlights, activeCount, closedCount, pastCount] = await Promise.all([
+      Flight.countDocuments(),
+      Flight.countDocuments({ isActive: true }),
+      Flight.countDocuments({ isActive: false }),
+      Flight.countDocuments({ status: "completed" }),
+    ]);
+
+    const totalPages = Math.ceil(activeCount / limit);
+
+    res.render("admin/closed-inventory", {
+      flights: activeFlights,
+      totalFlights: allFlights,
+      activeFlights: activeCount,
+      closedFlights: closedCount,
+      pastFlights: pastCount,
+      currentPage: page,
+      totalPages,
+      search,
+      limit,
+      totalCount: activeCount,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+}
+
 module.exports = {
   viewLogin,
   loginAdmin,
@@ -2540,5 +2747,8 @@ module.exports = {
   viewInitiatedBookings,
   viewLatestBookings,
   getAirportsApi,
+  viewActiveInventory,
+  viewPastInventory,
+  viewClosedInventory,
 
 };

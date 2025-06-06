@@ -142,7 +142,7 @@ userRouter.post("/support-ticket", upload.single('file'), isLogin, userControlle
 userRouter.post("/contact", userController.contact);
 userRouter.post("/cancel-booking", upload.single('file'), isLogin, userController.cancelBooking);
 userRouter.post("/support-booking/:id", upload.single('file'), isLogin, userController.bookingSupportTicket);
-
+userRouter.post('/remove-account',isLogin, userController.removeBank);
 
 userRouter.put("/update-listing", isLogin, userController.updateListingById);
 userRouter.put("/update-seats", isLogin, userController.updateSeatById);

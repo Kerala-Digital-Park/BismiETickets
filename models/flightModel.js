@@ -83,7 +83,13 @@ const flightSchema = mongoose.Schema({
     },
   }],
   refundable: { type: Boolean, required: true, default: false },
-  status: { type: String, required: true, default: "active" },
+  status: {
+    type: String,
+    required: true,
+    enum: ["pending", "completed"],
+    default: "pending",
+  },
+  isActive: { type: Boolean, default: true }, // <-- Added field
 },
 { timestamps: true }
 );
@@ -111,5 +117,29 @@ const flightSchema = mongoose.Schema({
 //     next();
 //   }
 // });
+
+// Pre-save hook to compute isActive
+flightSchema.pre("save", function (next) {
+  const flight = this;
+
+  if (flight.inventoryDates && flight.inventoryDates.length > 0) {
+    const allFull = flight.inventoryDates.every(date => date.seatsBooked >= date.seats);
+    flight.isActive = !allFull;
+  } else {
+    flight.isActive = true;
+  }
+
+  if (flight.departureDate) {
+    // Convert "25 Mar 2025" string to a Date object for comparison
+    const depDate = new Date(flight.departureDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // normalize to start of today
+    depDate.setHours(0, 0, 0, 0); // normalize for fair comparison
+
+    flight.status = depDate > today ? "pending" : "completed";
+  }
+
+  next();
+});
 
 module.exports = mongoose.model("Flights", flightSchema);

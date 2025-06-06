@@ -77,11 +77,10 @@
                                 <div class="card bg-light">
                                     <!-- Dropdown button -->
                                     <div class="dropdown position-absolute top-0 end-0 m-3">
-                                        <a href="#" class="btn btn-sm btn-white btn-round lh-lg mb-0" role="button"
+                                        <!-- <a href="#" class="btn btn-sm btn-white btn-round lh-lg mb-0" role="button"
                                             id="dropdownShare1" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="bi bi-three-dots fa-fw"></i>
                                         </a>
-                                        <!-- dropdown button -->
                                         <ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded"
                                             aria-labelledby="dropdownShare1">
                                             <li><a class="dropdown-item" href="#"><i
@@ -89,7 +88,10 @@
                                             <li><div class="dropdown-item delete-agent-btn"
                                                 data-agent-id="<%= agent._id %>"><i
                                                         class="bi bi-trash fa-fw me-2"></i>Remove</div></li>
-                                        </ul>
+                                        </ul> -->
+                                        <div class="dropdown-item delete-agent-btn"
+                                                data-agent-id="<%= agent._id %>"><i
+                                                        class="bi bi-trash fa-fw me-2 text-danger"></i></div>
                                     </div>
                                     <!-- Card body -->
                                     <div class="card-body text-center">

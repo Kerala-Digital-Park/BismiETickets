@@ -2749,6 +2749,24 @@ const changeStatus = async (req, res) => {
   }
 };
 
+const removeBank = async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    const user = await Users.findById(userId);
+    if (!user) return res.status(404).send("User not found");
+
+    user.bankDetails.isActive = false;
+    await user.save();
+
+    // req.flash('success', 'Bank account removed.');
+    res.redirect('/earnings'); // Redirect as needed
+  } catch (error) {
+    console.error("Error removing account:", error);
+    res.status(500).send("Failed to remove account");
+  }
+}
+
 const viewTransactions = async (req, res) => {
   const userId = req.session.userId;
   const search = req.query.search || '';
@@ -3060,6 +3078,7 @@ module.exports = {
   updateSeatById,
   updateDateById,
   addBank,
+  removeBank,
   viewTransactions,
   addSupportTicket,
   viewNotifications,

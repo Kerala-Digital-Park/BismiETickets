@@ -16,6 +16,11 @@ const bankUpdateSchema = mongoose.Schema(
       bankName: { type: String, default: null, required: false },
       branchName: { type: String, default: null, required: false },
     },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
   },
   { timestamps: true }
 );

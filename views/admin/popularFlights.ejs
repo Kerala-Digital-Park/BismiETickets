@@ -14,26 +14,76 @@
                     <div class="container mt-4">
                         <h3>Add New Popular Flight</h3>
 
-                        <form action="/admin/popular-flights" method="POST" enctype="multipart/form-data">
+                        <form id="popularFlightForm" enctype="multipart/form-data">
                             <div class="mb-3">
-                                <label class="form-label">From</label>
+                                <label class="form-label">From <span style="color: red;">*</span></label>
                                 <select class="form-select js-airport" id="fromSelect" name="from"
                                     placeholder="Select from"></select>
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">To</label>
+                                <label class="form-label">To <span style="color: red;">*</span></label>
                                 <select class="form-select" id="toSelect" name="to" style="width: 100%"></select>
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Upload File</label>
-                                <input type="file" name="file" class="form-control" required>
+                                <label class="form-label">Upload File <span style="color: red;">*</span></label>
+                                <input type="file" name="file" id="fileInput" class="form-control"
+                                    accept="image/*">
                             </div>
+
+                                <div id="formError" style="color: red; display: none; margin-bottom: 10px;">
+        Please fill out all required fields.
+    </div>
+
+    <div id="formSuccess" style="color: green; display: none; margin-bottom: 10px;">
+        Popular flight added successfully!
+    </div>
 
                             <button type="submit" class="btn btn-success">Create</button>
                         </form>
 
+                       <script>
+    document.getElementById('popularFlightForm').addEventListener('submit', function (e) {
+        e.preventDefault(); // Stop default form submission
+
+        const from = document.getElementById('fromSelect').value;
+        const to = document.getElementById('toSelect').value;
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+
+        // Hide previous messages
+        document.getElementById('formError').style.display = 'none';
+        document.getElementById('formSuccess').style.display = 'none';
+
+        if (!from || !to || !file) {
+            document.getElementById('formError').style.display = 'block';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('from', from);
+        formData.append('to', to);
+        formData.append('file', file);
+
+        fetch('/admin/popular-flights', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                document.getElementById('formSuccess').style.display = 'block';
+                document.getElementById('popularFlightForm').reset();
+            } else {
+                throw new Error('Server error');
+            }
+        })
+        .catch(error => {
+            document.getElementById('formError').textContent = 'Failed to add flight. Please try again.';
+            document.getElementById('formError').style.display = 'block';
+        });
+    });
+</script>
                         <hr>
 
                         <h4>All Popular Flights</h4>

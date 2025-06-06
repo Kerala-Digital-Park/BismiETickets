@@ -48,6 +48,8 @@ const userSchema = mongoose.Schema(
       ifscCode: { type: String, default: null, required: false },
       bankName: { type: String, default: null, required: false },
       branchName: { type: String, default: null, required: false },
+      isActive: { type: Boolean, default: false },
+      status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
     },
     daysOfInactivity: { type: Number, default: 0 },
     isActive: { type: Boolean, default: true },

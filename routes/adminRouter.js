@@ -34,7 +34,10 @@ adminRouter.get("/bookings/past", isLogin, adminController.viewPastBookings);
 adminRouter.get("/bookings/failed", isLogin, adminController.viewFailedBookings);
 adminRouter.get("/bookings/initiated", isLogin, adminController.viewInitiatedBookings);
 adminRouter.get("/api/airports", adminController.getAirportsApi);
-  
+adminRouter.get("/inventory/active", isLogin, adminController.viewActiveInventory);
+adminRouter.get("/inventory/past", isLogin, adminController.viewPastInventory);
+adminRouter.get("/inventory/closed", isLogin, adminController.viewClosedInventory);
+
 
 
 
@@ -56,7 +59,6 @@ adminRouter.post("/edit-user", isLogin, adminController.editUser);
 adminRouter.post("/add-airport", isLogin, adminController.addAirport);
 adminRouter.post("/update-airport", isLogin, adminController.updateAirport);
 adminRouter.post('/delete-popular-flight/:id', isLogin, adminController.deletePopularFlight);
-
 
 adminRouter.delete('/delete-user/:id',isLogin, adminController.deleteUser);
 adminRouter.delete('/delete-agent/:id',isLogin, adminController.deleteAgent);

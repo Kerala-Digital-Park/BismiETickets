@@ -56,6 +56,7 @@
                                                 <th>Bank Name</th>
                                                 <th>Branch Name</th>
                                                 <th>IFSC Code</th>
+                                                <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -109,11 +110,12 @@
                                                             </h6>
                                                         </td>
                                                         <td>
-                                                            <!-- <button class="btn btn-sm btn-primary view-update-btn"
-																	data-update='<%= JSON.stringify(update) %>' title="View"
-																	data-bs-toggle="tooltip" data-bs-placement="top">
-																	<i class="fa-solid fa-eye"></i>
-																</button> -->
+                                                            <h6 class="mb-0 fw-normal">
+                                                                <%= update.user.bankDetails.isActive === true ? "Active" : "Inactive" %>
+                                                            </h6>
+                                                        </td>
+                                                        <!-- <td>
+                                                           
                                                             <button class="btn btn-sm btn-success update-btn ms-2"
                                                                 data-update-id="<%= update._id %>" title="Accept"
                                                                 data-title="accept" data-bs-toggle="tooltip"
@@ -126,7 +128,28 @@
                                                                 data-bs-placement="top">
                                                                 <i class="fa-solid fa-xmark"></i>
                                                             </button>
-                                                        </td>
+                                                        </td> -->
+                                                        <td>
+                                                            <% if (update.status === "pending") { %>
+                                                              <button class="btn btn-sm btn-success update-btn ms-2"
+                                                                  data-update-id="<%= update._id %>" title="Accept"
+                                                                  data-title="accept" data-bs-toggle="tooltip"
+                                                                  data-bs-placement="top">
+                                                                  <i class="fa-solid fa-check"></i>
+                                                              </button>
+                                                              <button class="btn btn-sm btn-danger update-btn ms-2"
+                                                                  data-update-id="<%= update._id %>" title="Reject"
+                                                                  data-title="reject" data-bs-toggle="tooltip"
+                                                                  data-bs-placement="top">
+                                                                  <i class="fa-solid fa-xmark"></i>
+                                                              </button>
+                                                            <% } else if (update.status === "approved") { %>
+                                                              <span class="badge bg-success">Approved</span>
+                                                            <% } else if (update.status === "rejected") { %>
+                                                              <span class="badge bg-danger">Rejected</span>
+                                                            <% } %>
+                                                          </td>
+                                                          
                                                     </tr>
                                                     <% }) %>
                                                         <% } else { %>

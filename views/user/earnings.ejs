@@ -67,7 +67,7 @@
                                         </a>
                                         <ul class="dropdown-menu dropdown-menu-end"
                                             aria-labelledby="creditcardDropdown">
-                                            <li>
+                                            <!-- <li>
                                                 <a class="dropdown-item" href="#" data-bs-toggle="modal"
                                                     data-bs-target="#bankModal" data-mode="edit"
                                                     data-title="Edit Account" data-btn-text="Update"
@@ -83,7 +83,34 @@
                                                     data-title="Add New Account" data-btn-text="Add">
                                                     <i class="bi bi-credit-card me-2 fw-icon"></i>Add new account
                                                 </a>
-                                            </li>
+                                            </li> -->
+                                            <% if (user.bankDetails && user.bankDetails.status !== "pending") { %>
+                                                <li>
+                                                    <form method="POST" action="/remove-account" onsubmit="return confirm('Are you sure you want to remove this account?');">
+                                                        <input type="hidden" name="userId" value="<%= user._id %>">
+                                                        <button type="submit" class="dropdown-item text-danger">
+                                                            <i class="bi bi-trash me-2 fw-icon"></i>Remove account
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            <% } else { %>
+                                                <li>
+                                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                                        data-bs-target="#bankModal" data-mode="edit"
+                                                        data-title="Edit Account" data-btn-text="Update"
+                                                        data-user='<%- JSON.stringify(user) %>'>
+                                                        <i class="bi bi-credit-card-2-front-fill me-2 fw-icon"></i>Edit account
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                                        data-bs-target="#bankModal" data-mode="add"
+                                                        data-title="Add New Account" data-btn-text="Add">
+                                                        <i class="bi bi-credit-card me-2 fw-icon"></i>Add new account
+                                                    </a>
+                                                </li>
+                                            <% } %>
+                                            
                                         </ul>
                                     </div>
                                     <!-- Card action END -->
