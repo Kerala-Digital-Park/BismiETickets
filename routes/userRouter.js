@@ -58,7 +58,7 @@ userRouter.use(async(req, res, next) => {
 
 userRouter.get("/", userController.viewHomepage);
 userRouter.get("/dashboard", isLogin, userController.viewDashboard);
-userRouter.get("/flight-list", userController.viewFlightList)
+userRouter.get("/flight-list", userController.viewFlightList);
 userRouter.get("/flight-detail", isLogin, userController.viewFlightDetail);
 userRouter.get("/flight-booking",isLogin, userController.viewFlightBooking);
 userRouter.get("/about", userController.viewAbout);
