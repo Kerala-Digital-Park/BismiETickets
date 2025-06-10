@@ -14,7 +14,7 @@
                                     <tbody><tr>
                                             <td align="left"><a
                                                     href="#m_-2189906942916018798_"><img
-                                                        src="https://ci3.googleusercontent.com/meips/ADKq_NZRFBjm6GmOafNn5XOXBxDvmlZP6WfwpZezmA-RZLLkzz1JoXIibgWKpg-U_u0ngyEtQ2q6c9mwJU0Tk9CPH7kIZ9HN=s0-d-e1-ft#https://gos3.ibcdn.com/myp_logo-1709801210.png"
+                                                        src="/assets/images/logo.svg"
                                                         style="display:block"
                                                         width="114"
                                                         alt></a></td>
@@ -43,9 +43,12 @@
                                                     style="font-weight:bold">Ticket
                                                     Booked Successfully</span>,
                                                 For your PNR
-                                                <span>TBSP3U</span>, for sector
-                                                <span>CCJ-AUH</span> traveling
-                                                on <span>16 May, 2025</span>.
+                                                <span><%= flightDetails.inventoryDates[0].pnr %></span>, 
+for sector 
+<span><%= flightDetails.from %> - <%= flightDetails.to %></span> 
+traveling on 
+<span><%= new Date(flightDetails.departureDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %></span>.
+
                                                 Below are the flight &amp;
                                                 passenger details.
                                             </td>
@@ -70,14 +73,12 @@
                                                                 Details</td>
                                                             <td colspan="4"
                                                                 style="padding:10px 10px 10px 0;vertical-align:top;font-family:arial;text-align:right;border-bottom:1px solid #585475;font-size:10px;border-top-right-radius:3px;background:#bdb5d3"><u></u>Departure<u></u>
-                                                                : <span>16 May
-                                                                    2025,
-                                                                    22:35</span>
+                                                                : <span><%= flightDetails.departureDate %>,
+                                                                    <%= flightDetails.departureTime %></span>
                                                                 |
                                                                 <u></u>Arrival<u></u>
-                                                                : <span>17 May
-                                                                    2025,
-                                                                    01:05</span></td>
+                                                                : <span><%= flightDetails.arrivalDate %>,
+                                                                    <%= flightDetails.arrivalTime %></span></td>
                                                         </tr>
                                                         <tr>
                                                             <th
@@ -97,19 +98,20 @@
                                                                 Amount</th>
                                                         </tr>
                                                         <tr>
+                                                            <td style="padding:10px 5px;vertical-align:top;font-family:arial;border-right:1px solid #a09eb5;font-size:10px">
+                                                                <span><%= flightDetails.inventoryDates[0].pnr %></span>
+                                                            </td>
                                                             <td
-                                                                style="padding:10px 5px;vertical-align:top;font-family:arial;border-right:1px solid #a09eb5;font-size:10px"><span>TBSP3U</span></td>
+                                                                style="padding:10px 5px;vertical-align:top;font-family:arial;border-right:solid 1px #a09eb5;font-size:10px"><span><%= bookingId %></span></td>
                                                             <td
-                                                                style="padding:10px 5px;vertical-align:top;font-family:arial;border-right:solid 1px #a09eb5;font-size:10px"><span>NN2AEI6E90837004996</span></td>
+                                                                style="padding:10px 5px;vertical-align:top;font-family:arial;border-right:solid 1px #a09eb5;font-size:10px"><span><%= flightDetails.stops[0].airlineCode %>-<%= flightDetails.stops[0].flightNumber %></span></td>
                                                             <td
-                                                                style="padding:10px 5px;vertical-align:top;font-family:arial;border-right:solid 1px #a09eb5;font-size:10px"><span>IX-347</span></td>
+                                                                style="padding:10px 5px;vertical-align:top;font-family:arial;border-right:solid 1px #a09eb5;font-size:10px"><span><%= flightDetails.from %></span></td>
                                                             <td
-                                                                style="padding:10px 5px;vertical-align:top;font-family:arial;border-right:solid 1px #a09eb5;font-size:10px"><span>CCJ</span></td>
-                                                            <td
-                                                                style="padding:10px 5px;vertical-align:top;font-family:arial;border-right:solid 1px #a09eb5;font-size:10px"><span>AUH</span></td>
+                                                                style="padding:10px 5px;vertical-align:top;font-family:arial;border-right:solid 1px #a09eb5;font-size:10px"><span><%= flightDetails.to %></span></td>
                                                             <td rowspan="1"
                                                                 style="padding:10px 5px;vertical-align:top;font-family:source-sans-latest;font-size:9px">₹
-                                                                22200.0</td>
+                                                                <%= totalFare %></td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -119,6 +121,8 @@
                                             <td
                                                 style="height:16px;width:100%"></td>
                                         </tr>
+
+                                        <% travelers.forEach(function(traveler, index) { %>
                                         <tr>
                                             <td>
                                                 <table
@@ -129,21 +133,27 @@
                                                             <td
                                                                 style="padding:0">
                                                                 <table
-                                                                    cellpadding="0"
-                                                                    cellspacing="0"
-                                                                    style="border-collapse:initial;border-spacing:0;width:100%!important"
-                                                                    width="100%"
-                                                                    border="0">
-                                                                    <tbody><tr>
-                                                                            <td
-                                                                                style="padding:10px;vertical-align:top;font-family:arial;text-align:left;border-bottom:1px solid #b2b2b2;font-size:11px;line-height:normal;font-weight:bold;border-top-left-radius:3px;background:#c7d2e8">Passenger
-                                                                                Details
-                                                                                -
-                                                                                Adult
-                                                                                (12y
-                                                                                +)</td>
-                                                                        </tr>
-                                                                    </tbody></table>
+                                                                cellpadding="0"
+                                                                cellspacing="0"
+                                                                style="border-collapse:initial;border-spacing:0;width:100%!important"
+                                                                width="100%" border="0">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td style="padding:10px;vertical-align:top;font-family:arial;text-align:left;border-bottom:1px solid #b2b2b2;font-size:11px;line-height:normal;font-weight:bold;border-top-left-radius:3px;background:#c7d2e8">
+                                                                            Passenger Details -
+                                                                            <% if (traveler.type === 'Adult') { %>
+                                                                                Adult (12y +)
+                                                                            <% } else if (traveler.type === 'Child') { %>
+                                                                                Children (2y - 12y)
+                                                                            <% } else if (traveler.type === 'Infant') { %>
+                                                                                Infants (0y - 2y below)
+                                                                            <% } else { %>
+                                                                                Unknown Type
+                                                                            <% } %>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -171,8 +181,7 @@
                                                                                                     Name
                                                                                                     :
                                                                                                 </span>
-                                                                                                <span>SIBI
-                                                                                                    DAS
+                                                                                                <span><%= traveler.first_name %>
                                                                                                 </span></td>
                                                                                         </tr>
                                                                                         <tr>
@@ -182,15 +191,21 @@
                                                                                                     Name
                                                                                                     :
                                                                                                 </span>
-                                                                                                <span>VENGARATHODI</span></td>
+                                                                                                <span><%= traveler.last_name %></span></td>
                                                                                         </tr>
                                                                                         <tr>
-                                                                                            <td
-                                                                                                style="padding-bottom:8px"><span
-                                                                                                    style="color:#4a4a4a">Gender
-                                                                                                    :
+                                                                                            <td style="padding-bottom:8px">
+                                                                                                <span style="color:#4a4a4a">Gender :</span>
+                                                                                                <span>
+                                                                                                  <% if (["Mr", "Master"].includes(traveler.title)) { %>
+                                                                                                    Male
+                                                                                                  <% } else if (["Mrs", "Miss", "Ms"].includes(traveler.title)) { %>
+                                                                                                    Female
+                                                                                                  <% } else { %>
+                                                                                                    Unknown
+                                                                                                  <% } %>
                                                                                                 </span>
-                                                                                                <span>Female</span></td>
+                                                                                            </td>                                                                                              
                                                                                         </tr>
                                                                                         <tr>
                                                                                             <td
@@ -215,7 +230,7 @@
                                                                                                                     style="color:#4a4a4a">Nationality
                                                                                                                     :
                                                                                                                 </span>
-                                                                                                                <span>IN</span></td>
+                                                                                                                <span><%= traveler.nationality %></span></td>
                                                                                                             <td
                                                                                                                 width="50%"
                                                                                                                 style="padding-bottom:8px;width:50%"><span
@@ -223,7 +238,7 @@
                                                                                                                     Date
                                                                                                                     :
                                                                                                                 </span>
-                                                                                                                <span>03/02/2026</span></td>
+                                                                                                                <span><%= traveler.passport_expiry %></span></td>
                                                                                                         </tr>
                                                                                                         <tr>
                                                                                                             <td
@@ -233,7 +248,7 @@
                                                                                                                     No
                                                                                                                     :
                                                                                                                 </span>
-                                                                                                                <span>N7111794</span></td>
+                                                                                                                <span><%= traveler.passport_number %></span></td>
                                                                                                             <td
                                                                                                                 width="50%"
                                                                                                                 style="padding-bottom:8px"><span
@@ -241,7 +256,7 @@
                                                                                                                     Country
                                                                                                                     :
                                                                                                                 </span>
-                                                                                                                <span>IN</span></td>
+                                                                                                                <span><%= traveler.passport_country %></span></td>
                                                                                                         </tr>
                                                                                                     </tbody></table>
                                                                                             </td>
@@ -265,7 +280,7 @@
                                                                                                                     Birth
                                                                                                                     :
                                                                                                                 </span>
-                                                                                                                <span>02/05/1990</span></td>
+                                                                                                                <span><%= traveler.dob %></span></td>
                                                                                                         </tr>
                                                                                                     </tbody></table>
                                                                                             </td>
@@ -284,340 +299,8 @@
                                             <td
                                                 style="height:16px;width:100%"></td>
                                         </tr>
-                                        <tr>
-                                            <td>
-                                                <table
-                                                    style="border-collapse:initial;border-spacing:0;border:1px solid #b2b2b2;width:100%!important;background-color:#ebf3fb;border-radius:4px"
-                                                    width="100%">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:0">
-                                                                <table
-                                                                    cellpadding="0"
-                                                                    cellspacing="0"
-                                                                    style="border-collapse:initial;border-spacing:0;width:100%!important"
-                                                                    width="100%"
-                                                                    border="0">
-                                                                    <tbody><tr>
-                                                                            <td
-                                                                                style="padding:10px;vertical-align:top;font-family:arial;text-align:left;border-bottom:1px solid #b2b2b2;font-size:11px;line-height:normal;font-weight:bold;border-top-left-radius:3px;background:#c7d2e8">Passenger
-                                                                                Details
-                                                                                -
-                                                                                Children
-                                                                                (2y
-                                                                                -
-                                                                                12y)</td>
-                                                                        </tr>
-                                                                    </tbody></table>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:10px;vertical-align:top;font-family:arial;text-align:left">
-                                                                <table
-                                                                    cellpadding="0"
-                                                                    cellspacing="0"
-                                                                    style="border-spacing:0;width:100%!important"
-                                                                    width="100%">
-                                                                    <tbody><tr>
-                                                                            <td
-                                                                                style="padding:10px;background-color:#dbeaf9;border-radius:5px;width:100%">
-                                                                                <table
-                                                                                    cellpadding="0"
-                                                                                    cellspacing="0"
-                                                                                    style="border-collapse:initial;border-spacing:0;width:100%!important;color:#000000;font-size:10px"
-                                                                                    width="100%">
-                                                                                    <tbody><tr>
-                                                                                            <td
-                                                                                                style="padding-bottom:5px"><span
-                                                                                                    style="color:#4a4a4a">First
-                                                                                                    &amp;
-                                                                                                    Middle
-                                                                                                    Name
-                                                                                                    :
-                                                                                                </span>
-                                                                                                <span>DAKSHIT
-                                                                                                    DINOOP
-                                                                                                    DAS
-                                                                                                </span></td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td
-                                                                                                style="padding-bottom:5px"><span
-                                                                                                    style="color:#4a4a4a">Last
-                                                                                                    Name
-                                                                                                    :
-                                                                                                </span>
-                                                                                                <span>VELICHAPPATIL</span></td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td
-                                                                                                style="padding-bottom:8px"><span
-                                                                                                    style="color:#4a4a4a">Gender
-                                                                                                    :
-                                                                                                </span>
-                                                                                                <span>Male</span></td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td
-                                                                                                style="padding-top:8px;border-top:1px solid #c3c3c3"></td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td
-                                                                                                style="color:#000;font-family:Arial;font-size:10px;font-style:normal;font-weight:700;line-height:normal;padding-bottom:8px">Passport
-                                                                                                Details</td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <table
-                                                                                                    cellpadding="0"
-                                                                                                    cellspacing="0"
-                                                                                                    style="border-collapse:initial;border-spacing:0;width:100%!important"
-                                                                                                    width="100%">
-                                                                                                    <tbody><tr>
-                                                                                                            <td
-                                                                                                                width="50%"
-                                                                                                                style="padding-bottom:8px;width:50%"><span
-                                                                                                                    style="color:#4a4a4a">Nationality
-                                                                                                                    :
-                                                                                                                </span>
-                                                                                                                <span>IN</span></td>
-                                                                                                            <td
-                                                                                                                width="50%"
-                                                                                                                style="padding-bottom:8px;width:50%"><span
-                                                                                                                    style="color:#4a4a4a">Expiry
-                                                                                                                    Date
-                                                                                                                    :
-                                                                                                                </span>
-                                                                                                                <span>08/01/2028</span></td>
-                                                                                                        </tr>
-                                                                                                        <tr>
-                                                                                                            <td
-                                                                                                                width="50%"
-                                                                                                                style="padding-bottom:8px;width:50%"><span
-                                                                                                                    style="color:#4a4a4a">Passport
-                                                                                                                    No
-                                                                                                                    :
-                                                                                                                </span>
-                                                                                                                <span>W8517957</span></td>
-                                                                                                            <td
-                                                                                                                width="50%"
-                                                                                                                style="padding-bottom:8px"><span
-                                                                                                                    style="color:#4a4a4a">Issued
-                                                                                                                    Country
-                                                                                                                    :
-                                                                                                                </span>
-                                                                                                                <span>IN</span></td>
-                                                                                                        </tr>
-                                                                                                    </tbody></table>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td
-                                                                                                style="padding-top:8px;border-top:1px solid #c3c3c3"></td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <table
-                                                                                                    align="left"
-                                                                                                    cellpadding="0"
-                                                                                                    cellspacing="0"
-                                                                                                    style="border-collapse:initial;border-spacing:0">
-                                                                                                    <tbody><tr>
-                                                                                                            <td
-                                                                                                                style="padding-right:10px"><span
-                                                                                                                    style="color:#4a4a4a">Date
-                                                                                                                    of
-                                                                                                                    Birth
-                                                                                                                    :
-                                                                                                                </span>
-                                                                                                                <span>13/10/2017</span></td>
-                                                                                                        </tr>
-                                                                                                    </tbody></table>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </tbody></table>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody></table>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td
-                                                style="height:16px;width:100%"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <table
-                                                    style="border-collapse:initial;border-spacing:0;border:1px solid #b2b2b2;width:100%!important;background-color:#ebf3fb;border-radius:4px"
-                                                    width="100%">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:0">
-                                                                <table
-                                                                    cellpadding="0"
-                                                                    cellspacing="0"
-                                                                    style="border-collapse:initial;border-spacing:0;width:100%!important"
-                                                                    width="100%"
-                                                                    border="0">
-                                                                    <tbody><tr>
-                                                                            <td
-                                                                                style="padding:10px;vertical-align:top;font-family:arial;text-align:left;border-bottom:1px solid #b2b2b2;font-size:11px;line-height:normal;font-weight:bold;border-top-left-radius:3px;background:#c7d2e8">Passenger
-                                                                                Details
-                                                                                -
-                                                                                Infants
-                                                                                (0y
-                                                                                -
-                                                                                2y below)</td>
-                                                                        </tr>
-                                                                    </tbody></table>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:10px;vertical-align:top;font-family:arial;text-align:left">
-                                                                <table
-                                                                    cellpadding="0"
-                                                                    cellspacing="0"
-                                                                    style="border-spacing:0;width:100%!important"
-                                                                    width="100%">
-                                                                    <tbody><tr>
-                                                                            <td
-                                                                                style="padding:10px;background-color:#dbeaf9;border-radius:5px;width:100%">
-                                                                                <table
-                                                                                    cellpadding="0"
-                                                                                    cellspacing="0"
-                                                                                    style="border-collapse:initial;border-spacing:0;width:100%!important;color:#000000;font-size:10px"
-                                                                                    width="100%">
-                                                                                    <tbody><tr>
-                                                                                            <td
-                                                                                                style="padding-bottom:5px"><span
-                                                                                                    style="color:#4a4a4a">First
-                                                                                                    &amp;
-                                                                                                    Middle
-                                                                                                    Name
-                                                                                                    :
-                                                                                                </span>
-                                                                                                <span>DAKSHIT
-                                                                                                    DINOOP
-                                                                                                    DAS
-                                                                                                </span></td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td
-                                                                                                style="padding-bottom:5px"><span
-                                                                                                    style="color:#4a4a4a">Last
-                                                                                                    Name
-                                                                                                    :
-                                                                                                </span>
-                                                                                                <span>VELICHAPPATIL</span></td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td
-                                                                                                style="padding-bottom:8px"><span
-                                                                                                    style="color:#4a4a4a">Gender
-                                                                                                    :
-                                                                                                </span>
-                                                                                                <span>Male</span></td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td
-                                                                                                style="padding-top:8px;border-top:1px solid #c3c3c3"></td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td
-                                                                                                style="color:#000;font-family:Arial;font-size:10px;font-style:normal;font-weight:700;line-height:normal;padding-bottom:8px">Passport
-                                                                                                Details</td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <table
-                                                                                                    cellpadding="0"
-                                                                                                    cellspacing="0"
-                                                                                                    style="border-collapse:initial;border-spacing:0;width:100%!important"
-                                                                                                    width="100%">
-                                                                                                    <tbody><tr>
-                                                                                                            <td
-                                                                                                                width="50%"
-                                                                                                                style="padding-bottom:8px;width:50%"><span
-                                                                                                                    style="color:#4a4a4a">Nationality
-                                                                                                                    :
-                                                                                                                </span>
-                                                                                                                <span>IN</span></td>
-                                                                                                            <td
-                                                                                                                width="50%"
-                                                                                                                style="padding-bottom:8px;width:50%"><span
-                                                                                                                    style="color:#4a4a4a">Expiry
-                                                                                                                    Date
-                                                                                                                    :
-                                                                                                                </span>
-                                                                                                                <span>08/01/2028</span></td>
-                                                                                                        </tr>
-                                                                                                        <tr>
-                                                                                                            <td
-                                                                                                                width="50%"
-                                                                                                                style="padding-bottom:8px;width:50%"><span
-                                                                                                                    style="color:#4a4a4a">Passport
-                                                                                                                    No
-                                                                                                                    :
-                                                                                                                </span>
-                                                                                                                <span>W8517957</span></td>
-                                                                                                            <td
-                                                                                                                width="50%"
-                                                                                                                style="padding-bottom:8px"><span
-                                                                                                                    style="color:#4a4a4a">Issued
-                                                                                                                    Country
-                                                                                                                    :
-                                                                                                                </span>
-                                                                                                                <span>IN</span></td>
-                                                                                                        </tr>
-                                                                                                    </tbody></table>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td
-                                                                                                style="padding-top:8px;border-top:1px solid #c3c3c3"></td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <table
-                                                                                                    align="left"
-                                                                                                    cellpadding="0"
-                                                                                                    cellspacing="0"
-                                                                                                    style="border-collapse:initial;border-spacing:0">
-                                                                                                    <tbody><tr>
-                                                                                                            <td
-                                                                                                                style="padding-right:10px"><span
-                                                                                                                    style="color:#4a4a4a">Date
-                                                                                                                    of
-                                                                                                                    Birth
-                                                                                                                    :
-                                                                                                                </span>
-                                                                                                                <span>13/10/2017</span></td>
-                                                                                                        </tr>
-                                                                                                    </tbody></table>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </tbody></table>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody></table>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td
-                                                style="height:16px;width:100%"></td>
-                                        </tr>
+                                        <% }) %>
+
                                         <tr>
                                             <td
                                                 style="height:16px;width:100%"></td>
@@ -642,7 +325,7 @@
                                         <tr>
                                             <td
                                                 style="color:#000000;font-family:Arial;font-size:12px;font-style:normal;font-weight:700;line-height:16px">Team
-                                                myPartner</td>
+                                                BismiETickets</td>
                                         </tr>
                                     </tbody></table>
                             </td>
@@ -651,7 +334,7 @@
                             <td align="center" width="100%"
                                 style="margin:0;padding:50px 0 40px 0">
                                 <img
-                                    src="https://ci3.googleusercontent.com/meips/ADKq_NZRFBjm6GmOafNn5XOXBxDvmlZP6WfwpZezmA-RZLLkzz1JoXIibgWKpg-U_u0ngyEtQ2q6c9mwJU0Tk9CPH7kIZ9HN=s0-d-e1-ft#https://gos3.ibcdn.com/myp_logo-1709801210.png"
+                                    src="/assets/images/logo.svg"
                                     style="display:block;background-color:#f1f1f1;border-radius:8px;padding:2px 0 0 2px"
                                     width="114" alt>
                             </td>

@@ -2711,11 +2711,9 @@ const viewProfileUpdates = async (req, res) => {
       const regex = new RegExp(search, "i");
       matchStage = {
         $or: [
+          { "user.userId": regex },
           { "user.name": regex },
-          { "user.email": regex },
           { "user._id": { $regex: search, $options: "i" } }, // _id must be string
-          { "bankDetails.accountHolderName": regex },
-          { "bankDetails.bankName": regex },
         ],
       };
     }

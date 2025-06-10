@@ -1478,13 +1478,14 @@ Page Banner END -->
 						refundable: true
 					}
 					console.log(oneWayFlight)
+					const type = "oneWay";
 					try {
 						const response = await fetch("/add-flight", {
 							method: "POST",
 							headers: {
 								"Content-Type": "application/json"
 							},
-							body: JSON.stringify(oneWayFlight)
+							body: JSON.stringify({oneWayFlight, type})
 						});
 
 						if (!response.ok) {
@@ -1610,13 +1611,15 @@ Page Banner END -->
 			refundable: false,
 		};
 
+		const type = "connecting";
+
 		try {
 			const response = await fetch("/add-flight", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json"
 				},
-				body: JSON.stringify(oneWayFlight)
+				body: JSON.stringify({oneWayFlight, type})
 			});
 
 			if (!response.ok) {

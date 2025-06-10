@@ -1510,7 +1510,7 @@ const flightBooking = async (req, res) => {
         baseFare,
         otherServices,
         discount,
-        bookingId: newBooking._id,
+        bookingId: newBooking.bookingId,
       });
 
       await transporter.sendMail({
@@ -2764,11 +2764,14 @@ const viewUserBookingDetail = async (req, res) => {
   }
 };
 
+const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+
 const addFlight = async (req, res) => {
   console.log("Adding flights");
-  const oneWayFlight = req.body;
-  console.log(oneWayFlight);
-
+  const {oneWayFlight, type} = req.body;
+  
+  console.log("Received oneWayFlight object:", oneWayFlight);
+  console.log("Content of inventoryDates:", oneWayFlight.inventoryDates); // <--- Add this
   try {
     const newFlight = new Flights({
       sellerId: oneWayFlight.sellerId,
@@ -2822,19 +2825,45 @@ const addFlight = async (req, res) => {
       },
       inventoryDates: [
         {
-          // date: oneWayFlight.inventoryDates[0]?.date,
           pnr: oneWayFlight.inventoryDates[0]?.pnr,
           seats: oneWayFlight.inventoryDates[0]?.seats,
           fare: {
-            adults: oneWayFlight.inventoryDates[0]?.fare.adults,
-            infants: oneWayFlight.inventoryDates[0]?.fare.infants,
+            adults: oneWayFlight.inventoryDates[0]?.fare?.adults,
+            infants: oneWayFlight.inventoryDates[0]?.fare?.infants,
           },
         },
       ],
       refundable: oneWayFlight.refundable,
     });
-
+    
     await newFlight.save();
+    
+    const userId = req.session.userId;
+    const user = await Users.findById(userId);
+    const userEmail = user?.email;
+    
+    if (userEmail) {
+      const templateFile =
+  type === "oneWay"
+    ? "addInventoryMail.ejs"
+    : "addConnectingInventoryMail.ejs";
+    
+      const logoUrl = `${baseUrl}/assets/images/logo.svg`;
+      const templatePath = path.join(__dirname, "../views/user/", templateFile);
+      try{
+      const htmlContent = await ejs.renderFile(templatePath, { newFlight, logoUrl });
+
+      await transporter.sendMail({
+        to: userEmail,
+        subject: "New Flight Inventory Added",
+        html: htmlContent,
+      });
+    } catch (e) {
+      console.error("Error rendering EJS:", e);
+      return res.status(500).json({ success: false, message: "Template rendering failed" });
+    }
+    }
+
     return res.json({
       message: "Flight added successfully",
       success: true,
