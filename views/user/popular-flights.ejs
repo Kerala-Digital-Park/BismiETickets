@@ -1,0 +1,124 @@
+<%- include('./partials/header') %>
+<%- include('./partials/userHeader') %>
+
+<!-- **************** MAIN CONTENT START **************** -->
+<main>
+
+    <!-- =======================
+    Main banner START -->
+    <section>
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-xl-10 mx-auto text-center">
+                    <!-- Title -->
+                    <h1>Top Flight Routes</h1>
+                    <!-- Meta -->
+                    
+                </div>
+            </div> <!-- Row END -->
+    
+            <!-- Image START -->
+            <div class="row g-4 align-items-center">
+                    <% popularFlights.forEach((flight)=> { %>
+                      <% if(popularFlights.length> 0) { %>
+        
+                        <!-- Destination item START -->
+                        <div class="col-sm-6 col-lg-4">
+                          <!-- Card START -->
+                          <div class="card card-img-scale overflow-hidden bg-transparent">
+        
+                            <!-- Image -->
+                            <div class="card-img-scale-wrapper rounded-3" style="height: 240px;">
+                              <img src="<%= flight.image %>" class="card-img" alt="hotel image" style="min-height: 240px;" />
+                            </div>
+        
+                            <!-- Card body -->
+                            <div class="card-body px-2">
+                              <!-- Title -->
+                              <div class="d-flex align-items-center">
+                                <h5 class="card-title">
+                                  <a href="#" class="flightLink stretched-link" data-from="<%= flight.fromCity %>"
+                                    data-to="<%= flight.toCity %>">
+                                    <%= flight.fromCity %> <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
+                                      <%= flight.toCity %>
+                                  </a>
+                                </h5>
+        
+                              </div>
+                              <!-- Content -->
+                              <span class="mb-0">
+                                <%= flight.fromCode %> - <%= flight.toCode %>
+                              </span>
+                            </div>
+                          </div>
+                          <!-- Card END -->
+                        </div>
+                        <!-- Destination item END -->
+        
+                        <% } else { %>
+                          <p>No Popular Flights Available</p>
+                          <% } %>
+                            <% }) %>
+        
+            </div>
+            <!-- Image END -->
+            <form id="flightForm" method="POST" action="/flight-list">
+                <input type="hidden" name="from" id="fromInput">
+                <input type="hidden" name="to" id="toInput">
+                <input type="hidden" name="departureDate" id="departureDateInput">
+                <input type="hidden" name="returnDate" id="returnDateInput">
+                <input type="checkbox" id="dateTypeCheckbox" name="dateTypeCheckbox" checked hidden />
+                <input type="hidden" name="adults" id="adults">
+                <input type="hidden" name="children" id="children">
+                <input type="hidden" name="infants" id="infants">
+              </form>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          document.querySelectorAll(".flightLink").forEach((link) => {
+            link.addEventListener("click", function (event) {
+              event.preventDefault(); // Prevent default anchor behavior
+
+              // Get from and to values
+              const from = this.getAttribute("data-from");
+              const to = this.getAttribute("data-to");
+
+              // Get today's date and a week later
+              const today = new Date();
+              const weekLater = new Date();
+              weekLater.setDate(today.getDate() + 7);
+
+              console.log(today);
+              console.log(weekLater);
+
+              // Format dates to dd Mon Year
+
+              const formatDate = (date) => {
+                const day = date.getDate().toString().padStart(2, "0");
+                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                const month = monthNames[date.getMonth()];
+                const year = date.getFullYear();
+                return `${day} ${month} ${year}`;
+              };
+              console.log(formatDate(today));
+              console.log(formatDate(weekLater));
+
+              // Set form values
+              document.getElementById("fromInput").value = from;
+              document.getElementById("toInput").value = to;
+              document.getElementById("departureDateInput").value = formatDate(today);
+              document.getElementById("returnDateInput").value = formatDate(weekLater);
+
+              // Submit form
+              document.getElementById("flightForm").submit();
+            });
+          });
+        });
+      </script>
+      
+    </main>
+    <!-- **************** MAIN CONTENT END **************** -->
+
+    <%- include('./partials/footer') %>

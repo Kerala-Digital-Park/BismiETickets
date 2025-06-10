@@ -20,6 +20,7 @@ adminRouter.get('/coupons',isLogin, adminController.viewCoupons);
 adminRouter.get('/subscriptions',isLogin, adminController.viewSubscriptions);
 adminRouter.get('/edit-subscription/:id',isLogin, adminController.viewEditSubscription)
 adminRouter.get('/bank-updates',isLogin, adminController.viewBankUpdates);
+adminRouter.get('/profile-updates',isLogin, adminController.viewProfileUpdates);
 adminRouter.get('/user-kyc-updates',isLogin, adminController.viewUserKycUpdates);
 adminRouter.get('/agent-kyc-updates',isLogin, adminController.viewAgentKycUpdates);
 adminRouter.get('/transactions', isLogin, adminController.viewTransactions);
@@ -59,6 +60,7 @@ adminRouter.post("/edit-user", isLogin, adminController.editUser);
 adminRouter.post("/add-airport", isLogin, adminController.addAirport);
 adminRouter.post("/update-airport", isLogin, adminController.updateAirport);
 adminRouter.post('/delete-popular-flight/:id', isLogin, adminController.deletePopularFlight);
+adminRouter.post('/update-profile-detail/:id', isLogin, adminController.updateProfileDetail);
 
 adminRouter.delete('/delete-user/:id',isLogin, adminController.deleteUser);
 adminRouter.delete('/delete-agent/:id',isLogin, adminController.deleteAgent);

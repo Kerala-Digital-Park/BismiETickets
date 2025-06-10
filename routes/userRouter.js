@@ -101,7 +101,8 @@ userRouter.get("/search-airports", userController.searchAirports);
 userRouter.get("/search-airlines", userController.searchAirlines);
 userRouter.get("/agent-subscription", isLogin, userController.viewAgentSubscription);
 userRouter.get("/transactions", isLogin, userController.viewTransactions);
-userRouter.get("/notifications", isLogin, userController.viewNotifications)
+userRouter.get("/notifications", isLogin, userController.viewNotifications);
+userRouter.get("/popular-flights", userController.viewPopularFlights);
 
 
 userRouter.post("/sign-up", userController.signup);

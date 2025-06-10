@@ -14,6 +14,7 @@ const Transaction = require("../models/transactionModel");
 const Support = require("../models/supportModel");
 const Airport = require("../models/airportModel");
 const PopularFlight = require("../models/popularFlightModel");
+const ProfileUpdates = require("../models/profileUpdateModel");
 
 const viewLogin = async (req, res) => {
   try {
@@ -2697,6 +2698,157 @@ const viewClosedInventory = async (req, res) => {
   }
 }
 
+const viewProfileUpdates = async (req, res) => {
+  const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  try {
+    // Build the match stage conditionally
+    let matchStage = {};
+    if (search) {
+      const regex = new RegExp(search, "i");
+      matchStage = {
+        $or: [
+          { "user.name": regex },
+          { "user.email": regex },
+          { "user._id": { $regex: search, $options: "i" } }, // _id must be string
+          { "bankDetails.accountHolderName": regex },
+          { "bankDetails.bankName": regex },
+        ],
+      };
+    }
+
+    // Pipeline for pagination
+    const pipeline = [
+      {
+        $lookup: {
+          from: "users", // collection name for User model
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      { $match: matchStage },
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+    ];
+
+    // Pipeline for counting total results
+    const countPipeline = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      { $match: matchStage },
+      { $count: "totalCount" },
+    ];
+
+    // Execute aggregation
+    const updates = await ProfileUpdates.aggregate(pipeline);
+    const countResult = await ProfileUpdates.aggregate(countPipeline);
+    const totalCount = countResult[0]?.totalCount || 0;
+    const totalPages = Math.ceil(totalCount / limit);
+
+    res.render("admin/profileUpdates", {
+      updates,
+      search,
+      currentPage: page,
+      totalPages,
+      totalCount,
+      limit,
+    });
+  } catch (error) {
+    console.error("Aggregation error:", error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+};
+
+const updateProfileDetail = async (req, res) => {
+  console.log("Update profile detail called");
+  const profileUpdateId = req.params.id;
+  const { status } = req.body;
+  console.log("Profile update ID:", profileUpdateId);
+  console.log("Status:", status);
+  console.log("Request body:", req.body);
+
+  try {
+    const update = await ProfileUpdates.findById(profileUpdateId).populate("userId");
+    if (!update) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Profile update not found" });
+    }
+
+    const userId = update.userId._id; // Get the user ID from the populated userId field
+
+    if (status === "accept") {
+      const updatedData = {
+        name: update.name,
+        email: update.email,
+        mobile: update.mobile,
+        nationality: update.nationality,
+        gender: update.gender,
+        address: update.address,
+      };
+
+      if (update.image) {
+              // Delete old image if exists
+              if (update.image && update.userId.image !== "/assets/images/avatar/default.png" && update.userId.image !== update.image) {
+                const oldImagePath = path.join(__dirname, "..", "public", update.userId.image);
+                if (fs.existsSync(oldImagePath)) {
+                  fs.unlinkSync(oldImagePath);
+                }
+              }
+        
+              // Save new image path
+              updatedData.image = update.image;
+            }
+
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { ...updatedData },
+        { new: true, runValidators: true }
+      );
+
+      if (!updatedUser) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
+      }
+
+      // Remove approved bank update request
+      await ProfileUpdates.findByIdAndUpdate(profileUpdateId, {$set: { "status": "approved" }}, { new: true });
+      return res.json({
+        success: true,
+        message: "Profile details accepted successfully",
+      });
+    }
+
+    if (status === "reject") {
+      
+      await ProfileUpdates.findByIdAndUpdate(profileUpdateId, {$set: { "status": "rejected" }}, { new: true });
+      return res.json({
+        success: true,
+        message: "Profile details rejected successfully",
+      });
+    }
+
+    res.redirect("/admin/profile-updates");
+  } catch (error) {
+    console.log("Error updating profile detail:", error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+};
+
 module.exports = {
   viewLogin,
   loginAdmin,
@@ -2750,5 +2902,7 @@ module.exports = {
   viewActiveInventory,
   viewPastInventory,
   viewClosedInventory,
+  viewProfileUpdates,
+  updateProfileDetail,
 
 };

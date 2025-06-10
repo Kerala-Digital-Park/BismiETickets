@@ -13,6 +13,7 @@ const BankUpdate = require("../models/bankUpdateModel");
 const KycUpdate = require("../models/kycUpdateModel");
 const Support = require("../models/supportModel");
 const PopularFlight = require("../models/popularFlightModel");
+const ProfileUpdate = require("../models/profileUpdateModel");
 const { countries } = require('countries-list');
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -45,7 +46,7 @@ const renderTemplate = (templatePath, data) => {
 
 const viewHomepage = async (req, res) => {
   try {
-    const popularFlights = await PopularFlight.find();
+    const popularFlights = await PopularFlight.find().limit(6);
     res.render("user/home", {popularFlights});
   } catch (error) {
     console.error(error);
@@ -1531,95 +1532,183 @@ const flightBooking = async (req, res) => {
   }
 };
 
+// const updateProfile = async (req, res) => {
+//   const { name, email, mobile, nationality, gender, address } = req.body;
+//   console.log(req.body);
+//   try {
+//     const userId = req.session.userId; // Get logged-in user ID
+//     if (!userId) {
+//       return res.status(401).json({ success: false, message: "Unauthorized" });
+//     }
+
+//     // Fetch user from database
+//     const user = await Users.findById(userId);
+//     if (!user) {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "User not found" });
+//     }
+
+//     // Prepare updated data
+//     const updatedData = {
+//       name: name,
+//       email: email,
+//       mobile: mobile,
+//       nationality: nationality,
+//       gender: gender,
+//       address: address,
+//     };
+
+//     // Handle profile image upload
+//     if (req.file) {
+//       // Delete old image if exists
+//       if (user.image && user.image !== "/assets/images/avatar/default.png") {
+//         const oldImagePath = path.join(__dirname, "..", "public", user.image);
+//         if (fs.existsSync(oldImagePath)) {
+//           fs.unlinkSync(oldImagePath);
+//         }
+//       }
+
+//       // Save new image path
+//       updatedData.image = "/uploads/" + req.file.filename;
+//     }
+
+//     // Update user in the database
+//     const updatedUser = await Users.findByIdAndUpdate(userId, updatedData, {
+//       new: true,
+//     });
+//     console.log(updatedUser);
+
+//     res.json({ success: true, user: updatedUser });
+//   } catch (error) {
+//     console.error("Error updating profile:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
+// const updateEmail = async (req, res) => {
+//   const { email } = req.body;
+//   console.log(req.body);
+
+//   try {
+//     const userId = req.session.userId; // Get logged-in user ID
+//     if (!userId) {
+//       return res.status(401).json({ success: false, message: "Unauthorized" });
+//     }
+//     // Check if the new email already exists
+//     const existingUser = await Users.findOne({ email: email });
+//     if (existingUser && existingUser._id.toString() !== userId) {
+//       // Ensure it's not the current user's email
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Email already exists" });
+//     }
+
+//     // Fetch user from database
+//     const user = await Users.findById(userId);
+//     if (!user) {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "User not found" });
+//     }
+
+//     // Update user in the database
+//     const updatedUser = await Users.findByIdAndUpdate(
+//       userId,
+//       { email: email },
+//       { new: true }
+//     );
+//     res.json({ success: true, user: updatedUser });
+//   } catch (error) {
+//     console.error("Error updating email:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
 const updateProfile = async (req, res) => {
   const { name, email, mobile, nationality, gender, address } = req.body;
   console.log(req.body);
+
   try {
-    const userId = req.session.userId; // Get logged-in user ID
+    const userId = req.session.userId;
     if (!userId) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
-    // Fetch user from database
     const user = await Users.findById(userId);
     if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+      return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    // Prepare updated data
-    const updatedData = {
-      name: name,
-      email: email,
-      mobile: mobile,
-      nationality: nationality,
-      gender: gender,
-      address: address,
-    };
+    let imagePath = user.image;
 
-    // Handle profile image upload
+    // Handle new profile image
     if (req.file) {
-      // Delete old image if exists
-      if (user.image && user.image !== "/assets/images/avatar/default.png") {
-        const oldImagePath = path.join(__dirname, "..", "public", user.image);
-        if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath);
-        }
-      }
-
-      // Save new image path
-      updatedData.image = "/uploads/" + req.file.filename;
+      imagePath = "/uploads/" + req.file.filename;
     }
 
-    // Update user in the database
-    const updatedUser = await Users.findByIdAndUpdate(userId, updatedData, {
-      new: true,
+    // Save requested update to the ProfileUpdate collection
+    const profileUpdate = new ProfileUpdate({
+      userId,
+      name,
+      email,
+      mobile,
+      nationality,
+      gender,
+      address,
+      image: imagePath,
     });
-    console.log(updatedUser);
 
-    res.json({ success: true, user: updatedUser });
+    await profileUpdate.save();
+
+    res.json({
+      success: true,
+      message: "Profile update request submitted for admin approval.",
+    });
+
   } catch (error) {
-    console.error("Error updating profile:", error);
+    console.error("Error submitting profile update request:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
 const updateEmail = async (req, res) => {
   const { email } = req.body;
-  console.log(req.body);
-
   try {
-    const userId = req.session.userId; // Get logged-in user ID
+    const userId = req.session.userId;
     if (!userId) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
+
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
     // Check if the new email already exists
     const existingUser = await Users.findOne({ email: email });
-    if (existingUser && existingUser._id.toString() !== userId) {
+    if (existingUser && user.email === email) {
       // Ensure it's not the current user's email
       return res
         .status(400)
         .json({ success: false, message: "Email already exists" });
     }
 
-    // Fetch user from database
-    const user = await Users.findById(userId);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
-    }
-
-    // Update user in the database
-    const updatedUser = await Users.findByIdAndUpdate(
+    // Save only email update request for admin approval
+    const profileUpdate = new ProfileUpdate({
       userId,
-      { email: email },
-      { new: true }
-    );
-    res.json({ success: true, user: updatedUser });
+      email,
+    });
+
+    await profileUpdate.save();
+
+    res.json({
+      success: true,
+      message: "Email update request submitted for admin approval.",
+    });
+
   } catch (error) {
-    console.error("Error updating email:", error);
+    console.error("Error submitting email update request:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -3270,6 +3359,15 @@ const bookingSupportTicket = async (req, res) => {
   }
 }
 
+const viewPopularFlights = async (req, res) => {
+  try {
+    const popularFlights = await PopularFlight.find();
+    res.render("user/popular-flights", {popularFlights});
+  } catch (error) {
+    console.error("Error fetching popular flights:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+}
 module.exports = {
   viewHomepage,
   viewDashboard,
@@ -3348,5 +3446,6 @@ module.exports = {
   contact,
   cancelBooking,
   bookingSupportTicket,
-   
+  viewPopularFlights,
+
 };

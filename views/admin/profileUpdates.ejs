@@ -1,0 +1,254 @@
+<%- include('./partials/header') %>
+
+    <!-- **************** MAIN CONTENT START **************** -->
+    <main>
+
+        <!-- Sidebar START -->
+        <%- include('./partials/sideBar') %>
+            <!-- Sidebar END -->
+
+            <!-- Page content START -->
+            <div class="page-content">
+
+                <!-- Top bar START -->
+                <%- include('./partials/topBar') %>
+                    <!-- Top bar END -->
+
+                    <!-- Page main content START -->
+                    <div class="page-content-wrapper p-xxl-4">
+
+                        <!-- Title -->
+                        <div class="row">
+                            <div class="col-12 mb-4 mb-sm-5">
+                                <div class="d-sm-flex justify-content-between align-items-center">
+                                    <h1 class="h3 mb-3 mb-sm-0">Profile Updates List</h1>
+                                    <div class="col-md-6 col-lg-3">
+                                        <form class="rounded position-relative" method="get"
+                                            action="/admin/profile-updates">
+                                            <input class="form-control bg-transparent pe-5" type="search" name="search"
+                                                placeholder="Search" aria-label="Search" value="<%= search %>">
+                                            <button
+                                                class="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover "
+                                                type="submit">
+                                                <i class="fas fa-search fs-6"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="d-grid"><a href="#" class="btn btn-primary mb-0"><i
+                                                class="bi bi-filetype-pdf me-2"></i>Generate Report</a> </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Guest list START -->
+                        <div class="card shadow mt-3">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table align-middle">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th></th>
+                                                <th>User ID</th>
+                                                <th>Name</th>
+                                                <th>Email </th>
+                                                <th>Mobile</th>
+                                                <th>Nationality</th>
+                                                <th>Gender</th>
+                                                <th>Address</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                            <% if(updates && updates.length> 0) { %>
+                                                <% updates.forEach((update, index)=> { %>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center">
+																<div class="avatar avatar-xs flex-shrink-0">
+																	<img class="avatar-img rounded-circle"
+																		src="<%= update.image ? update.image : '' %>"
+																		alt="avatar">
+																</div>
+																
+															</div>
+                                                        </td>
+                                                        <td>
+															<h6 class="mb-0 fw-normal">
+                                                                <%= update.user.userId %>
+                                                            </h6>
+														</td>
+                                                        <td>
+                                                            <h6 class="mb-0 fw-normal">
+                                                                <%= update.name %>
+                                                            </h6>
+                                                        </td>
+                                                        <td>
+															<h6 class="mb-0 fw-normal">
+																<%= update.email %>
+															</h6>
+														</td>
+														<td>
+															<h6 class="mb-0 fw-normal">
+																<%= update.mobile %>
+															</h6>
+														</td>
+                                                        <td>
+                                                            <h6 class="mb-0 fw-normal">
+                                                                <%= update.nationality %>
+                                                            </h6>
+                                                        </td>
+                                                        <td>
+                                                            <h6 class="mb-0 fw-normal">
+                                                                <%= update.gender %>
+                                                            </h6>
+                                                        </td>
+                                                        <td>
+                                                            <h6 class="mb-0 fw-normal">
+                                                                <%= update.address %>
+                                                            </h6>
+                                                        </td>
+                                                        
+                                                        <!-- <td>
+                                                           
+                                                            <button class="btn btn-sm btn-success update-btn ms-2"
+                                                                data-update-id="<%= update._id %>" title="Accept"
+                                                                data-title="accept" data-bs-toggle="tooltip"
+                                                                data-bs-placement="top">
+                                                                <i class="fa-solid fa-check"></i>
+                                                            </button>
+                                                            <button class="btn btn-sm btn-danger update-btn ms-2"
+                                                                data-update-id="<%= update._id %>" title="Reject"
+                                                                data-title="reject" data-bs-toggle="tooltip"
+                                                                data-bs-placement="top">
+                                                                <i class="fa-solid fa-xmark"></i>
+                                                            </button>
+                                                        </td> -->
+                                                        <td>
+                                                            <% if (update.status === "pending") { %>
+                                                              <button class="btn btn-sm btn-success update-btn ms-2"
+                                                                  data-update-id="<%= update._id %>" title="Accept"
+                                                                  data-title="accept" data-bs-toggle="tooltip"
+                                                                  data-bs-placement="top">
+                                                                  <i class="fa-solid fa-check"></i>
+                                                              </button>
+                                                              <button class="btn btn-sm btn-danger update-btn ms-2"
+                                                                  data-update-id="<%= update._id %>" title="Reject"
+                                                                  data-title="reject" data-bs-toggle="tooltip"
+                                                                  data-bs-placement="top">
+                                                                  <i class="fa-solid fa-xmark"></i>
+                                                              </button>
+                                                            <% } else if (update.status === "approved") { %>
+                                                              <span class="badge bg-success">Approved</span>
+                                                            <% } else if (update.status === "rejected") { %>
+                                                              <span class="badge bg-danger">Rejected</span>
+                                                            <% } %>
+                                                          </td>
+                                                          
+                                                    </tr>
+                                                    <% }) %>
+                                                        <% } else { %>
+                                                            <tr>
+                                                                <td colspan="9" class="text-center">
+                                                                    <p class="mb-0">No updates found.</p>
+                                                                </td>
+                                                            </tr>
+                                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Card footer START -->
+                            <div class="card-footer pt-0">
+                                <!-- Pagination and content -->
+                                <div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+                                    <p class="mb-sm-0 text-center text-sm-start">
+                                        Showing <%= (currentPage - 1) * limit + 1 %> to
+                                            <%= Math.min(currentPage * limit, totalCount) %> of
+                                                <%= totalCount %> entries
+                                    </p>
+                                    <nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
+                                        <ul class="pagination pagination-sm pagination-primary-soft mb-0">
+                                            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                                <a class="page-link"
+                                                    href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
+                                            </li>
+
+                                            <% for (let i=1; i <=totalPages; i++) { %>
+                                                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                                    <a class="page-link" href="?search=<%= search %>&page=<%= i %>">
+                                                        <%= i %>
+                                                    </a>
+                                                </li>
+                                                <% } %>
+
+                                                    <li
+                                                        class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                                        <a class="page-link"
+                                                            href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
+                                                    </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                            <!-- Card footer END -->
+                        </div>
+
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                const acceptButtons = document.querySelectorAll(".update-btn");
+
+                                acceptButtons.forEach(button => {
+                                    button.addEventListener("click", async function () {
+                                        const updateId = this.getAttribute("data-update-id");
+                                        const status = this.getAttribute("data-title");
+                                        console.log("Status: ", status);
+                                        console.log("Update ID: ", updateId);
+                                        // Confirm with the user
+
+                                        let confirmed;
+                                        if (status === "accept") {
+                                            confirmed = confirm("Are you sure you want to accept this update?");
+                                        } else {
+                                            confirmed = confirm("Are you sure you want to reject this update?");
+                                        }
+                                        if (!confirmed) return;
+
+
+                                        try {
+                                            const response = await fetch(`/admin/update-profile-detail/${updateId}`, {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                },
+                                                body: JSON.stringify({ status }),
+                                            });
+                                            console.log("Response: ", response);
+                                            const result = await response.json();
+                                            console.log("Result: ", result);
+                                            if (response.ok) {
+                                                alert(result.message || "Update accepted successfully.");
+                                                location.reload(); // Or remove the row from table dynamically
+                                            } else {
+                                                alert("Error: " + result.message || "Failed to update.");
+                                            }
+                                        } catch (error) {
+                                            console.error("Error in updating:", error);
+                                            alert("An error occurred.");
+                                        }
+                                    });
+                                });
+                            });
+                        </script>
+
+
+
+                    </div>
+                    <!-- Page main content END -->
+            </div>
+            <!-- Page content END -->
+
+    </main>
+    <!-- **************** MAIN CONTENT END **************** -->
+
+    <%- include('./partials/footer') %>

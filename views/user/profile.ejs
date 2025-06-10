@@ -24,6 +24,18 @@
                                 </div>
 
                                 <div class="vstack gap-4">
+
+                                    <% if (userDetails.kyc === "Completed") { %>
+                                        <p class="text-success fw-semibold">
+                                          <i class="bi bi-shield-check"></i> KYC Verified
+                                        </p>
+                                    <% } else { %>
+                                        <div class="alert alert-warning d-flex justify-content-between align-items-center">
+                                          <span><i class="bi bi-exclamation-circle"></i> Your KYC is pending</span>
+                                          <a href="/kyc" class="btn btn-primary btn-sm">Complete KYC Now</a>
+                                        </div>
+                                    <% } %>
+                                      
                                     <!-- Verified message -->
                                     <div class="bg-light rounded p-3">
                                         <!-- Progress bar -->
@@ -89,17 +101,6 @@
                                         </div>
                                     </div>
 
-                                    <% if (userDetails.kyc === "Completed") { %>
-                                        <p class="text-success fw-semibold">
-                                          <i class="bi bi-shield-check"></i> KYC Verified
-                                        </p>
-                                    <% } else { %>
-                                        <div class="alert alert-warning d-flex justify-content-between align-items-center">
-                                          <span><i class="bi bi-exclamation-circle"></i> Your KYC is pending</span>
-                                          <a href="/kyc" class="btn btn-primary btn-sm">Complete KYC Now</a>
-                                        </div>
-                                    <% } %>
-                                      
                                     <!-- Personal info START -->
                                     <div class="card border">
                                         <!-- Card header -->
@@ -148,7 +149,7 @@
                                                     <label class="form-label">Email address<span
                                                             class="text-danger">*</span></label>
                                                     <input type="email" class="form-control" id="email"
-                                                        placeholder="Enter your email id" value=<%=userDetails.email %>>
+                                                        placeholder="Enter your email id" value=<%=userDetails.email %> disabled>
                                                 </div>
 
                                                 <!-- Mobile -->
@@ -169,34 +170,27 @@
                                                   </div>                                                  
                                                 
                                                 <!-- Gender -->
-                                                <div class="col-md-6">
-                                                    <label class="form-label">Select Gender<span
-                                                            class="text-danger">*</span></label>
-                                                    <div class="d-flex gap-4">
-                                                        <div class="form-check radio-bg-light">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="flexRadioDefault" id="flexRadioDefault1"
-                                                                checked="">
-                                                            <label class="form-check-label" for="flexRadioDefault1">
-                                                                Male
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check radio-bg-light">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="flexRadioDefault" id="flexRadioDefault2">
-                                                            <label class="form-check-label" for="flexRadioDefault2">
-                                                                Female
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check radio-bg-light">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="flexRadioDefault" id="flexRadioDefault3">
-                                                            <label class="form-check-label" for="flexRadioDefault3">
-                                                                Others
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </div>
+<div class="col-md-6">
+    <label class="form-label">Select Gender<span class="text-danger">*</span></label>
+    <div class="d-flex gap-4">
+        <div class="form-check radio-bg-light">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"
+                <%= userDetails.gender === "Male" ? "checked" : "" %>>
+            <label class="form-check-label" for="flexRadioDefault1">Male</label>
+        </div>
+        <div class="form-check radio-bg-light">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2"
+                <%= userDetails.gender === "Female" ? "checked" : "" %>>
+            <label class="form-check-label" for="flexRadioDefault2">Female</label>
+        </div>
+        <div class="form-check radio-bg-light">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3"
+                <%= userDetails.gender === "Others" ? "checked" : "" %>>
+            <label class="form-check-label" for="flexRadioDefault3">Others</label>
+        </div>
+    </div>
+</div>
+
 
                                                 <!-- Address -->
                                                 <div class="col-12">
@@ -352,10 +346,10 @@
                             const data = await response.json();
             
                             if (data.success) {
-                                alert("Profile updated successfully!");
+                                alert("Profile update request submitted for admin approval!");
                                 location.reload(); // Refresh page to reflect changes
                             } else {
-                                alert("Error updating profile: " + data.message);
+                                alert("Error submitting profile update request: " + data.message);
                             }
                         } catch (error) {
                             console.error("Error:", error);
@@ -390,10 +384,10 @@
                             const data = await response.json();
 
                             if (data.success) {
-                                alert("Email updated successfully!");
+                                alert("Email update request submitted for admin approval!");
                                 location.reload(); // Refresh page to reflect changes
                             } else {
-                                alert("Error updating profile: " + data.message);
+                                alert("Error submitting email update request: " + data.message);
                             }
                         } catch (error) {
                             console.error("Error:", error);

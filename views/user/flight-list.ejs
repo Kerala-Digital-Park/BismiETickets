@@ -1320,84 +1320,80 @@ if (userData?.subscription?.serviceCharge) {
 
       <script>
         document.addEventListener("DOMContentLoaded", function () {
-          const fromSelect = document.getElementById('from');
-          const toSelect = document.getElementById('to');
-          const fixedFromSelect = document.getElementById('fixedFrom');
-          const fixedToSelect = document.getElementById('fixedTo');
+          const staticSelectors = [
+            "#fixedFrom",
+            "#fixedTo",
+            "#from",
+            "#to"
+          ];
 
+          const doneTypingInterval = 100;
 
-          const selectedFixedFrom = fixedFromSelect?.dataset.selected || "";
-          const selectedFixedTo = fixedToSelect?.dataset.selected || "";
+          function initChoicesForElement(element) {
+            if (!element || element.classList.contains('choices-initialized')) return;
+            element.classList.add('choices-initialized');
 
-          fetch('https://raw.githubusercontent.com/jbrooksuk/JSON-Airports/master/airports.json')
-            .then(response => response.json())
-            .then(data => {
-
-              // Filter airports with valid IATA codes
-              const airports = data.filter(airport => airport.iata && airport.name && airport.iata.length === 3);
-
-              const createOption = (airport, selectedValue) => {
-                const option = document.createElement('option');
-                option.value = airport.iata;
-                option.textContent = `${airport.name} (${airport.iata})`;
-                if (airport.iata === selectedValue) {
-                  option.selected = true;
-                }
-                return option;
-              };
-
-              airports.forEach(airport => {
-                fromSelect.appendChild(createOption(airport));
-                toSelect.appendChild(createOption(airport));
-                fixedFromSelect.appendChild(createOption(airport));
-                fixedToSelect.appendChild(createOption(airport));
-              });
-
-              // Initialize Choices AFTER population
-              if (!fromSelect.classList.contains('choices__input')) {
-                new Choices(fromSelect, {
-                  searchEnabled: true,
-                  shouldSort: false,
-                  placeholder: true,
-                  placeholderValue: 'Select From Airport',
-                  allowHTML: true
-                });
-              }
-
-              if (!toSelect.classList.contains('choices__input')) {
-                new Choices(toSelect, {
-                  searchEnabled: true,
-                  shouldSort: false,
-                  placeholder: true,
-                  placeholderValue: 'Select To Airport',
-                  allowHTML: true
-                });
-              }
-
-              if (!fixedFromSelect.classList.contains('choices__input')) {
-                new Choices(fixedFromSelect, {
-                  searchEnabled: true,
-                  shouldSort: false,
-                  placeholder: true,
-                  placeholderValue: 'Select From Airport',
-                  allowHTML: true
-                });
-              }
-
-              if (!fixedToSelect.classList.contains('choices__input')) {
-                new Choices(fixedToSelect, {
-                  searchEnabled: true,
-                  shouldSort: false,
-                  placeholder: true,
-                  placeholderValue: 'Select To Airport',
-                  allowHTML: true
-                });
-              }
-
-            })
-            .catch(error => {
-              console.error('Error fetching airports:', error);
+            const choices = new Choices(element, {
+              searchEnabled: true,
+              placeholderValue: "Select Airport",
+              searchChoices: false,
+              shouldSort: false,
+              allowHTML: true
             });
+
+            element._choicesInstance = choices;
+
+            let defaultLoaded = false;
+            let typingTimer;
+
+            element.addEventListener('showDropdown', async () => {
+              if (!defaultLoaded) {
+                try {
+                  const res = await fetch("/search-airports");
+                  const airports = await res.json();
+                  choices.setChoices(
+                    airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
+                    "value",
+                    "label",
+                    true
+                  );
+                  defaultLoaded = true;
+                } catch (err) {
+                  console.error("Error loading default airports:", err);
+                }
+              }
+            });
+
+            element.addEventListener('search', function (e) {
+              clearTimeout(typingTimer);
+              const searchTerm = e.detail.value.trim();
+              if (searchTerm.length >= 2) {
+                typingTimer = setTimeout(async () => {
+                  try {
+                    const res = await fetch(`/search-airports?q=${encodeURIComponent(searchTerm)}`);
+                    const airports = await res.json();
+                    choices.setChoices(
+                      airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
+                      "value",
+                      "label",
+                      true
+                    );
+                  } catch (err) {
+                    console.error("Error searching airports:", err);
+                  }
+                }, doneTypingInterval);
+              }
+            });
+          }
+
+          // ✅ Init static selects
+          staticSelectors.forEach(selector => {
+            const element = document.querySelector(selector);
+            if (element) initChoicesForElement(element);
+          });
+
+
+          observer.observe(document.body, { childList: true, subtree: true });
         });
       </script>
 
