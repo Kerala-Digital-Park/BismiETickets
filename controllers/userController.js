@@ -1092,7 +1092,13 @@ const signin = async (req, res) => {
 
     const redirectUrl = req.session?.originalUrl || "/";
     if (req.session) delete req.session.originalUrl;
-    res.redirect(redirectUrl);
+
+    return res.json({
+      success: true,
+      message: "Login successful",
+      redirect: redirectUrl,
+    });
+    
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -1222,6 +1228,36 @@ const viewResetPassword = async (req, res) => {
     res.render("error", { error });
   }
 };
+
+const otpStore = {}; // You can store this in session/Redis for production
+
+const sendOtp = async (req, res) => {
+  const { email } = req.body;
+  const user = await Users.findOne({ email });
+  if (!user) return res.json({ success: false, message: "Email not found." });
+
+  const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit
+  otpStore[email] = otp;
+
+  await transporter.sendMail({
+    from: `"BismiETickets" <${process.env.EMAIL}>`,
+    to: email,
+    subject: "Your OTP for Login",
+    html: `<p>Your OTP is <strong>${otp}</strong>. It is valid for 5 minutes.</p>`,
+  });
+
+  res.json({ success: true });
+}
+
+const verifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
+  if (otpStore[email] && otpStore[email].toString() === otp) {
+    delete otpStore[email]; // Optional: clear after verification
+    res.json({ success: true });
+  } else {
+    res.json({ success: false, message: "Invalid or expired OTP." });
+  }
+}
 
 const viewProfile = async (req, res) => {
   const userId = req.session.userId;
@@ -3426,6 +3462,8 @@ module.exports = {
   resetPassword,
   viewResetPassword,
   signOut,
+  sendOtp,
+  verifyOtp,
   viewProfile,
   viewBookings,
   viewTravelers,

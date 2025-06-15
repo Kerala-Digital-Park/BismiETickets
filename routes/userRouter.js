@@ -109,6 +109,8 @@ userRouter.post("/sign-up", userController.signup);
 userRouter.post("/sign-in", userController.signin);
 userRouter.post("/forgot-password", userController.forgotPassword);
 userRouter.post("/reset-password", userController.resetPassword);
+userRouter.post("/send-otp", userController.sendOtp);
+userRouter.post("/verify-otp", userController.verifyOtp);
 userRouter.post("/flight-list", userController.findTicket);
 userRouter.post("/flight-detail", userController.getFlightDetail);
 userRouter.post("/seller-list", userController.getSellerList)

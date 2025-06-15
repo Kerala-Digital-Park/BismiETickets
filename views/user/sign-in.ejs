@@ -11,15 +11,6 @@
                 <div class="col-12">
                     <div class="bg-mode shadow rounded-3 overflow-hidden">
                         <div class="row g-0">
-                            <!-- Vector Image -->
-                            <div class="col-lg-6 d-flex align-items-center order-2 order-lg-1">
-                                <div class="p-3 p-lg-5">
-                                    <img src="/assets/images/element/signin.svg" alt="">
-                                </div>
-                                <!-- Divider -->
-                                <div class="vr opacity-1 d-none d-lg-block"></div>
-                            </div>
-            
                             <!-- Information -->
                             <div class="col-lg-6 order-1">
                                 <div class="p-4 p-sm-7">
@@ -37,26 +28,36 @@
                                       <% } %>
 
                                     <!-- Form START -->
-                                    <form class="mt-4 text-start" action="/sign-in" method="POST">
+                                    <form class="mt-4 text-start" id="login-form" autocomplete="off">
                                         <!-- Email -->
                                         <div class="mb-3">
-                                            <label class="form-label">Enter email address</label>
-                                            <input type="email" class="form-control" name="email">
+                                            <label class="form-label">Enter email address <span class="text-danger">*</span></label>
+                                            <input type="email" class="form-control" name="email" id="email" autocomplete="off" required>
                                         </div>
                                         <!-- Password -->
                                         <div class="mb-3 position-relative">
-                                            <label class="form-label">Enter password</label>
-                                            <input class="form-control fakepassword" type="password" id="psw-input" name="password">
+                                            <label class="form-label">Enter password <span class="text-danger">*</span></label>
+                                            <input class="form-control fakepassword" type="password" id="psw-input" name="password" autocomplete="new-password" required>
                                             <span class="position-absolute top-50 end-0 translate-middle-y p-0 mt-3">
                                                 <i class="fakepasswordicon fas fa-eye-slash cursor-pointer p-2"></i>
                                             </span>
                                         </div>
+                                        <!-- OTP Field -->
+  <div class="mb-3">
+    <label class="form-label">Enter OTP <span class="text-danger">*</span></label>
+    <div class="input-group">
+      <input type="text" class="form-control" id="otp" disabled>
+      <button type="button" class="btn btn-outline-primary" id="otp-button">Send OTP</button>
+    </div>
+    <small id="otp-message" class="text-danger d-block mt-1"></small>
+  </div>
+
                                         <!-- Remember me -->
                                         <div class="mb-3 d-sm-flex" style="float: inline-end;">
                                             <a href="/forgot-password">Forgot password?</a>
                                         </div>
                                         <!-- Button -->
-                                        <div><button type="submit" class="btn btn-primary w-100 mb-0">Login</button></div>
+                                        <div><button type="submit" class="btn btn-primary w-100 mb-0" id="login-btn" disabled>Login</button></div>
             
                                         <!-- Copyright -->
                                         <div class="text-primary-hover text-body mt-3 text-center">
@@ -67,6 +68,15 @@
                                     </form>
                                     <!-- Form END -->
                                 </div>		
+                            </div>
+
+                            <!-- Vector Image -->
+                            <div class="col-lg-6 d-flex align-items-center order-2 order-lg-1">
+                                <!-- Divider -->
+                                <div class="vr opacity-1 d-none d-lg-block"></div>
+                                <div class="p-3 p-lg-5">
+                                    <img src="/assets/images/element/signin.jpg" alt="">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -96,6 +106,88 @@
         });
         </script>
         
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              const emailInput = document.getElementById("email");
+              const otpInput = document.getElementById("otp");
+              const otpButton = document.getElementById("otp-button");
+              const loginButton = document.getElementById("login-btn");
+              const otpMessage = document.getElementById("otp-message");
+              let otpVerified = false;
+            
+              otpButton.addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+
+  if (!email) {
+    otpMessage.textContent = "Enter your email first.";
+    return;
+  }
+
+  if (otpButton.textContent === "Send OTP") {
+    // Send OTP
+    const res = await fetch("/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      otpInput.disabled = false;
+      otpButton.textContent = "Verify OTP";
+      otpMessage.textContent = "OTP sent to your email.";
+      otpMessage.classList.replace("text-danger", "text-success");
+    } else {
+      otpMessage.textContent = data.message;
+      otpMessage.classList.replace("text-success", "text-danger");
+    }
+  } else {
+    // ✅ Only now read OTP value
+    const otp = otpInput.value.trim();
+    const res = await fetch("/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      otpVerified = true;
+      loginButton.disabled = false;
+      otpButton.textContent = "Verified ✅";
+      otpButton.disabled = true;
+      otpInput.disabled = true;
+      otpMessage.textContent = "OTP verified successfully.";
+      otpMessage.classList.replace("text-danger", "text-success");
+    } else {
+      otpMessage.textContent = data.message;
+      otpMessage.classList.replace("text-success", "text-danger");
+    }
+  }
+});
+            
+              // Handle login submit
+              document.getElementById("login-form").addEventListener("submit", async (e) => {
+                e.preventDefault();
+                if (!otpVerified) {
+                  alert("Please verify OTP first.");
+                  return;
+                }
+                const email = emailInput.value;
+                const password = document.getElementById("psw-input").value;
+                const res = await fetch("/sign-in", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ email, password }),
+                });
+                const data = await res.json();
+                if (data.success) {
+                  window.location.href = data.redirect || "/";
+                } else {
+                  alert(data.message);
+                }
+              });
+            });
+            </script>
+            
     <!-- =======================
     Main Content END -->
     

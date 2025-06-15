@@ -11,15 +11,7 @@
                     <div class="col-12">
                         <div class="bg-mode shadow rounded-3 overflow-hidden">
                             <div class="row g-0">
-                                <!-- Vector Image -->
-                                <div class="col-lg-6 d-md-flex align-items-center order-2 order-lg-1">
-                                    <div class="p-3 p-lg-5">
-                                        <img src="/assets/images/element/signin.svg" alt="">
-                                    </div>
-                                    <!-- Divider -->
-                                    <div class="vr opacity-1 d-none d-lg-block"></div>
-                                </div>
-
+                                
                                 <!-- Information -->
                                 <div class="col-lg-6 order-1">
                                     <div class="p-4 p-sm-6">
@@ -37,39 +29,58 @@
                                             </div>
                                             <% } %>
                                                 <!-- Form START -->
-                                                <form class="mt-4 text-start" action="/sign-up" method="POST">
+                                                <form class="mt-4 text-start" action="/sign-up" method="POST" autocomplete="off">
                                                     <!-- Name -->
                                                     <div class="mb-3">
-                                                        <label class="form-label">Enter name</label>
-                                                        <input type="text" class="form-control" name="name">
+                                                        <label class="form-label">Enter name <span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control" name="name" autocomplete="off" required>
                                                     </div>
                                                     <!-- Email -->
                                                     <div class="mb-3">
-                                                        <label class="form-label">Enter email address</label>
-                                                        <input type="email" class="form-control" name="email">
+                                                        <label class="form-label">Enter email address <span class="text-danger">*</span></label>
+                                                        <input type="email" class="form-control" name="email" autocomplete="off" required>
                                                     </div>
                                                     <!-- Pancard -->
                                                     <div class="mb-3">
-                                                        <label class="form-label">Enter PAN </label>
+                                                        <label class="form-label">Enter PAN <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control" name="pan"
-                                                            maxlength="10">
+                                                            maxlength="10" autocomplete="off" required>
                                                     </div>
-                                                    <!-- Password -->
-                                                    <div class="mb-3 position-relative">
-                                                        <label class="form-label">Enter password</label>
-                                                        <input class="form-control fakepassword" type="password"
-                                                            id="psw-input" name="password">
-                                                        <span
-                                                            class="position-absolute top-50 end-0 translate-middle-y p-0 mt-3">
-                                                            <i
-                                                                class="fakepasswordicon fas fa-eye-slash cursor-pointer p-2"></i>
-                                                        </span>
-                                                    </div>
+                                                    
+<!-- Password -->
+<div class="mb-3 position-relative">
+    <label class="form-label">Enter password <span class="text-danger">*</span></label>
+    <input class="form-control fakepassword" type="password"
+        id="psw-input" name="password" autocomplete="new-password" required>
+    <span class="position-absolute top-50 end-0 translate-middle-y p-0 mt-0">
+        <i class="fakepasswordicon fas fa-eye-slash cursor-pointer p-2"></i>
+    </span>
+
+        <!-- Generate Button -->
+        <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="generate-password-btn">
+            Generate Strong Password
+        </button>
+
+    <!-- RULES GO HERE -->
+    <div id="password-rules-container" class="d-none">
+        <ul id="password-rules" class="text-danger small ps-3 mb-3" style="list-style: none;">
+            <li id="rule-length" style="font-size: smaller;">❌ Minimum 8 characters</li>
+            <li id="rule-upper" style="font-size: smaller;">❌ At least 1 uppercase letter</li>
+            <li id="rule-lower" style="font-size: smaller;">❌ At least 1 lowercase letter</li>
+            <li id="rule-number" style="font-size: smaller;">❌ At least 1 number</li>
+            <li id="rule-special" style="font-size: smaller;">❌ At least 1 special character (@, #, $, *)</li>
+        </ul>
+    </div>
+</div>
+
+
                                                     <!-- Confirm Password -->
                                                     <div class="mb-3 position-relative">
-                                                        <label class="form-label">Confirm Password</label>
-                                                        <input class="form-control fakepassword" type="password"
-                                                            id="psw-input" name="confirmPassword">
+                                                        <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                                                        <!-- <input class="form-control fakepassword" type="password"
+                                                            id="psw-input" name="confirmPassword" autocomplete="new-password" required> -->
+                                                            <input class="form-control fakepassword" type="password"
+    id="confirm-password" name="confirmPassword" autocomplete="new-password" required disabled>
                                                         <span
                                                             class="position-absolute top-50 end-0 translate-middle-y p-0 mt-3">
                                                             <i
@@ -92,6 +103,16 @@
                                                 <!-- Form END -->
                                     </div>
                                 </div>
+
+                                <!-- Vector Image -->
+                                <div class="col-lg-6 d-md-flex align-items-center order-2 order-lg-1">
+                                    <!-- Divider -->
+                                    <div class="vr opacity-1 d-none d-lg-block"></div>
+                                    <div class="p-3 p-lg-5">
+                                        <img src="/assets/images/element/signin.jpg" alt="" >
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -117,8 +138,91 @@
                         }
                     });
                 });
+          
+        // Password validation
+        const passwordInput = document.getElementById("psw-input");
+        const confirmPasswordInput = document.getElementById("confirm-password");
+
+        const ruleContainer = document.getElementById("password-rules-container");
+
+        const rules = {
+            length: document.getElementById("rule-length"),
+            upper: document.getElementById("rule-upper"),
+            lower: document.getElementById("rule-lower"),
+            number: document.getElementById("rule-number"),
+            special: document.getElementById("rule-special"),
+        };
+
+        passwordInput.addEventListener("focus", () => {
+        ruleContainer.classList.remove("d-none");
+    });
+
+        passwordInput.addEventListener("input", function () {
+            const value = passwordInput.value;
+            const conditions = {
+                length: value.length >= 8,
+                upper: /[A-Z]/.test(value),
+                lower: /[a-z]/.test(value),
+                number: /[0-9]/.test(value),
+                special: /[@#$*]/.test(value),
+            };
+
+            // Update UI for each rule
+            Object.keys(conditions).forEach(key => {
+                if (conditions[key]) {
+                    rules[key].classList.remove("text-danger");
+                    rules[key].classList.add("text-success");
+                    rules[key].textContent = "✅ " + rules[key].textContent.slice(2);
+                } else {
+                    rules[key].classList.add("text-danger");
+                    rules[key].classList.remove("text-success");
+                    rules[key].textContent = "❌ " + rules[key].textContent.slice(2);
+                }
             });
-        </script>
+
+            // Enable confirm password only if all are true
+            const allValid = Object.values(conditions).every(Boolean);
+            confirmPasswordInput.disabled = !allValid;
+        });
+
+        // Auto-generate a password that meets all rules
+function generateStrongPassword() {
+    const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lower = "abcdefghijklmnopqrstuvwxyz";
+    const numbers = "0123456789";
+    const special = "@#$*";
+    const all = upper + lower + numbers + special;
+
+    let password = "";
+    password += upper[Math.floor(Math.random() * upper.length)];
+    password += lower[Math.floor(Math.random() * lower.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+    password += special[Math.floor(Math.random() * special.length)];
+
+    // Fill remaining with random characters (to reach 8+ characters)
+    for (let i = password.length; i < 10; i++) {
+        password += all[Math.floor(Math.random() * all.length)];
+    }
+
+    // Shuffle the result
+    return password
+        .split("")
+        .sort(() => 0.5 - Math.random())
+        .join("");
+}
+
+// Hook up generate password button
+document.getElementById("generate-password-btn").addEventListener("click", () => {
+    const generated = generateStrongPassword();
+    const passwordInput = document.getElementById("psw-input");
+    passwordInput.value = generated;
+    passwordInput.dispatchEvent(new Event("input")); // Trigger validation
+    passwordInput.focus();
+});
+
+    });
+</script>
+
 
 
         <!-- =======================
