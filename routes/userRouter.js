@@ -76,7 +76,9 @@ userRouter.get("/faq", userController.viewFAQ);
 userRouter.get("/help-contact", userController.viewHelpContact);
 userRouter.get("/support-ticket", isLogin, userController.viewSupportTicket);
 userRouter.get("/privacy-policy", userController.viewPrivacy);
-userRouter.get("/terms-of-service", userController.viewTerms);
+userRouter.get("/terms-and-conditions", userController.viewTerms);
+userRouter.get("/cookies", userController.viewCookies);
+userRouter.get("/disclaimer", userController.viewDisclaimer);
 userRouter.get("/profile",isLogin, userController.viewProfile);
 userRouter.get("/bookings",isLogin, userController.viewBookings);
 userRouter.get("/travelers",isLogin, userController.viewTravelers);
@@ -115,9 +117,12 @@ userRouter.post("/flight-list", userController.findTicket);
 userRouter.post("/flight-detail", userController.getFlightDetail);
 userRouter.post("/seller-list", userController.getSellerList)
 userRouter.post("/flight-booking",isLogin, userController.flightBooking);
-userRouter.post("/update-profile",isLogin, upload.single("image"), userController.updateProfile);
 userRouter.post("/update-email",isLogin, userController.updateEmail);
 userRouter.post("/update-password",isLogin, userController.updatePassword);
+userRouter.post("/update-profile",isLogin, upload.fields([
+  { name: "image",  maxCount: 1 },
+  { name: "logo", maxCount: 1 },
+]), userController.updateProfile);
 userRouter.post("/verify-card",isLogin,
   upload.fields([
   { name: "visitingCard", maxCount: 1 },

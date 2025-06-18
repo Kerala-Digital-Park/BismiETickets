@@ -100,6 +100,7 @@
 																data-bs-toggle="tooltip" data-bs-placement="top">
 																<i class="fa-solid fa-eye"></i>
 															</button>
+                                                            <% if (update.status === "pending") { %>
                                                             <button class="btn btn-sm btn-success update-btn ms-2"
                                                                 data-update-id="<%= update._id %>" title="Accept"
                                                                 data-title="accept" data-bs-toggle="tooltip"
@@ -112,6 +113,11 @@
                                                                 data-bs-placement="top">
                                                                 <i class="fa-solid fa-xmark"></i>
                                                             </button>
+                                                            <% } else if (update.status === "approved") { %>
+                                                                <span class="badge bg-success">Approved</span>
+                                                              <% } else if (update.status === "rejected") { %>
+                                                                <span class="badge bg-danger">Rejected</span>
+                                                              <% } %>
                                                         </td>
                                                     </tr>
                                                     <% }) %>

@@ -47,9 +47,11 @@
                                     <table class="table align-middle">
                                         <thead class="bg-light">
                                             <tr>
-                                                <th></th>
+                                                <th>Profile</th>
+                                                <th>Logo</th>
                                                 <th>User ID</th>
                                                 <th>Name</th>
+                                                <th>Agency</th>
                                                 <th>Email </th>
                                                 <th>Mobile</th>
                                                 <th>Nationality</th>
@@ -73,6 +75,16 @@
 															</div>
                                                         </td>
                                                         <td>
+                                                            <div class="d-flex align-items-center">
+																<div class="avatar avatar-xs flex-shrink-0">
+																	<img class="avatar-img rounded-circle"
+																		src="<%= update.logo ? update.logo : '' %>"
+																		alt="avatar">
+																</div>
+																
+															</div>
+                                                        </td>
+                                                        <td>
 															<h6 class="mb-0 fw-normal">
                                                                 <%= update.user.userId %>
                                                             </h6>
@@ -80,6 +92,11 @@
                                                         <td>
                                                             <h6 class="mb-0 fw-normal">
                                                                 <%= update.name %>
+                                                            </h6>
+                                                        </td>
+                                                        <td>
+                                                            <h6 class="mb-0 fw-normal">
+                                                                <%= update.agencyName %>
                                                             </h6>
                                                         </td>
                                                         <td>

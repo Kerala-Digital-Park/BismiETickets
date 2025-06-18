@@ -866,19 +866,6 @@ const updateKycDetail = async (req, res) => {
       update.aadhaarCardBack &&
       update.aadhaarCardFront
     ) {
-      // if (subscription.subscription === "Free") {
-      //   const defaultPlan = await Subscription.findOne({
-      //     subscription: "Free",
-      //     role: role,
-      //   });
-      //   if (!defaultPlan) {
-      //     return res.status(400).json({
-      //     success: false,
-      //     message: "Default subscription plan not found",
-      //     });
-      //   }
-      // }
-      // subscriptionId = defaultPlan._id;
       newKyc = "Completed";
     }
 
@@ -923,7 +910,12 @@ const updateKycDetail = async (req, res) => {
       }
 
       // Remove approved bank update request
-      await KycUpdates.findByIdAndDelete(kycUpdateId);
+      await KycUpdates.findByIdAndUpdate(
+        kycUpdateId,
+        { status: "approved" },
+        { new: true }
+      );
+      
       return res.json({
         success: true,
         message: "Kyc details accepted successfully",
@@ -932,7 +924,12 @@ const updateKycDetail = async (req, res) => {
 
     if (status === "reject") {
       // Optional: Set a status or delete it
-      await KycUpdates.findByIdAndDelete(kycUpdateId);
+      await KycUpdates.findByIdAndUpdate(
+        kycUpdateId,
+        { status: "rejected" },
+        { new: true }
+      );
+        
       return res.json({
         success: true,
         message: "Kyc details rejected successfully",
@@ -945,320 +942,6 @@ const updateKycDetail = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server error" });
   }
 };
-
-// const viewTransactions = async (req, res) => {
-//   const search = req.query.search || "";
-//   const page = parseInt(req.query.page) || 1;
-//   const limit = 10;
-//   const skip = (page - 1) * limit;
-
-//   try {
-//     // Build the match stage conditionally
-//     let matchStage = {};
-//     if (search) {
-//       const regex = new RegExp(search, "i");
-//       matchStage = {
-//         $or: [
-//           { "user.name": regex },
-//           { "user._id": { $regex: search, $options: "i" } }, // _id must be string
-//           { "kyc": regex },
-//           { "subscription.subscription": regex },
-//         ]
-//       };
-//     }
-
-//     const pipeline = [
-//       {
-//         $lookup: {
-//           from: "users",
-//           localField: "userId",
-//           foreignField: "_id",
-//           as: "user"
-//         }
-//       },
-//       { $unwind: "$user" },
-//       {
-//         $lookup: {
-//           from: "subscriptions",
-//           localField: "subscription",
-//           foreignField: "_id",
-//           as: "subscription"
-//         }
-//       },
-//       { $unwind: "$subscription" },
-//       { $match: matchStage },
-//       { $sort: { createdAt: -1 } },
-//       { $skip: skip },
-//       { $limit: limit }
-//     ];
-
-//     // Aggregation pipeline for total count
-//     const countPipeline = [
-//       {
-//         $lookup: {
-//           from: "users",
-//           localField: "userId",
-//           foreignField: "_id",
-//           as: "user"
-//         }
-//       },
-//       { $unwind: "$user" },
-//       {
-//         $lookup: {
-//           from: "bookings",
-//           localField: "bookingId",
-//           foreignField: "_id",
-//           as: "booking"
-//         }
-//       },
-//       { $unwind: "$subscription" },
-//       { $match: matchStage },
-//       { $count: "totalCount" }
-//     ];
-
-//     // Execute aggregation
-//     const transactions = await Transaction.aggregate(pipeline);
-//     const countResult = await Transaction.aggregate(countPipeline);
-//     const totalCount = countResult[0]?.totalCount || 0;
-//     const totalPages = Math.ceil(totalCount / limit);
-
-//     res.render("admin/transactions", {
-//       transactions,
-//       search,
-//       currentPage: page,
-//       totalPages,
-//       totalCount,
-//       limit
-//     });
-
-//   } catch (error) {
-//     console.error("Aggregation error:", error);
-//     res.status(500).json({ success: false, message: "Internal Server error" });
-//   }
-// };
-
-// const viewTransactions = async (req, res) => {
-//   const search = req.query.search || "";
-//   const page = parseInt(req.query.page) || 1;
-//   const limit = 10;
-//   const skip = (page - 1) * limit;
-
-//   try {
-//     const regex = new RegExp(search, "i");
-
-//     // Match stage
-//     const matchStage = search
-//       ? {
-//           $or: [
-//             { "user.name": regex },
-//             { "user._id": { $regex: search, $options: "i" } },
-//             { transactionId: regex },
-//             { "booking.bookingId": regex } // assuming bookingId is a string like BFL00001
-//           ]
-//         }
-//       : {};
-
-//     const pipeline = [
-//       {
-//         $lookup: {
-//           from: "users",
-//           localField: "userId",
-//           foreignField: "_id",
-//           as: "user"
-//         }
-//       },
-//       { $unwind: "$user" },
-//       {
-//         $lookup: {
-//           from: "bookings",
-//           localField: "bookingId",
-//           foreignField: "_id",
-//           as: "booking"
-//         }
-//       },
-//       { $unwind: "$booking" },
-//       { $match: matchStage },
-//       { $sort: { createdAt: -1 } },
-//       { $skip: skip },
-//       { $limit: limit }
-//     ];
-
-//     const countPipeline = [
-//       {
-//         $lookup: {
-//           from: "users",
-//           localField: "userId",
-//           foreignField: "_id",
-//           as: "user"
-//         }
-//       },
-//       { $unwind: "$user" },
-//       {
-//         $lookup: {
-//           from: "bookings",
-//           localField: "bookingId",
-//           foreignField: "_id",
-//           as: "booking"
-//         }
-//       },
-//       { $unwind: "$booking" },
-//       { $match: matchStage },
-//       { $count: "totalCount" }
-//     ];
-
-//     const transactions = await Transaction.aggregate(pipeline);
-//     const countResult = await Transaction.aggregate(countPipeline);
-//     const totalCount = countResult[0]?.totalCount || 0;
-//     const totalPages = Math.ceil(totalCount / limit);
-
-//     res.render("admin/transactions", {
-//       transactions,
-//       search,
-//       currentPage: page,
-//       totalPages,
-//       totalCount,
-//       limit
-//     });
-
-//   } catch (error) {
-//     console.error("Aggregation error:", error);
-//     res.status(500).json({ success: false, message: "Internal Server error" });
-//   }
-// };
-
-// const viewTransactions = async (req, res) => {
-//   const search = req.query.search || "";
-//   const page = parseInt(req.query.page) || 1;
-//   const limit = 10;
-//   const skip = (page - 1) * limit;
-
-//   try {
-//     const regex = new RegExp(search, "i");
-
-//     const matchStage = search
-//       ? {
-//           $or: [
-//             { "user.name": regex },
-//             { "user._id": { $regex: search, $options: "i" } },
-//             { transactionId: regex },
-//             { "booking.bookingId": regex },
-//             { "bookingUser.name": regex },
-//             { "flight.name": regex }, // assuming flight has a `name` field
-//           ]
-//         }
-//       : {};
-
-//     const pipeline = [
-//       // Lookup user from transaction.userId
-//       {
-//         $lookup: {
-//           from: "users",
-//           localField: "userId",
-//           foreignField: "_id",
-//           as: "user"
-//         }
-//       },
-//       { $unwind: "$user" },
-
-//       // Lookup booking from bookingId
-//       {
-//         $lookup: {
-//           from: "bookings",
-//           localField: "bookingId",
-//           foreignField: "_id",
-//           as: "booking"
-//         }
-//       },
-//       { $unwind: "$booking" },
-
-//       // Lookup user from booking.userId as bookingUser
-//       {
-//         $lookup: {
-//           from: "users",
-//           localField: "booking.userId",
-//           foreignField: "_id",
-//           as: "bookingUser"
-//         }
-//       },
-//       { $unwind: "$bookingUser" },
-
-//       // Lookup flight from booking.flight
-//       {
-//         $lookup: {
-//           from: "flights",
-//           localField: "booking.flight",
-//           foreignField: "_id",
-//           as: "flight"
-//         }
-//       },
-//       { $unwind: "$flight" },
-
-//       { $match: matchStage },
-//       { $sort: { createdAt: -1 } },
-//       { $skip: skip },
-//       { $limit: limit }
-//     ];
-
-//     const countPipeline = [
-//       {
-//         $lookup: {
-//           from: "users",
-//           localField: "userId",
-//           foreignField: "_id",
-//           as: "user"
-//         }
-//       },
-//       { $unwind: "$user" },
-//       {
-//         $lookup: {
-//           from: "bookings",
-//           localField: "bookingId",
-//           foreignField: "_id",
-//           as: "booking"
-//         }
-//       },
-//       { $unwind: "$booking" },
-//       {
-//         $lookup: {
-//           from: "users",
-//           localField: "booking.userId",
-//           foreignField: "_id",
-//           as: "bookingUser"
-//         }
-//       },
-//       { $unwind: "$bookingUser" },
-//       {
-//         $lookup: {
-//           from: "flights",
-//           localField: "booking.flight",
-//           foreignField: "_id",
-//           as: "flight"
-//         }
-//       },
-//       { $unwind: "$flight" },
-//       { $match: matchStage },
-//       { $count: "totalCount" }
-//     ];
-
-//     const transactions = await Transaction.aggregate(pipeline);
-//     const countResult = await Transaction.aggregate(countPipeline);
-//     const totalCount = countResult[0]?.totalCount || 0;
-//     const totalPages = Math.ceil(totalCount / limit);
-
-//     res.render("admin/transactions", {
-//       transactions,
-//       search,
-//       currentPage: page,
-//       totalPages,
-//       totalCount,
-//       limit
-//     });
-
-//   } catch (error) {
-//     console.error("Aggregation error:", error);
-//     res.status(500).json({ success: false, message: "Internal Server error" });
-//   }
-// };
 
 const viewTransactions = async (req, res) => {
   const search = req.query.search || "";
@@ -2781,13 +2464,12 @@ const updateProfileDetail = async (req, res) => {
   try {
     const update = await ProfileUpdates.findById(profileUpdateId).populate("userId");
     if (!update) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Profile update not found" });
+      return res.status(404).json({ success: false, message: "Profile update not found" });
     }
 
-    const userId = update.userId._id; // Get the user ID from the populated userId field
+    const userId = update.userId._id;
 
+    // Accept case
     if (status === "accept") {
       const updatedData = {
         name: update.name,
@@ -2796,21 +2478,45 @@ const updateProfileDetail = async (req, res) => {
         nationality: update.nationality,
         gender: update.gender,
         address: update.address,
+        agencyName: update.agencyName,
       };
 
-      if (update.image) {
-              // Delete old image if exists
-              if (update.image && update.userId.image !== "/assets/images/avatar/default.png" && update.userId.image !== update.image) {
-                const oldImagePath = path.join(__dirname, "..", "public", update.userId.image);
-                if (fs.existsSync(oldImagePath)) {
-                  fs.unlinkSync(oldImagePath);
-                }
-              }
-        
-              // Save new image path
-              updatedData.image = update.image;
-            }
+      // Helper function to validate file path
+      const isValidFilePath = (filePath) =>
+        filePath && typeof filePath === "string" && !filePath.endsWith("/");
 
+      // Handle profile image update
+      if (
+        isValidFilePath(update.image) &&
+        isValidFilePath(update.userId.image) &&
+        update.userId.image !== "/assets/images/avatar/default.png" &&
+        update.userId.image !== update.image
+      ) {
+        const oldImagePath = path.join(__dirname, "..", "public", update.userId.image);
+        if (fs.existsSync(oldImagePath) && fs.lstatSync(oldImagePath).isFile()) {
+          fs.unlinkSync(oldImagePath);
+        }
+      }
+      if (isValidFilePath(update.image)) {
+        updatedData.image = update.image;
+      }
+
+      // Handle logo update
+      if (
+        isValidFilePath(update.logo) &&
+        isValidFilePath(update.userId.logo) &&
+        update.userId.logo !== update.logo
+      ) {
+        const oldLogoPath = path.join(__dirname, "..", "public", update.userId.logo);
+        if (fs.existsSync(oldLogoPath) && fs.lstatSync(oldLogoPath).isFile()) {
+          fs.unlinkSync(oldLogoPath);
+        }
+      }
+      if (isValidFilePath(update.logo)) {
+        updatedData.logo = update.logo;
+      }
+
+      // Update user data
       const updatedUser = await User.findByIdAndUpdate(
         userId,
         { ...updatedData },
@@ -2818,32 +2524,36 @@ const updateProfileDetail = async (req, res) => {
       );
 
       if (!updatedUser) {
-        return res
-          .status(404)
-          .json({ success: false, message: "User not found" });
+        return res.status(404).json({ success: false, message: "User not found" });
       }
 
-      // Remove approved bank update request
-      await ProfileUpdates.findByIdAndUpdate(profileUpdateId, {$set: { "status": "approved" }}, { new: true });
+      // Mark the profile update request as approved
+      await ProfileUpdates.findByIdAndUpdate(profileUpdateId, { $set: { status: "approved" } });
+
       return res.json({
         success: true,
         message: "Profile details accepted successfully",
       });
     }
 
+    // Reject case
     if (status === "reject") {
-      
-      await ProfileUpdates.findByIdAndUpdate(profileUpdateId, {$set: { "status": "rejected" }}, { new: true });
+      await ProfileUpdates.findByIdAndUpdate(profileUpdateId, { $set: { status: "rejected" } });
+
       return res.json({
         success: true,
         message: "Profile details rejected successfully",
       });
     }
 
-    res.redirect("/admin/profile-updates");
+    // If status is invalid
+    return res.status(400).json({
+      success: false,
+      message: "Invalid status provided",
+    });
   } catch (error) {
-    console.log("Error updating profile detail:", error);
-    res.status(500).json({ success: false, message: "Internal Server error" });
+    console.error("Error updating profile detail:", error);
+    return res.status(500).json({ success: false, message: "Internal Server error" });
   }
 };
 

@@ -19,7 +19,9 @@ const profileUpdateSchema = mongoose.Schema(
       required: false,
     },
     address: { type: String, required: false },
+    agencyName: { type: String, required: false },
     image: { type: String, required: false },
+    logo: { type: String, required: false },
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],

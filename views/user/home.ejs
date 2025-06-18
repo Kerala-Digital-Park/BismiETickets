@@ -12,8 +12,12 @@
             <p class="alert alert-info text-center mx-auto shadow-sm rounded" style="max-width: 80%;  z-index: 10;">
               <a href="/kyc"><strong>Complete your KYC</strong></a> to enable transactions securely.
             </p>
-            <% } %>
-              <% } %>
+          <% } else if( message ) { %>
+            <p class="alert alert-info text-center mx-auto shadow-sm rounded" style="max-width: 80%;  z-index: 10;">
+              <a href="/kyc"><strong><%= message %></strong></a> 
+            </p>
+          <% } %>
+        <% } %>
 
                 <!-- Background dark overlay -->
                 <div class="bg-overlay bg-dark opacity-7"></div>

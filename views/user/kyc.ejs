@@ -77,6 +77,42 @@
                                         
                     </div>
 
+                    <!-- Personal info START -->
+                    <div class="card border">
+                        <!-- Card body START -->
+                        <div class="card-body">
+                            <!-- Form START -->
+                                <div class="row g-3">
+                                 <!-- Agency Name -->
+                                 <div class="col-md-6">
+                                    <label class="form-label">Agency Name<span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="agencyName"
+                                    placeholder="Enter your agency name" value=<%=userDetails.agencyName %> <%= userDetails.agencyName ? 'disabled' : '' %>>
+                                </div>
+
+                                <!-- Mobile -->
+                                <div class="col-md-6">
+                                    <label class="form-label">Whatsapp number<span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="mobile"
+                                    value="<%= userDetails.mobile %>" placeholder="Enter your mobile number"
+                                        <%= userDetails.mobile ? 'disabled' : '' %>>
+                                </div>
+
+                                <!-- Agency Address -->
+                                <div class="col-12">
+                                    <label class="form-label">Agency Address</label>
+                                    <textarea class="form-control" rows="3" id="address"
+                                        spellcheck="false" value=<%=userDetails.address
+                                        %>  <%= userDetails.address ? 'disabled' : '' %> ><%= userDetails.address %></textarea>
+                                </div>
+                                </div>
+                                 
+                        </div>
+                        <!-- Card body END -->
+                    </div>
+                    <!-- Personal info END -->
                                     <!-- Initial KYC START -->
                                     <div class="card border" id="initialKyc">
                                         <!-- Card header -->

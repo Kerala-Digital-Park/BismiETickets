@@ -23,6 +23,11 @@ const kycUpdateSchema = mongoose.Schema(
       enum: ["Completed", "Initial", "Pending"],
       default: "Pending",
     },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
   },
   { timestamps: true }
 );

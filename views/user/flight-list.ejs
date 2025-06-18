@@ -127,10 +127,7 @@
                           <div class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3">
                             <!-- Input field -->
                             <label class="mb-1"><i class="bi bi-geo-alt me-2"></i>From</label>
-                            <!-- <select class="form-select" id="fixedFrom" name="fixedFrom"
-                              data-selected="<%= requestDetails.fixedFrom %>">
-                              <option value="">Select location</option>
-                             </select> -->
+                            
                              <select class="form-select js-airport" id="fixedFrom" name="fixedFrom" 
                              data-selected="<%= requestDetails.fixedFrom %>">
                               <option value="">Select location</option>
@@ -151,10 +148,6 @@
                           <div class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3">
                             <!-- Input field -->
                             <label class="mb-1"><i class="bi bi-send me-2"></i>To</label>
-                            <!-- <select class="form-select" id="fixedTo" name="fixedTo"
-                              data-selected="<%= requestDetails.fixedTo %>">
-                              <option value="">Select location</option>
-                              </select> -->
                               <select class="form-select js-airport" id="fixedTo"
                               name="fixedTo" data-selected="<%= requestDetails.fixedTo %>">
                               <option value="">Select location</option>
@@ -173,7 +166,7 @@
                         </div>
 
                         <div class="col-12 text-end pt-0">
-                          <button class="btn btn-primary mb-n4" type="submit">Find ticket <i
+                          <button class="btn btn-primary mb-n4" type="submit">Modify Search <i
                               class="bi bi-arrow-right ps-3"></i></button>
                         </div>
                       </div>
@@ -189,9 +182,6 @@
                           <div class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3">
                             <!-- Input field -->
                             <label class="mb-1"><i class="bi bi-geo-alt me-2"></i>From</label>
-                            <!-- <select class="form-select" data-search-enabled="true" id="from" name="from">
-                              <option value="">Select location</option>
-                              </select> -->
                               <select class="form-select js-airport" id="from"
                               name="from" data-selected="<%= requestDetails.from %>">
                               <option value="">Select location</option>
@@ -211,9 +201,6 @@
                           <div class="form-border-transparent form-fs-lg bg-light rounded-3 h-100 p-3">
                             <!-- Input field -->
                             <label class="mb-1"><i class="bi bi-send me-2"></i>To</label>
-                            <!-- <select class="form-select" data-search-enabled="true" id="to" name="to">
-                              <option value="">Select location</option>
-                                </select> -->
                                 <select class="form-select js-airport" id="to"
                                 name="to" data-selected="<%= requestDetails.to %>">
                                 <option value="">Select location</option>
@@ -242,7 +229,7 @@
                         </div>
 
                         <div class="col-12 text-end pt-0">
-                          <button class="btn btn-primary mb-n4" type="submit">Find ticket <i
+                          <button class="btn btn-primary mb-n4" type="submit">Modify Search <i
                               class="bi bi-arrow-right ps-3"></i></button>
                         </div>
                       </div>
@@ -1318,7 +1305,7 @@ if (userData?.subscription?.serviceCharge) {
 
       </script>
 
-      <script>
+      <!-- <script>
         document.addEventListener("DOMContentLoaded", function () {
           const staticSelectors = [
             "#fixedFrom",
@@ -1333,12 +1320,15 @@ if (userData?.subscription?.serviceCharge) {
             if (!element || element.classList.contains('choices-initialized')) return;
             element.classList.add('choices-initialized');
 
+            const selectedValue = element.getAttribute('data-selected');
+
             const choices = new Choices(element, {
               searchEnabled: true,
               placeholderValue: "Select Airport",
               searchChoices: false,
               shouldSort: false,
-              allowHTML: true
+              allowHTML: true,
+              itemSelectText: '',
             });
 
             element._choicesInstance = choices;
@@ -1351,8 +1341,13 @@ if (userData?.subscription?.serviceCharge) {
                 try {
                   const res = await fetch("/search-airports");
                   const airports = await res.json();
+
                   choices.setChoices(
-                    airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
+                    airports.map(a => ({ 
+                      value: a.Value, 
+                      label: `${a.Airport} (${a.Value})`,
+                      selected: a.Value === selectedValue
+                     })),
                     "value",
                     "label",
                     true
@@ -1373,7 +1368,11 @@ if (userData?.subscription?.serviceCharge) {
                     const res = await fetch(`/search-airports?q=${encodeURIComponent(searchTerm)}`);
                     const airports = await res.json();
                     choices.setChoices(
-                      airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
+                      airports.map(a => ({
+                        value: a.Value, 
+                        label: `${a.Airport} (${a.Value})`,
+                        selected: a.Value === selectedValue
+                      })),
                       "value",
                       "label",
                       true
@@ -1395,8 +1394,96 @@ if (userData?.subscription?.serviceCharge) {
 
           observer.observe(document.body, { childList: true, subtree: true });
         });
-      </script>
+      </script> -->
 
+      <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+          const staticSelectors = [
+            "#fixedFrom",
+            "#fixedTo",
+            "#from",
+            "#to"
+          ];
+      
+          const doneTypingInterval = 100;
+      
+          let airportList = [];
+      
+          // ✅ 1. Fetch all airports once on page load
+          try {
+            const res = await fetch("/search-airports");
+            airportList = await res.json();
+          } catch (err) {
+            console.error("Error preloading airports:", err);
+          }
+      
+          function initChoicesForElement(element) {
+            if (!element || element.classList.contains('choices-initialized')) return;
+            element.classList.add('choices-initialized');
+      
+            const selectedValue = element.getAttribute('data-selected');
+      
+            const choices = new Choices(element, {
+              searchEnabled: true,
+              placeholderValue: "Select Airport",
+              searchChoices: false,
+              shouldSort: false,
+              allowHTML: true,
+              itemSelectText: ''
+            });
+      
+            element._choicesInstance = choices;
+      
+            // ✅ 2. Set initial choices with selected one marked
+            choices.setChoices(
+              airportList.map(a => ({
+                value: a.Value,
+                label: `${a.Airport} (${a.Value})`,
+                selected: a.Value === selectedValue
+              })),
+              "value",
+              "label",
+              true
+            );
+      
+            // ✅ 3. Search on user input
+            let typingTimer;
+            element.addEventListener('search', function (e) {
+              clearTimeout(typingTimer);
+              const searchTerm = e.detail.value.trim();
+      
+              if (searchTerm.length >= 2) {
+                typingTimer = setTimeout(async () => {
+                  try {
+                    const res = await fetch(`/search-airports?q=${encodeURIComponent(searchTerm)}`);
+                    const airports = await res.json();
+      
+                    choices.setChoices(
+                      airports.map(a => ({
+                        value: a.Value,
+                        label: `${a.Airport} (${a.Value})`,
+                        selected: a.Value === selectedValue
+                      })),
+                      "value",
+                      "label",
+                      true
+                    );
+                  } catch (err) {
+                    console.error("Error searching airports:", err);
+                  }
+                }, doneTypingInterval);
+              }
+            });
+          }
+      
+          // ✅ Initialize all select fields
+          staticSelectors.forEach(selector => {
+            const element = document.querySelector(selector);
+            if (element) initChoicesForElement(element);
+          });
+        });
+      </script>
+      
       <script>
         window.history.replaceState(null, "", window.location.href)
       </script>

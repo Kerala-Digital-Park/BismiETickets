@@ -15,22 +15,22 @@
             <!-- Title START -->
             <div class="d-flex align-items-center">
               <!-- Icon -->
-              <h1 class="display-4 mb-0">
+              <h2 class="display-4 mb-0">
                 <i class="fa-solid fa-plane rtl-flip"></i>
-              </h1>
+              </h2>
 
               <!-- Title and content START -->
               <div class="ms-3">
                 <!-- Title -->
                 <ul class="list-inline mb-2">
                   <li class="list-inline-item me-2">
-                    <h3 class="mb-0"><%= flightDetails.fromCity %> (<%= flightDetails.from.toUpperCase() %>)</h3>
+                    <h4 class="mb-0"><%= flightDetails.fromCity %> (<%= flightDetails.from.toUpperCase() %>)</h4>
                   </li>
                   <li class="list-inline-item me-2">
-                    <h3 class="mb-0"><i class="bi bi-arrow-right"></i></h3>
+                    <h4 class="mb-0"><i class="bi bi-arrow-right"></i></h4>
                   </li>
                   <li class="list-inline-item me-0">
-                    <h3 class="mb-0"><%= flightDetails.toCity %> (<%= flightDetails.to.toUpperCase() %>)</h3>
+                    <h4 class="mb-0"><%= flightDetails.toCity %> (<%= flightDetails.to.toUpperCase() %>)</h4>
                   </li>
                 </ul>
 
@@ -184,61 +184,28 @@
             <div class="card border">
               <!-- Card header -->
               <div class="card-header border-bottom px-4">
-                <h3 class="card-title mb-0">Important Information</h3>
+                <h5 class="card-title mb-0">Terms & Conditions</h5>
               </div>
               <!-- Card body -->
               <div class="card-body py-4">
                 <!-- List -->
-                <h5 class="mb-3">
-                  <i class="bi bi-arrow-right rtl-flip me-2"></i>Passengers
-                  traveling to the United States, please note
-                </h5>
-                <ul>
+                
+                <ul style="list-style: none;">
                   <li class="mb-2">
-                    Who can travel?
-                    <strong
-                      >All fully vaccinated travelers are allowed to enter the
-                      country. All WHO-approved vaccines, including Covishield
-                      and Covaxin, are accepted by the USA.</strong
-                    >
+                    1) All travelers must present hard copies of their foreign visa (soft copies won't be accepted) at the immigration counters during departure.
                   </li>
                   <li class="mb-2">
-                    Destination restrictions:
-                    <strong
-                      >Non-vaccinated travelers from India cannot enter. Any
-                      traveler transiting via EU/UK cannot enter the
-                      USA.</strong
-                    >
+                    2) Please note that travelers are solely responsible for ensuring their eligibility to enter the destination or transit countries. We accept no liability in this regard. Please check the travel rules of all regulatory websites before booking and commencing travel.
                   </li>
                   <li class="mb-2">
-                    Insipidity the sufficient discretion imprudence resolution
-                    sir him decisively. Proceed how any engaged visitor.
+                    3) Wearing masks/face covers is no longer mandatory. However, all travelers are advised to wear them, in view of the threat posed by COVID-19.
                   </li>
                   <li class="mb-2">
-                    Explained propriety off out perpetual his you. Feel sold off
-                    felt nay rose met you. We so entreaties cultivated
-                    astonished is.
-                  </li>
-                  <li class="mb-2">
-                    Was sister for a few longer Mrs sudden talent become. Done
-                    may bore quit evil old mile. If likely am of beauty tastes.
+                    4) Total Rescheduling Charges Airlines Rescheduling fees Fare Difference if applicable + Bismietickets Fees. The airline cancel reschedule fees is indicative and can be changed without any prior notice by the airlines.Bismietickets does not guarantee the accuracy of cancel reschedule fees.
                   </li>
                 </ul>
 
-                <!-- Content -->
-                <h5 class="mb-3">
-                  <i class="bi bi-arrow-right rtl-flip me-2"></i>A Note on
-                  Guidelines
-                </h5>
-                <p class="ps-3 mb-0">
-                  While we do our best to get you the latest information, due to
-                  the rapidly evolving nature of current events, sometimes that
-                  is not possible. Please note, it is the sole responsibility of
-                  the passenger to ensure his or her eligibility to enter the
-                  destination or transit countries (as applicable). We accept no
-                  liability in this regard. Please check the travel rules of all
-                  regulatory websites before to booking as well as commencing.
-                </p>
+               
               </div>
             </div>
             <!-- Information END -->
@@ -247,7 +214,7 @@
             <form class="card border" id="bookingForm">
               <!-- Card header -->
               <div class="card-header border-bottom px-4">
-                <h3 class="card-title mb-0">Traveler Details</h3>
+                <h4 class="card-title mb-0">Traveler Details</h4>
               </div>
 
               <!-- Card body START -->
@@ -270,28 +237,24 @@
 
                 <!-- Number and email START -->
                 <!-- Title -->
-                <h5 class="mt-4">Booking detail will be sent to</h5>
+                <h5 class="mt-4">Contact Information</h5>
+                <p>Enter the email address and phone number to which your confirmation and flight updates will be sent.
+                  Please make sure they are correct.</p>
                 <div class="row g-3 g-md-4">
                   <!-- Input item -->
                   <div class="col-md-6">
-                    <label class="form-label">Mobile Number</label>
                     <input
-                      type="text"
+                      type="email"
                       class="form-control"
-                      placeholder="Enter your mobile number"
+                      placeholder="Email address"
                     />
                   </div>
 
                   <!-- Input item -->
                   <div class="col-md-6">
-                    <label class="form-label">Email Address</label>
-                    <input
-                      type="email"
-                      class="form-control"
-                      placeholder="Enter your email address"
-                    />
+                    <input id="phone" type="tel" class="form-control" placeholder="Enter your mobile number" />
                   </div>
-                </div>
+                </div>  
                 <!-- Number and email START -->
 
                 <!-- Button -->
@@ -308,10 +271,44 @@
         </div>
         <!-- Left Content END -->
 
+        <link rel="stylesheet"
+ href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/css/intlTelInput.css">
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/intlTelInput.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+  const input = document.querySelector("#phone");
+  window.intlTelInput(input, {
+    separateDialCode: true,      // Show code outside
+    initialCountry: "auto",      // Auto-select based on IP
+    geoIpLookup: callback => {
+      fetch('https://ipapi.co/json')
+        .then(res => res.json())
+        .then(data => callback(data.country_code.toLowerCase()))
+        .catch(() => callback('us'));
+    },
+    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"
+  });
+});
+
+</script>
         <!-- Right content START -->
         <aside class="col-xl-3">
           <div data-sticky data-margin-top="80" data-sticky-for="1199">
             <div class="row g-4">
+
+              <div class="d-flex align-items-center justify-content-between border border-warning rounded-3 p-3 bg-light-warning text-dark" style="max-width: 400px;">
+                <div class="d-flex align-items-center gap-2">
+                  <img src="/assets/images/element/timer.png" alt="Timer" width="24" height="24">
+                  <div>
+                    <div class="fw-semibold">Cabin and fare confirmed.</div>
+                    <div class="small">Book now!</div>
+                  </div>
+                </div>
+                <div class="fw-bold fs-5" id="timer">10:48</div>
+              </div>
+              
               <!-- Fare summary START -->
               <div class="col-md-6 col-xl-12">
                 <div class="card bg-light rounded-2">
@@ -368,49 +365,59 @@
               <!-- Fare summary END -->
 
               <!-- Coupon START -->
-              <div class="col-md-6 col-xl-12">
-                <div class="card card-body bg-light">
-                  <div class="cardt-title">
-                    <h5>Offer & Discount</h5>
-                  </div>
-                  <!-- Input group -->
-                  <div class="input-group mt-2">
-                    <input
-                      class="form-control form-control"
-                      placeholder="Coupon code"
-                    />
-                    <button type="button" class="btn btn-primary">Apply</button>
-                  </div>
-                </div>
-              </div>
-              <!-- Coupon END -->
+<div class="col-md-6 col-xl-12">
+  <div class="card border-0 shadow-sm rounded-4 p-3">
+    <h5 class="mb-3 fw-bold">Offer & Discount</h5>
 
-              <!-- Cancel policy START -->
-              <div class="col-md-6 col-xl-12">
-                <div class="card card-body border p-4">
-                  <div class="cardt-title mb-3">
-                    <h5 class="mb-0">Cancellation & Date Change Charges</h5>
-                  </div>
+    <!-- None Option -->
+    <div class="bg-light rounded-3 d-flex align-items-center justify-content-between p-3 mb-3">
+      <div>
+        <div class="form-check mb-1">
+          <input class="form-check-input" type="radio" name="selectedCoupon" id="noneCoupon" value="none" checked>
+          <label class="form-check-label fw-bold" for="noneCoupon">None</label>
+        </div>
+        <p class="mb-0 small text-muted">No discount applied.</p>
+      </div>
+      <div class="text-muted fw-bold fs-5">₹0</div>
+    </div>
 
-                  <h6 class="text-danger">Non Refundable</h6>
-                  <p class="mb-2">
-                    The Cancellation penalty on this booking will depend on how
-                    close to the departure date you cancel your ticket. View
-                    fare rules to know more
-                  </p>
-                  <div>
-                    <a
-                      href="#"
-                      class="btn btn-link p-0 mb-0 text-decoration-underline"
-                      data-bs-toggle="modal"
-                      data-bs-target="#cancellation"
-                    >
-                      <i class="bi bi-eye-fill"></i> View Detail
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <!-- Cancel policy END -->
+    <!-- Loop through valid coupons -->
+    <% if (coupons.length > 0) { %>
+      <% coupons.forEach((coupon, index) => { %>
+        <div class="bg-light rounded-3 d-flex align-items-center justify-content-between p-3 mb-3">
+          <div>
+            <div class="form-check mb-1">
+              <input class="form-check-input"
+                     type="radio"
+                     name="selectedCoupon"
+                     id="coupon_<%= index %>"
+                     value="<%= coupon.code %>"
+                      >
+              <label class="form-check-label fw-bold" for="coupon_<%= index %>">
+                <%= coupon.code %>
+              </label>
+            </div>
+            <p class="mb-0 small text-muted">
+              Save <strong>₹<%= coupon.discount %></strong> with <%= coupon.code %>
+            </p>
+          </div>
+          <div class="text-success fw-bold fs-5">–₹<%= coupon.discount %></div>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <p class="text-muted">No active coupons available at the moment.</p>
+    <% } %>
+
+    <!-- Manual Coupon Entry -->
+    <div class="input-group">
+      <input class="form-control" placeholder="Coupon code" id="couponCodeInput" />
+      <button type="button" class="btn btn-primary" id="applyCouponBtn">Apply</button>
+    </div>
+  </div>
+</div>
+<!-- Coupon END -->
+
+
             </div>
           </div>
         </aside>
@@ -418,6 +425,123 @@
       </div>
     </div>
   
+    <!-- <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const couponRadios = document.querySelectorAll('input[name="selectedCoupon"]');
+        const discountDisplay = document.getElementById("discount");
+    
+        const baseFare = <%= 
+          (requestDetails.adults * flightDetails.inventoryDates[0].fare.adults) + 
+          (requestDetails.children * flightDetails.inventoryDates[0].fare.adults) + 
+          (requestDetails.infants * flightDetails.inventoryDates[0].fare.infants) 
+        %>;
+    
+        const servicesCharge = <%= subscription.serviceCharge %>;
+        const serviceTax = (servicesCharge * 18) / 100;
+        const totalAmount = baseFare + servicesCharge + serviceTax;
+    
+        const coupons = <%- JSON.stringify(coupons) %>; // make available as JS object
+    
+        function applyDiscount(code) {
+          const selected = coupons.find(coupon => coupon.code === code);
+          if (!selected) {
+            discountDisplay.innerText = "+₹0";
+            return;
+          }
+    
+          const discountValue = Math.round((totalAmount * selected.discount) / 100);
+          discountDisplay.innerText = `–₹${discountValue}`;
+        }
+    
+        // Apply first one by default (if exists)
+        if (couponRadios.length > 0) {
+          applyDiscount(couponRadios[0].value);
+        }
+    
+        couponRadios.forEach(radio => {
+          radio.addEventListener("change", function () {
+            applyDiscount(this.value);
+          });
+        });
+      });
+    </script> -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const couponRadios = document.querySelectorAll('input[name="selectedCoupon"]');
+        const discountDisplay = document.getElementById("discount");
+        const totalFareDisplay = document.getElementById("total-fare");
+        const manualInput = document.getElementById("couponCodeInput");
+        const applyBtn = document.getElementById("applyCouponBtn");
+    
+        const baseFare = <%= 
+          (requestDetails.adults * flightDetails.inventoryDates[0].fare.adults) + 
+          (requestDetails.children * flightDetails.inventoryDates[0].fare.adults) + 
+          (requestDetails.infants * flightDetails.inventoryDates[0].fare.infants) 
+        %>;
+    
+        const servicesCharge = <%= subscription.serviceCharge %>;
+        const serviceTax = (servicesCharge * 18) / 100;
+        const otherServices = servicesCharge + serviceTax;
+    
+        const coupons = <%- JSON.stringify(coupons) %>;
+    
+        function updateFareDisplay(discountValue) {
+          discountDisplay.innerText = `–₹${discountValue}`;
+          const total = baseFare + otherServices - discountValue;
+          totalFareDisplay.innerText = `₹${total.toLocaleString()}`;
+        }
+    
+        function applyCoupon(code) {
+  if (code === "none") {
+    updateFareDisplay(0);
+    return;
+  }
+
+  const selected = coupons.find(c => c.code.toLowerCase() === code.toLowerCase());
+  if (!selected) {
+    alert("No coupon found with that code or it may have expired.");
+    updateFareDisplay(0);
+    document.getElementById("noneCoupon").checked = true; // fallback
+    return;
+  }
+
+  const discountAmount = Math.round(((baseFare + otherServices) * selected.discount) / 100);
+  updateFareDisplay(discountAmount);
+}
+
+        // Auto-apply first coupon if available
+        if (couponRadios.length > 0) {
+          applyCoupon(couponRadios[0].value);
+        }
+    
+        // Radio button change
+        couponRadios.forEach(radio => {
+          radio.addEventListener("change", function () {
+            applyCoupon(this.value);
+          });
+        });
+    
+        // Manual apply button
+        applyBtn.addEventListener("click", function () {
+          const code = manualInput.value.trim();
+          if (code === "") {
+            alert("Please enter a coupon code.");
+            return;
+          }
+          applyCoupon(code);
+    
+          // Auto-select radio if it exists
+          couponRadios.forEach(radio => {
+            if (radio.value.toLowerCase() === code.toLowerCase()) {
+              radio.checked = true;
+            } else {
+              radio.checked = false;
+            }
+          });
+        });
+      });
+    </script>
+    
     <script>
       document.addEventListener("DOMContentLoaded", function () {
   function calculateTotalFare() {
@@ -738,7 +862,6 @@ if (type === "Adult") {
         <option>Miss</option>    `;
 }
 
-
         return `
             <div class="accordion-item mb-3">
                 <h6 class="accordion-header font-base" id="heading-${travelerCount}">
@@ -818,16 +941,42 @@ if (type === "Adult") {
 
     // Initialize Flatpickr with min and max date restrictions
     setTimeout(() => {
+    // document.querySelectorAll(".dob-adult, .dob-child, .dob-infant").forEach((input) => {
+    //     flatpickr(input, {
+    //         dateFormat: "Y-m-d",  // Internal format (hidden)
+    //         altInput: true,       // Show user-friendly format
+    //         altFormat: "F j, Y",  // e.g., February 23, 2025
+    //         allowInput: true,
+    //         minDate: input.getAttribute("data-min"),
+    //         maxDate: input.getAttribute("data-max"),
+    //     });
+    // });
+
     document.querySelectorAll(".dob-adult, .dob-child, .dob-infant").forEach((input) => {
-        flatpickr(input, {
-            dateFormat: "Y-m-d",  // Internal format (hidden)
-            altInput: true,       // Show user-friendly format
-            altFormat: "F j, Y",  // e.g., February 23, 2025
-            allowInput: true,
-            minDate: input.getAttribute("data-min"),
-            maxDate: input.getAttribute("data-max"),
-        });
-    });
+  const maxDateStr = input.getAttribute("data-max");
+  
+  flatpickr(input, {
+    dateFormat: "Y-m-d",
+    altInput: true,
+    altFormat: "F j, Y",
+    allowInput: true,
+    minDate: input.getAttribute("data-min"),
+    maxDate: maxDateStr,
+    onDayCreate: function(dObj, dStr, fp, dayElem) {
+      const date = dayElem.dateObj;
+      const maxDate = new Date(maxDateStr);
+
+      // Compare only date parts (ignoring time)
+      if (
+        date.getFullYear() === maxDate.getFullYear() &&
+        date.getMonth() === maxDate.getMonth() &&
+        date.getDate() === maxDate.getDate()
+      ) {
+        dayElem.classList.add("max-date-highlight");
+      }
+    }
+  });
+});
 
       document.querySelectorAll(".expiry-picker").forEach((input) => {
         flatpickr(input, {
@@ -840,8 +989,19 @@ if (type === "Adult") {
     });
 }, 100);
 });
-
   </script>
+
+  <style>
+    /* Highlight the last selectable date */
+.max-date-highlight {
+  border: 2px solid #e9e8fa !important;
+  background-color: #edecfb !important;
+  border-radius: 50%;
+  color: #5143d9;
+  font-weight: bold;
+}
+
+  </style>
     
     <script>
       document.getElementById("bookingForm").addEventListener("submit", function (event) {
@@ -903,7 +1063,7 @@ if (type === "Adult") {
 
     // Collect other form data
     const mobile_number = document.querySelector("input[placeholder='Enter your mobile number']").value;
-    const email = document.querySelector("input[placeholder='Enter your email address']").value;
+    const email = document.querySelector("input[placeholder='Email address']").value;
     
     if (!mobile_number || !email) {
         alert("Please provide both mobile number and email.");
@@ -935,6 +1095,58 @@ window.location.href = "/flight-booking";
 });
 
     </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const fId = urlParams.get("fId");
+    const aId = urlParams.get("aId");
+    const currentPath = window.location.pathname;
+    // Get request count
+    const adults = Number(<%= requestDetails.adults %>);
+    const children = Number(<%= requestDetails.children %>);
+    const infants = Number(<%= requestDetails.infants %>);
+    const pax = adults + children + infants;
+
+    // Default timer
+    let totalSeconds = (pax > 4) ? 20 * 60 : 15 * 60;
+    const timerEl = document.getElementById("timer");
+
+    function formatTime(sec) {
+      const m = String(Math.floor(sec / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    timerEl.textContent = formatTime(totalSeconds);
+
+    const interval = setInterval(() => {
+      totalSeconds--;
+      if (totalSeconds >= 0) {
+        timerEl.textContent = formatTime(totalSeconds);
+      } else {
+        clearInterval(interval);
+        // If still on flight-detail page with same params, redirect
+        if (
+          window.location.pathname === '/flight-detail' &&
+          urlParams.get('fId') === fId &&
+          urlParams.get('aId') === aId
+        ) {
+          window.location.href = '/';
+          alert("Your session has expired. Please start a new search.");
+        }
+      }
+    }, 1000);
+
+    // Optional: reset timer if navigating internally to flight-booking
+    // e.g., you click a booking button that changes the URL path
+    const bookingLink = document.getElementById('toBooking');
+    if (bookingLink) {
+      bookingLink.addEventListener('click', () => clearInterval(interval));
+    }
+  });
+</script>
+
   <!-- =======================
     Main Content END -->
 </main>

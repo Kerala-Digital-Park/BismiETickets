@@ -14,6 +14,7 @@ const KycUpdate = require("../models/kycUpdateModel");
 const Support = require("../models/supportModel");
 const PopularFlight = require("../models/popularFlightModel");
 const ProfileUpdate = require("../models/profileUpdateModel");
+const Coupons = require("../models/couponModel");
 const { countries } = require('countries-list');
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -45,8 +46,18 @@ const renderTemplate = (templatePath, data) => {
 };
 
 const viewHomepage = async (req, res) => {
+  const userId = req.session.userId;
   try {
     const popularFlights = await PopularFlight.find().limit(6);
+    if(userId){
+      const userKyc = await KycUpdate.findOne({ userId: userId });
+      if(userKyc.status === "rejected") {
+        return res.render("user/home", {
+          popularFlights,
+          message: "Your KYC is rejected or suspended. Please complete your KYC to book flights."
+        });
+      }
+    }
     res.render("user/home", {popularFlights});
   } catch (error) {
     console.error(error);
@@ -538,6 +549,24 @@ const viewPrivacy = async (req, res) => {
   }
 };
 
+const viewCookies = async (req, res) => {
+  try {
+    res.render("user/cookies", {});
+  } catch (error) {
+    console.error(error);
+    res.render("error", { error });
+  }
+};
+
+const viewDisclaimer = async (req, res) => {
+  try {
+    res.render("user/disclaimer", {});
+  } catch (error) {
+    console.error(error);
+    res.render("error", { error });
+  }
+};
+
 const viewSupportTicket = async (req, res) => {
   try {
     res.render("user/support", {});
@@ -876,11 +905,18 @@ const viewFlightDetail = async (req, res) => {
     const requestDetails = flightRequests;
     console.log("requestDetails",requestDetails);
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const coupons = await Coupons.find({
+      expiry: { $gte: today },
+    });
+
     res.render("user/flight-detail", {
       flightDetails,
-      requestDetails: requestDetails,
+      requestDetails,
       subscription,
-
+      coupons, 
     });
   } catch (error) {
     console.error("Error fetching flight details:", error);
@@ -1568,101 +1604,8 @@ const flightBooking = async (req, res) => {
   }
 };
 
-// const updateProfile = async (req, res) => {
-//   const { name, email, mobile, nationality, gender, address } = req.body;
-//   console.log(req.body);
-//   try {
-//     const userId = req.session.userId; // Get logged-in user ID
-//     if (!userId) {
-//       return res.status(401).json({ success: false, message: "Unauthorized" });
-//     }
-
-//     // Fetch user from database
-//     const user = await Users.findById(userId);
-//     if (!user) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "User not found" });
-//     }
-
-//     // Prepare updated data
-//     const updatedData = {
-//       name: name,
-//       email: email,
-//       mobile: mobile,
-//       nationality: nationality,
-//       gender: gender,
-//       address: address,
-//     };
-
-//     // Handle profile image upload
-//     if (req.file) {
-//       // Delete old image if exists
-//       if (user.image && user.image !== "/assets/images/avatar/default.png") {
-//         const oldImagePath = path.join(__dirname, "..", "public", user.image);
-//         if (fs.existsSync(oldImagePath)) {
-//           fs.unlinkSync(oldImagePath);
-//         }
-//       }
-
-//       // Save new image path
-//       updatedData.image = "/uploads/" + req.file.filename;
-//     }
-
-//     // Update user in the database
-//     const updatedUser = await Users.findByIdAndUpdate(userId, updatedData, {
-//       new: true,
-//     });
-//     console.log(updatedUser);
-
-//     res.json({ success: true, user: updatedUser });
-//   } catch (error) {
-//     console.error("Error updating profile:", error);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
-
-// const updateEmail = async (req, res) => {
-//   const { email } = req.body;
-//   console.log(req.body);
-
-//   try {
-//     const userId = req.session.userId; // Get logged-in user ID
-//     if (!userId) {
-//       return res.status(401).json({ success: false, message: "Unauthorized" });
-//     }
-//     // Check if the new email already exists
-//     const existingUser = await Users.findOne({ email: email });
-//     if (existingUser && existingUser._id.toString() !== userId) {
-//       // Ensure it's not the current user's email
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "Email already exists" });
-//     }
-
-//     // Fetch user from database
-//     const user = await Users.findById(userId);
-//     if (!user) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "User not found" });
-//     }
-
-//     // Update user in the database
-//     const updatedUser = await Users.findByIdAndUpdate(
-//       userId,
-//       { email: email },
-//       { new: true }
-//     );
-//     res.json({ success: true, user: updatedUser });
-//   } catch (error) {
-//     console.error("Error updating email:", error);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
-
 const updateProfile = async (req, res) => {
-  const { name, email, mobile, nationality, gender, address } = req.body;
+  const { name, email, mobile, nationality, gender, address, agencyName } = req.body;
   console.log(req.body);
 
   try {
@@ -1677,10 +1620,16 @@ const updateProfile = async (req, res) => {
     }
 
     let imagePath = user.image;
+    let logoPath = user.logo;
 
     // Handle new profile image
-    if (req.file) {
-      imagePath = "/uploads/" + req.file.filename;
+    if (req.files && req.files.image && req.files.image[0]) {
+      imagePath = "/uploads/" + req.files.image[0].filename;
+    }
+
+    // Handle new logo
+    if (req.files && req.files.logo && req.files.logo[0]) {
+      logoPath = "/uploads/" + req.files.logo[0].filename;
     }
 
     // Save requested update to the ProfileUpdate collection
@@ -1692,7 +1641,9 @@ const updateProfile = async (req, res) => {
       nationality,
       gender,
       address,
+      agencyName,
       image: imagePath,
+      logo: logoPath,
     });
 
     await profileUpdate.save();
@@ -1795,199 +1746,6 @@ const updatePassword = async (req, res) => {
   }
 };
 
-// const verifyCard = async (req, res) => {
-//   console.log("Verify card")
-//   try {
-//     const userId = req.session.userId;
-//     if (!userId) {
-//       return res.status(401).json({ success: false, message: "Unauthorized" });
-//     }
-
-//     const user = await Users.findById(userId).populate('subscription');
-//     const subscription = user.subscription;
-//     console.log(subscription)
-    
-//     if (!subscription) {
-//       return res.status(400).json({ success: false, message: "Subscription not found" });
-//     }
-
-//     console.log(req.files);
-
-//     const today = new Date();
-
-//     // Format today's date to YYYY-MM-DD
-//     const todayFormatted = today.toISOString().split("T")[0];
-
-//     // Calculate the expiry date (30 days from today)
-//     const subscriptionDate = new Date(today); // Create a copy of today's date
-//     subscriptionDate.setDate(subscriptionDate.getDate() + 30);
-
-//     // Format expiry date to YYYY-MM-DD
-//     const expiryDate = subscriptionDate.toISOString().split("T")[0];
-
-//     if (req.files && req.files.visitingCard && req.files.panCard) {
-//       const visitingCardFile = req.files.visitingCard[0];
-//       const panCardFile = req.files.panCard[0];
-    
-//       if (!visitingCardFile || !panCardFile) {
-//         return res
-//           .status(400)
-//           .json({
-//             success: false,
-//             message: "Visiting Card and PAN Card are required.",
-//           });
-//       }
-
-//       user.visitingCard = "/uploads/" + visitingCardFile.filename;
-//       user.panCard = "/uploads/" + panCardFile.filename;
-
-//   if (subscription.subscription === "Null") {
-//     const defaultPlan = await Subscriptions.findOne({
-//       subscription: "Free",
-//       role: user.userRole,
-//     });
-
-//     if (!defaultPlan) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Default subscription plan not found",
-//       });
-//     }
-
-//     user.subscription = defaultPlan._id;
-//   }
-
-//   user.subscriptionDate = todayFormatted;
-//   user.expiryDate = expiryDate;
-//   user.kyc = "Initial";
-//   user.transactions = 0;
-//   user.transactionAmount = 0;
-
-//   await user.save();
-
-//       res.json({
-//         success: true,
-//         user,
-//         message: "Visiting card and PAN card uploaded successfully!",
-//       });
-//     } else {
-//       return res
-//         .status(400)
-//         .json({
-//           success: false,
-//           message: "Visiting Card and Pan Card are required.",
-//         });
-//     }
-//   } catch (error) {
-//     console.error("Error verifying card:", error);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
-
-// const verifyAadhaar = async (req, res) => {
-//   try {
-//     const userId = req.session.userId;
-//     if (!userId) {
-//       return res.status(401).json({ success: false, message: "Unauthorized" });
-//     }
-
-//     const user = await Users.findById(userId).populate("subscription");
-//     if (!user) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "User not found" });
-//     }
-
-//     if (req.files && req.files.aadhaar1 && req.files.aadhaar2) {
-//       // Access files using req.files.fieldname
-//       const aadhaarCard1File = req.files.aadhaar1[0];
-//       const aadhaarCard2File = req.files.aadhaar2[0];
-
-//       if (!aadhaarCard1File || !aadhaarCard2File) {
-//         return res
-//           .status(400)
-//           .json({ success: false, message: "Both Aadhaar Card front and back are required." });
-//       }
-
-//       user.aadhaarCardFront = "/uploads/" + aadhaarCard1File.filename;
-//       user.aadhaarCardBack = "/uploads/" + aadhaarCard2File.filename;
-
-//       if (user.subscription && user.subscription.subscription === "Free") {
-//         user.kyc = "Completed";
-//         user.transactions = 0;
-//         user.transactionAmount = 0;
-//       }
-//       await user.save();
-
-//       res.json({
-//         success: true,
-//         user,
-//         message: "Aadhaar card uploaded successfully!",
-//       });
-//     } else {
-//       return res
-//         .status(400)
-//         .json({
-//           success: false,
-//           message: "Aadhaar Card Front and Back are required.",
-//         });
-//     }
-//   } catch (error) {
-//     console.error("Error verifying aadhaar:", error);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
-
-// const subscription = async (req, res) => {
-//   const { subscription } = req.body;
-//   const userId = req.session.userId;
-//   try {
-//     if (!userId) {
-//       return res.status(401).json({ success: false, message: "Unauthorized" });
-//     }
-//     const user = await Users.findById(userId);
-//     if (!user) {
-//       return res.status(404).json({ success: false, message: "User not found" });
-//     }
-
-//     if(subscription === "Free") {
-//       if(user.subscription.subscription === "Free"){
-//         return res.json({ redirectUrl: "/subscription-payment?subscription=Free", message:"Free subscription already taken" });
-//       }
-//       else if (user.subscription.kyc === "Pending"){
-//         return res.json({ redirectUrl: "/kyc", message:"Complete Initial kyc for free subscription" });
-//       }
-//     }
-//     else if(subscription === "Pro"){
-//       if(user.subscription.subscription === "Pro"){
-//         return res.json({ redirectUrl: "/subscription-payment?subscription=Pro", message:"Pro subscription already taken" });
-//       }
-//       else if(user.subscription.kyc !== "Completed"){
-//         return res.json({ redirectUrl: "/kyc", message:"Complete kyc for pro subscription" });
-//       }
-//       else{
-//         res.status(200).json({ redirectUrl: `/subscription-payment?subscription=${subscription}` });
-//       }
-//     }
-//     else if(subscription === "Enterprise"){
-//       if(user.subscription.subscription === "Enterprise"){
-//         return res.json({ redirectUrl: "/subscription-payment?subscription=Enterprise", message:"Enterprise subscription already taken" });
-//       }
-//       else if(user.subscription.kyc !== "Completed"){
-//         return res.json({ redirectUrl: "/kyc", message:"Complete kyc for enterprise" });
-//       } else{
-//         res.status(200).json({ redirectUrl: `/subscription-payment?subscription=${subscription}` });
-//       }
-//     }else {
-//       res.status(201).json({ redirectUrl: "/subscription", message:"Invalid subscription" });
-//     }
-//   } catch (error) {
-//     console.error("Error fetching payment details:", error);
-//     res.status(400).json({ error: "Invalid subscription detail" });
-//   }
-// };
-
-
 const verifyCard = async (req, res) => {
   console.log("Verify card")
   try {
@@ -2070,7 +1828,7 @@ const verifyCard = async (req, res) => {
 
     await newRequest.save();
     console.log(newRequest, "newRequest")
-    res.json({ success: true, message: "Wait for the admin to approve your bank details" });
+    res.json({ success: true, message: "Your KYC application under process . Kindly wait for update." });
   }
   
   } catch (error) {
@@ -2108,12 +1866,15 @@ const verifyAadhaar = async (req, res) => {
       }
 
       if (existingRequest) {
-      user.aadhaarCardFront = "/uploads/" + aadhaarCard1File.filename;
-      user.aadhaarCardBack = "/uploads/" + aadhaarCard2File.filename;
+        existingRequest.aadhaarCardFront = "/uploads/" + aadhaarCard1File.filename;
+        existingRequest.aadhaarCardBack = "/uploads/" + aadhaarCard2File.filename;
+        existingRequest.kyc = user.kyc;
+        existingRequest.subscription = user.subscription;
+        existingRequest.status = "pending";
 
       await existingRequest.save();
       console.log(existingRequest, "existingRequest");
-      return res.json({ success: true, message: "KYC details update request modified" });
+      return res.json({ success: true, message: "Your KYC application under process . Kindly wait for update." });
       }
       // if (user.subscription && user.subscription.subscription === "Free") {
       //   user.kyc = "Completed";
@@ -2130,7 +1891,7 @@ const verifyAadhaar = async (req, res) => {
       await newRequest.save();
 
       console.log(newRequest, "newRequest")
-    res.json({ success: true, message: "Wait for the admin to approve your bank details" });
+    res.json({ success: true, message: "Wait for the admin to approve your kyc details" });
   }
   
   } catch (error) {
@@ -3034,7 +2795,14 @@ const getApiFlights = async (req, res) => {
 
 const getApiCountries = async (req, res) => {
   const countryList = Object.values(countries).map(c => c.name).sort();
-  res.json(countryList);
+  // Remove "India" if present and sort the rest
+  const india = "India";
+  const otherCountries = countryList.filter(name => name !== india).sort();
+
+  // Put India at the top
+  const finalList = [india, ...otherCountries];
+
+  res.json(finalList);
 };
 
 const updateListingById = async( req, res ) => {
@@ -3453,6 +3221,8 @@ module.exports = {
   viewSupportTicket,
   viewTerms,
   viewPrivacy,
+  viewCookies,
+  viewDisclaimer,
   findTicket,
   getFlightDetail,
   getFlights,
