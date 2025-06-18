@@ -51,7 +51,7 @@ const viewHomepage = async (req, res) => {
     const popularFlights = await PopularFlight.find().limit(6);
     if(userId){
       const userKyc = await KycUpdate.findOne({ userId: userId });
-      if(userKyc.status === "rejected") {
+      if(userKyc && userKyc.status === "rejected") {
         return res.render("user/home", {
           popularFlights,
           message: "Your KYC is rejected or suspended. Please complete your KYC to book flights."
