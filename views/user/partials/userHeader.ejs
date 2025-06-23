@@ -29,6 +29,7 @@
           <% if(user) { %>
             <% if(user.userRole === "User") { %>
               <ul class="navbar-nav navbar-nav-scroll me-auto mx-auto">
+                <li class="nav-item dropdown"><a class="nav-link" href="/">Home</a></li>
                 <li class="nav-item dropdown"><a class="nav-link" href="/about">About</a></li>
                 <li class="nav-item dropdown"><a class="nav-link" href="/contact">Contact</a></li>
                 <li class="nav-item dropdown"><a class="nav-link" href="/subscription">Pricing</a></li>
@@ -39,7 +40,7 @@
               </ul>
             <% } else { %>
               <ul class="navbar-nav navbar-nav-scroll me-auto mx-auto">
-                <li class="nav-item dropdown"><a class="nav-link" href="/about">Menu</a></li>
+                <li class="nav-item dropdown"><a class="nav-link" href="/">Home</a></li>
                 <li class="nav-item dropdown"><a class="nav-link" href="/subscription">Pricing</a></li>
                 <li class="nav-item dropdown"><a class="nav-link" href="/dashboard">Dashboard</a></li>
                 <li class="nav-item dropdown"><a class="nav-link" href="/popular-flights">Top Flight Routes</a></li>
@@ -50,6 +51,7 @@
               <% } %>
           <% } else { %>
               <ul class="navbar-nav navbar-nav-scroll me-auto mx-auto">
+                <li class="nav-item dropdown"><a class="nav-link" href="/">Home</a></li>
                 <li class="nav-item dropdown"><a class="nav-link" href="/about">About</a></li>
                 <li class="nav-item dropdown"><a class="nav-link" href="/contact">Contact</a></li>
                 <li class="nav-item dropdown"><a class="nav-link" href="/subscription">Pricing</a></li>

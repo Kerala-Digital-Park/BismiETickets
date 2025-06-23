@@ -232,7 +232,7 @@
     const uploadAadhaarCard2 = document.getElementById("upload-aadhaar-2");
     const verifyCardBtn = document.getElementById("verifyCard");
     const verifyAadhaarBtn = document.getElementById("verifyAadhaar");
-    const kycStatus = '<%= userDetails.subscription ? userDetails.subscription.kyc : null %>';
+    const kycStatus = '<%= userDetails ? userDetails.kyc : null %>';
     
     function handleKycStatus(kycStatus) {
             if (kycStatus === 'Initial' || kycStatus === 'Completed') {

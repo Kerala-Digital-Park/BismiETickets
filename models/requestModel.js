@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
 
 const Users = require("./userModel");
+const Bookings = require("./bookingModel");
 const Counter = require("./counterModel");
 
-const supportSchema = mongoose.Schema(
+const requestSchema = mongoose.Schema(
   {
-    enquiryId: {
+    requestId: {
       type: String,
       unique: true,
     },
@@ -14,34 +15,40 @@ const supportSchema = mongoose.Schema(
       required: true,
       ref: "Users",
     },
-    enquiryType: {
-      type: String,
-      enum: ["general", "problem", "airline", "internal", "ticket", "other"],
-      default: "general",
+    bookingId: {
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
+      ref: "Bookings",
     },
     category: {
       type: String,
-      enum: ["General", "Technical", "Billing", "Cancellation", "Request"],
-      default: "General",
-      required: true,
-    },
-    priority: {
-      type: String,
-      enum: ["Normal", "Important", "High Priority"],
-      default: "Normal",
+      enum: ["service", "support"],
       required: true,
     },
     subject: {
       type: String,
       required: true,
     },
-    message: {
+    passengerName: {
       type: String,
       required: true,
     },
-    fileUrl: {
+    request: {
       type: String,
+      required: false,
+    },
+    reqName: [{
+        firstName: {
+            type: String,
+            required: false,
+        },
+        lastName: {
+            type: String,
+            required: false,
+        }      
+    }],
+    fileUrl: { 
+      type: [String],
       required: false,
     },
     reply: [
@@ -55,24 +62,30 @@ const supportSchema = mongoose.Schema(
           default: Date.now,
         }
       }
-    ]    
+    ],
+    status: {
+      type: String,
+      enum: ["pending", "in-progress", "resolved", "closed"],
+      default: "pending",
+      required: true,
+    },    
   },
   { timestamps: true }
 );
 
-supportSchema.pre("save", async function (next) {
-  if (!this.enquiryId) {
+requestSchema.pre("save", async function (next) {
+  if (!this.requestId) {
     const counter = await Counter.findOneAndUpdate(
-      { name: "enquiryId" },
+      { name: "requestId" },
       { $inc: { seq: 1 } },
       { new: true, upsert: true }
     );
 
     const paddedNumber = String(counter.seq).padStart(5, "0");
-    this.enquiryId = `ENQ${paddedNumber}`;
+    this.requestId = `REQ${paddedNumber}`;
   }
 
   next();
 });
 
-module.exports = mongoose.model("Supports", supportSchema);
+module.exports = mongoose.model("Requests", requestSchema);

@@ -18,6 +18,7 @@ const profileUpdateSchema = mongoose.Schema(
       enum: ["Male", "Female", "Others"],
       required: false,
     },
+    proprietorship: { type: String, required: false },
     address: { type: String, required: false },
     agencyName: { type: String, required: false },
     image: { type: String, required: false },

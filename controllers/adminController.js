@@ -2476,7 +2476,7 @@ const updateProfileDetail = async (req, res) => {
         email: update.email,
         mobile: update.mobile,
         nationality: update.nationality,
-        gender: update.gender,
+        proprietorship: update.proprietorship,
         address: update.address,
         agencyName: update.agencyName,
       };

@@ -15,6 +15,7 @@ const Support = require("../models/supportModel");
 const PopularFlight = require("../models/popularFlightModel");
 const ProfileUpdate = require("../models/profileUpdateModel");
 const Coupons = require("../models/couponModel");
+const Requests = require("../models/requestModel");
 const { countries } = require('countries-list');
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -45,20 +46,51 @@ const renderTemplate = (templatePath, data) => {
   });
 };
 
+// const viewHomepage = async (req, res) => {
+//   const userId = req.session.userId;
+//   try {
+//     const popularFlights = await PopularFlight.find().limit(6);
+//     const user = await Users.findById(userId).populate("subscription");
+//     if(userId){
+//       const userKyc = await KycUpdate.findOne({ userId: userId });
+//       if(userKyc && userKyc.status === "rejected") {
+//         return res.render("user/home", {
+//           popularFlights,
+//           message: "Your KYC is rejected or suspended. Please complete your KYC to book flights.",
+//           user
+//         });
+//       }
+//     }
+//     res.render("user/home", {popularFlights, user});
+//   } catch (error) {
+//     console.error(error);
+//     res.render("error", { error });
+//   }
+// };
+
 const viewHomepage = async (req, res) => {
   const userId = req.session.userId;
+  let message = null;
+  let user = null;
+
   try {
     const popularFlights = await PopularFlight.find().limit(6);
-    if(userId){
+
+    if (userId) {
+      user = await Users.findById(userId); // Fetch user from DB
       const userKyc = await KycUpdate.findOne({ userId: userId });
-      if(userKyc && userKyc.status === "rejected") {
-        return res.render("user/home", {
-          popularFlights,
-          message: "Your KYC is rejected or suspended. Please complete your KYC to book flights."
-        });
+
+      if (userKyc && userKyc.status === "rejected") {
+        message = "Your KYC is rejected or suspended. Please complete your KYC to book flights.";
       }
     }
-    res.render("user/home", {popularFlights});
+
+    res.render("user/home", {
+      popularFlights,
+      userId,
+      user,          // ✅ now passed
+      message        // ✅ now passed
+    });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
@@ -970,65 +1002,28 @@ const getFlights = async (req, res) => {
 
 const viewManageBooking = async (req, res) => {
   const bookingId = req.query.id;
-
   try {
-    const bookings = await Bookings.findById(bookingId).populate("userId").populate("flight")
-    res.render("user/manage-booking", { requestDetails: "" , bookings});
+    const bookings = await Bookings.findById(bookingId).populate("userId").populate("flight");
+    const requests = await Requests.find({ bookingId: bookingId });
+    res.render("user/manage-booking", { requestDetails: "" , bookings, requests, success: req.query.success, error: req.query.error });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-// const signup = async (req, res) => {
-//   try {
-//     const { name, email, pan, password, confirmPassword } = req.body;
-//     if (password !== confirmPassword) {
-//       return res.render("user/sign-up", {
-//         message: "Password does not match",
-//         messageType: "danger",
-//       });
-//     }
+const viewSellerBooking = async (req, res) => {
+  const bookingId = req.query.id;
 
-//     // Check if the email already exists
-//     const existingUserByEmail = await Users.findOne({ email });
-//     if (existingUserByEmail) {
-//       return res.render("user/sign-up", {
-//         message: "User with this email already exists",
-//         messageType: "danger",
-//       });
-//     }
-
-//     // Check if the PAN already exists
-//     const existingUserByPAN = await Users.findOne({ pan });
-//     if (existingUserByPAN) {
-//       return res.render("user/sign-up", {
-//         message: "User with this PAN already exists",
-//         messageType: "danger",
-//       });
-//     }
-
-//     const expiry_date = new Date(30-12-2500);
-
-//     const newUser = new Users({
-//       name: name,
-//       email: email,
-//       pan: pan,
-//       password: password,
-//       subscription.expiryDate: expiry_date
-//     });
-
-//     await newUser.save();
-
-//     const token = jwt.sign({ id: newUser._id }, process.env.SECRET_KEY, {
-//       expiresIn: "7d",
-//     });
-
-//     return res.redirect("/sign-in");
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
+  try {
+    const bookings = await Bookings.findById(bookingId).populate("userId").populate("flight");
+    const requests = await Requests.find({ bookingId: bookingId });
+    res.render("user/seller-booking", { requestDetails: "" , bookings, requests, success: req.query.success, error: req.query.error });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 const signup = async (req, res) => {
   try {
@@ -1605,7 +1600,7 @@ const flightBooking = async (req, res) => {
 };
 
 const updateProfile = async (req, res) => {
-  const { name, email, mobile, nationality, gender, address, agencyName } = req.body;
+  const { name, email, mobile, nationality, proprietorship, address, agencyName } = req.body;
   console.log(req.body);
 
   try {
@@ -1639,7 +1634,7 @@ const updateProfile = async (req, res) => {
       email,
       mobile,
       nationality,
-      gender,
+      proprietorship,
       address,
       agencyName,
       image: imagePath,
@@ -1776,48 +1771,15 @@ const verifyCard = async (req, res) => {
       if (existingRequest) {
         existingRequest.visitingCard = "/uploads/" + visitingCardFile.filename;
         existingRequest.panCard = "/uploads/" + panCardFile.filename;
+        existingRequest.kyc = user.kyc;
+        existingRequest.subscription = user.subscription;
+        existingRequest.status = "pending";
 
         await existingRequest.save();
       console.log(existingRequest, "existingRequest");
       return res.json({ success: true, message: "KYC details update request modified" });
       }
 
-  // if (subscription.subscription === "Null") {
-  //   const defaultPlan = await Subscriptions.findOne({
-  //     subscription: "Free",
-  //     role: user.userRole,
-  //   });
-
-  //   if (!defaultPlan) {
-  //     return res.status(400).json({
-  //       success: false,
-  //       message: "Default subscription plan not found",
-  //     });
-  //   }
-
-  //   user.subscription = defaultPlan._id;
-  // }
-
-  // user.subscriptionDate = todayFormatted;
-  // user.expiryDate = expiryDate;
-  // user.kyc = "Initial";
-  // user.transactions = 0;
-  // user.transactionAmount = 0;
-
-  // await user.save();
-
-    //   res.json({
-    //     success: true,
-    //     user,
-    //     message: "Visiting card and PAN card uploaded successfully!",
-    //   });
-    // } else {
-    //   return res
-    //     .status(400)
-    //     .json({
-    //       success: false,
-    //       message: "Visiting Card and Pan Card are required.",
-    //     });
     const newRequest = new KycUpdate({
       userId: userId,
       visitingCard : "/uploads/" + visitingCardFile.filename,
@@ -3201,6 +3163,91 @@ const viewPopularFlights = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 }
+
+const addServiceRequest = async (req, res) => {
+  const bookingId = req.params.bookingId;
+  const userId = req.session.userId;
+
+  try {
+    const { passengerName, subject, reqContent } = req.body;
+    console.log("Received:", { passengerName, subject, reqContent });
+    console.log("Files:", req.files);
+
+    if (!userId || !bookingId || !passengerName) {
+      return res.redirect(`/manage-booking?id=${bookingId}&error=Missing+required+fields`);
+    }
+
+    const bookingExists = await Bookings.findById(bookingId);
+    if (!bookingExists) {
+      return res.redirect(`/manage-booking?id=${bookingId}&error=Booking+not+found`);
+    }
+
+    const filePaths = (req.files || []).map(file => `/uploads/requests/${file.filename}`);
+
+    const request = new Requests({
+      userId,
+      bookingId,
+      category: "service",
+      subject,
+      passengerName,
+      request: reqContent,
+      fileUrl: filePaths
+    });
+
+    await request.save();
+
+    return res.redirect(`/manage-booking?id=${bookingId}&success=Request+submitted`);
+  } catch (error) {
+    console.error("Error creating request:", error);
+    return res.redirect(`/manage-booking?id=${bookingId}&error=Server+error`);
+  }
+};
+
+const addSupportRequest = async (req, res) => {
+  const bookingId = req.params.bookingId;
+  const userId = req.session.userId;
+
+  try {
+    const { passengerName, subject, reqContent, firstName, lastName } = req.body;
+    console.log("Received:", { passengerName, subject, reqContent, firstName, lastName });
+    console.log("Files:", req.files);
+
+    if (!userId || !bookingId || !passengerName) {
+      return res.redirect(`/manage-booking?id=${bookingId}&error=Missing+required+fields`);
+    }
+
+    const bookingExists = await Bookings.findById(bookingId);
+    if (!bookingExists) {
+      return res.redirect(`/manage-booking?id=${bookingId}&error=Booking+not+found`);
+    }
+
+    const filePaths = (req.files || []).map(file => `/uploads/requests/${file.filename}`);
+
+    const request = new Requests({
+      userId,
+      bookingId,
+      category: "support",
+      subject,
+      passengerName,
+      request: reqContent || "",
+      fileUrl: filePaths,
+      reqName: [
+        {
+          firstName: firstName || "",
+          lastName: lastName || ""
+        }
+      ]
+    });
+
+    await request.save();
+
+    return res.redirect(`/manage-booking?id=${bookingId}&success=Request+submitted`);
+  } catch (error) {
+    console.error("Error creating request:", error);
+    return res.redirect(`/manage-booking?id=${bookingId}&error=Server+error`);
+  }
+};
+
 module.exports = {
   viewHomepage,
   viewDashboard,
@@ -3284,5 +3331,8 @@ module.exports = {
   cancelBooking,
   bookingSupportTicket,
   viewPopularFlights,
+  addServiceRequest,
+  addSupportRequest,
+  viewSellerBooking,
 
 };

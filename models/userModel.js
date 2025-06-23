@@ -13,10 +13,11 @@ const userSchema = mongoose.Schema(
     resetTokenExpiry: { type: Date, default: null },
     mobile: { type: Number, default: null },
     nationality: { type: String, default: null },
-    gender: {
-      type: String,
-      enum: ["Male", "Female", "Others"],
-    },
+    proprietorship: { type: String, default: null },
+    // gender: {
+    //   type: String,
+    //   enum: ["Male", "Female", "Others"],
+    // },
     address: { type: String, default: null },
     agencyName: { type: String, default: null },
     image: { type: String, default: null },

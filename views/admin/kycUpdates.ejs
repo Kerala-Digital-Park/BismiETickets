@@ -242,7 +242,7 @@
 										const update = JSON.parse(this.dataset.update);
 
 										// Text fields
-										document.getElementById("viewUserId").value = update.userId || '';
+										document.getElementById("viewUserId").value = update.user.userId || '';
 										document.getElementById("viewName").value = update.user.name || '';
 										document.getElementById("viewPan").value = update.user.pan || '';
 										document.getElementById("viewGender").value = update.user.gender || '';

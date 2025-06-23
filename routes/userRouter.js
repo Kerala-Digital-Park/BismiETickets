@@ -89,6 +89,7 @@ userRouter.get("/delete-profile",isLogin, userController.viewDeleteProfile);
 userRouter.get("/kyc",isLogin, userController.viewKyc);
 userRouter.get("/flights", isLogin, userController.getFlights);
 userRouter.get("/manage-booking", isLogin, userController.viewManageBooking);
+userRouter.get("/seller-booking", isLogin, userController.viewSellerBooking);
 userRouter.get("/manage-subscription", isLogin, userController.viewManageSubscription);
 userRouter.get("/subscription-payment", isLogin, userController.viewSubscriptionPayment);
 userRouter.get("/subscription", userController.viewPricing);
@@ -151,6 +152,8 @@ userRouter.post("/contact", userController.contact);
 userRouter.post("/cancel-booking", upload.single('file'), isLogin, userController.cancelBooking);
 userRouter.post("/support-booking/:id", upload.single('file'), isLogin, userController.bookingSupportTicket);
 userRouter.post('/remove-account',isLogin, userController.removeBank);
+userRouter.post("/service-request/:bookingId", isLogin, upload.array("file", 4), userController.addServiceRequest);
+userRouter.post("/support-request/:bookingId", isLogin, upload.array("file", 4), userController.addSupportRequest);
 
 userRouter.put("/update-listing", isLogin, userController.updateListingById);
 userRouter.put("/update-seats", isLogin, userController.updateSeatById);

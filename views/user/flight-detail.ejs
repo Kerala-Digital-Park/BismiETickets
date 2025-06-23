@@ -1,868 +1,753 @@
-<%- include('./partials/header') %> 
-<%- include('./partials/userHeader') %>
-<!-- **************** MAIN CONTENT START **************** -->
+<%- include('./partials/header') %>
+  <%- include('./partials/userHeader') %>
+    <!-- **************** MAIN CONTENT START **************** -->
 
-<main>
-  <!-- =======================
+    <main>
+      <!-- =======================
     Main Content START -->
-  <section>
-    <div class="container position-relative" data-sticky-container>
-      <div class="row g-4">
-        <!-- Left Content START -->
-        <div class="col-xl-9">
-          <div class="vstack gap-4">
-            <% if (flightDetails) { %>
-            <!-- Title START -->
-            <div class="d-flex align-items-center">
-              <!-- Icon -->
-              <h2 class="display-4 mb-0">
-                <i class="fa-solid fa-plane rtl-flip"></i>
-              </h2>
+      <section>
+        <div class="container position-relative" data-sticky-container>
+          <div class="row g-4">
+            <!-- Left Content START -->
+            <div class="col-xl-9">
+              <div class="vstack gap-4">
+                <% if (flightDetails) { %>
+                  <!-- Title START -->
+                  <div class="d-flex align-items-center">
+                    <!-- Icon -->
+                    <h2 class="display-4 mb-0">
+                      <i class="fa-solid fa-plane rtl-flip"></i>
+                    </h2>
 
-              <!-- Title and content START -->
-              <div class="ms-3">
-                <!-- Title -->
-                <ul class="list-inline mb-2">
-                  <li class="list-inline-item me-2">
-                    <h4 class="mb-0"><%= flightDetails.fromCity %> (<%= flightDetails.from.toUpperCase() %>)</h4>
-                  </li>
-                  <li class="list-inline-item me-2">
-                    <h4 class="mb-0"><i class="bi bi-arrow-right"></i></h4>
-                  </li>
-                  <li class="list-inline-item me-0">
-                    <h4 class="mb-0"><%= flightDetails.toCity %> (<%= flightDetails.to.toUpperCase() %>)</h4>
-                  </li>
-                </ul>
+                    <!-- Title and content START -->
+                    <div class="ms-3">
+                      <!-- Title -->
+                      <ul class="list-inline mb-2">
+                        <li class="list-inline-item me-2">
+                          <h4 class="mb-0">
+                            <%= flightDetails.fromCity %> (<%= flightDetails.from.toUpperCase() %>)
+                          </h4>
+                        </li>
+                        <li class="list-inline-item me-2">
+                          <h4 class="mb-0"><i class="bi bi-arrow-right"></i></h4>
+                        </li>
+                        <li class="list-inline-item me-0">
+                          <h4 class="mb-0">
+                            <%= flightDetails.toCity %> (<%= flightDetails.to.toUpperCase() %>)
+                          </h4>
+                        </li>
+                      </ul>
 
-                <!-- List -->
-                <ul class="nav nav-divider h6 fw-normal text-body mb-0">
-                  <li class="nav-item"><%= flightDetails.departureDate %></li>
-                  <li class="nav-item">
-                    <% const stopCount = flightDetails.stops.length - 1; %>
-                    <%= stopCount === 0 ? 'Non-stop' : stopCount === 1 ? '1 stop' : `${stopCount} stops` %>
-                  </li>
-                <!-- <% 
+                      <!-- List -->
+                      <ul class="nav nav-divider h6 fw-normal text-body mb-0">
+                        <li class="nav-item">
+                          <%= flightDetails.departureDate %>
+                        </li>
+                        <li class="nav-item">
+                          <% const stopCount=flightDetails.stops.length - 1; %>
+                            <%= stopCount===0 ? 'Non-stop' : stopCount===1 ? '1 stop' : `${stopCount} stops` %>
+                        </li>
+                        <!-- <% 
                   const totalSeconds = parseInt(flightDetails.duration) || 0;
                   const hours = Math.floor(totalSeconds / 3600);
                   const minutes = Math.floor((totalSeconds % 3600) / 60);
                 %> -->
-                <li class="nav-item">
-                  <%= flightDetails.duration %>
-                </li>
-                </ul>
-              </div>
-              <!-- Title and content END -->
-            </div>
-            <!-- Title END -->
+                        <li class="nav-item">
+                          <%= flightDetails.duration %>
+                        </li>
+                      </ul>
+                    </div>
+                    <!-- Title and content END -->
+                  </div>
+                  <!-- Title END -->
 
-            <!-- Ticket START -->
-            <div class="card border">
-              <!-- Card header -->
-              <div class="card-header d-flex justify-content-between pb-0">
-                <a
-                  href="#"
-                  class="btn btn-link text-decoration-underline p-0 mb-0"
-                  data-bs-toggle="modal"
-                  data-bs-target="#baggageFare"
-                >
-                  <i class="bi bi-eye-fill me-1"></i>Baggage & Fare Rules
-                </a>
-              </div>
-              
-              <% if (flightDetails.stops && flightDetails.stops.length > 1) { %>
-                <!-- Multi-stop Flight Layout -->
-                <div class="card-body p-4">
-                  <% for (let i = 0; i < flightDetails.stops.length; i++) { %>
-                    <div class="row g-4">
-                      <!-- Airline Info -->
-                      <div class="col-md-3">
-                        <img src="<%= flightDetails.stops[i].airlineLogo %>" class="w-80px mb-3" alt="" />
-                        <h6 class="fw-normal mb-0"><%= flightDetails.stops[i].airline %></h6>
-                        <h6 class="fw-normal mb-0"><%= flightDetails.stops[i].airlineCode %> - <%= flightDetails.stops[i].flightNumber %></h6>
+                  <!-- Ticket START -->
+                  <div class="card border">
+                    <!-- Card header -->
+                    <div class="card-header d-flex justify-content-between pb-0">
+                      <a href="#" class="btn btn-link text-decoration-underline p-0 mb-0" data-bs-toggle="modal"
+                        data-bs-target="#baggageFare">
+                        <i class="bi bi-eye-fill me-1"></i>Baggage & Fare Rules
+                      </a>
+                    </div>
+
+                    <% if (flightDetails.stops && flightDetails.stops.length> 1) { %>
+                      <!-- Multi-stop Flight Layout -->
+                      <div class="card-body p-4">
+                        <% for (let i=0; i < flightDetails.stops.length; i++) { %>
+                          <div class="row g-4">
+                            <!-- Airline Info -->
+                            <div class="col-md-3">
+                              <img src="<%= flightDetails.stops[i].airlineLogo %>" class="w-80px mb-3" alt="" />
+                              <h6 class="fw-normal mb-0">
+                                <%= flightDetails.stops[i].airline %>
+                              </h6>
+                              <h6 class="fw-normal mb-0">
+                                <%= flightDetails.stops[i].airlineCode %> - <%= flightDetails.stops[i].flightNumber %>
+                              </h6>
+                            </div>
+
+                            <!-- From Airport -->
+                            <div class="col-sm-4 col-md-3">
+                              <h4>
+                                <%= flightDetails.stops[i].fromCode.toUpperCase() %>
+                              </h4>
+                              <h6>
+                                <%= flightDetails.stops[i].departureTime %>
+                              </h6>
+
+                              <p class="mb-2">
+                                <%= new Date(flightDetails.stops[i].departureDay).toDateString() %>
+                              </p>
+                              <p class="mb-2">
+                                <%= flightDetails.stops[i].from %>
+                              </p>
+                              <% if (flightDetails.stops[i].fromTerminal) { %>
+                                <p class="mb-0">Terminal - <%= flightDetails.stops[i].fromTerminal %>
+                                </p>
+                                <% } %>
+                            </div>
+
+                            <!-- Duration Between Stops -->
+                            <div class="col-sm-4 col-md-3 text-center my-sm-auto">
+
+                              <h5>
+                                <%= flightDetails.stops[i].stopDuration || 0 %>
+                              </h5>
+                              <div class="position-relative my-4">
+                                <hr class="bg-primary opacity-5 position-relative" />
+                                <div
+                                  class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
+                                  <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- To Airport -->
+                            <div class="col-sm-4 col-md-3">
+                              <h4>
+                                <%= flightDetails.stops[i].toCode.toUpperCase() %>
+                              </h4>
+                              <h6>
+                                <%= flightDetails.stops[i].arrivalTime %>
+                              </h6>
+                              <p class="mb-2">
+                                <%= new Date(flightDetails.stops[i].arrivalDay).toDateString() %>
+                              </p>
+                              <p class="mb-2">
+                                <%= flightDetails.stops[i].to %>
+                              </p>
+                              <% if (flightDetails.stops[i].toTerminal) { %>
+                                <p class="mb-0">Terminal - <%= flightDetails.stops[i].toTerminal %>
+                                </p>
+                                <% } %>
+                            </div>
+                          </div>
+
+                          <% if (i < flightDetails.stops.length - 1) { const stopSec=parseInt(flightDetails.stops[i +
+                            1].stopDuration || 0); const layoverHr=Math.floor(stopSec / 3600); const
+                            layoverMin=Math.floor((stopSec % 3600) / 60); %>
+                            <!-- Layover Info -->
+                            <div class="bg-light rounded-2 text-center text-danger p-2 my-4">
+                              Layover:
+                              <% if (layoverHr> 0) { %><%= layoverHr %> hr <% } %>
+                                    <% if (layoverMin> 0 || layoverHr === 0) { %><%= layoverMin %> min<% } %>
+                                          in <%= flightDetails.stops[i + 1].departureCity %>
+                            </div>
+                            <% } %>
+
+                              <% } %>
                       </div>
-              
-                      <!-- From Airport -->
-                      <div class="col-sm-4 col-md-3">
-                        <h4><%= flightDetails.stops[i].fromCode.toUpperCase() %></h4>
-                        <h6><%= flightDetails.stops[i].departureTime %></h6>
-                        
-                        <p class="mb-2"><%= new Date(flightDetails.stops[i].departureDay).toDateString() %></p>
-                        <p class="mb-2"><%= flightDetails.stops[i].from %></p>
-                        <% if (flightDetails.stops[i].fromTerminal) { %>
-                          <p class="mb-0">Terminal - <%= flightDetails.stops[i].fromTerminal %></p>
-                        <% } %>
-                      </div>
-              
-                      <!-- Duration Between Stops -->
-                      <div class="col-sm-4 col-md-3 text-center my-sm-auto">
-                        
-                        <h5><%= flightDetails.stops[i].stopDuration || 0 %></h5>
-                        <div class="position-relative my-4">
-                          <hr class="bg-primary opacity-5 position-relative" />
-                          <div class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
-                            <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
+                      <% } else { %>
+                        <!-- One-stop / Direct Flight Layout -->
+                        <div class="card-body p-4">
+                          <div class="row g-4">
+                            <div class="col-md-3">
+                              <img src="<%= flightDetails.stops[0]?.airlineLogo || '/assets/images/element/09.svg' %>"
+                                class="w-80px mb-3" alt="" />
+                              <h6 class="fw-normal mb-0">
+                                <%= flightDetails.stops[0]?.airline?.toUpperCase() ||
+                                  flightDetails.airline?.toUpperCase() %>
+                              </h6>
+                              <h6 class="fw-normal mb-0">
+                                <%= flightDetails.stops[0]?.airlineCode || flightDetails.airlineCode %> - <%=
+                                    flightDetails.stops[0]?.flightNumber || flightDetails.flightNumber %>
+                              </h6>
+                            </div>
+
+                            <div class="col-sm-4 col-md-3">
+                              <h4>
+                                <%= flightDetails.stops[0]?.fromCode.toUpperCase() %>
+                              </h4>
+                              <h6>
+                                <%= flightDetails.stops[0]?.departureTime %>
+                              </h6>
+                              <p class="mb-2">
+                                <%= flightDetails.stops[0]?.departureDay || "-" %>
+                              </p>
+                              <p class="mb-2">
+                                <%= flightDetails.stops[0]?.from %>
+                              </p>
+                              <% if (flightDetails.stops[0]?.fromTerminal) { %>
+                                <p class="mb-0">Terminal - <%= flightDetails.stops[0].fromTerminal %>
+                                </p>
+                                <% } %>
+                            </div>
+
+                            <div class="col-sm-4 col-md-3 text-center my-sm-auto">
+
+                              <h5>
+                                <%= flightDetails.duration || 0 %>
+                              </h5>
+                              <div class="position-relative my-4">
+                                <hr class="bg-primary opacity-5 position-relative" />
+                                <div
+                                  class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
+                                  <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-sm-4 col-md-3">
+                              <h4>
+                                <%= flightDetails.stops[0]?.toCode.toUpperCase() %>
+                              </h4>
+                              <h6>
+                                <%= flightDetails.stops[0]?.arrivalTime %>
+                              </h6>
+                              <p class="mb-2">
+                                <%= flightDetails.stops[0]?.arrivalDay || flightDetails.arrivalDate %>
+                              </p>
+                              <p class="mb-2">
+                                <%= flightDetails.stops[0]?.to %>
+                              </p>
+                              <% if (flightDetails.stops[0]?.toTerminal) { %>
+                                <p class="mb-0">Terminal - <%= flightDetails.stops[0].toTerminal %>
+                                </p>
+                                <% } %>
+                            </div>
                           </div>
                         </div>
-                      </div>
-              
-                      <!-- To Airport -->
-                      <div class="col-sm-4 col-md-3">
-                        <h4><%= flightDetails.stops[i].toCode.toUpperCase() %></h4>
-                        <h6><%= flightDetails.stops[i].arrivalTime %></h6>
-                        <p class="mb-2"><%= new Date(flightDetails.stops[i].arrivalDay).toDateString() %></p>
-                        <p class="mb-2"><%= flightDetails.stops[i].to %></p>
-                        <% if (flightDetails.stops[i].toTerminal) { %>
-                          <p class="mb-0">Terminal - <%= flightDetails.stops[i].toTerminal %></p>
                         <% } %>
+
+                  </div>
+                  <!-- Ticket END -->
+                  <% } %>
+                    <!-- Information START -->
+                    <div class="card border">
+                      <!-- Card header -->
+                      <div class="card-header border-bottom px-4">
+                        <h5 class="card-title mb-0">Important Information</h5>
+                      </div>
+                      <!-- Card body -->
+                      <div class="card-body py-4">
+                        <!-- List -->
+
+                        <ul style="list-style: none;">
+                          <li class="mb-2">
+                            1) All travelers must present hard copies of their foreign visa (soft copies won't be
+                            accepted) at the immigration counters during departure.
+                          </li>
+                          <li class="mb-2">
+                            2) Please note that travelers are solely responsible for ensuring their eligibility to enter
+                            the destination or transit countries. We accept no liability in this regard. Please check
+                            the travel rules of all regulatory websites before booking and commencing travel.
+                          </li>
+                          <li class="mb-2">
+                            3) Wearing masks/face covers is no longer mandatory. However, all travelers are advised to
+                            wear them, in view of the threat posed by COVID-19.
+                          </li>
+                          <li class="mb-2">
+                            4) Total Rescheduling Charges Airlines Rescheduling fees Fare Difference if applicable +
+                            Bismietickets Fees. The airline cancel reschedule fees is indicative and can be changed
+                            without any prior notice by the airlines.Bismietickets does not guarantee the accuracy of
+                            cancel reschedule fees.
+                          </li>
+                        </ul>
+
+
                       </div>
                     </div>
-              
-                    <% if (i < flightDetails.stops.length - 1) { 
-                      const stopSec = parseInt(flightDetails.stops[i + 1].stopDuration || 0);
-                      const layoverHr = Math.floor(stopSec / 3600);
-                      const layoverMin = Math.floor((stopSec % 3600) / 60);
-                  %>
-                    <!-- Layover Info -->
-                    <div class="bg-light rounded-2 text-center text-danger p-2 my-4">
-                      Layover: 
-                      <% if (layoverHr > 0) { %><%= layoverHr %> hr <% } %>
-                      <% if (layoverMin > 0 || layoverHr === 0) { %><%= layoverMin %> min<% } %>
-                      in <%= flightDetails.stops[i + 1].departureCity %>
-                    </div>
-                  <% } %>
-                  
-                  <% } %>
-                </div>
-              <% } else { %>
-                <!-- One-stop / Direct Flight Layout -->
-                <div class="card-body p-4">
-                  <div class="row g-4">
-                    <div class="col-md-3">
-                      <img src="<%= flightDetails.stops[0]?.airlineLogo || '/assets/images/element/09.svg' %>" class="w-80px mb-3" alt="" />
-                      <h6 class="fw-normal mb-0"><%= flightDetails.stops[0]?.airline?.toUpperCase() || flightDetails.airline?.toUpperCase() %></h6>
-                      <h6 class="fw-normal mb-0"><%= flightDetails.stops[0]?.airlineCode || flightDetails.airlineCode %> - <%= flightDetails.stops[0]?.flightNumber || flightDetails.flightNumber %></h6>
-                    </div>
-              
-                    <div class="col-sm-4 col-md-3">
-                      <h4><%= flightDetails.stops[0]?.fromCode.toUpperCase() %></h4>
-                      <h6><%= flightDetails.stops[0]?.departureTime %></h6>
-                      <p class="mb-2"><%= flightDetails.stops[0]?.departureDay || "-" %></p>
-                      <p class="mb-2"><%= flightDetails.stops[0]?.from %></p>
-                      <% if (flightDetails.stops[0]?.fromTerminal) { %>
-                        <p class="mb-0">Terminal - <%= flightDetails.stops[0].fromTerminal %></p>
-                      <% } %>
-                    </div>
-              
-                    <div class="col-sm-4 col-md-3 text-center my-sm-auto">
-                      
-                      <h5><%= flightDetails.duration || 0 %></h5>
-                      <div class="position-relative my-4">
-                        <hr class="bg-primary opacity-5 position-relative" />
-                        <div class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
-                          <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
+                    <!-- Information END -->
+
+                    <!-- Booking form START -->
+                    <form class="card border" id="bookingForm">
+                      <!-- Card header -->
+                      <div class="card-header border-bottom px-4">
+                        <h4 class="card-title mb-0">Traveler Details</h4>
+                      </div>
+
+                      <!-- Card body START -->
+                      <div class="card-body py-4">
+                        <!-- Badge with content -->
+                        <div class="bg-danger bg-opacity-10 rounded-2 p-3 mb-3">
+                          <p class="h6 fw-light small mb-0">
+                            <span class="badge bg-danger me-2">New</span>Please make
+                            sure you enter the Name as per your passport
+                          </p>
+                        </div>
+
+                        <!-- Traveler Details Accordion -->
+                        <div class="accordion accordion-icon accordion-bg-light" id="travelerAccordion">
+                          <!-- Dynamic sections will be added here -->
+                        </div>
+
+                        <!-- Number and email START -->
+                        <!-- Title -->
+                        <h5 class="mt-4">Contact Information</h5>
+                        <p>Enter the email address and phone number to which your confirmation and flight updates will
+                          be sent.
+                          Please make sure they are correct.</p>
+                        <div class="row g-3 g-md-4">
+                          <!-- Input item -->
+                          <div class="col-6">
+                            <input type="email" class="form-control" placeholder="Email address" />
+                          </div>
+
+                          <!-- Input item -->
+                          <div class="col-6">
+                            <input id="phone" type="tel" class="form-control" placeholder="Enter your mobile number" />
+                          </div>
+                        </div>
+                        <!-- Number and email END -->
+
+                        <style>
+                          .iti {
+                            width: 100% !important;
+                          }
+                        </style>
+                        <!-- Button -->
+                        <div class="d-grid mt-4">
+                          <button type="submit" class="btn btn-primary mb-0">Proceed To Payment</button>
                         </div>
                       </div>
-                    </div>
-              
-                    <div class="col-sm-4 col-md-3">
-                      <h4><%= flightDetails.stops[0]?.toCode.toUpperCase() %></h4>
-                      <h6><%= flightDetails.stops[0]?.arrivalTime %></h6>
-                      <p class="mb-2"><%= flightDetails.stops[0]?.arrivalDay || flightDetails.arrivalDate %></p>
-                      <p class="mb-2"><%= flightDetails.stops[0]?.to %></p>
-                      <% if (flightDetails.stops[0]?.toTerminal) { %>
-                        <p class="mb-0">Terminal - <%= flightDetails.stops[0].toTerminal %></p>
-                      <% } %>
-                    </div>
-                  </div>
-                </div>
-              <% } %>
-              
-            </div>
-            <!-- Ticket END -->
-            <% } %>
-            <!-- Information START -->
-            <div class="card border">
-              <!-- Card header -->
-              <div class="card-header border-bottom px-4">
-                <h5 class="card-title mb-0">Terms & Conditions</h5>
-              </div>
-              <!-- Card body -->
-              <div class="card-body py-4">
-                <!-- List -->
-                
-                <ul style="list-style: none;">
-                  <li class="mb-2">
-                    1) All travelers must present hard copies of their foreign visa (soft copies won't be accepted) at the immigration counters during departure.
-                  </li>
-                  <li class="mb-2">
-                    2) Please note that travelers are solely responsible for ensuring their eligibility to enter the destination or transit countries. We accept no liability in this regard. Please check the travel rules of all regulatory websites before booking and commencing travel.
-                  </li>
-                  <li class="mb-2">
-                    3) Wearing masks/face covers is no longer mandatory. However, all travelers are advised to wear them, in view of the threat posed by COVID-19.
-                  </li>
-                  <li class="mb-2">
-                    4) Total Rescheduling Charges Airlines Rescheduling fees Fare Difference if applicable + Bismietickets Fees. The airline cancel reschedule fees is indicative and can be changed without any prior notice by the airlines.Bismietickets does not guarantee the accuracy of cancel reschedule fees.
-                  </li>
-                </ul>
-
-               
+                      <!-- Card body END -->
+                    </form>
+                    <!-- Booking form END -->
               </div>
             </div>
-            <!-- Information END -->
+            <!-- Left Content END -->
 
-            <!-- Booking form START -->
-            <form class="card border" id="bookingForm">
-              <!-- Card header -->
-              <div class="card-header border-bottom px-4">
-                <h4 class="card-title mb-0">Traveler Details</h4>
-              </div>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/css/intlTelInput.css">
+            <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/intlTelInput.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"></script>
 
-              <!-- Card body START -->
-              <div class="card-body py-4">
-                <!-- Badge with content -->
-                <div class="bg-danger bg-opacity-10 rounded-2 p-3 mb-3">
-                  <p class="h6 fw-light small mb-0">
-                    <span class="badge bg-danger me-2">New</span>Please make
-                    sure you enter the Name as per your passport
-                  </p>
-                </div>
+            <script>
+              document.addEventListener("DOMContentLoaded", function () {
+                const input = document.querySelector("#phone");
+                window.intlTelInput(input, {
+                  separateDialCode: true,      // Show code outside
+                  initialCountry: "auto",      // Auto-select based on IP
+                  geoIpLookup: callback => {
+                    fetch('https://ipapi.co/json')
+                      .then(res => res.json())
+                      .then(data => callback(data.country_code.toLowerCase()))
+                      .catch(() => callback('us'));
+                  },
+                  utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"
+                });
+              });
 
-                <!-- Traveler Details Accordion -->
-                <div
-                  class="accordion accordion-icon accordion-bg-light"
-                  id="travelerAccordion"
-                >
-                  <!-- Dynamic sections will be added here -->
-                </div>
+            </script>
+            <!-- Right content START -->
+            <aside class="col-xl-3">
+              <div data-sticky data-margin-top="80" data-sticky-for="1199">
+                <div class="row g-4">
 
-                <!-- Number and email START -->
-                <!-- Title -->
-                <h5 class="mt-4">Contact Information</h5>
-                <p>Enter the email address and phone number to which your confirmation and flight updates will be sent.
-                  Please make sure they are correct.</p>
-                <div class="row g-3 g-md-4">
-                  <!-- Input item -->
-                  <div class="col-md-6">
-                    <input
-                      type="email"
-                      class="form-control"
-                      placeholder="Email address"
-                    />
+                  <div
+                    class="d-flex align-items-center justify-content-between border border-warning rounded-3 p-3 bg-light-warning text-dark"
+                    style="max-width: 400px;">
+                    <div class="d-flex align-items-center gap-2">
+                      <img src="/assets/images/element/timer.png" alt="Timer" width="24" height="24">
+                      <div>
+                        <div class="fw-semibold">Cabin and fare confirmed.</div>
+                        <div class="small">Book now!</div>
+                      </div>
+                    </div>
+                    <div class="fw-bold fs-5" id="timer"></div>
                   </div>
 
-                  <!-- Input item -->
-                  <div class="col-md-6">
-                    <input id="phone" type="tel" class="form-control" placeholder="Enter your mobile number" />
-                  </div>
-                </div>  
-                <!-- Number and email START -->
+                  <!-- Fare summary START -->
+                  <div class="col-md-6 col-xl-12">
+                    <div class="card bg-light rounded-2">
+                      <!-- card header -->
+                      <div class="card-header border-bottom bg-light">
+                        <h5 class="card-title mb-0">Fare Summary</h5>
+                      </div>
 
-                <!-- Button -->
-                <div class="d-grid mt-4">
-                  <button type="submit" class="btn btn-primary mb-0"
-                    >Proceed To Payment</button
-                  >
+                      <!-- Card body -->
+                      <div class="card-body">
+                        <ul class="list-group list-group-borderless">
+                          <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="h6 fw-normal mb-0">Base Fare
+                              <a href="#" tabindex="0" data-bs-toggle="popover" data-bs-trigger="focus"
+                                data-bs-placement="bottom"
+                                data-bs-content="COVID-19 test required Vaccinated travelers can visit">
+                                <i class="bi bi-info-circle"></i>
+                              </a>
+                            </span>
+                            <span class="fs-5" id="base-fare">₹<%= (requestDetails.adults *
+                                flightDetails.inventoryDates[0].fare.adults) + (requestDetails.children *
+                                flightDetails.inventoryDates[0].fare.adults) + (requestDetails.infants *
+                                flightDetails.inventoryDates[0].fare.infants) %></span>
+                          </li>
+                          <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="h6 fw-normal mb-0">Discount</span>
+                            <span class="fs-6 text-success" id="discount">+₹0</span>
+                          </li>
+                          <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="h6 fw-normal mb-0">Taxes & Services</span>
+                            <span class="fs-5" id="other-services">₹<%= ((subscription.serviceCharge * 18)/100) +
+                                subscription.serviceCharge %></span>
+                          </li>
+                        </ul>
+                      </div>
+                      <!-- Card footer -->
+                      <div class="card-footer border-top bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <span class="h5 fw-normal mb-0">Total Fare</span>
+                          <span class="h5 fw-normal mb-0" id="total-fare">₹0</span>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                  <!-- Fare summary END -->
+
+                  <!-- Coupon START -->
+                  <div class="col-md-6 col-xl-12">
+                    <div class="card border-0 shadow-sm rounded-4 p-3">
+                      <h5 class="mb-3 fw-bold">Offer & Discount</h5>
+
+                      <!-- None Option -->
+                      <div class="bg-light rounded-3 d-flex align-items-center justify-content-between p-3 mb-3">
+                        <div>
+                          <div class="form-check mb-1">
+                            <input class="form-check-input" type="radio" name="selectedCoupon" id="noneCoupon"
+                              value="none" checked>
+                            <label class="form-check-label fw-bold" for="noneCoupon">None</label>
+                          </div>
+                          <p class="mb-0 small text-muted">No discount applied.</p>
+                        </div>
+                        <div class="text-muted fw-bold fs-5">₹0</div>
+                      </div>
+
+                      <!-- Loop through valid coupons -->
+                      <% if (coupons.length> 0) { %>
+                        <% coupons.forEach((coupon, index)=> { %>
+                          <div class="bg-light rounded-3 d-flex align-items-center justify-content-between p-3 mb-3">
+                            <div>
+                              <div class="form-check mb-1">
+                                <input class="form-check-input" type="radio" name="selectedCoupon"
+                                  id="coupon_<%= index %>" value="<%= coupon.code %>">
+                                <label class="form-check-label fw-bold" for="coupon_<%= index %>">
+                                  <%= coupon.code %>
+                                </label>
+                              </div>
+                              <p class="mb-0 small text-muted">
+                                Save <strong>₹<%= coupon.discount %></strong> with <%= coupon.code %>
+                              </p>
+                            </div>
+                            <div class="text-success fw-bold fs-5">–₹<%= coupon.discount %>
+                            </div>
+                          </div>
+                          <% }); %>
+                            <% } else { %>
+                              <p class="text-muted">No active coupons available at the moment.</p>
+                              <% } %>
+
+                                <!-- Manual Coupon Entry -->
+                                <div class="input-group">
+                                  <input class="form-control" placeholder="Coupon code" id="couponCodeInput" />
+                                  <button type="button" class="btn btn-primary" id="applyCouponBtn">Apply</button>
+                                </div>
+                    </div>
+                  </div>
+                  <!-- Coupon END -->
+
+
                 </div>
               </div>
-              <!-- Card body END -->
-            </form>
-            <!-- Booking form END -->
+            </aside>
+            <!-- Right content END -->
           </div>
         </div>
-        <!-- Left Content END -->
 
-        <link rel="stylesheet"
- href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/css/intlTelInput.css">
-<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/intlTelInput.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"></script>
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            const couponRadios = document.querySelectorAll('input[name="selectedCoupon"]');
+            const discountDisplay = document.getElementById("discount");
+            const totalFareDisplay = document.getElementById("total-fare");
+            const manualInput = document.getElementById("couponCodeInput");
+            const applyBtn = document.getElementById("applyCouponBtn");
 
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-  const input = document.querySelector("#phone");
-  window.intlTelInput(input, {
-    separateDialCode: true,      // Show code outside
-    initialCountry: "auto",      // Auto-select based on IP
-    geoIpLookup: callback => {
-      fetch('https://ipapi.co/json')
-        .then(res => res.json())
-        .then(data => callback(data.country_code.toLowerCase()))
-        .catch(() => callback('us'));
-    },
-    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"
-  });
-});
+            const baseFare = <%=
+            (requestDetails.adults * flightDetails.inventoryDates[0].fare.adults) +
+              (requestDetails.children * flightDetails.inventoryDates[0].fare.adults) +
+              (requestDetails.infants * flightDetails.inventoryDates[0].fare.infants)
+              %>;
 
-</script>
-        <!-- Right content START -->
-        <aside class="col-xl-3">
-          <div data-sticky data-margin-top="80" data-sticky-for="1199">
-            <div class="row g-4">
+            const servicesCharge = <%= subscription.serviceCharge %>;
+            const serviceTax = (servicesCharge * 18) / 100;
+            const otherServices = servicesCharge + serviceTax;
 
-              <div class="d-flex align-items-center justify-content-between border border-warning rounded-3 p-3 bg-light-warning text-dark" style="max-width: 400px;">
-                <div class="d-flex align-items-center gap-2">
-                  <img src="/assets/images/element/timer.png" alt="Timer" width="24" height="24">
-                  <div>
-                    <div class="fw-semibold">Cabin and fare confirmed.</div>
-                    <div class="small">Book now!</div>
-                  </div>
-                </div>
-                <div class="fw-bold fs-5" id="timer">10:48</div>
+            const coupons = <% - JSON.stringify(coupons) %>;
+
+            function updateFareDisplay(discountValue) {
+              discountDisplay.innerText = `–₹${discountValue}`;
+              const total = baseFare + otherServices - discountValue;
+              totalFareDisplay.innerText = `₹${total.toLocaleString()}`;
+            }
+
+            function applyCoupon(code) {
+              if (code === "none") {
+                updateFareDisplay(0);
+                return;
+              }
+
+              const selected = coupons.find(c => c.code.toLowerCase() === code.toLowerCase());
+              if (!selected) {
+                alert("No coupon found with that code or it may have expired.");
+                updateFareDisplay(0);
+                document.getElementById("noneCoupon").checked = true; // fallback
+                return;
+              }
+
+              const discountAmount = Math.round(((baseFare + otherServices) * selected.discount) / 100);
+              updateFareDisplay(discountAmount);
+            }
+
+            // Auto-apply first coupon if available
+            if (couponRadios.length > 0) {
+              applyCoupon(couponRadios[0].value);
+            }
+
+            // Radio button change
+            couponRadios.forEach(radio => {
+              radio.addEventListener("change", function () {
+                applyCoupon(this.value);
+              });
+            });
+
+            // Manual apply button
+            applyBtn.addEventListener("click", function () {
+              const code = manualInput.value.trim();
+              if (code === "") {
+                alert("Please enter a coupon code.");
+                return;
+              }
+              applyCoupon(code);
+
+              // Auto-select radio if it exists
+              couponRadios.forEach(radio => {
+                if (radio.value.toLowerCase() === code.toLowerCase()) {
+                  radio.checked = true;
+                } else {
+                  radio.checked = false;
+                }
+              });
+            });
+          });
+        </script>
+
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            function calculateTotalFare() {
+              // Get the values of Base Fare, Discount, and Other Services
+              let baseFare = parseFloat(document.getElementById("base-fare").innerText.replace("₹", "")) || 0;
+              let discount = parseFloat(document.getElementById("discount").innerText.replace("₹", "")) || 0;
+              let otherServices = parseFloat(document.getElementById("other-services").innerText.replace("₹", "")) || 0;
+
+              // Calculate total fare
+              let totalFare = baseFare + otherServices - discount;
+
+              // Update the Total Fare display
+              document.getElementById("total-fare").innerText = `₹${totalFare.toLocaleString()}`;
+            }
+
+            // Call function to initialize the total fare calculation
+            calculateTotalFare();
+          });
+
+        </script>
+
+        <!-- Baggage and fare START -->
+        <div class="modal fade" id="baggageFare" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <!-- Title -->
+              <div class="modal-header">
+                <h5 class="modal-title" id="baggageFarelabel">Baggage & Fare Rules</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              
-              <!-- Fare summary START -->
-              <div class="col-md-6 col-xl-12">
-                <div class="card bg-light rounded-2">
-                  <!-- card header -->
-                  <div class="card-header border-bottom bg-light">
-                    <h5 class="card-title mb-0">Fare Summary</h5>
+
+              <!-- Body -->
+              <div class="modal-body p-3">
+                <!-- Card START -->
+                <div class="card border">
+                  <!-- Card header -->
+                  <div class="card-header border-bottom">
+                    <!-- Title -->
+                    <h5 class="card-title mb-0">
+                      <img src="/assets/images/element/09.svg" class="h-80px" alt="">
+                      <%= flightDetails.from %> - <%= flightDetails.to %>
+                    </h5>
                   </div>
 
                   <!-- Card body -->
                   <div class="card-body">
-                    <ul class="list-group list-group-borderless">
-                      <li
-                        class="list-group-item d-flex justify-content-between align-items-center"
-                      >
-                        <span class="h6 fw-normal mb-0"
-                          >Base Fare
-                          <a
-                            href="#"
-                            tabindex="0"
-                            data-bs-toggle="popover"
-                            data-bs-trigger="focus"
-                            data-bs-placement="bottom"
-                            data-bs-content="COVID-19 test required Vaccinated travelers can visit"
-                          >
-                            <i class="bi bi-info-circle"></i>
-                          </a>
-                        </span>
-                        <span class="fs-5" id="base-fare">₹<%= (requestDetails.adults * flightDetails.inventoryDates[0].fare.adults) + (requestDetails.children * flightDetails.inventoryDates[0].fare.adults) + (requestDetails.infants * flightDetails.inventoryDates[0].fare.infants) %></span>
-                      </li>
-                      <li
-                        class="list-group-item d-flex justify-content-between align-items-center"
-                      >
-                        <span class="h6 fw-normal mb-0">Discount</span>
-                        <span class="fs-6 text-success" id="discount">+₹0</span>
-                      </li>
-                      <li
-                        class="list-group-item d-flex justify-content-between align-items-center"
-                      >
-                        <span class="h6 fw-normal mb-0">Taxes & Services</span>
-                        <span class="fs-5" id="other-services">₹<%= ((subscription.serviceCharge * 18)/100) + subscription.serviceCharge %></span>
-                      </li>
-                    </ul>
-                  </div>
-                  <!-- Card footer -->
-                  <div class="card-footer border-top bg-light">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <span class="h5 fw-normal mb-0">Total Fare</span>
-                      <span class="h5 fw-normal mb-0" id="total-fare">₹0</span> 
+                    <!-- Table START -->
+                    <div class="table-responsive-lg">
+                      <table class="table table-bordered rounded caption-bottom overflow-hidden mb-0">
+                        <!-- Table head -->
+                        <thead class="table-dark border-light">
+                          <tr>
+                            <th scope="col">Baggage Type</th>
+                            <th scope="col">Check In</th>
+                            <th scope="col">Cabin</th>
+                          </tr>
+                        </thead>
+                        <!-- Table body -->
+                        <tbody class="border-top-0">
+                          <tr>
+                            <td>Adult</td>
+                            <td>2 PC</td>
+                            <td>7 Kg</td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
+                    <!-- Table END -->
                   </div>
-                  
+
+                  <!-- Card footer -->
+                  <div class="card-footer d-flex justify-content-between align-items-center pt-0 px-sm-4">
+                    <span>*1PC = 23KG</span>
+                    <a href="#" class="btn btn-sm btn-primary-soft mb-0">Add luggage</a>
+                  </div>
                 </div>
+                <!-- Card END -->
+
+                <!-- Content START -->
+                <div class="mt-4 px-2">
+                  <span class="badge bg-light text-success mb-2"><i class="bi bi-star-fill me-2"></i>Travel Hack</span>
+                  <h5 class="mb-2">This itinerary includes a self-transfer</h5>
+                  <p class="mb-0">Please note, that it is the sole responsibility of the passenger to ensure his or her
+                    eligibility to enter the destination or transit countries (as applicable). We accept no liability in
+                    this regard. Please check the travel rules of all regulatory websites before to booking as well as
+                    commencing.</p>
+                </div>
+                <!-- Content END -->
               </div>
-              <!-- Fare summary END -->
-
-              <!-- Coupon START -->
-<div class="col-md-6 col-xl-12">
-  <div class="card border-0 shadow-sm rounded-4 p-3">
-    <h5 class="mb-3 fw-bold">Offer & Discount</h5>
-
-    <!-- None Option -->
-    <div class="bg-light rounded-3 d-flex align-items-center justify-content-between p-3 mb-3">
-      <div>
-        <div class="form-check mb-1">
-          <input class="form-check-input" type="radio" name="selectedCoupon" id="noneCoupon" value="none" checked>
-          <label class="form-check-label fw-bold" for="noneCoupon">None</label>
-        </div>
-        <p class="mb-0 small text-muted">No discount applied.</p>
-      </div>
-      <div class="text-muted fw-bold fs-5">₹0</div>
-    </div>
-
-    <!-- Loop through valid coupons -->
-    <% if (coupons.length > 0) { %>
-      <% coupons.forEach((coupon, index) => { %>
-        <div class="bg-light rounded-3 d-flex align-items-center justify-content-between p-3 mb-3">
-          <div>
-            <div class="form-check mb-1">
-              <input class="form-check-input"
-                     type="radio"
-                     name="selectedCoupon"
-                     id="coupon_<%= index %>"
-                     value="<%= coupon.code %>"
-                      >
-              <label class="form-check-label fw-bold" for="coupon_<%= index %>">
-                <%= coupon.code %>
-              </label>
-            </div>
-            <p class="mb-0 small text-muted">
-              Save <strong>₹<%= coupon.discount %></strong> with <%= coupon.code %>
-            </p>
-          </div>
-          <div class="text-success fw-bold fs-5">–₹<%= coupon.discount %></div>
-        </div>
-      <% }); %>
-    <% } else { %>
-      <p class="text-muted">No active coupons available at the moment.</p>
-    <% } %>
-
-    <!-- Manual Coupon Entry -->
-    <div class="input-group">
-      <input class="form-control" placeholder="Coupon code" id="couponCodeInput" />
-      <button type="button" class="btn btn-primary" id="applyCouponBtn">Apply</button>
-    </div>
-  </div>
-</div>
-<!-- Coupon END -->
-
-
             </div>
           </div>
-        </aside>
-        <!-- Right content END -->
-      </div>
-    </div>
-  
-    <!-- <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const couponRadios = document.querySelectorAll('input[name="selectedCoupon"]');
-        const discountDisplay = document.getElementById("discount");
-    
-        const baseFare = <%= 
-          (requestDetails.adults * flightDetails.inventoryDates[0].fare.adults) + 
-          (requestDetails.children * flightDetails.inventoryDates[0].fare.adults) + 
-          (requestDetails.infants * flightDetails.inventoryDates[0].fare.infants) 
-        %>;
-    
-        const servicesCharge = <%= subscription.serviceCharge %>;
-        const serviceTax = (servicesCharge * 18) / 100;
-        const totalAmount = baseFare + servicesCharge + serviceTax;
-    
-        const coupons = <%- JSON.stringify(coupons) %>; // make available as JS object
-    
-        function applyDiscount(code) {
-          const selected = coupons.find(coupon => coupon.code === code);
-          if (!selected) {
-            discountDisplay.innerText = "+₹0";
+        </div>
+        <!-- Baggage and fare END -->
+
+      </section>
+
+      <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+      <script>
+        async function populateCountryDropdowns() {
+          try {
+            const response = await fetch("/api/countries");
+            const countries = await response.json();
+
+            const nationalitySelects = document.querySelectorAll("#nationalitySelect");
+            const countrySelects = document.querySelectorAll("#countrySelect");
+
+            countries.forEach(country => {
+              const option = document.createElement("option");
+              option.value = country;
+              option.textContent = country;
+
+              nationalitySelects.forEach(select => {
+                select.appendChild(option.cloneNode(true));
+              });
+
+              countrySelects.forEach(select => {
+                select.appendChild(option.cloneNode(true));
+              });
+            });
+          } catch (err) {
+            console.error("Error fetching country list:", err);
+          }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+          setTimeout(populateCountryDropdowns, 200); // Slight delay to ensure DOM is built
+        });
+      </script>
+
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const travelerAccordion = document.getElementById("travelerAccordion");
+          const requestDetails = <% - JSON.stringify(requestDetails) %>;
+
+          if (!requestDetails) {
+            travelerAccordion.innerHTML = "<p>No traveler details found.</p>";
             return;
           }
-    
-          const discountValue = Math.round((totalAmount * selected.discount) / 100);
-          discountDisplay.innerText = `–₹${discountValue}`;
-        }
-    
-        // Apply first one by default (if exists)
-        if (couponRadios.length > 0) {
-          applyDiscount(couponRadios[0].value);
-        }
-    
-        couponRadios.forEach(radio => {
-          radio.addEventListener("change", function () {
-            applyDiscount(this.value);
-          });
-        });
-      });
-    </script> -->
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const couponRadios = document.querySelectorAll('input[name="selectedCoupon"]');
-        const discountDisplay = document.getElementById("discount");
-        const totalFareDisplay = document.getElementById("total-fare");
-        const manualInput = document.getElementById("couponCodeInput");
-        const applyBtn = document.getElementById("applyCouponBtn");
-    
-        const baseFare = <%= 
-          (requestDetails.adults * flightDetails.inventoryDates[0].fare.adults) + 
-          (requestDetails.children * flightDetails.inventoryDates[0].fare.adults) + 
-          (requestDetails.infants * flightDetails.inventoryDates[0].fare.infants) 
-        %>;
-    
-        const servicesCharge = <%= subscription.serviceCharge %>;
-        const serviceTax = (servicesCharge * 18) / 100;
-        const otherServices = servicesCharge + serviceTax;
-    
-        const coupons = <%- JSON.stringify(coupons) %>;
-    
-        function updateFareDisplay(discountValue) {
-          discountDisplay.innerText = `–₹${discountValue}`;
-          const total = baseFare + otherServices - discountValue;
-          totalFareDisplay.innerText = `₹${total.toLocaleString()}`;
-        }
-    
-        function applyCoupon(code) {
-  if (code === "none") {
-    updateFareDisplay(0);
-    return;
-  }
 
-  const selected = coupons.find(c => c.code.toLowerCase() === code.toLowerCase());
-  if (!selected) {
-    alert("No coupon found with that code or it may have expired.");
-    updateFareDisplay(0);
-    document.getElementById("noneCoupon").checked = true; // fallback
-    return;
-  }
+          let { adults, children, infants } = requestDetails;
+          adults = parseInt(adults) || 1;
+          children = parseInt(children) || 0;
+          infants = parseInt(infants) || 0;
 
-  const discountAmount = Math.round(((baseFare + otherServices) * selected.discount) / 100);
-  updateFareDisplay(discountAmount);
-}
+          let travelerCount = 1;
+          const today = new Date();
 
-        // Auto-apply first coupon if available
-        if (couponRadios.length > 0) {
-          applyCoupon(couponRadios[0].value);
-        }
-    
-        // Radio button change
-        couponRadios.forEach(radio => {
-          radio.addEventListener("change", function () {
-            applyCoupon(this.value);
-          });
-        });
-    
-        // Manual apply button
-        applyBtn.addEventListener("click", function () {
-          const code = manualInput.value.trim();
-          if (code === "") {
-            alert("Please enter a coupon code.");
-            return;
-          }
-          applyCoupon(code);
-    
-          // Auto-select radio if it exists
-          couponRadios.forEach(radio => {
-            if (radio.value.toLowerCase() === code.toLowerCase()) {
-              radio.checked = true;
-            } else {
-              radio.checked = false;
-            }
-          });
-        });
-      });
-    </script>
-    
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-  function calculateTotalFare() {
-    // Get the values of Base Fare, Discount, and Other Services
-    let baseFare = parseFloat(document.getElementById("base-fare").innerText.replace("₹", "")) || 0;
-    let discount = parseFloat(document.getElementById("discount").innerText.replace("₹", "")) || 0;
-    let otherServices = parseFloat(document.getElementById("other-services").innerText.replace("₹", "")) || 0;
-
-    // Calculate total fare
-    let totalFare = baseFare + otherServices - discount;
-
-    // Update the Total Fare display
-    document.getElementById("total-fare").innerText = `₹${totalFare.toLocaleString()}`;
-  }
-
-  // Call function to initialize the total fare calculation
-  calculateTotalFare();
-});
-
-    </script>
-
-<!-- Cancellation modal START -->
-<div class="modal fade" id="cancellation" aria-hidden="true">
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<!-- Title -->
-			<div class="modal-header">
-				<h5 class="modal-title" id="cancellationlabel">Cancellation & Date Change Charges</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-
-			<!-- Body -->
-			<div class="modal-body p-3">
-
-				<ul class="nav nav-pills nav-justified nav-responsive bg-primary bg-opacity-10 rounded p-2 mb-3" id="tour-pills-tab" role="tablist">
-					<!-- Tab item -->
-					<li class="nav-item" role="presentation">
-						<button class="nav-link rounded-start active mb-0" id="tour-pills-tab-1" data-bs-toggle="pill" data-bs-target="#tour-pills-tab1" type="button" role="tab" aria-controls="tour-pills-tab1" aria-selected="true">Cancellation Charge</button>
-					</li>
-					<!-- Tab item -->
-					<li class="nav-item" role="presentation">
-						<button class="nav-link rounded-end mb-0" id="tour-pills-tab-2" data-bs-toggle="pill" data-bs-target="#tour-pills-tab2" type="button" role="tab" aria-controls="tour-pills-tab2" aria-selected="false">Date Change Charge</button>
-					</li>
-				</ul>
-
-				<!-- Tab content START -->
-				<div class="tab-content mb-0" id="tour-pills-tabContent">
-
-					<!-- Content item START -->
-					<div class="tab-pane fade show active" id="tour-pills-tab1" role="tabpanel" aria-labelledby="tour-pills-tab-1">
-
-						<div class="card border">
-							<!-- Card header -->
-							<div class="card-header border-bottom">
-								<!-- Title -->
-								<h5 class="card-title mb-0">
-									<img src="/assets/images/element/09.svg" class="h-50px" alt="">
-									<%= flightDetails.from %> - <%= flightDetails.to %>
-								</h5>
-							</div>
-
-							<!-- Card body -->
-							<div class="card-body">
-								<!-- Table START -->
-								<div class="table-responsive-lg">
-									<table class="table table-bordered rounded caption-bottom overflow-hidden mb-0">
-										<!-- Caption -->
-										<caption class="pb-0">*From The Date Of Departure</caption>
-										<!-- Table head -->
-										<thead class="table-dark border-light">
-											<tr>
-												<th scope="col">Time Frame</th>
-												<th scope="col">Air Free + MMT Free</th>
-											</tr>
-										</thead>
-										<!-- Table body -->
-										<tbody class="border-top-0">
-											<tr>
-												<td>0 hours to 24 hours</td>
-												<td>Non Refundable</td>
-											</tr>
-											<tr>
-												<td>24 hours to 365 days</td>
-												<td>$16,325 + $250</td>
-											</tr>
-										</tbody>
-									</table>
-								</div>
-								<!-- Table END -->
-							</div>
-						</div>
-					</div>		
-					<!-- Content item END -->
-
-					<!-- Content item START -->
-					<div class="tab-pane fade" id="tour-pills-tab2" role="tabpanel" aria-labelledby="tour-pills-tab-2">
-						<div class="card border">
-							<!-- Card header -->
-							<div class="card-header border-bottom">
-								<!-- Title -->
-								<h5 class="card-title mb-0">
-									<img src="/assets/images/element/09.svg" class="h-50px" alt="">
-									JFK - BOM
-								</h5>
-							</div>
-
-							<!-- Card body -->
-							<div class="card-body">
-								<!-- Table START -->
-								<div class="table-responsive-lg">
-									<table class="table table-bordered rounded caption-bottom overflow-hidden mb-0">
-										<!-- Caption -->
-										<caption class="pb-0">*From The Date Of Departure</caption>
-										<!-- Table head -->
-										<thead class="table-dark border-light">
-											<tr>
-												<th scope="col">Time Frame</th>
-												<th scope="col">Air Free + MMT Free + Fare Difference</th>
-											</tr>
-										</thead>
-										<!-- Table body -->
-										<tbody class="border-top-0">
-											<tr>
-												<td>0 hours to 24 hours</td>
-												<td>Non Refundable</td>
-											</tr>
-											<tr>
-												<td>24 hours to 365 days</td>
-												<td>$16,325 + $250 + Fare Difference</td>
-											</tr>
-										</tbody>
-									</table>
-								</div>
-								<!-- Table END -->
-							</div>
-						</div>
-					</div>	
-					<!-- Content item END -->
-
-				</div>
-				<!-- Tab content END -->
-			</div>
-		</div>
-	</div>
-</div>
-<!-- Cancellation modal END -->
-
-<!-- Baggage and fare START -->
-<div class="modal fade" id="baggageFare" aria-hidden="true">
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<!-- Title -->
-			<div class="modal-header">
-				<h5 class="modal-title" id="baggageFarelabel">Baggage & Fare Rules</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			
-			<!-- Body -->
-			<div class="modal-body p-3">
-				<!-- Card START -->
-				<div class="card border">
-					<!-- Card header -->
-					<div class="card-header border-bottom">
-						<!-- Title -->
-						<h5 class="card-title mb-0">
-							<img src="/assets/images/element/09.svg" class="h-80px" alt="">
-							<%= flightDetails.from %> - <%= flightDetails.to %>
-						</h5>
-					</div>
-
-					<!-- Card body -->
-					<div class="card-body">
-						<!-- Table START -->
-						<div class="table-responsive-lg">
-							<table class="table table-bordered rounded caption-bottom overflow-hidden mb-0">
-								<!-- Table head -->
-								<thead class="table-dark border-light">
-									<tr>
-										<th scope="col">Baggage Type</th>
-										<th scope="col">Check In</th>
-										<th scope="col">Cabin</th>
-									</tr>
-								</thead>
-								<!-- Table body -->
-								<tbody class="border-top-0">
-									<tr>
-										<td>Adult</td>
-										<td>2 PC</td>
-										<td>7 Kg</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-						<!-- Table END -->
-					</div>
-
-					<!-- Card footer -->
-					<div class="card-footer d-flex justify-content-between align-items-center pt-0 px-sm-4">
-						<span>*1PC = 23KG</span>
-						<a href="#" class="btn btn-sm btn-primary-soft mb-0">Add luggage</a>
-					</div>
-				</div>
-				<!-- Card END -->
-
-				<!-- Content START -->
-				<div class="mt-4 px-2">
-					<span class="badge bg-light text-success mb-2"><i class="bi bi-star-fill me-2"></i>Travel Hack</span>
-					<h5 class="mb-2">This itinerary includes a self-transfer</h5>
-					<p class="mb-0">Please note, that it is the sole responsibility of the passenger to ensure his or her eligibility to enter the destination or transit countries (as applicable). We accept no liability in this regard. Please check the travel rules of all regulatory websites before to booking as well as commencing.</p>
-				</div>
-				<!-- Content END -->
-			</div>
-		</div>
-	</div>
-</div>
-<!-- Baggage and fare END -->
- 
-</section>
-
-<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-
-  <script>
-    async function populateCountryDropdowns() {
-      try {
-        const response = await fetch("/api/countries");
-        const countries = await response.json();
-  
-        const nationalitySelects = document.querySelectorAll("#nationalitySelect");
-        const countrySelects = document.querySelectorAll("#countrySelect");
-  
-        countries.forEach(country => {
-          const option = document.createElement("option");
-          option.value = country;
-          option.textContent = country;
-  
-          nationalitySelects.forEach(select => {
-            select.appendChild(option.cloneNode(true));
-          });
-  
-          countrySelects.forEach(select => {
-            select.appendChild(option.cloneNode(true));
-          });
-        });
-      } catch (err) {
-        console.error("Error fetching country list:", err);
-      }
-    }
-  
-    document.addEventListener("DOMContentLoaded", () => {
-      setTimeout(populateCountryDropdowns, 200); // Slight delay to ensure DOM is built
-    });
-  </script>
-  
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-    const travelerAccordion = document.getElementById("travelerAccordion");
-    const requestDetails = <%- JSON.stringify(requestDetails) %>;
-
-    if (!requestDetails) {
-        travelerAccordion.innerHTML = "<p>No traveler details found.</p>";
-        return;
-    }
-
-    let { adults, children, infants } = requestDetails;
-    adults = parseInt(adults) || 1;
-    children = parseInt(children) || 0;
-    infants = parseInt(infants) || 0;
-
-    let travelerCount = 1;
-    const today = new Date();
-
-            // Function to format date for Flatpickr (YYYY-MM-DD)
-            const formatDateForFlatpickr = (date) => {
+          // Function to format date for Flatpickr (YYYY-MM-DD)
+          const formatDateForFlatpickr = (date) => {
             return date.toISOString().split("T")[0];
-        };
+          };
 
-    const adultMinDOB = new Date(today.getFullYear() - 150, today.getMonth(), today.getDate()); // Assuming max 150 years old
-    const adultMaxDOB = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
-    const childMinDOB = new Date(today.getFullYear() - 17, today.getMonth(), today.getDate());
-    const childMaxDOB = new Date(today.getFullYear() - 2, today.getMonth(), today.getDate());
-    const infantMinDOB = new Date(today.getFullYear() - 2, today.getMonth(), today.getDate());
-    const infantMaxDOB = today;
-    
-    function createTravelerSection(type, index) {
-        let dobClass = "";
-        let minDOB = "";
-        let maxDOB = "";
+          const adultMinDOB = new Date(today.getFullYear() - 150, today.getMonth(), today.getDate()); // Assuming max 150 years old
+          const adultMaxDOB = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+          const childMinDOB = new Date(today.getFullYear() - 17, today.getMonth(), today.getDate());
+          const childMaxDOB = new Date(today.getFullYear() - 2, today.getMonth(), today.getDate());
+          const infantMinDOB = new Date(today.getFullYear() - 2, today.getMonth(), today.getDate());
+          const infantMaxDOB = today;
 
-        if (type === "Adult") {
-                dobClass = "dob-adult";
-                minDOB = formatDateForFlatpickr(adultMinDOB);
-                maxDOB = formatDateForFlatpickr(adultMaxDOB);
+          function createTravelerSection(type, index) {
+            let dobClass = "";
+            let minDOB = "";
+            let maxDOB = "";
+
+            if (type === "Adult") {
+              dobClass = "dob-adult";
+              minDOB = formatDateForFlatpickr(adultMinDOB);
+              maxDOB = formatDateForFlatpickr(adultMaxDOB);
             } else if (type === "Child") {
-                dobClass = "dob-child";
-                minDOB = formatDateForFlatpickr(childMinDOB);
-                maxDOB = formatDateForFlatpickr(childMaxDOB);
+              dobClass = "dob-child";
+              minDOB = formatDateForFlatpickr(childMinDOB);
+              maxDOB = formatDateForFlatpickr(childMaxDOB);
             } else if (type === "Infant") {
-                dobClass = "dob-infant";
-                minDOB = formatDateForFlatpickr(infantMinDOB);
-                maxDOB = formatDateForFlatpickr(infantMaxDOB);
+              dobClass = "dob-infant";
+              minDOB = formatDateForFlatpickr(infantMinDOB);
+              maxDOB = formatDateForFlatpickr(infantMaxDOB);
             }
 
             let titleOptions = "";
-if (type === "Adult") {
-    titleOptions = `
+            if (type === "Adult") {
+              titleOptions = `
         <option>Mr</option>
         <option>Mrs</option>
         <option>Ms</option>
     `;
-} else if (type === "Child") {
-    titleOptions = `
+            } else if (type === "Child") {
+              titleOptions = `
         <option>Master</option>
         <option>Miss</option>
     `;
-} else {
-    titleOptions = `
+            } else {
+              titleOptions = `
 <option>Master</option>
         <option>Miss</option>    `;
-}
+            }
 
-        return `
+            return `
             <div class="accordion-item mb-3">
                 <h6 class="accordion-header font-base" id="heading-${travelerCount}">
                     <button class="accordion-button fw-bold rounded collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${travelerCount}" aria-expanded="true" aria-controls="collapse-${travelerCount}">
@@ -921,125 +806,124 @@ if (type === "Adult") {
                 </div>
             </div>
         `;
-    }
-
-    // Generate travelers
-    for (let i = 1; i <= adults; i++) {
-        travelerAccordion.innerHTML += createTravelerSection("Adult", i);
-        travelerCount++;
-    }
-
-    for (let i = 1; i <= children; i++) {
-        travelerAccordion.innerHTML += createTravelerSection("Child", i);
-        travelerCount++;
-    }
-
-    for (let i = 1; i <= infants; i++) {
-        travelerAccordion.innerHTML += createTravelerSection("Infant", i);
-        travelerCount++;
-    }
-
-    // Initialize Flatpickr with min and max date restrictions
-    setTimeout(() => {
-    // document.querySelectorAll(".dob-adult, .dob-child, .dob-infant").forEach((input) => {
-    //     flatpickr(input, {
-    //         dateFormat: "Y-m-d",  // Internal format (hidden)
-    //         altInput: true,       // Show user-friendly format
-    //         altFormat: "F j, Y",  // e.g., February 23, 2025
-    //         allowInput: true,
-    //         minDate: input.getAttribute("data-min"),
-    //         maxDate: input.getAttribute("data-max"),
-    //     });
-    // });
-
-    document.querySelectorAll(".dob-adult, .dob-child, .dob-infant").forEach((input) => {
-  const maxDateStr = input.getAttribute("data-max");
-  
-  flatpickr(input, {
-    dateFormat: "Y-m-d",
-    altInput: true,
-    altFormat: "F j, Y",
-    allowInput: true,
-    minDate: input.getAttribute("data-min"),
-    maxDate: maxDateStr,
-    onDayCreate: function(dObj, dStr, fp, dayElem) {
-      const date = dayElem.dateObj;
-      const maxDate = new Date(maxDateStr);
-
-      // Compare only date parts (ignoring time)
-      if (
-        date.getFullYear() === maxDate.getFullYear() &&
-        date.getMonth() === maxDate.getMonth() &&
-        date.getDate() === maxDate.getDate()
-      ) {
-        dayElem.classList.add("max-date-highlight");
-      }
-    }
-  });
-});
-
-      document.querySelectorAll(".expiry-picker").forEach((input) => {
-        flatpickr(input, {
-            dateFormat: "Y-m-d",
-            altInput: true,
-            altFormat: "F j, Y",
-            allowInput: true,
-            minDate: "today",  // Restrict past dates
-        });
-    });
-}, 100);
-});
-  </script>
-
-  <style>
-    /* Highlight the last selectable date */
-.max-date-highlight {
-  border: 2px solid #e9e8fa !important;
-  background-color: #edecfb !important;
-  border-radius: 50%;
-  color: #5143d9;
-  font-weight: bold;
-}
-
-  </style>
-    
-    <script>
-      document.getElementById("bookingForm").addEventListener("submit", function (event) {
-    event.preventDefault(); // Prevent default form submission
-
-    const travelers = [];
-    let isValid = true;
-
-    document.querySelectorAll(".accordion-item").forEach((item, index) => {
-      const fields = {
-            title: item.querySelector("select[name='title']"),
-            first_name: item.querySelector("input[name='first_name']"),
-            last_name: item.querySelector("input[name='last_name']"),
-            dob: item.querySelector("input[name='dob']"),
-            nationality: item.querySelector("select[name='nationality']"),
-            passport_number: item.querySelector("input[name='passport_number']"),
-            passport_country: item.querySelector("select[name='passport_country']"),
-            passport_expiry: item.querySelector("input[name='passport_expiry']")
-        };
-
-        let travelerValid = true;
-
-        for (const key in fields) {
-          const field = fields[key];
-          if (!field || !field.value.trim()) {
-            field?.classList.add("border", "border-danger");
-            travelerValid = false;
-            isValid = false;
-          } else {
-            field?.classList.remove("border", "border-danger");
           }
+
+          // Generate travelers
+          for (let i = 1; i <= adults; i++) {
+            travelerAccordion.innerHTML += createTravelerSection("Adult", i);
+            travelerCount++;
+          }
+
+          for (let i = 1; i <= children; i++) {
+            travelerAccordion.innerHTML += createTravelerSection("Child", i);
+            travelerCount++;
+          }
+
+          for (let i = 1; i <= infants; i++) {
+            travelerAccordion.innerHTML += createTravelerSection("Infant", i);
+            travelerCount++;
+          }
+
+          // Initialize Flatpickr with min and max date restrictions
+          setTimeout(() => {
+            // document.querySelectorAll(".dob-adult, .dob-child, .dob-infant").forEach((input) => {
+            //     flatpickr(input, {
+            //         dateFormat: "Y-m-d",  // Internal format (hidden)
+            //         altInput: true,       // Show user-friendly format
+            //         altFormat: "F j, Y",  // e.g., February 23, 2025
+            //         allowInput: true,
+            //         minDate: input.getAttribute("data-min"),
+            //         maxDate: input.getAttribute("data-max"),
+            //     });
+            // });
+
+            document.querySelectorAll(".dob-adult, .dob-child, .dob-infant").forEach((input) => {
+              const maxDateStr = input.getAttribute("data-max");
+
+              flatpickr(input, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "F j, Y",
+                allowInput: true,
+                minDate: input.getAttribute("data-min"),
+                maxDate: maxDateStr,
+                onDayCreate: function (dObj, dStr, fp, dayElem) {
+                  const date = dayElem.dateObj;
+                  const maxDate = new Date(maxDateStr);
+
+                  // Compare only date parts (ignoring time)
+                  if (
+                    date.getFullYear() === maxDate.getFullYear() &&
+                    date.getMonth() === maxDate.getMonth() &&
+                    date.getDate() === maxDate.getDate()
+                  ) {
+                    dayElem.classList.add("max-date-highlight");
+                  }
+                }
+              });
+            });
+
+            document.querySelectorAll(".expiry-picker").forEach((input) => {
+              flatpickr(input, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "F j, Y",
+                allowInput: true,
+                minDate: "today",  // Restrict past dates
+              });
+            });
+          }, 100);
+        });
+      </script>
+
+      <style>
+        /* Highlight the last selectable date */
+        .max-date-highlight {
+          border: 2px solid #e9e8fa !important;
+          background-color: #edecfb !important;
+          border-radius: 50%;
+          color: #5143d9;
+          font-weight: bold;
         }
+      </style>
 
-        if (travelerValid) {
-          const typeText = item.querySelector(".accordion-button")?.textContent.trim() || "";
-          const type = typeText.split(" ")[0];
+      <script>
+        document.getElementById("bookingForm").addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent default form submission
 
-            const traveler = {
+          const travelers = [];
+          let isValid = true;
+
+          document.querySelectorAll(".accordion-item").forEach((item, index) => {
+            const fields = {
+              title: item.querySelector("select[name='title']"),
+              first_name: item.querySelector("input[name='first_name']"),
+              last_name: item.querySelector("input[name='last_name']"),
+              dob: item.querySelector("input[name='dob']"),
+              nationality: item.querySelector("select[name='nationality']"),
+              passport_number: item.querySelector("input[name='passport_number']"),
+              passport_country: item.querySelector("select[name='passport_country']"),
+              passport_expiry: item.querySelector("input[name='passport_expiry']")
+            };
+
+            let travelerValid = true;
+
+            for (const key in fields) {
+              const field = fields[key];
+              if (!field || !field.value.trim()) {
+                field?.classList.add("border", "border-danger");
+                travelerValid = false;
+                isValid = false;
+              } else {
+                field?.classList.remove("border", "border-danger");
+              }
+            }
+
+            if (travelerValid) {
+              const typeText = item.querySelector(".accordion-button")?.textContent.trim() || "";
+              const type = typeText.split(" ")[0];
+
+              const traveler = {
                 type: type,
                 index: index + 1,
                 title: fields.title.value,
@@ -1051,52 +935,52 @@ if (type === "Adult") {
                 passport_country: fields.passport_country.value,
                 passport_expiry: fields.passport_expiry.value,
               };
-            travelers.push(traveler);
-        }
-    });
+              travelers.push(traveler);
+            }
+          });
 
-    
-    if (!isValid) {
-        alert("Please fill in all traveler details before proceeding.");
-        return;
-    }
 
-    // Collect other form data
-    const mobile_number = document.querySelector("input[placeholder='Enter your mobile number']").value;
-    const email = document.querySelector("input[placeholder='Email address']").value;
-    
-    if (!mobile_number || !email) {
-        alert("Please provide both mobile number and email.");
-        return;
-    }
+          if (!isValid) {
+            alert("Please fill in all traveler details before proceeding.");
+            return;
+          }
 
-    const totalFare = document.getElementById("total-fare").innerText;
-    const baseFare = document.getElementById("base-fare").innerText;
-    const discount = document.getElementById("discount").innerText;
-    const otherServices = document.getElementById("other-services").innerText;
-    const flightDetails = <%- JSON.stringify(flightDetails) %>;
+          // Collect other form data
+          const mobile_number = document.querySelector("input[placeholder='Enter your mobile number']").value;
+          const email = document.querySelector("input[placeholder='Email address']").value;
 
-    // Prepare request payload
-    const requestData = {
-        travelers,
-        mobile_number,
-        email,
-        totalFare,
-        baseFare,
-        discount,
-        otherServices,
-    };
+          if (!mobile_number || !email) {
+            alert("Please provide both mobile number and email.");
+            return;
+          }
 
-    sessionStorage.setItem("bookingData", JSON.stringify(requestData));
-    sessionStorage.setItem("flightDetails", JSON.stringify(flightDetails));
+          const totalFare = document.getElementById("total-fare").innerText;
+          const baseFare = document.getElementById("base-fare").innerText;
+          const discount = document.getElementById("discount").innerText;
+          const otherServices = document.getElementById("other-services").innerText;
+          const flightDetails = <% - JSON.stringify(flightDetails) %>;
+          console.log(discount)
+          // Prepare request payload
+          const requestData = {
+            travelers,
+            mobile_number,
+            email,
+            totalFare,
+            baseFare,
+            discount,
+            otherServices,
+          };
 
-// Redirect to /flight-booking
-window.location.href = "/flight-booking";
-});
+          sessionStorage.setItem("bookingData", JSON.stringify(requestData));
+          sessionStorage.setItem("flightDetails", JSON.stringify(flightDetails));
 
-    </script>
+          // Redirect to /flight-booking
+          window.location.href = "/flight-booking";
+        });
 
-<script>
+      </script>
+
+      <!-- <script>
   document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search);
     const fId = urlParams.get("fId");
@@ -1145,11 +1029,58 @@ window.location.href = "/flight-booking";
       bookingLink.addEventListener('click', () => clearInterval(interval));
     }
   });
-</script>
+</script> -->
 
-  <!-- =======================
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const adults = Number(<%= requestDetails.adults %>);
+          const children = Number(<%= requestDetails.children %>);
+          const infants = Number(<%= requestDetails.infants %>);
+          const pax = adults + children + infants;
+
+          const paxTime = pax > 4 ? 20 * 60 : 15 * 60; // in seconds
+          const timerEl = document.getElementById("timer");
+
+          const flightId = "<%= flightDetails._id %>" || "default";
+          const timerKey = `flight_timer_${flightId}`;
+
+          let expireAt = localStorage.getItem(timerKey);
+
+          if (!expireAt) {
+            const expireTimestamp = Date.now() + paxTime * 1000;
+            localStorage.setItem(timerKey, expireTimestamp);
+            expireAt = expireTimestamp;
+          } else {
+            expireAt = parseInt(expireAt, 10);
+          }
+
+          const interval = setInterval(() => {
+            const now = Date.now();
+            const remaining = Math.max(0, Math.floor((expireAt - now) / 1000));
+
+            const minutes = String(Math.floor(remaining / 60)).padStart(2, '0');
+            const seconds = String(remaining % 60).padStart(2, '0');
+            timerEl.textContent = `${minutes}:${seconds}`;
+
+            if (remaining <= 0) {
+              clearInterval(interval);
+              localStorage.removeItem(timerKey);
+              alert("Your session has expired. Please start again.");
+              window.location.href = "/";
+            }
+          }, 1000);
+
+          // Stop timer if already at /bookings
+          if (window.location.pathname === "/bookings") {
+            localStorage.removeItem(timerKey);
+            clearInterval(interval);
+          }
+        });
+      </script>
+
+      <!-- =======================
     Main Content END -->
-</main>
-<!-- **************** MAIN CONTENT END **************** -->
+    </main>
+    <!-- **************** MAIN CONTENT END **************** -->
 
-<%- include('./partials/footer') %>
+    <%- include('./partials/footer') %>

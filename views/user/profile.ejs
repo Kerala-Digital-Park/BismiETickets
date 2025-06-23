@@ -35,19 +35,23 @@
                                                 let progress = 0;
                                                 let emailVerified = !!userDetails.email;
                                                 let mobileVerified = !!userDetails.mobile;
+                                                let kycVerified = userDetails.kyc === "Completed";
+
+                                                if (emailVerified) progress += 20;
+                                                if (mobileVerified) progress += 20;
+                                                if (kycVerified) progress += 30;
+                                                
+                                                const basicInfoComplete = userDetails.name && userDetails.email && userDetails.mobile && userDetails.agencyName &&
+                                                                          userDetails.nationality && userDetails.proprietorship && userDetails.address && userDetails.image && userDetails.logo;
                                     
-                                                if (emailVerified) progress += 30;
-                                                if (mobileVerified) progress += 30;
-                                    
-                                                const basicInfoComplete = userDetails.name && userDetails.email && userDetails.mobile &&
-                                                                          userDetails.nationality && userDetails.gender && userDetails.address && userDetails.image;
-                                    
-                                                if (basicInfoComplete) progress = 100;
+                                                if (basicInfoComplete) progress += 30;
+                                                if (basicInfoComplete && kycVerified) progress = 100;
                                     
                                                 let progressColor = "bg-danger";
                                                 if (progress === 100) progressColor = "bg-success";
-                                                else if (progress >= 60) progressColor = "bg-warning";
-                                                else if (progress >= 30) progressColor = "bg-info";
+                                                else if (progress >= 70) progressColor = "bg-warning";
+                                                else if (progress >= 40) progressColor = "bg-info";
+                                                else if (progress >= 20) progressColor = "bg-tertiary";
                                             %>
                                     
                                             <div class="progress progress-sm bg-success bg-opacity-10">
@@ -185,9 +189,9 @@
 
                                                 <!-- Mobile -->
                                                 <div class="col-md-6">
-                                                    <label class="form-label">Mobile number<span
+                                                    <label class="form-label">Mobile number (with Country Code)<span
                                                             class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="mobile"
+                                                    <input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mobile"
                                                     value="<%= userDetails.mobile %>" placeholder="Enter your mobile number"
                                                         <%= userDetails.mobile ? 'disabled' : '' %>>
                                                 </div>
@@ -198,10 +202,19 @@
                                                     <select class="form-select" id="nationality" <%= userDetails.nationality ? 'disabled' : '' %>>
                                                       <option value="">Select your country</option>
                                                     </select>
-                                                  </div>                                                  
+                                                </div>     
+                                                
+                                                <!-- Proprietorship -->  
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Proprietorship/Company/LLP<span
+                                                            class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" id="proprietorship"
+                                                    value="<%= userDetails.proprietorship %>" placeholder="Enter your company"
+                                                        <%= userDetails.proprietorship ? 'disabled' : '' %>>
+                                                </div>  
                                                 
                                                 <!-- Gender -->
-<div class="col-md-6">
+<!-- <div class="col-md-6">
     <label class="form-label">Select Gender<span class="text-danger">*</span></label>
     <div class="d-flex gap-4">
         <div class="form-check radio-bg-light">
@@ -220,7 +233,7 @@
             <label class="form-check-label" for="flexRadioDefault3">Others</label>
         </div>
     </div>
-</div>
+</div> -->
 
 
                                                 <!-- Address -->
@@ -369,19 +382,19 @@
                         formData.append("nationality", document.getElementById("nationality").value);
                         formData.append("address", document.getElementById("address").value);
                         formData.append("agencyName", document.getElementById("agencyName").value);
-            
-                        // Get selected gender
-                        const genderInputs = document.getElementsByName("flexRadioDefault");
-                        let selectedGender = "";
-                        for (const input of genderInputs) {
-                            if (input.checked) {
-                                // Correctly get the value of the selected radio button
-                                selectedGender = document.querySelector(`label[for="${input.id}"]`).textContent.trim();
-                                break; // Stop after finding the selected gender
-                            }
-                        }
-                        formData.append("gender", selectedGender);
-                        console.log(selectedGender);
+                        formData.append("proprietorship", document.getElementById("proprietorship").value);
+                        // // Get selected gender
+                        // const genderInputs = document.getElementsByName("flexRadioDefault");
+                        // let selectedGender = "";
+                        // for (const input of genderInputs) {
+                        //     if (input.checked) {
+                        //         // Correctly get the value of the selected radio button
+                        //         selectedGender = document.querySelector(`label[for="${input.id}"]`).textContent.trim();
+                        //         break; // Stop after finding the selected gender
+                        //     }
+                        // }
+                        // formData.append("gender", selectedGender);
+                        // console.log(selectedGender);
             
                         try {
                             const response = await fetch("/update-profile", {

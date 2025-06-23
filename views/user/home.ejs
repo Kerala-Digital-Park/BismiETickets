@@ -8,13 +8,16 @@
       <section class="position-relative py-8 py-lg-9"
         style="background-image:url(assets/images/bg/20.jpg); background-position: center left; background-size: cover;">
         <% if (userId) { %>
-          <% if (user.kyc !=="Completed" ) { %>
+          <% if (user && user.kyc !=="Completed" ) { %>
             <p class="alert alert-info text-center mx-auto shadow-sm rounded" style="max-width: 80%;  z-index: 10;">
               <a href="/kyc"><strong>Complete your KYC</strong></a> to enable transactions securely.
             </p>
           <% } else if( message ) { %>
             <p class="alert alert-info text-center mx-auto shadow-sm rounded" style="max-width: 80%;  z-index: 10;">
               <a href="/kyc"><strong><%= message %></strong></a> 
+            </p>
+          <% } else { %>
+            <p>
             </p>
           <% } %>
         <% } %>
