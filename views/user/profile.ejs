@@ -54,13 +54,13 @@
                                                 else if (progress >= 20) progressColor = "bg-tertiary";
                                             %>
                                     
-                                            <div class="progress progress-sm bg-success bg-opacity-10">
+                                            <div class="progress progress-sm bg-success bg-opacity-10 d-flex">
                                                 <div class="progress-bar <%= progressColor %> aos" role="progressbar"
                                                     data-aos="slide-right" data-aos-delay="200" data-aos-duration="1000"
                                                     data-aos-easing="ease-in-out" style="width: <%= progress %>%;" aria-valuenow="<%= progress %>"
                                                     aria-valuemin="0" aria-valuemax="100">
-                                                    <span class="progress-percent-simple h6 fw-light ms-auto"><%= progress %>%</span>
                                                 </div>
+                                                <span class="progress-percent-simple h6 fw-light ms-auto"><%= progress %>%</span>
                                             </div>
                                             <% if ( progress === 100) { %>
                                                 <p class="mb-0 text-success">You're all set!</p>

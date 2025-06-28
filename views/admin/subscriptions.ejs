@@ -16,20 +16,29 @@
         <!-- Subscription Category -->
         <div class="mb-3">
           <label class="form-label">Subscription For</label>
-          <select name="category" class="form-select" id="categorySelect">
+          <!-- <select name="category" class="form-select" id="categorySelect">
             <option value="User">User</option>
             <option value="Agent">Agent</option>
-          </select>
+          </select> -->
+          <input type="text" class="form-control" name="category" id="categorySelect" value="<%= role %>" disabled>
         </div>
       
-        <div class="mb-3">
+        <!-- <div class="mb-3">
           <label class="form-label">Plan Name</label>
           <select name="subscription" class="form-select" id="subscriptionSelect">
             <option value="Free">Free</option>
             <option value="Pro">Pro</option>
             <option value="Enterprise">Enterprise</option>
           </select>
-        </div>
+        </div> -->
+        <div class="mb-3">
+  <label class="form-label">Plan Name</label>
+  <select name="subscription" class="form-select" id="subscriptionSelect">
+    <% subscriptions.forEach(function(plan) { %>
+      <option value="<%= plan.name %>"><%= plan.subscription %></option>
+    <% }); %>
+  </select>
+</div>
       
         <div class="mb-3">
           <label class="form-label">Transaction Limit</label>

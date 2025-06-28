@@ -17,7 +17,8 @@ adminRouter.get("/agent-detail/:id",isLogin, adminController.viewAgentDetail);
 adminRouter.get("/settings",isLogin, adminController.viewSettings);
 adminRouter.get("/add-flight",isLogin, adminController.viewAddFlight);
 adminRouter.get('/coupons',isLogin, adminController.viewCoupons);
-adminRouter.get('/subscriptions',isLogin, adminController.viewSubscriptions);
+adminRouter.get('/agent-subscriptions',isLogin, adminController.viewAgentSubscriptions);
+adminRouter.get('/user-subscriptions',isLogin, adminController.viewUserSubscriptions);
 adminRouter.get('/edit-subscription/:id',isLogin, adminController.viewEditSubscription)
 adminRouter.get('/bank-updates',isLogin, adminController.viewBankUpdates);
 adminRouter.get('/profile-updates',isLogin, adminController.viewProfileUpdates);

@@ -54,16 +54,21 @@
                         <!-- Price item START -->
                         <div class="col-md-6 col-lg-4">
                             <div class="card shadow">
+                                        <% const freePlan=subscriptions.find(plan=> plan.subscription === "Starter");
+                                            const featureList = freePlan?.features[0]?.split(',') || [];
+                                            const freePrice = freePlan?.price || 0;
+                                            const freeAnnualPrice = freePrice * 12 ;
+                                            %>
                                 <!-- Card header -->
                                 <div
                                     class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
                                     <div>
-                                        <h5 class="mb-0">Free Plan</h5>
-                                        <!-- <div class="hstack gap-2">
-                                            <span class="h3 plan-price mb-0" data-monthly-price="$20"
-                                                data-annual-price="$570">$20</span>
+                                        <h6 class="mb-0">Starter Plan</h6>
+                                        <div class="hstack gap-2">
+                                            <span class="h3 plan-price mb-0" data-monthly-price="₹<%= freePrice %>"
+                                                data-annual-price="<%= freeAnnualPrice %>">₹<%= freePrice %></span>
                                             <span class="h6 fw-light mb-0">/ per user</span>
-                                        </div> -->
+                                        </div>
                                     </div>
                                     <span class="icon-lg rounded-circle" data-bs-toggle="tooltip"
                                         data-bs-placement="top" title="Most Popular">
@@ -95,9 +100,6 @@
                                         <li><i class="bi bi-x-circle text-danger me-2"></i>No Special Fares</li>
                                     </ul> -->
                                     <ul class="list-unstyled mb-0">
-                                        <% const freePlan=subscriptions.find(plan=> plan.subscription === "Free");
-                                            const featureList = freePlan?.features[0]?.split(',') || [];
-                                            %>
                                             <% featureList.forEach(feature=> { %>
                                                 <li class="mb-2">
                                                     <i class="bi bi-check-circle text-success me-2"></i>
@@ -110,7 +112,7 @@
 
                                 <!-- Card footer -->
                                 <% if(user) { %>
-                                    <% if(user.subscription && user.subscription.subscription==="Free" ) { %>
+                                    <% if(user.subscription && user.subscription.subscription==="Starter" ) { %>
                                         <div class="card-footer p-4 pt-0">
                                             <button class="btn btn-success w-100 mb-0" disabled>Current Plan</button>
                                         </div>
@@ -322,7 +324,7 @@
 
         <script>
             async function freeCheckout() {
-                const subscription = "Free";
+                const subscription = "Starter";
                 try {
                     const response = await fetch("/subscription",
                         {
@@ -402,9 +404,9 @@
             }
 
             async function freeDowngrade() {
-                const subscription = "Free";
+                const subscription = "Starter";
                 try {
-                    alert("Are you sure you want to downgrade to Free");
+                    alert("Are you sure you want to downgrade to Starter");
                     const response = await fetch("/subscription-free",
                         {
                             method: "POST",

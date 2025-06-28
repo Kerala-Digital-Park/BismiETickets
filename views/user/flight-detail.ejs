@@ -491,7 +491,7 @@
             const serviceTax = (servicesCharge * 18) / 100;
             const otherServices = servicesCharge + serviceTax;
 
-            const coupons = <% - JSON.stringify(coupons) %>;
+            const coupons = <%- JSON.stringify(coupons) %>;
 
             function updateFareDisplay(discountValue) {
               discountDisplay.innerText = `–₹${discountValue}`;
@@ -683,7 +683,8 @@
       <script>
         document.addEventListener("DOMContentLoaded", function () {
           const travelerAccordion = document.getElementById("travelerAccordion");
-          const requestDetails = <% - JSON.stringify(requestDetails) %>;
+          const requestDetails = <%- JSON.stringify(requestDetails) %>;
+          console.log("Request Details:", requestDetails);
 
           if (!requestDetails) {
             travelerAccordion.innerHTML = "<p>No traveler details found.</p>";
@@ -958,7 +959,7 @@
           const baseFare = document.getElementById("base-fare").innerText;
           const discount = document.getElementById("discount").innerText;
           const otherServices = document.getElementById("other-services").innerText;
-          const flightDetails = <% - JSON.stringify(flightDetails) %>;
+          const flightDetails = <%- JSON.stringify(flightDetails) %>;
           console.log(discount)
           // Prepare request payload
           const requestData = {

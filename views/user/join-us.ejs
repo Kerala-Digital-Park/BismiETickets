@@ -11,22 +11,24 @@
             <div class="row g-4 align-items-center">				
                 <div class="col-lg-7">
                     <!-- Title -->
-                    <h1 class="mb-4 display-5">List Your Property at <span class="text-primary">Booking</span></h1>
+                    <h1 class="mb-4 display-5">List your flight groups on <span class="text-primary">Btrips</span></h1>
                     <!-- Info -->
-                    <p class="mb-4">Speedily say has suitable disposal add boy. On forth doubt miles of child. Exercise joy man children rejoiced.</p>
+                    <p class="mb-4">Travel agencies have the opportunity to sell their own groups and restricted seats on our portal.
+ Simple and convenient options.
+ Please subscribe to a plan and complete Kyc before adding.</p>
                     <!-- Button -->
                     <button onclick="addListing()" class="btn btn-primary-soft mb-4">Add Listing <i class="fa-solid fa-arrow-right-long fa-fw"></i></button>
                     <!-- List -->
                     <h6 class="fw-normal mb-1">Create New Listing</h6>
                     <ul class="list-group list-group-borderless mb-0 small">
                         <li class="list-group-item d-flex mb-0">
-                            <i class="fa-solid fa-check-circle text-success me-2 mt-1"></i>More than 5.1 million holiday rentals already listed 
+                            <i class="fa-solid fa-check-circle text-success me-2 mt-1"></i>Over 1000 flight groups listed
                         </li>
                         <li class="list-group-item d-flex mb-0">
-                            <i class="fa-solid fa-check-circle text-success me-2 mt-1"></i>Bed one supposing breakfast day fulfilled off depending questions.
+                            <i class="fa-solid fa-check-circle text-success me-2 mt-1"></i>Easy and convenient tools to sell and customize
                         </li>
                         <li class="list-group-item d-flex mb-0">
-                            <i class="fa-solid fa-check-circle text-success me-2 mt-1"></i>The difference in the cost shall be borne by the client in case.
+                            <i class="fa-solid fa-check-circle text-success me-2 mt-1"></i>Utility opportunity to add services to your groups
                         </li>
                     </ul>
                 </div>
@@ -103,8 +105,8 @@
                             <div class="col-md-6">
                                 <div class="card card-body p-4">
                                  <div><img src="assets/images/element/18.svg" class="h-70px mb-3" alt=""></div> 
-                                    <h5>List any type of properties</h5>
-                                    <p class="mb-0">Speedily say has suitable disposal add boy. On forth doubt miles of child. Exercise joy man children rejoiced.</p>
+                                    <h5>List flight groups</h5>
+                                    <p class="mb-0">Sell quickly and complete your group fill, you can list flights. Groups, held seats or restricted seats can be allowed for sale.</p>
                                 </div>
                             </div>
                             <!-- Card END -->
@@ -114,7 +116,7 @@
                                 <div class="card card-body p-4">
                                     <div><img src="assets/images/element/21.svg" class="h-70px mb-3" alt=""></div>
                                     <h5>Import detail easily</h5>
-                                    <p class="mb-0">Two before narrow not relied on how except moment myself Dejection assurance Mrs led certainly open Betrayed.</p>
+                                    <p class="mb-0">Once inventory is added, quickly approve it for public purchase. There is no automated process for approval.</p>
                                 </div>
                             </div>
                             <!-- Card END -->
@@ -124,7 +126,7 @@
                                 <div class="card card-body p-4">
                                     <div><img src="assets/images/element/19.svg" class="h-70px mb-3" alt=""></div>
                                     <h5>Step by step guide</h5>
-                                    <p class="mb-0">Rooms oh fully taken by worse do. Points afraid but may end law.Points afraid but may end law.</p>
+                                    <p class="mb-0">The lists are completely filled with bad things. Points are feared, but the law may end. All bad sellers notice their bad things and get tired of them or prevent further sales.</p>
                                 </div>
                             </div>
                             <!-- Card END -->
@@ -134,7 +136,7 @@
                                 <div class="card card-body p-4">
                                     <div><img src="assets/images/element/20.svg" class="h-70px mb-3" alt=""></div>
                                     <h5>Marvelous discounts</h5>
-                                    <p class="mb-0">Prospective should start broadly and then narrow their list down to colleges that best fit experts</p>
+                                    <p class="mb-0">List groups can be allocated special promotions to increase sales, and exclusive coupons can also be allocated. It helps to increase sales and reviews.</p>
                                 </div>
                             </div>
                             <!-- Card END -->
@@ -197,15 +199,20 @@
                     <div class="row g-4 justify-content-center mt-1">
                         <!-- Price item START -->
                         <div class="col-md-6 col-lg-4">
-                            <div class="card border">
+                            <div class="card shadow">
+                                <% const proPlan=subscriptions.find(plan=> plan.subscription === "Base");
+                                    const proFeatureList = proPlan?.features[0]?.split(',') || [];
+                                    const proPrice = proPlan?.price || 0;
+                                    const proAnnualPrice = proPrice * 12 ;
+                                    %>
                                 <!-- Card header -->
                                 <div
                                     class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
                                     <div>
-                                        <h6 class="mb-0">Starter Plan</h6>
+                                        <h6 class="mb-0">Base Plan</h6>
                                         <div class="hstack gap-2">
-                                            <span class="h3 plan-price mb-0" data-monthly-price="$59"
-                                                data-annual-price="$840">$59</span>
+                                            <span class="h3 plan-price mb-0" data-monthly-price="₹<%= proPrice %>"
+                                                data-annual-price="₹<%= proAnnualPrice.toFixed(0) %>">₹<%= proPrice %></span>
                                             <span class="h6 fw-light mb-0">/ per user</span>
                                         </div>
                                     </div>
@@ -220,7 +227,13 @@
                                 <div class="card-body p-4">
                                     <!-- List -->
                                     <ul class="list-unstyled mb-0">
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>100
+                                        <% proFeatureList.forEach(feature=> { %>
+                                                <li class="mb-2">
+                                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                                    <%= feature.trim() %>
+                                                </li>
+                                                <% }) %>
+                                        <!-- <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>100
                                             Bookings/Month</li>
                                         <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>20 Lakh
                                             Transactions</li>
@@ -236,13 +249,13 @@
                                             Bids Opportunity</li>
                                         <li class="mb-2"><i class="fas fa-shield-alt text-success me-2"></i>Full KYC
                                             Badge</li>
-                                        <li><i class="fas fa-tools text-success me-2"></i>Limited Action Tools</li>
+                                        <li><i class="fas fa-tools text-success me-2"></i>Limited Action Tools</li> -->
                                     </ul>
                                 </div>
 
                                 <!-- Card footer -->
                                 <% if(user) { %>
-                                    <% if(user.subscription && user.subscription.subscription==="Starter" ) { %>
+                                    <% if(user.subscription && user.subscription.subscription==="Base" ) { %>
                                         <div class="card-footer p-4 pt-0">
                                             <button class="btn btn-success w-100 mb-0" disabled>Current Plan</button>
                                         </div>
@@ -266,14 +279,19 @@
                         <!-- Price item START -->
                         <div class="col-md-6 col-lg-4">
                             <div class="card shadow">
+                                <% const enterprisePlan=subscriptions.find(plan=> plan.subscription === "Enterprise");
+                                    const enterpriseFeatureList = enterprisePlan?.features[0]?.split(',') || [];
+                                    const enterprisePrice = enterprisePlan?.price || 0;
+                                    const enterpriseAnnualPrice = enterprisePrice * 12 ;
+                                    %>
                                 <!-- Card header -->
                                 <div
                                     class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
                                     <div>
                                         <h6 class="mb-0">Enterprise Plan</h6>
                                         <div class="hstack gap-2">
-                                            <span class="h3 plan-price mb-0" data-monthly-price="$99"
-                                                data-annual-price="$999">$99</span>
+                                            <span class="h3 plan-price mb-0" data-monthly-price="₹<%= enterprisePrice %>"
+                                                data-annual-price="₹<%= enterpriseAnnualPrice.toFixed(0) %>">₹<%= enterprisePrice %></span>
                                             <span class="h6 fw-light mb-0">/ per user</span>
                                         </div>
                                     </div>
@@ -288,7 +306,7 @@
                                 <div class="card-body p-4">
                                     <!-- List -->
                                     <ul class="list-unstyled mb-0">
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Unlimited
+                                        <!-- <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Unlimited
                                             Bookings</li>
                                         <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Unlimited
                                             Transactions</li>
@@ -305,7 +323,13 @@
                                         <li class="mb-2"><i class="fas fa-shield-alt text-success me-2"></i>Full KYC
                                             Badge</li>
                                         <li><i class="fas fa-money-bill-alt text-success me-2"></i>Reduced Booking Fees
-                                        </li>
+                                        </li> -->
+                                        <% enterpriseFeatureList.forEach(feature=> { %>
+                                                <li class="mb-2">
+                                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                                    <%= feature.trim() %>
+                                                </li>
+                                                <% }) %>
                                     </ul>
                                 </div>
 
@@ -354,8 +378,8 @@
     
                             <!-- Title and content -->
                             <div class="col-sm-9 col-lg-6 col-xl-7">
-                                <h4>Why did you choose us</h4>
-                                <p class="mb-0">Water timed folly right aware if oh truth. Large above be to means. Dashwood does provide stronger is.</p>
+                                <h4>Are you having trouble joining?</h4>
+                                <p class="mb-0">We are ready to help and support you with any issues joining our seller platforms. Don't hesitate, you can contact us via email. Please click the button and share it.</p>
                             </div>
     
                             <!-- Button -->
@@ -392,7 +416,7 @@
 
     <script>
         async function starterCheckout() {
-            const subscription = "Starter";
+            const subscription = "Base";
             try {
                 const response = await fetch("/agent-subscription",
                     {

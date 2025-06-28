@@ -529,8 +529,11 @@ const viewBlogDetail = async (req, res) => {
 };
 
 const viewHelp = async (req, res) => {
+  const userId = req.session.userId; // Get user ID from session
   try {
-    res.render("user/help", {});
+    const tickets = await Support.find({ userId: userId }).sort({ createdAt: -1 });
+
+    res.render("user/help", { tickets});
   } catch (error) {
     console.error(error);
     res.render("error", { error });
@@ -904,7 +907,7 @@ const getSellerList = async (req, res) => {
   try {
     // Store requestDetails temporarily in memory
     flightRequests = requestDetails;
-    console.log(flightRequests)
+    console.log("flightRequests",flightRequests)
 
     // Send redirect URL to frontend
     res.status(200).json({ redirectUrl: `/flights?id=${id}` });
@@ -2017,7 +2020,7 @@ const freeSubscription = async (req, res) => {
     }
     
     const freePlan = await Subscriptions.findOne({
-      subscription: "Free",
+      subscription: "Starter",
       role: user.userRole,
     });
     
@@ -2183,16 +2186,16 @@ const agentSubscription = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    if (subscription === "Starter") {
-      if (user.subscription.subscription === "Starter") {
+    if (subscription === "Base") {
+      if (user.subscription.subscription === "Base") {
         return res.json({
           redirectUrl: "/join-us",
-          message: "Starter subscription already active",
+          message: "Base subscription already active",
         });
       } else if (user.kyc !== "Completed") {
         return res.json({
           redirectUrl: "/kyc",
-          message: "Complete KYC for Starter subscription",
+          message: "Complete KYC for Base subscription",
         });
       } else {
         res
@@ -3057,7 +3060,7 @@ const contact = async (req, res) => {
   try {
     const mailOptions = {
       from: email, // Sender (user's email)
-      to: process.env.EMAIL, // Recipient (you)
+      to: "info@btrips.in", // Recipient (you)
       subject: `New Contact Form Submission from ${name}`,
       html: `
         <h3>Contact Form Submission</h3>
@@ -3248,6 +3251,52 @@ const addSupportRequest = async (req, res) => {
   }
 };
 
+const addAddonRequest = async (req, res) => {
+  const bookingId = req.params.bookingId;
+  const userId = req.session.userId;
+
+  try {
+    const { passengerName, subject, visaDuration, returnDate, hotelDate, location, passengerIdentification1, passengerIdentification2, type1, type2 } = req.body;
+    console.log("Received:", { passengerName, subject, visaDuration, returnDate, hotelDate, location, passengerIdentification1, passengerIdentification2, type1, type2 });
+
+    if (!userId || !bookingId || !passengerName) {
+      return res.redirect(`/manage-booking?id=${bookingId}&error=Missing+required+fields`);
+    }
+
+    const bookingExists = await Bookings.findById(bookingId);
+    if (!bookingExists) {
+      return res.redirect(`/manage-booking?id=${bookingId}&error=Booking+not+found`);
+    }
+
+    const request = new Requests({
+      userId,
+      bookingId,
+      category: "add-on",
+      subject,
+      passengerName,
+      visaDuration: visaDuration || "",
+      returnDate: returnDate || "",
+      hotelDate: hotelDate || "",
+      location: location || "",
+      passengerIdentification: [
+        {
+          passengerIdentification1: passengerIdentification1 || "",
+          passengerIdentification2: passengerIdentification2 || "",
+          type1: type1 || "",
+          type2: type2 || ""
+        }
+      ]
+    });
+
+    await request.save();
+
+    return res.redirect(`/manage-booking?id=${bookingId}&success=Request+submitted`);
+  } catch (error) {
+    console.error("Error creating request:", error);
+    return res.redirect(`/manage-booking?id=${bookingId}&error=Server+error`);
+  }
+};
+
 module.exports = {
   viewHomepage,
   viewDashboard,
@@ -3331,8 +3380,8 @@ module.exports = {
   cancelBooking,
   bookingSupportTicket,
   viewPopularFlights,
+  viewSellerBooking,
   addServiceRequest,
   addSupportRequest,
-  viewSellerBooking,
-
+  addAddonRequest,
 };

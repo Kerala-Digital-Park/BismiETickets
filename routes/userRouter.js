@@ -55,7 +55,7 @@ userRouter.use(async(req, res, next) => {
     next();
   });
   
-
+  
 userRouter.get("/", userController.viewHomepage);
 userRouter.get("/dashboard", isLogin, userController.viewDashboard);
 userRouter.get("/flight-list", userController.viewFlightList);
@@ -70,7 +70,7 @@ userRouter.get("/forgot-password", userController.viewForgotPassword);
 userRouter.get("/reset-password", userController.viewResetPassword);
 userRouter.get("/blog", userController.viewBlog);
 userRouter.get("/blog-detail", userController.viewBlogDetail);
-userRouter.get("/help", userController.viewHelp);
+userRouter.get("/help", isLogin, userController.viewHelp);
 userRouter.get("/help-detail", userController.viewHelpDetail);
 userRouter.get("/faq", userController.viewFAQ);
 userRouter.get("/help-contact", userController.viewHelpContact);
@@ -106,7 +106,6 @@ userRouter.get("/agent-subscription", isLogin, userController.viewAgentSubscript
 userRouter.get("/transactions", isLogin, userController.viewTransactions);
 userRouter.get("/notifications", isLogin, userController.viewNotifications);
 userRouter.get("/popular-flights", userController.viewPopularFlights);
-
 
 userRouter.post("/sign-up", userController.signup);
 userRouter.post("/sign-in", userController.signin);
@@ -154,6 +153,7 @@ userRouter.post("/support-booking/:id", upload.single('file'), isLogin, userCont
 userRouter.post('/remove-account',isLogin, userController.removeBank);
 userRouter.post("/service-request/:bookingId", isLogin, upload.array("file", 4), userController.addServiceRequest);
 userRouter.post("/support-request/:bookingId", isLogin, upload.array("file", 4), userController.addSupportRequest);
+userRouter.post("/addon-request/:bookingId", isLogin, userController.addAddonRequest);
 
 userRouter.put("/update-listing", isLogin, userController.updateListingById);
 userRouter.put("/update-seats", isLogin, userController.updateSeatById);

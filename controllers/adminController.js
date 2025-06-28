@@ -398,10 +398,20 @@ const deleteCoupon = async (req, res) => {
   }
 };
 
-const viewSubscriptions = async (req, res) => {
+const viewAgentSubscriptions = async (req, res) => {
   try {
-    const subscriptions = await Subscription.find();
-    res.render("admin/subscriptions", { subscriptions });
+    const subscriptions = await Subscription.find({role:"Agent"});
+    res.render("admin/subscriptions", { subscriptions, role: "Agent" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+};
+
+const viewUserSubscriptions = async (req, res) => {
+  try {
+    const subscriptions = await Subscription.find({role:"User"});
+    res.render("admin/subscriptions", { subscriptions, role: "User" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
@@ -451,7 +461,12 @@ const viewEditSubscription = async (req, res) => {
 const editSubscription = async (req, res) => {
   try {
     await Subscription.findByIdAndUpdate(req.params.id, req.body);
-    res.redirect("/admin/subscriptions");
+    const { role } = req.body; // Get the role from the request body
+    if (role === "Agent") {
+      res.redirect("/admin/agent-subscriptions");
+    } else if (role === "User") {
+      res.redirect("/admin/user-subscriptions");
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
@@ -843,13 +858,19 @@ const updateKycDetail = async (req, res) => {
     const role = update.userId.userRole;
     const subscription = update.subscription;
 
+    let defaultSubscription;
+    if (role === "Agent") {
+      defaultSubscription = "Base";
+    } else if (role === "User") {
+      defaultSubscription = "Starter";
+    }
     let subscriptionId;
     let newKyc;
 
     if (update.kyc === "Pending" && update.visitingCard && update.panCard) {
       if (subscription.subscription === "Null") {
         const defaultPlan = await Subscription.findOne({
-          subscription: "Free",
+          subscription: defaultSubscription,
           role: role,
         });
         if (!defaultPlan) {
@@ -909,10 +930,14 @@ const updateKycDetail = async (req, res) => {
           .json({ success: false, message: "User not found" });
       }
 
-      // Remove approved bank update request
+      console.log("Updated user:", updatedUser);
+
       await KycUpdates.findByIdAndUpdate(
         kycUpdateId,
-        { status: "approved" },
+        { status: "approved",
+          kyc: newKyc, // Update the kyc status
+          subscription: subscriptionId, // Update the subscription ID
+         },
         { new: true }
       );
       
@@ -2573,7 +2598,8 @@ module.exports = {
   viewCoupons,
   viewAddCoupon,
   deleteCoupon,
-  viewSubscriptions,
+  viewAgentSubscriptions,
+  viewUserSubscriptions,
   addSubscription,
   viewEditSubscription,
   editSubscription,

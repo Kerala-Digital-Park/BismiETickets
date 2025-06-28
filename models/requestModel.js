@@ -22,7 +22,7 @@ const requestSchema = mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["service", "support"],
+      enum: ["service", "support", "add-on"],
       required: true,
     },
     subject: {
@@ -61,6 +61,42 @@ const requestSchema = mongoose.Schema(
           type: Date,
           default: Date.now,
         }
+      }
+    ],
+    visaDuration: {
+      type: Number,
+      required: false,
+    },
+    returnDate: {
+      type: Date,
+      required: false,
+    },
+    location: {
+      type: String,
+      required: false,
+    },
+    hotelDate:{
+      type: String,
+      required: false,
+    },
+    passengerIdentification: [
+      {
+        passengerIdentification1: {
+        type: String,
+        required: false,
+      },
+        passengerIdentification2: {
+          type: String,
+          required: false,
+        },
+        type1: {
+          type: String,
+          required: false,
+        },
+        type2: {
+          type: String,
+          required: false,
+        },
       }
     ],
     status: {

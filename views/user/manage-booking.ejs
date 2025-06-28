@@ -88,7 +88,26 @@ Page banner END -->
                                 <li class="nav-item"> <a class="nav-link mb-0" data-bs-toggle="tab"
                                         href="#tab-3"><i class="bi bi-patch-question"></i> Manage
                                         Requests</a> </li>
-
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="dropdoanMenu"
+                                        title="Please inactive Inventory For Edit options" data-bs-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        <i class="bi bi-list-ul fa-fw me-1"></i>Addon Services
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdoanMenu">
+                                        <!-- Dropdown menu -->
+                                        <li> <a class="dropdown-item"
+                                                title="Return Issued Ticket for Visit Visa Passenger"
+                                                data-bs-toggle="modal" data-bs-target="#returndummy"><i
+                                                    class="bi bi-ticket-perforated"></i> Return Dummy Tickets</a></li>
+                                        <li> <a class="dropdown-item" title="Hotel Booking for Visit Visa Passenger"
+                                                data-bs-toggle="modal" data-bs-target="#hotel"><i
+                                                    class="bi bi-building-fill"></i> Dummy Hotel Booking</a></li>
+                                        <li> <a class="dropdown-item" title="Saudi Arabia Residents"
+                                                data-bs-toggle="modal" data-bs-target="#muqeem"><i
+                                                    class="bi bi-file-text-fill"></i> Muqeem Re-entry</a></li>
+                                    </ul>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -222,7 +241,12 @@ Page banner END -->
                                     <div class="card border">
                                         <!-- Card header -->
                                         <div class="card-header border-bottom d-md-flex justify-content-md-between">
-                                            <h6 class="card-title mb-0">Passenger Information</h6>
+                                            <h6 class="card-title mb-0"><i class="bi bi-passport"></i> Passenger
+                                                Information</h6>
+                                            <button class="btn btn-link  p-0 mb-0" data-bs-toggle="modal"
+                                                data-bs-target="#namecorrect">
+                                                <i class="bi bi-person-badge"></i> Name correction
+                                            </button>
                                         </div>
 
                                         <!-- Card body START -->
@@ -588,67 +612,7 @@ Page banner END -->
                             <div class="card-body p-4 pb-0">
                                 <!-- Accordion START -->
                                 <div class="accordion accordion-icon accordion-bg-light" id="accordioncircle">
-                                       <!-- Name START -->
-                                    <div class="accordion-item mb-3">
-                                        <h6 class="accordion-header" id="heading-4">
-                                            <button class="accordion-button collapsed rounded" type="button"
-                                                data-bs-toggle="collapse" data-bs-target="#collapse-4"
-                                                aria-expanded="false" aria-controls="collapse-4">
-                                                <i class="bi bi-person-badge text-primary me-2"></i> <span
-                                                    class="me-5">Name correction ( Not allowed Full
-                                                    Change)</span>
-                                            </button>
-                                        </h6>
-                                        <div id="collapse-4" class="accordion-collapse collapse"
-                                            aria-labelledby="heading-4" data-bs-parent="#accordioncircle">
-                                            <!-- Accordion body -->
-                                            <div class="accordion-body">
-                                                <p class="mb-2 mb-sm-0 text-dark">File a request with the corrected
-                                                    name, We’ll contact the airline to correct the error in the
-                                                    name, If the airline allows requested change, we’ll call you to
-                                                    confirm it and an updated e-ticket will be sent to you on mail
-                                                </p>
-                                                <div class="card card-body border align-items-center mt-4">
-                                                    <!-- Form START -->
-                                                    <form class="row g-3" id="changeNameForm" enctype="multipart/form-data" action="/support-request/<%= bookings._id%>" method="post">
-                                                            <div class="col-md-6 form-group"><label class="form-label" for="passengerName">Passenger Name</label>
-							<select class="form-control passenger-select" name="passengerName" required>
-  								<option value="">--Select Passenger--</option>
-							</select>
-                                                        </div>
-
-                                                        <div class="col-md-6">
-                                                            <label for="formFile" class="form-label"> Proof Of
-                                                                Passenger</label>
-                                                            <input class="form-control" type="file" id="file" name="file"
-                                                                required>
-
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            <label for="formFile" class="form-label"> Correct Name
-                                                                of
-                                                                Passenger</label>
-                                                            <div class="input-group">
-                                                                <input type="text" class="form-control" name="firstName"
-                                                                    placeholder="First name" required>
-                                                                <input type="text" class="form-control" name="lastName"
-                                                                    placeholder="Last name" required>
-                                                            </div>
-
-
-                                                        </div>
-
-														<input type="hidden" name="subject" value="Request For Name Correction"/>
-
-                                                        <button type="submit" class="btn btn-sm btn-outline-primary mb-0">Submit
-                                                            request</button>
-                                                    </form>
-                                                </div>
-                                                <!-- Form END -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Name END -->
+                                    
                                     <!-- non-operational START -->
                                     <div class="accordion-item mb-3">
                                         <h6 class="accordion-header" id="heading-1">
@@ -1309,7 +1273,319 @@ Page banner END -->
             </div>
         </div>
     </div>
-    <!-- meals modal END -->
+    <!-- Bag modal END -->
+    
+    <!-- return Dummy modal START -->
+    <div class="modal fade" id="returndummy" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Title -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Request For Return Dummy Tickets</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body p-3">
+                    <p>Book a Return Dummy at least 24 hours prior to departure for a hassle-free travel.</p>
+                    <div class="row g-4 mb-3">
+                        <form class="row g-3" id="dummyTicketsForm" action="/addon-request/<%= bookings._id%>" method="post">
+                            <div class="col-md-6 form-group"><label class="form-label" for="passengerName">Passenger Name</label>
+							<select class="form-control passenger-select" name="passengerName" required>
+  								<option value="">--Select Passenger--</option>
+							</select>
+                            </div>
+                        <div class="col-sm-6 form-group">
+                            <label class="form-label h6 fw-normal mb-1"><i
+                                    class="bi bi-passport text-primary me-1"></i>Visa Duration</label>
+                            <div class="form-border-bottom form-control-transparent form-fs-lg mt-2"> 
+                                <select id="visaDuration" name="visaDuration" class="form-control" required>
+                                    <option class="opt" value="">--Select Duration--</option>
+                                    <option class="opt" value="15">15 Days</option>
+                                    <option class="opt" value="30">30 Days</option>
+                                    <option class="opt" value="60">60 Days</option>
+                                    <option class="opt" value="90">90 Days</option>
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 form-group"><!-- Check in -->
+
+                            <label class="h6 fw-normal mb-1"><i class="bi bi-calendar text-primary me-1"></i>Return
+                                Date</label>
+                            <!-- Input field -->
+                            <div class="form-border-bottom form-control-transparent form-fs-lg mt-2">
+                                <input type="text" class="form-control flatpickr py-2" data-date-format="d M Y"
+                                    placeholder="Choose a date" name="returnDate" id="returnDate" required>
+                            </div>
+							<input type="hidden" name="subject" value="Request For Return Dummy Tickets"/>
+
+                        </div>
+
+                    </div>
+                    <div class="modal-footer bg-light mb-2"> 
+                        <button type="submit" class="btn btn-sm btn-outline-primary mb-0">Submit
+                            request</button>
+                        </form> 
+                    </div>
+                    <h6 class="alert-heading h6">Instructions for Return Dummy</h6>
+                    <ul>
+                        <li>By processing, You accept Booking <a href="#">Terms of Services</a> and <a
+                                href="#">Policy</a></li>
+                        <li>The onward ticket is a one-way ticket showing you are leaving a country for another
+                            destination. A return flight ticket is a round-trip ticket that shows you will be coming
+                            back to your original location after your visit. The main difference is that an onward
+                            ticket moves you forward, while a return ticket brings you back. But both work fine in
+                            immigration check.</li>
+                        <li>Steps: Submit Request -> Our team will forward the request to the sales teams and once it is
+                            accepted we will add the service cost. You have to pay the amount within the time. Once it
+                            is completed the seller will be updated.</li>
+                        <li>You should book it at least 24 hours before your flight's departure. so it's best to book in
+                            advance. </li>
+                        <li>Once request we will response a support Id. it shows on manage supports tab then please
+                            confirm it.</li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- return dummy modal END -->
+
+    <!-- hotel modal START -->
+    <div class="modal fade" id="hotel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Title -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Request For Dummy Hotel Booking</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body p-3">
+                    <p>Dummy Hotel Booking is a temporary, cancellable reservation made at a hotel. It's often used to
+                        meet visa application requirements or other travel documentation needs without committing to a
+                        real stay. Note: Dummy Hotel Booking is not verifiable on the hotel website.</p>
+                    <div class="row g-4 mb-3">
+                         <form class="row g-3" id="dummyHotelForm" action="/addon-request/<%= bookings._id%>" method="post">
+                                                            <div class="col-md-6 form-group"><label class="form-label" for="passengerName">Passenger Name</label>
+							<select class="form-control passenger-select" name="passengerName" required>
+  								<option value="">--Select Passenger--</option>
+							</select>
+                                                        </div>
+                        <div class="col-sm-6 form-group">
+                           <label class="h6 fw-normal mb-0"><i class="bi bi-geo-alt text-primary me-1"></i>Location</label>
+									<!-- Input field -->
+									<div class="form-border-bottom form-control-transparent form-fs-lg mt-2">
+										<select id="country" name="location" class="form-control" required>
+  							<option value="">--Select Country--</option>
+  							</select>
+									</div>
+                        </div>
+
+                        <div class="col-sm-6 form-group"><!-- Check in -->
+
+                            <label class="h6 fw-normal mb-1"><i class="bi bi-calendar text-primary me-1"></i>Select
+                                Date</label>
+                            <!-- Input field -->
+                            <div class="form-border-bottom form-control-transparent form-fs-lg mt-2">
+                                <input type="text" class="form-control flatpickr" data-mode="range" placeholder="Select date" id="hotelDate" name="hotelDate" required>
+                            </div>
+							<input type="hidden" name="subject" value="Request For Dummy Hotel Booking"/>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer bg-light mb-2"> 
+                        <button type="submit" class="btn btn-sm btn-outline-primary mb-0">Submit
+                                                            request</button>
+                        </form>
+                    </div>
+                    <h6 class="alert-heading h6">Instructions for Return Dummy</h6>
+                    <ul>
+                        <li>By processing, You accept Booking <a href="#">Terms of Services</a> and <a
+                                href="#">Policy</a></li>
+                        <li>Steps: Submit Request -> Our team will forward the request to the sales teams and once it is
+                            accepted we will add the service cost. You have to pay the amount within the time. Once it
+                            is completed the seller will be updated.</li>
+                        <li>You should book it at least 24 hours before your flight's departure. so it's best to book in
+                            advance. </li>
+                        <li>Once request we will response a support Id. it shows on manage supports tab then please
+                            confirm it.</li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- hotel modal END -->
+
+       <!-- muqeem modal START -->
+    <div class="modal fade" id="muqeem" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Title -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Request For Saudi Re-Entry Checking</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body p-3">
+                    <p>Saudi Residents want to carry their Visa Return validity Print. You can request for that.</p>
+                    <form id="muqeemForm" action="/addon-request/<%= bookings._id%>" method="post">
+                            <div class="row g-4 mb-3">
+                         <div class="col-sm-6 form-group"><label class="form-label" for="passengerName">Passenger Name</label>
+							<select class="form-control passenger-select" name="passengerName" required>
+  								<option value="">--Select Passenger--</option>
+							</select>
+                        </div>
+                          <div class="col-sm-6 form-group"><label class="form-label" for="passengerIdentification1">Passenger
+                                Identification 1</label>
+                            <select id="passengerIdentification1" name="passengerIdentification1" class="form-control" required>
+                                <option class="opt" value="">--Select option--</option>
+                                <option class="opt" value="iqama">Iqama Number</option>
+                                <option class="opt" value="visa">Visa Number</option>
+                                <option class="opt" value="visa">Passport Number</option>
+
+                            </select>
+                        </div>
+                      <div class="col-sm-6 form-group"><label class="form-label" for="type1">Type Number</label>
+                            <input class="form-control" maxlength="50" placeholder="Type row and seat side" id="type1" name="type1" required>
+                        </div>
+                            <div class="col-sm-6 form-group"><label class="form-label" for="passengerIdentification2">Passenger
+                                Identification 2</label>
+                            <select id="passengerIdentification2" name="passengerIdentification2" class="form-control" required>
+                                <option class="opt" value="">--Select option--</option>
+                                <option class="opt" value="iqama">Iqama Number</option>
+                                <option class="opt" value="visa">Visa Number</option>
+                                <option class="opt" value="visa">Passport Number</option>
+
+                            </select>
+                        </div>
+                      <div class="col-sm-6 form-group"><label class="form-label" for="type2">Type Number</label>
+                            <input class="form-control" maxlength="50" placeholder="Type row and seat side" id="type2" name="type2" >
+                        </div>
+                        
+                        <div class="col-sm-6 form-group"><!-- Check in -->
+
+                            <label class="h6 fw-normal mb-1"><i class="bi bi-calendar text-primary me-1"></i>Birth
+                                Date</label>
+                            <!-- Input field -->
+                            <div class="form-border-bottom form-control-transparent form-fs-lg mt-2">
+                                <input type="text" class="form-control flatpickr py-2" data-date-format="d M Y"
+                                    placeholder="Choose a date" id="dob" name="dob" required>
+                            </div>
+						<input type="hidden" name="subject" value="Request For Saudi Re-Entry Checking"/>
+                        </div>
+                       
+                    </div>
+                    <div class="modal-footer bg-light mb-2"> 
+                            <button type="submit" class="btn btn-sm btn-outline-primary mb-0">Submit request</button>
+                    </div>
+                </form>
+                    <h6 class="alert-heading h6">Instructions for Muqeem Print</h6>
+                    <ul>
+                        <li>By processing, You accept Booking <a href="#">Terms of Services</a> and <a
+                                href="#">Policy</a></li>
+                        <li>Steps: Submit Request -> Our team will forward the request to the sales teams and once it is
+                            accepted we will add the service cost. You have to pay the amount within the time. Once it
+                            is completed the seller will be updated.</li>
+                        <li>2 documents needed for checking. Collect from customer and type it. </li>
+                        <li>Once request we will response a support Id. it shows on manage supports tab then please
+                            confirm it.</li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- muqeem modal END -->
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        const today = new Date();
+          today.setHours(0, 0, 0, 0); // Normalize time
+
+        flatpickr("#dob", {
+  dateFormat: "d M Y",
+  maxDate: "today" // prevents picking future dates
+});
+
+        flatpickr("#returnDate", {
+  dateFormat: "d M Y",
+  minDate: "today" // prevents picking future dates
+});
+        });
+    </script>
+    
+    <!-- name correct modal START -->
+    <div class="modal fade" id="namecorrect" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Title -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Name correction</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <form class="row g-3" id="changeNameForm" enctype="multipart/form-data" action="/support-request/<%= bookings._id%>" method="post">
+                <!-- Body -->
+                <div class="modal-body p-3">
+                    <p>Name corrections are allowed as per airline policy. Complete changes are not allowed. If you opt
+                        for the Name Update Protection Plan, charges will be covered. In all other cases, charges as per
+                        airline policy will apply.</p>
+                    <div class="row g-4 mb-3">
+                        <div class="col-6 form-group"><label class="form-label" for="passengerName">Passenger Name</label>
+							<select class="form-control passenger-select" name="passengerName" required>
+  								<option value="">--Select Passenger--</option>
+							</select>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="formFile" class="form-label"> Passenger ID Proof</label>
+                            <input class="form-control" type="file"  id="file" name="file">
+                        </div>
+                        <div class="col-sm-12"><label class="form-label" for="country">Correct Name of
+                                Passenger</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="First name" name="firstName">
+                                <input type="text" class="form-control" placeholder="Last name" name="lastName">
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <input type="hidden" name="subject" value="Request For Name Correction"/>
+
+                    <button type="submit" class="btn btn-sm btn-outline-primary mb-0">Submit
+                                                            request</button>
+                </div>
+                </form>
+                    <h6 class="alert-heading h6">Instructions for Name correction</h6>
+                    <ul>
+                        <li>By processing, You accept Booking <a href="#">Terms of Services</a> and <a
+                                href="#">Policy</a></li>
+                        <li>Steps: Submit Request -> Our team will forward the request to the sales teams and once it is
+                            accepted we will add the service cost. You have to pay the amount within the time. Once it
+                            is completed the seller will be updated.</li>
+                        <li>You should inform the correction at least 48 hours before your flight's departure. </li>
+                        <li>Once request we will response a support Id. it shows on manage supports tab then please
+                            confirm it. after make payment to update Names.</li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- name correction modal END -->
 
 						<!-- Flight detail modal START -->
 						<div class="modal fade" id="flightdetail" aria-hidden="true">
