@@ -208,14 +208,20 @@
                         });
     
                     if (!response.ok) {
-                        alert("Failed to fetch subscription details");
-                        return;
+                        return Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Failed to fetch subscription details'
+        });
                     }
     
                     const data = await response.json();
                     if (data.message) {
-                        alert(data.message);
-                    }
+await Swal.fire({
+          icon: 'info',
+          title: 'Message',
+          text: data.message
+        });                    }
                     window.location.href = data.redirectUrl;
                 } catch (error) {
                     window.location.href = "/sign-in";
@@ -234,13 +240,21 @@
                         });
     
                     if (!response.ok) {
-                        alert("Failed to fetch subscription details");
+                        return Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Failed to fetch subscription details'
+        });
                         return;
                     }
     
                     const data = await response.json();
                     if (data.message) {
-                        alert(data.message);
+                        await Swal.fire({
+          icon: 'info',
+          title: 'Message',
+          text: data.message
+        });
                     }
                     window.location.href = data.redirectUrl;
     
@@ -251,9 +265,19 @@
             }
     
             async function starterDowngrade() {
-                const subscription = "Free";
-                try {
-                    alert("Are you sure you want to downgrade to Free");
+                const subscription = "Base";
+ const confirm = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to downgrade to the Base plan?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, downgrade'
+    });
+
+    if (!confirm.isConfirmed) return;     
+               try {
                     const response = await fetch("/subscription-free",
                         {
                             method: "POST",
@@ -262,13 +286,21 @@
                         });
     
                     if (!response.ok) {
-                        alert("Failed to fetch subscription details");
+                        return Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Failed to fetch subscription details'
+        });
                         return;
                     }
     
                     const data = await response.json();
                     if (data.message) {
-                        alert(data.message);
+                        await Swal.fire({
+          icon: 'info',
+          title: 'Message',
+          text: data.message
+        });
                     }
                     window.location.href = data.redirectUrl;
                 } catch (error) {

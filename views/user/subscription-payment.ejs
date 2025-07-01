@@ -197,8 +197,14 @@
                         .then(res => res.json())
                         .then(data => {
                             console.log("Server Response:", data);
-                            alert("Purchase confirmed! Redirecting...");
-                            window.location.href = "/profile";
+                            Swal.fire({
+        icon: 'success',
+        title: 'Purchase Confirmed!',
+        text: 'Redirecting to your profile...',
+        confirmButtonText: 'OK'
+    }).then(() => {
+        window.location.href = "/profile";
+    });
                         })
                         .catch(error => console.error("Error:", error));
         },

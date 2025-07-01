@@ -405,14 +405,25 @@
                             const data = await response.json();
             
                             if (data.success) {
-                                alert("Profile update request submitted for admin approval!");
-                                location.reload(); // Refresh page to reflect changes
+                                Swal.fire({
+  icon: 'success',
+  title: 'Submitted!',
+  text: 'Profile update request submitted for admin approval.'
+}).then(() => location.reload());
                             } else {
-                                alert("Error submitting profile update request: " + data.message);
-                            }
+Swal.fire({
+  icon: 'error',
+  title: 'Update Failed',
+  text: "Error submitting profile update request: " + data.message
+});                            }
                         } catch (error) {
                             console.error("Error:", error);
-                            alert("An error occurred while updating your profile.");
+
+Swal.fire({
+  icon: 'error',
+  title: 'Error',
+  text: "An error occurred while updating your profile."
+});
                         }
                     });
                 });
@@ -427,8 +438,11 @@
                         console.log(email);
 
                         if (!email) {
-                            alert("Please enter a valid email address.");
-                            return;
+Swal.fire({
+  icon: 'warning',
+  title: 'Missing Email',
+  text: 'Please enter a valid email address.'
+});                            return;
                         }
 
                         try {
@@ -443,14 +457,24 @@
                             const data = await response.json();
 
                             if (data.success) {
-                                alert("Email update request submitted for admin approval!");
-                                location.reload(); // Refresh page to reflect changes
+                               Swal.fire({
+  icon: 'success',
+  title: 'Submitted!',
+  text: 'Email update request submitted for admin approval.'
+}).then(() => location.reload());
                             } else {
-                                alert("Error submitting email update request: " + data.message);
-                            }
+Swal.fire({
+  icon: 'error',
+  title: 'Update Failed',
+  text: "Error submitting email update request: " + data.message
+});                            }
                         } catch (error) {
                             console.error("Error:", error);
-                            alert("An error occurred while updating your profile.");
+                            Swal.fire({
+  icon: 'error',
+  title: 'Update Failed',
+  text: "An error occurred while updating your profile"
+});
                         }
                     });
                 });
@@ -468,8 +492,11 @@
             console.log(currentPassword, newPassword, confirmPassword);
             
             if ( !currentPassword || !newPassword || !confirmPassword) {
-                alert("Please enter all fields.");
-                return;
+Swal.fire({
+  icon: 'warning',
+  title: 'Missing Fields',
+  text: 'Please enter all fields.'
+});                return;
             }
 
             const requestBody = {
@@ -490,15 +517,24 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert("Password updated successfully!");
-                    location.reload(); // Refresh page to reflect changes
+Swal.fire({
+  icon: 'success',
+  title: 'Success',
+  text: 'Password updated successfully!'
+}).then(() => location.reload());
                 } else {
-                    alert("Error updating profile: " + data.message);
-                }
+Swal.fire({
+  icon: 'error',
+  title: 'Update Failed',
+  text: "Error updating profile: " + data.message
+});                }
             } catch (error) {
                 console.error("Error:", error);
-                alert("An error occurred while updating your profile.");
-            }
+Swal.fire({
+  icon: 'error',
+  title: 'Error',
+  text: "An error occurred while updating your profile."
+});            }
         });
     });
 </script>

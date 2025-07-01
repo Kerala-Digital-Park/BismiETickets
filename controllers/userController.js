@@ -996,7 +996,7 @@ const getFlights = async (req, res) => {
   return { agent, flight: f };
 });
 
-    res.render("user/flights", { id, flight,   agentsWithFlights, requestDetails: "" });
+    res.render("user/flights", { id, flight,   agentsWithFlights, requestDetails });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });

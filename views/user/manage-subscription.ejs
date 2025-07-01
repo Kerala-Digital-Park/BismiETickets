@@ -193,8 +193,14 @@
                                 .then(res => res.json())
                                 .then(data => {
                                     console.log("Server Response:", data);
-                                    alert("Renewal completed! Redirecting...");
-                                    window.location.href = "/manage-subscription";
+                                    Swal.fire({
+              icon: 'success',
+              title: 'Renewal Completed!',
+              text: 'Redirecting to subscription page...',
+              confirmButtonText: 'OK'
+            }).then(() => {
+              window.location.href = "/manage-subscription";
+            });
                                 })
                                 .catch(error => console.error("Error:", error));
                 },
@@ -222,13 +228,21 @@
                         });
 
                     if (!response.ok) {
-                        alert("Failed to fetch subscription details");
+                         await Swal.fire({
+        icon: 'error',
+        title: 'Fetch Failed',
+        text: 'Failed to fetch subscription details'
+      });
                         return;
                     }
 
                     const data = await response.json();
                     if (data.message) {
-                        alert(data.message);
+                        await Swal.fire({
+        icon: 'info',
+        title: 'Notice',
+        text: data.message
+      });
                     }
                     window.location.href = data.redirectUrl;
                 } catch (error) {

@@ -445,10 +445,10 @@
                                 </label>
                               </div>
                               <p class="mb-0 small text-muted">
-                                Save <strong>₹<%= coupon.discount %></strong> with <%= coupon.code %>
+                                Save <strong id="discountAmountDisplay"><%= coupon.discount %> %</strong> with <%= coupon.code %>
                               </p>
                             </div>
-                            <div class="text-success fw-bold fs-5">–₹<%= coupon.discount %>
+                            <div class="text-success fw-bold fs-5">–<%= coupon.discount %> %
                             </div>
                           </div>
                           <% }); %>
@@ -490,7 +490,7 @@
             const servicesCharge = <%= subscription.serviceCharge %>;
             const serviceTax = (servicesCharge * 18) / 100;
             const otherServices = servicesCharge + serviceTax;
-
+            const discountAmountDisplay = document.getElementById("discountAmountDisplay");
             const coupons = <%- JSON.stringify(coupons) %>;
 
             function updateFareDisplay(discountValue) {
@@ -507,13 +507,18 @@
 
               const selected = coupons.find(c => c.code.toLowerCase() === code.toLowerCase());
               if (!selected) {
-                alert("No coupon found with that code or it may have expired.");
+                Swal.fire({
+  icon: 'error',
+  title: 'Invalid Coupon',
+  text: 'No coupon found with that code or it may have expired.'
+});
                 updateFareDisplay(0);
                 document.getElementById("noneCoupon").checked = true; // fallback
                 return;
               }
 
               const discountAmount = Math.round(((baseFare + otherServices) * selected.discount) / 100);
+              discountAmountDisplay.innerText = `₹${discountAmount}`;
               updateFareDisplay(discountAmount);
             }
 
@@ -533,8 +538,11 @@
             applyBtn.addEventListener("click", function () {
               const code = manualInput.value.trim();
               if (code === "") {
-                alert("Please enter a coupon code.");
-                return;
+Swal.fire({
+  icon: 'info',
+  title: 'Missing Input',
+  text: 'Please enter a coupon code.'
+});                return;
               }
               applyCoupon(code);
 
@@ -942,8 +950,11 @@
 
 
           if (!isValid) {
-            alert("Please fill in all traveler details before proceeding.");
-            return;
+Swal.fire({
+  icon: 'warning',
+  title: 'Incomplete Details',
+  text: 'Please fill in all traveler details before proceeding.'
+});            return;
           }
 
           // Collect other form data
@@ -951,8 +962,11 @@
           const email = document.querySelector("input[placeholder='Email address']").value;
 
           if (!mobile_number || !email) {
-            alert("Please provide both mobile number and email.");
-            return;
+Swal.fire({
+  icon: 'info',
+  title: 'Missing Contact Info',
+  text: 'Please provide both mobile number and email.'
+});            return;
           }
 
           const totalFare = document.getElementById("total-fare").innerText;
@@ -980,57 +994,6 @@
         });
 
       </script>
-
-      <!-- <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const fId = urlParams.get("fId");
-    const aId = urlParams.get("aId");
-    const currentPath = window.location.pathname;
-    // Get request count
-    const adults = Number(<%= requestDetails.adults %>);
-    const children = Number(<%= requestDetails.children %>);
-    const infants = Number(<%= requestDetails.infants %>);
-    const pax = adults + children + infants;
-
-    // Default timer
-    let totalSeconds = (pax > 4) ? 20 * 60 : 15 * 60;
-    const timerEl = document.getElementById("timer");
-
-    function formatTime(sec) {
-      const m = String(Math.floor(sec / 60)).padStart(2, '0');
-      const s = String(sec % 60).padStart(2, '0');
-      return `${m}:${s}`;
-    }
-
-    timerEl.textContent = formatTime(totalSeconds);
-
-    const interval = setInterval(() => {
-      totalSeconds--;
-      if (totalSeconds >= 0) {
-        timerEl.textContent = formatTime(totalSeconds);
-      } else {
-        clearInterval(interval);
-        // If still on flight-detail page with same params, redirect
-        if (
-          window.location.pathname === '/flight-detail' &&
-          urlParams.get('fId') === fId &&
-          urlParams.get('aId') === aId
-        ) {
-          window.location.href = '/';
-          alert("Your session has expired. Please start a new search.");
-        }
-      }
-    }, 1000);
-
-    // Optional: reset timer if navigating internally to flight-booking
-    // e.g., you click a booking button that changes the URL path
-    const bookingLink = document.getElementById('toBooking');
-    if (bookingLink) {
-      bookingLink.addEventListener('click', () => clearInterval(interval));
-    }
-  });
-</script> -->
 
       <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -1066,8 +1029,13 @@
             if (remaining <= 0) {
               clearInterval(interval);
               localStorage.removeItem(timerKey);
-              alert("Your session has expired. Please start again.");
-              window.location.href = "/";
+Swal.fire({
+  icon: 'warning',
+  title: 'Session Expired',
+  text: 'Your session has expired. Please start again.'
+}).then(() => {
+  window.location.href = "/";
+});
             }
           }, 1000);
 

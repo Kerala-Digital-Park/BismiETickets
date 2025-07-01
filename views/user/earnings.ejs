@@ -626,17 +626,31 @@
                         const data = await response.json();
                         console.log('Response data:', data);
 
-                        if (data.success) {
-                            alert(data.message);
-                            window.location.reload();
-                        } else {
-                            alert('Error adding bank details.');
-                        }
+                       if (data.success) {
+    Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: data.message
+    }).then(() => {
+        window.location.reload();
+    });
+} else {
+    Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error adding bank details.'
+    });
+}
+
                     } catch (error) {
-                        console.error('Error:', error);
-
-                    }
-
+    console.error('Error:', error);
+    Swal.fire({
+        icon: 'error',
+        title: 'Unexpected Error',
+        text: 'Something went wrong. Please try again later.',
+        confirmButtonText: 'OK'
+    });
+}
                 });
             </script>
 

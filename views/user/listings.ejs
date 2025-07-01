@@ -602,11 +602,21 @@
 							}
 
 							const result = await response.json();
-							alert('Flight updated successfully!');
-							window.location.reload();
+Swal.fire({
+  icon: 'success',
+  title: 'Success',
+  text: 'Flight updated successfully!',
+  confirmButtonText: 'OK'
+}).then(() => window.location.reload());
+
 						} catch (error) {
 							console.error('Error:', error);
-							alert('Error updating flight.');
+Swal.fire({
+  icon: 'error',
+  title: 'Update Failed',
+  text: 'Error updating flight.',
+  confirmButtonText: 'OK'
+});
 						}
 					});
 
@@ -673,12 +683,20 @@
 							}
 
 							const result = await response.json();
-							alert('Flight updated successfully!');
-							window.location.reload();
+Swal.fire({
+  icon: 'success',
+  title: 'Success',
+  text: 'Flight updated successfully!',
+  confirmButtonText: 'OK'
+}).then(() => window.location.reload());
 						} catch (error) {
 							console.error('Error:', error);
-							alert('Error updating flight.');
-						}
+Swal.fire({
+  icon: 'error',
+  title: 'Update Failed',
+  text: 'Error updating flight.',
+  confirmButtonText: 'OK'
+});						}
 					});
 
 				</script>
@@ -883,11 +901,20 @@
 							}
 
 							const result = await response.json();
-							alert('Flight updated successfully!');
-							window.location.reload();
+							Swal.fire({
+  icon: 'success',
+  title: 'Success',
+  text: 'Flight updated successfully!',
+  confirmButtonText: 'OK'
+}).then(() => window.location.reload());
 						} catch (error) {
 							console.error('Error:', error);
-							alert('Error updating flight.');
+Swal.fire({
+  icon: 'error',
+  title: 'Update Failed',
+  text: 'Error updating flight.',
+  confirmButtonText: 'OK'
+});
 						}
 					});
 				</script>
@@ -948,10 +975,19 @@
 									// ✅ Update the data-status to reflect the next toggle
 									checkbox.setAttribute('data-status', newStatus === 'active' ? 'inactive' : 'active');
 
-									alert('Status updated successfully!');
-
+Swal.fire({
+  icon: 'success',
+  title: 'Updated',
+  text: 'Status updated successfully!',
+  confirmButtonText: 'OK'
+});
 								} catch (err) {
-									alert('Error updating status');
+Swal.fire({
+  icon: 'error',
+  title: 'Failed',
+  text: 'Error updating status',
+  confirmButtonText: 'OK'
+});
 									checkbox.checked = wasChecked; // Revert on error too
 								}
 							});
@@ -980,8 +1016,12 @@
 							if (flightId) {
 								window.location.href = `/user-bookings?flightId=${flightId}`;
 							} else {
-								alert('Flight ID missing.');
-							}
+Swal.fire({
+  icon: 'warning',
+  title: 'Missing Flight ID',
+  text: 'Flight ID missing.',
+  confirmButtonText: 'OK'
+});							}
 						});
 					});
 				</script>
@@ -996,8 +1036,12 @@
 							if (flightId) {
 								window.location.href = `/transactions?flightId=${flightId}`;
 							} else {
-								alert('Flight ID missing.');
-							}
+Swal.fire({
+  icon: 'warning',
+  title: 'Missing Flight ID',
+  text: 'Flight ID missing.',
+  confirmButtonText: 'OK'
+});							}
 						});
 					});
 				</script>

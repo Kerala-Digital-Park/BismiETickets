@@ -1,199 +1,262 @@
 <%- include('./partials/header') %>
   <%- include('./partials/userHeader') %>
 
-    <!-- **************** MAIN CONTENT START **************** -->
+      <!-- **************** MAIN CONTENT START **************** -->
     <main>
-      <!-- ======================= Title and notice board START -->
-      <section class="pt-0">
-        <div class="container position-relative">
-          <!-- Title and button START -->
-          <div class="row">
-            <div class="col-xl-12 col-xxl-12">
-              <div class="vstack gap-4">
-                <div id="flight-list">
-                  <% if(flight){ %>
-                    <!-- Ticket item START -->
-                    <div class="card border">
-                      <!-- card-body START -->
-                      <div class="card-body p-4 pb-0">
-                        <div class="row g-4">
-                          <!-- Air line name -->
-                          <div class="col-md-3">
-                            <!-- Image -->
-                            <img src="<%= flight.stops[0].airlineLogo %>" class="w-80px mb-3" alt="">
+
+
+        <!-- =======================
+Title and notice board START -->
+        <section class="pt-0">
+            <div class="container position-relative">
+                <!-- Title and button START -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-sm-flex justify-content-sm-between align-items-center">
                             <!-- Title -->
-                            <h6 class="fw-normal mb-0">
-                              <%= flight.stops[0].airline %>
-                            </h6>
-                            <h6 class="fw-normal mb-0">
-                              <%= flight.stops[0].airlineCode %>
-                            </h6>
-                          </div>
+                            <div class="mb-3 mb-sm-0">
+                                <h4 class="fs-4">Choose where to book</h4>
+                                <ul class="nav nav-divider h6 mb-0">
+                                    <li class="nav-item"><%= new Date(flight.departureDate).toDateString() %></li>
+                                    <%
+                                    let stops;
+                                      if(flight.stops.length = 1){
+                                        stops = "Non Stop";
+                                        } else if(flight.stops.length = 2){
+                                        stops =  1 + " Stop";
+                                      } else if(flight.stops.length > 1){
+                                        stops = flight.stops.length - 1 + " Stops";
+                                      }
+                                    %>
+                                    <li class="nav-item"><%= stops %></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Title and button END -->
 
-                          <% const hasStops=flight.stops && flight.stops.length> 0; %>
-                            <% const firstStop=hasStops ? flight.stops[0] : null; %>
 
-                              <!-- Airport detail -->
-                              <div class="col-sm-4 col-md-3">
-                                <!-- Title -->
-                                <h4>
-                                  <%= flight.departureTime %>
-                                </h4>
-                                <h6 class="mb-0">
-                                  <%= new Date(flight.departureDate).toDateString() %>
+
+            </div>
+        </section>
+        <!-- =======================
+Title and notice board END -->
+
+        <!-- =======================
+Flight list START -->
+        <section class="pt-0">
+            <div class="container">
+                <div class="row">
+                    <!-- Detail START -->
+                    <div class="col-xl-7">
+                        <!-- Card body START -->
+                        <div class="card bg-transparent mb-3">
+                            <div class="vstack gap-3">
+                              <% if (agentsWithFlights && agentsWithFlights.length> 0) { %>
+                                <% agentsWithFlights.forEach(({ agent, flight })=> { %>
+                                <!-- Choose item START -->
+                                <div class="card border bg-transparent ">
+                                    <div class="card card-body h-100">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <!-- Image and text -->
+                                            <div class="d-flex align-items-center">
+                                                <div class="ms-3 mt-3">
+                                                    <h5 class="mb-0"><%= agent.userId %></h5>
+                                                    <span>
+                                                        <ul class="list-inline mb-2">
+                                                            <li class="list-inline-item me-0 small"><i
+                                                                    class="fa-solid fa-star text-warning"></i></li>
+                                                            <li class="list-inline-item me-0 small"><i
+                                                                    class="fa-solid fa-star text-warning"></i></li>
+                                                            <li class="list-inline-item me-0 small"><i
+                                                                    class="fa-solid fa-star text-warning"></i></li>
+                                                            <li class="list-inline-item me-0 small"><i
+                                                                    class="fa-solid fa-star text-warning"></i></li>
+                                                            <li class="list-inline-item me-0 small"><i
+                                                                    class="fa-solid fa-star-half-alt text-warning"></i>
+                                                            </li>
+                                                        </ul>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <ul class="list-group list-group-borderless mt-2 mb-0">
+                                                <li class="list-group-item">
+                                                    <h6 class="fw-normal mb-0"  data-bs-toggle="tooltip"
+                                                            data-bs-placement="top"
+                                                            aria-label="Check-in: <%= flight.baggage?.adult?.checkIn?.numberOfPieces %> pcs, <%= flight.baggage?.adult?.checkIn?.weightPerPiece %> kg each" data-bs-original-title="Check-in: <%= flight.baggage?.adult?.checkIn?.numberOfPieces %> pcs, <%= flight.baggage?.adult?.checkIn?.weightPerPiece %> kg each">
+                                                             <i  class="bi bi-suitcase fa-fw text-primary" ></i><%= flight.baggage?.adult?.checkIn?.weightPerPiece %> kg
+                                                    </h6>
+                                                </li>
+
+                                                <li class="list-group-item">
+                                                    <h6 class="fw-normal mb-0">
+                                                        <!-- Cabin Baggage Icon with Tooltip -->
+                                                        <i class="fa-solid fa-briefcase me-2" data-bs-toggle="tooltip"
+                                                            data-bs-placement="top"
+                                                            aria-label="Cabin: <%= flight.baggage?.adult?.cabin?.pieces %> pcs, <%= flight.baggage?.adult?.cabin?.weightPerPiece %> kg each"
+                                                            data-bs-original-title="Cabin: <%= flight.baggage?.adult?.cabin?.pieces %> pcs, <%= flight.baggage?.adult?.cabin?.weightPerPiece %> kg each">
+                                                        </i>
+                                                        <!-- Seats Icon with Tooltip -->
+                                                         <% 
+                                                         let seats;
+                                                          if(flight.inventoryDates ){
+                                                            totalSeats = flight.inventoryDates?.[0]?.seats;
+                                                            bookedSeats = flight.inventoryDates?.[0]?.seatsBooked;
+                                                            seats = totalSeats - bookedSeats;
+                                                          } else {
+                                                            seats = 0;
+                                                          }
+                                                         %>
+                                                        <i class="fas fa-chair me-2" data-bs-toggle="tooltip"
+                                                            data-bs-placement="top" aria-label="Seats Available: <%= seats %>"
+                                                            data-bs-original-title="Seats Available: <%= seats %>"></i>
+
+                                                        <i class="bi bi-patch-check-fill text-danger me-2"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            aria-label="Non-Refundable"
+                                                            data-bs-original-title="Non-Refundable"></i>
+                                                </li>
+                                                </h6>
+                                                </li>
+                                            </ul>
+                                            <%
+                                             const adults = requestDetails.adults || 1;
+                                             const children = requestDetails.children || 0;
+                                             const infants = requestDetails.infants || 0;
+                                             const totalPax = adults + children + infants;
+                                             const fareAdults = flight.inventoryDates[0].fare.adults || 0;
+                                             const fareChildren = flight.inventoryDates[0].fare.children || 0;
+                                             const fareInfants = flight.inventoryDates[0].fare.infants || 0;
+                                             const totalFare = (fareAdults * adults) + (fareChildren * children) +
+                                             (fareInfants * infants);
+                                            %>
+                                            <div data-bs-toggle="tooltip" data-bs-placement="top"
+                                                aria-label="Total Price : ₹ <%= totalFare %>"
+                                                data-bs-original-title="Total Price : ₹ <%= totalFare %>">
+                                                <span>Price per Pax</span>
+                                                <h5 class="card-title mb-0">₹ <%= flight.inventoryDates[0].fare.adults %></h5>
+                                            </div>
+                                            <!-- Button -->
+                                            <a href="#" class="btn btn-dark-soft mt-2" onclick='bookNow("<%= agent._id %>", "<%= flight._id %>")'>Book Now <i
+                                              class="bi bi-cart-plus-fill"></i> </a>
+                                            </div>
+                                    </div>
+                                  </div>
+                                  <!-- Choose item END -->
+                                  <% }) %>
+                                  <% } else { %>
+                                    <p>No agents available.</p>
+                                    <% } %>
+                                    
+                            </div>
+                        </div>
+                        <!-- Card body END -->
+                    </div>
+                    <!-- Detail END -->
+                    <%
+                      const adults = requestDetails.adults || 1;
+                      const children = requestDetails.children || 0;
+                      const infants = requestDetails.infants || 0;
+                      const totalPax = parseInt(adults) + parseInt(children) + parseInt(infants);
+                    %>
+                    <!-- Right side content START -->
+                    <aside class="col-xl-5">
+                        <div class="card bg-transparent border">
+                            <!-- Card header START -->
+                            <div class="card-header bg-transparent border-bottom">
+                                <h5 class="card-title mb-1"> <i class="bi bi-ticket-detailed me-2"></i><%= flight.fromCity %>  to <%= flight.toCity %></h5>
+                                <ul class="nav nav-divider mb-0">
+                                    <li class="nav-item"><%= totalPax %> <%=
+                                      totalPax === 1 ? 'Traveler' : 'Travelers' %>
+                                      %></li>
+                                    <li class="nav-item"><%= new Date(flight.departureDate).toDateString() %></li>
+                                    <% 
+                                    let type;
+                                    if(flight.stops.length === 1){
+                                        type = "Direct";
+                                      } else if(flight.stops.length === 2){
+                                        type =  1 + " Stop";
+                                      } else if(flight.stops.length > 2){
+                                        type = flight.stops.length - 1 + " Stops";
+                                      }
+                                    %>
+                                    <li class="nav-item">
+                                      <%= type %>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Card header END -->
+                            <!-- Card body START -->
+                            <div class="card-header d-sm-flex justify-content-sm-between align-items-center">
+                                <!-- Airline Name -->
+                                <div class="d-flex align-items-center mb-2 mb-sm-0">
+                                    <img src="<%= flight.stops[0].airlineLogo %>"
+                                        class="w-30px me-2" alt="">
+                                    <h6 class="fw-normal mb-0"><%= flight.stops[0].airline %> </h6>
+                                </div>
+                                <h6 class="fw-normal mb-0"><span class="text-body"><%= flight.stops[0].airlineCode %>-<%= flight.stops[0].flightNumber %></span>
                                 </h6>
-                                <p class="mb-0">
-                                  <%= flight.from.toUpperCase() %> -
+                            </div>
+                            <% const hasStops=flight.stops && flight.stops.length> 0; %>
+                            <% const firstStop=hasStops ? flight.stops[0] : null; %>
+                            <% const lastStop=hasStops ? flight.stops[flight.stops.length - 1] : null; %>
+
+                            <div class="card-body">
+                                <!-- Ticket item START -->
+                                <div class="row g-4">
+                                    <!-- Airport detail -->
+                                    <div class="col-sm-4 col-md-4">
+                                        <h5><%= flight.departureTime %></h5>
+                                        <h6 class="mb-0"><%= new Date(flight.departureDate).toDateString() %></h6>
+                                        <p class="mb-0"><%= flight.from.toUpperCase() %> -
                                     <% if (hasStops && firstStop.fromTerminal) { %>
                                       Terminal <%= firstStop.fromTerminal %>
                                         <% } %>
-                                          <%= flight.fromCity %>, <%= flight.fromCountry %>
-                                </p>
-                              </div>
+                                          <%= flight.fromCity %>, <%= flight.fromCountry %></p>
+                                    </div>
 
-                              <% const lastStop=hasStops ? flight.stops[flight.stops.length - 1] : null; %>
+                                    <!-- Time -->
+                                    <div class="col-sm-4 col-md-4 my-sm-auto text-center">
+                                        <!-- Time -->
+                                        <h6><%= flight.duration %></h6>
+                                        <div class="position-relative my-4">
+                                            <!-- Line -->
+                                            <hr class="bg-primary opacity-5 position-relative">
+                                            <!-- Icon -->
+                                            <div
+                                                class="icon-md bg-primary text-white rounded-circle position-absolute top-50 start-50 translate-middle">
+                                                <i class="fa-solid fa-fw fa-plane rtl-flip"></i>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                <!-- Airport detail -->
-                                <div class="col-sm-4 col-md-3">
-                                  <!-- Title -->
-                                  <h4>
-                                    <%= flight.arrivalTime %>
-                                  </h4>
-                                  <h6 class="mb-0">
-                                    <%= new Date(flight.arrivalDate).toDateString() %>
-                                  </h6>
-                                  <p class="mb-0">
-                                    <%= flight.to.toUpperCase() %> -
+                                    <!-- Airport detail -->
+                                    <div class="col-sm-4 col-md-4">
+                                        <h5><%= flight.arrivalTime %></h5>
+                                        <h6 class="mb-0"><%= new Date(flight.arrivalDate).toDateString() %></h6>
+                                        <p class="mb-0"><%= flight.to.toUpperCase() %> -
                                       <% if (hasStops && lastStop.toTerminal) { %>
                                         Terminal <%= lastStop.toTerminal %>
                                           <% } %>
-                                            <%= flight.toCity %>, <%= flight.toCountry %>
-                                  </p>
+                                            <%= flight.toCity %>, <%= flight.toCountry %></p>
+                                    </div>
                                 </div>
+                                <!-- Ticket item END -->
+                            </div>
+                            <!-- Card body END -->
 
-                                <!-- Price -->
-                                <div class="col-sm-4 col-md-3 text-end">
-                                  <!-- Price -->
-                                  <button class="btn btn-link text-decoration-underline p-0 mb-0 flight-detail-btn"
-                                    data-bs-toggle="modal" data-bs-target="#flightdetail"
-                                    data-flight='<%= JSON.stringify(flight) %>'>
-                                    <i class="bi bi-eye-fill me-1"></i>Flight Details
-                                  </button>
-
-                                </div>
 
                         </div>
-                      </div>
-                      <!-- card-body END -->
+                    </aside>
+                    <!-- Right side content END -->
 
-                      <!-- card footer -->
-                      <div class="card-footer">
-                        <!-- <div class="bg-light p-2 rounded-2">
-                                                <ul class="list-inline d-sm-flex justify-content-sm-between mb-0 mx-4">
-                                                    <li class="list-inline-item text-danger">Only 10 Seat Left</li>
-                                                    <li class="list-inline-item">Total time: 10h 35m</li>
-                                                    <li class="list-inline-item text-success">Refundable</li>
-                                                </ul>
-                                            </div> -->
-                      </div>
-                    </div>
-                    <% } %>
-
-                      <!-- Ticket item END -->
-                </div>
-              </div>
+                </div> <!-- Row END -->
             </div>
-          </div>
-          <!-- Title and button END -->
-        </div>
-      </section>
-      <!-- =======================
-    Title and notice board END -->
-
-      <!-- =======================
-    Flight list START -->
-      <section class="pt-0">
-        <div class="container">
-          <div class="row">
-            <!-- Left sidebar START -->
-
-            <!-- Left sidebar END -->
-
-            <!-- Main content START -->
-            <div class="col-xl-12 col-xxl-12">
-              <div class="vstack gap-4">
-                <div id="flight-list">
-                  <% if (agentsWithFlights && agentsWithFlights.length> 0) { %>
-                    <% agentsWithFlights.forEach(({ agent, flight })=> { %>
-                      <!-- Ticket item START -->
-                      <div class="card border mb-3">
-                        <!-- card-body START -->
-                        <div class="card-body p-4 pb-0">
-                          <div class="row g-4 align-items-center">
-                            <!-- Air line name -->
-                            <div class="col-md-3 d-flex align-items-center gap-3">
-                              <!-- Image -->
-                              <img src="<%= agent.image ? agent.image : '/assets/images/avatar/default.png' %>"
-                                class="w-80px mb-3" alt="" style="position: relative; ">
-                              <!-- Title -->
-                              <h6 class="fw-normal mb-0">
-                                <%= agent.userId %>
-                              </h6>
-                            </div>
-
-                            <div class="col-md-3 d-flex flex-column">
-                              <div class="col-4 d-flex justify-content-between">
-                                <!-- Cabin Baggage Icon with Tooltip -->
-                                <i class="fa-solid fa-briefcase" data-bs-toggle="tooltip" data-bs-placement="top"
-                                  title="Cabin: <%= flight.baggage?.adult?.cabin?.pieces %> pcs, <%= flight.baggage?.adult?.cabin?.weightPerPiece %> kg each">
-                                </i>
-                                <!-- Check-in Baggage Icon with Tooltip -->
-                                <i class="fa-solid fa-suitcase-rolling" data-bs-toggle="tooltip" data-bs-placement="top"
-                                  title="Check-in: <%= flight.baggage?.adult?.checkIn?.numberOfPieces %> pcs, <%= flight.baggage?.adult?.checkIn?.weightPerPiece %> kg each">
-                                </i>
-                                <!-- Seats Icon with Tooltip -->
-                                <img src="/assets/images/element/seat.png" alt="seats" height="15px" width="15px"
-                                  data-bs-toggle="tooltip" data-bs-placement="top"
-                                  title="Seats Available: <%= flight.inventoryDates?.[0]?.seats %>">
-                              </div>
-
-                              <div style="margin-top: 10px;">
-                                <li class="list-inline-item text-success">
-                                  <%= flight.refundable ? 'Refundable' : 'Non-refundable' %>
-                                </li>
-                              </div>
-                            </div>
-
-                            <!-- Price -->
-                            <div class="col-sm-4 col-md-3">
-                              <!-- Price -->
-                              <h4>₹ <%= flight.inventoryDates[0].fare.adults %>
-                              </h4>
-                            </div>
-
-                            <div class="col-sm-4 col-md-3">
-                              <button class="btn btn-dark"
-                                onclick='bookNow("<%= agent._id %>", "<%= flight._id %>")'>Book Now</button>
-                            </div>
-
-                          </div>
-                        </div>
-                        <!-- card-body END -->
-
-                      </div>
-                      <!-- Ticket item END -->
-                      <% }) %>
-                        <% } else { %>
-                          <p>No agents available.</p>
-                          <% } %>
-
-                </div>
-              </div>
-              <!-- Main content END -->
-            </div>
-            <!-- Row END -->
-          </div>
-      </section>
+        </section>
+        <!-- =======================
+Flight list END -->
 
       <script>
         async function bookNow(agentId, flightId) {
@@ -210,10 +273,16 @@
             const data = await response.json();
             console.log(data);
 
-            if (!response.ok) {
-              alert(data.message || "Failed to fetch flight details");
-              window.location.href = data.redirectUrl;
-            }
+if (!response.ok) {
+  Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    text: data.message || "Failed to fetch flight details",
+    confirmButtonText: 'OK'
+  }).then(() => {
+    window.location.href = data.redirectUrl;
+  });
+}
 
             // Extract redirect URL and navigate
             console.log(data.redirectUrl);
@@ -519,8 +588,6 @@
         window.history.replaceState(null, "", window.location.href)
       </script>
 
-      <!-- =======================
-    Flight list END -->
     </main>
     <!-- **************** MAIN CONTENT END **************** -->
 

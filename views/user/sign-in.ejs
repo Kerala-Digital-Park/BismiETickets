@@ -168,8 +168,12 @@
               document.getElementById("login-form").addEventListener("submit", async (e) => {
                 e.preventDefault();
                 if (!otpVerified) {
-                  alert("Please verify OTP first.");
-                  return;
+Swal.fire({
+      icon: 'warning',
+      title: 'OTP Not Verified',
+      text: 'Please verify OTP first.',
+      confirmButtonText: 'OK'
+    });                  return;
                 }
                 const email = emailInput.value;
                 const password = document.getElementById("psw-input").value;
@@ -182,8 +186,12 @@
                 if (data.success) {
                   window.location.href = data.redirect || "/";
                 } else {
-                  alert(data.message);
-                }
+Swal.fire({
+      icon: 'error',
+      title: 'Login Failed',
+      text: data.message || 'Invalid credentials',
+      confirmButtonText: 'Try Again'
+    });                }
               });
             });
             </script>

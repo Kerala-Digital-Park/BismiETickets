@@ -318,14 +318,21 @@
         if (uploadVisitingCard.files.length > 0) {
                 formData.append("visitingCard", uploadVisitingCard.files[0]);
             } else {
-                alert("Please select a Visiting card image.");
+  Swal.fire({
+    icon: 'warning',
+    title: 'Missing File',
+    text: 'Please select a Visiting card image.'
+  });
                 return;
             }
              if (uploadPanCard.files.length > 0) {
                 formData.append("panCard", uploadPanCard.files[0]);
             } else {
-                alert("Please select a PAN card image.");
-                return;
+Swal.fire({
+    icon: 'warning',
+    title: 'Missing File',
+    text: 'Please select a PAN card image.'
+  });                return;
             }
 
         try {
@@ -333,15 +340,24 @@
             const data = await response.json();
 
             if (data.success) {
-                alert(data.message || "Card verified successfully!");
-                location.reload();
+await Swal.fire({
+      icon: 'success',
+      title: 'Verified',
+      text: data.message || "Card verified successfully!"
+    });                location.reload();
             } else {
-                alert("Error verifying card: " + data.message);
-            }
+Swal.fire({
+      icon: 'error',
+      title: 'Verification Failed',
+      text: "Error verifying card: " + data.message
+    });            }
         } catch (error) {
             console.error("Error:", error);
-            alert("An error occurred while verifying your card.");
-        }
+Swal.fire({
+    icon: 'error',
+    title: 'Request Failed',
+    text: "An error occurred while verifying your card."
+  });        }
     });
 
     function checkAadhaarUploads() {
@@ -363,15 +379,22 @@
         if (uploadAadhaarCard1.files.length > 0) {
             formData.append("aadhaar1", uploadAadhaarCard1.files[0]);
         } else {
-        alert("Please select Aadhaar card frontside to verify.");
-        return; // Exit the function if no image is selected
+  Swal.fire({
+    icon: 'warning',
+    title: 'Missing File',
+    text: 'Please select Aadhaar card frontside to verify.'
+  });
+          return; // Exit the function if no image is selected
         }
 
         if (uploadAadhaarCard2.files.length > 0) {
             formData.append("aadhaar2", uploadAadhaarCard2.files[0]);
         } else {
-        alert("Please select Aadhaar card backside to verify.");
-        return; // Exit the function if no image is selected
+  Swal.fire({
+    icon: 'warning',
+    title: 'Missing File',
+    text: 'Please select Aadhaar card backside to verify.'
+  });        return; // Exit the function if no image is selected
         }
 
         try {
@@ -379,15 +402,24 @@
             const data = await response.json();
 
             if (data.success) {
-                alert(data.message || "Aadhaar card verified successfully!");
-                location.reload();
+await Swal.fire({
+      icon: 'success',
+      title: 'Verified',
+      text: data.message || "Aadhaar card verified successfully!"
+    });                location.reload();
             } else {
-                alert("Error verifying Aadhaar: " + data.message);
-            }
+Swal.fire({
+      icon: 'error',
+      title: 'Verification Failed',
+      text: "Error verifying Aadhaar: " + data.message
+    });            }
         } catch (error) {
             console.error("Error:", error);
-            alert("An error occurred while verifying your Aadhaar.");
-        }
+ Swal.fire({
+    icon: 'error',
+    title: 'Request Failed',
+    text: "An error occurred while verifying your Aadhaar."
+  });        }
     });
 });
 

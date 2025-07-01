@@ -644,8 +644,14 @@
       document.getElementById('reservationForm').addEventListener('submit', function (e) {
         e.preventDefault();
         // Submit logic here
-        alert('Reservation updated (submit logic goes here)');
-        reservationModal.hide();
+        Swal.fire({
+    icon: 'success',
+    title: 'Reservation Updated',
+    text: 'Reservation updated (submit logic goes here)',
+    confirmButtonText: 'OK'
+  }).then(() => {
+    reservationModal.hide();
+  });
       });
     });
   </script>
@@ -787,8 +793,14 @@
       document.getElementById('trackingForm').addEventListener('submit', function (e) {
         e.preventDefault();
         // Add AJAX/form submission logic here if needed
-        alert('Tracking updated!');
-        trackingModal.hide();
+         Swal.fire({
+    icon: 'success',
+    title: 'Tracking Updated',
+    text: 'Tracking updated!',
+    confirmButtonText: 'OK'
+  }).then(() => {
+    trackingModal.hide();
+  });
       });
     });
   </script>  

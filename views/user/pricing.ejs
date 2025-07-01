@@ -334,14 +334,22 @@
                         });
 
                     if (!response.ok) {
-                        alert("Failed to fetch subscription details");
-                        return;
+      await Swal.fire({
+        icon: 'error',
+        title: 'Failed',
+        text: 'Failed to fetch subscription details'
+      });         
+                     return;
                     }
 
                     const data = await response.json();
                     if (data.message) {
-                        alert(data.message);
-                    }
+await Swal.fire({
+        icon: 'info',
+        title: 'Notice',
+        text: data.message
+      });
+                        }
                     window.location.href = data.redirectUrl;
                 } catch (error) {
                     window.location.href = "/sign-in";
@@ -360,14 +368,22 @@
                         });
 
                     if (!response.ok) {
-                        alert("Failed to fetch subscription details");
-                        return;
+      await Swal.fire({
+        icon: 'error',
+        title: 'Failed',
+        text: 'Failed to fetch subscription details'
+      });
+                              return;
                     }
 
                     const data = await response.json();
                     if (data.message) {
-                        alert(data.message);
-                    }
+await Swal.fire({
+        icon: 'info',
+        title: 'Notice',
+        text: data.message
+      });
+                        }
                     window.location.href = data.redirectUrl;
 
                 } catch (error) {
@@ -387,14 +403,22 @@
                         });
 
                     if (!response.ok) {
-                        alert("Failed to fetch subscription details");
-                        return;
+      await Swal.fire({
+        icon: 'error',
+        title: 'Failed',
+        text: 'Failed to fetch subscription details'
+      });
+                              return;
                     }
 
                     const data = await response.json();
                     if (data.message) {
-                        alert(data.message);
-                    }
+await Swal.fire({
+        icon: 'info',
+        title: 'Notice',
+        text: data.message
+      });
+                        }
                     window.location.href = data.redirectUrl;
 
                 } catch (error) {
@@ -405,8 +429,17 @@
 
             async function freeDowngrade() {
                 const subscription = "Starter";
-                try {
-                    alert("Are you sure you want to downgrade to Starter");
+  const confirm = await Swal.fire({
+    icon: 'warning',
+    title: 'Are you sure?',
+    text: 'Do you want to downgrade to the Starter plan?',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, downgrade',
+    cancelButtonText: 'Cancel'
+  });
+
+  if (!confirm.isConfirmed) return;
+                  try {
                     const response = await fetch("/subscription-free",
                         {
                             method: "POST",
@@ -415,18 +448,25 @@
                         });
 
                     if (!response.ok) {
-                        alert("Failed to fetch subscription details");
-                        return;
+await Swal.fire({
+        icon: 'error',
+        title: 'Failed',
+        text: 'Failed to fetch subscription details'
+      });
+                              return;
                     }
 
                     const data = await response.json();
                     if (data.message) {
-                        alert(data.message);
-                    }
+      await Swal.fire({
+        icon: 'info',
+        title: 'Notice',
+        text: data.message
+      });                    }
                     window.location.href = data.redirectUrl;
                 } catch (error) {
-                    window.location.href = "/sign-in";
                     console.error("Error:", error);
+                    window.location.href = "/sign-in";
                 }
             }
         </script>

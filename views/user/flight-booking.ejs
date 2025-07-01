@@ -22,8 +22,8 @@ Main Content START -->
 					<!-- Card body START -->
 					<div class="card-body p-0 mt-3">
 						<!-- Alert box -->
-						<div class="alert alert-success" role="alert">
-							Hey' you are saving<strong class="mx-1">$2,560</strong>discount using coupon code
+						<div class="alert alert-success" role="alert" id="discountMessage">
+							
 						</div>
 
 						 <!-- Payment Tabs -->
@@ -139,14 +139,22 @@ document.addEventListener("DOMContentLoaded", function () {
 		const flightDetails = JSON.parse(sessionStorage.getItem("flightDetails"));
 
     if (!bookingData) {
-        alert("Booking data not found!");
+        Swal.fire({
+            icon: 'error',
+            title: 'Missing Data',
+            text: 'Booking data not found!'
+        });
         return;
     }
 
     const { travelers, email, mobile_number, totalFare, baseFare, discount, otherServices } = bookingData;
 
     if (!upiId || !mobileNumber) {
-        alert("Please fill in all details.");
+        Swal.fire({
+            icon: 'warning',
+            title: 'Incomplete Details',
+            text: 'Please fill in all details.'
+        });
         return;
     }
 
@@ -189,10 +197,24 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(res => res.json())
             .then(data => {
                 console.log("Server Response:", data);
-                alert("Booking confirmed! Redirecting...");
-                window.location.href = "/bookings"; // Redirect to confirmation page
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Booking Confirmed!',
+                    text: 'Redirecting to your bookings...',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = "/bookings";
+                });
             })
-            .catch(error => console.error("Error:", error));
+            .catch(error =>  {
+                console.error("Error:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Payment Failed',
+                    text: 'Something went wrong. Please try again later.'
+                });
+            });
         },
 			"theme": {
 				"color": "#3399cc"
@@ -278,9 +300,9 @@ document.addEventListener("DOMContentLoaded", function () {
 							</div>
 
 							<!-- Card footer -->
-							<div class="card-footer border-top text-center p-3">
+							<!-- <div class="card-footer border-top text-center p-3">
 								<a href="#" class="btn btn-link mb-0 p-0">Review booking</a>
-							</div>
+							</div> -->
 						</div>
 					</div>
 					<!-- Booking END -->
@@ -342,6 +364,13 @@ document.addEventListener("DOMContentLoaded", function () {
 				`;
 				travelerList.innerHTML += travelerHTML;
 			});
+		}
+
+		const discountMessage = document.getElementById("discountMessage");
+		if (bookingData && bookingData.discount) {
+			discountMessage.textContent = `You are saving ${bookingData.discount} using coupon code`;
+		} else {
+			discountMessage.textContent = "No discount applied.";
 		}
 	});
 	</script>

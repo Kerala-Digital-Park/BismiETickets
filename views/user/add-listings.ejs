@@ -1072,8 +1072,12 @@ Page Banner END -->
 
 				function populateFlightDetails(flights) {
 					if (!Array.isArray(flights) || flights.length === 0) {
-    						alert("❗ No matching flights found. Please add manually!");
-    						return;
+ Swal.fire({
+        icon: 'info',
+        title: 'No Matching Flights',
+        text: '❗ No matching flights found. Please add manually!',
+        confirmButtonText: 'OK'
+    });    						return;
 					}
 
 					//   console.log("Structured Flights:", flights);
@@ -1270,8 +1274,12 @@ Page Banner END -->
 					function populateOneWayFlightDetails(flights) {
 
 						if (!Array.isArray(flights) || flights.length === 0) {
-    						alert("❗ No matching flights found. Please add manually!");
-    						return;
+ Swal.fire({
+        icon: 'info',
+        title: 'No Matching Flights',
+        text: '❗ No matching flights found. Please add manually!',
+        confirmButtonText: 'OK'
+    });    						return;
 						}
 
 						flights.forEach((flight, flightIndex) => {
@@ -1494,15 +1502,27 @@ Page Banner END -->
 
 						const result = await response.json();
 						console.log("Success:", result);
-						alert("Flight detail submitted successfully!");
-						window.location.href = result.redirectUrl;
+						Swal.fire({
+  title: 'Success!',
+  text: 'Flight detail submitted successfully!',
+  icon: 'success',
+  confirmButtonText: 'OK'
+}).then(() => {
+  window.location.href = result.redirectUrl;
+});
+
 
 						// Optional: Reset form after success
 						form.reset();
 
 					} catch (error) {
 						console.error("Error:", error);
-						alert("There was an error submitting the flight details.");
+Swal.fire({
+  title: 'Error!',
+  text: 'There was an error submitting the flight details.',
+  icon: 'error',
+  confirmButtonText: 'Close'
+});
 					}
 				}
 			</script>
@@ -1628,14 +1648,25 @@ Page Banner END -->
 
 			const result = await response.json();
 			console.log("Success:", result);
-			alert("Connecting flight added successfully!");
-			window.location.href = result.redirectUrl;
-
+			
+			Swal.fire({
+  title: 'Success!',
+  text: 'Connecting flight added successfully!',
+  icon: 'success',
+  confirmButtonText: 'OK'
+}).then(() => {
+  window.location.href = result.redirectUrl;
+});
 			form.reset();
 
 		} catch (error) {
 			console.error("Error:", error);
-			alert("Error submitting the connecting flight.");
+			Swal.fire({
+  title: 'Error!',
+  text: 'There was an error submitting the flight details.',
+  icon: 'error',
+  confirmButtonText: 'Close'
+});
 		}
 	}
 </script>

@@ -404,7 +404,11 @@
             if (user.userRole === 'Agent') {
               window.location.href = '/add-listing';
             } else {
-              alert("You must be an agent to access this page.");
+              await Swal.fire({
+          icon: 'warning',
+          title: 'Access Denied',
+          text: 'You must be an agent to access this page.'
+        });
               window.location.href = "#pricing";
             }
           } else {
@@ -426,13 +430,21 @@
                     });
 
                 if (!response.ok) {
-                    alert("Failed to fetch subscription details");
-                    return;
+        await Swal.fire({
+          icon: 'error',
+          title: 'Failed',
+          text: 'Failed to fetch subscription details'
+        });
+        return;
                 }
 
                 const data = await response.json();
                 if (data.message) {
-                    alert(data.message);
+        await Swal.fire({
+          icon: 'info',
+          title: 'Notice',
+          text: data.message
+        });
                 }
                 window.location.href = data.redirectUrl;
             } catch (error) {
@@ -452,13 +464,21 @@
                     });
 
                 if (!response.ok) {
-                    alert("Failed to fetch subscription details");
+                    await Swal.fire({
+          icon: 'error',
+          title: 'Failed',
+          text: 'Failed to fetch subscription details'
+        });
                     return;
                 }
 
                 const data = await response.json();
                 if (data.message) {
-                    alert(data.message);
+                    await Swal.fire({
+          icon: 'info',
+          title: 'Message',
+          text: data.message
+        });
                 }
                 window.location.href = data.redirectUrl;
 
@@ -469,9 +489,18 @@
         }
 
         async function starterDowngrade() {
-            const subscription = "Free";
+            const subscription = "Base";
+                const confirm = await Swal.fire({
+      icon: 'warning',
+      title: 'Are you sure?',
+      text: 'Do you want to downgrade to the Free plan?',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, downgrade',
+      cancelButtonText: 'Cancel'
+    });
+
+    if (!confirm.isConfirmed) return;
             try {
-                alert("Are you sure you want to downgrade to Free");
                 const response = await fetch("/subscription-free",
                     {
                         method: "POST",
@@ -480,14 +509,20 @@
                     });
 
                 if (!response.ok) {
-                    alert("Failed to fetch subscription details");
-                    return;
+await Swal.fire({
+          icon: 'error',
+          title: 'Failed',
+          text: 'Failed to fetch subscription details'
+        });                    return;
                 }
 
                 const data = await response.json();
                 if (data.message) {
-                    alert(data.message);
-                }
+await Swal.fire({
+          icon: 'info',
+          title: 'Info',
+          text: data.message
+        });                }
                 window.location.href = data.redirectUrl;
             } catch (error) {
                 window.location.href = "/sign-in";

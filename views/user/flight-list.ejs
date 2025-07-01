@@ -773,10 +773,15 @@
               body: JSON.stringify({ id, requestDetails }),
             });
 
-            if (!response.ok) {
-              alert("Failed to fetch flight details");
-              return;
-            }
+if (!response.ok) {
+  Swal.fire({
+    icon: 'error',
+    title: 'Fetch Failed',
+    text: 'Failed to fetch flight details',
+    confirmButtonText: 'OK'
+  });
+  return;
+}
 
             // Extract redirect URL and navigate
             const data = await response.json();
