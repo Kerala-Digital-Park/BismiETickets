@@ -392,6 +392,16 @@ Content END -->
     });
   </script>
   
+  <script>
+  if (window.location.pathname === "/bookings") {
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith("flight_timer_")) {
+        localStorage.removeItem(key);
+      }
+    });
+  }
+</script>
+
 
         </main>
         <!-- **************** MAIN CONTENT END **************** -->

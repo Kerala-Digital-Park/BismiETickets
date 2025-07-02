@@ -53,9 +53,6 @@ app.use(
     secret: process.env.SECRET_KEY || "supersecretkey12345",
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGODB,
-    }),
     cookie: {
       sameSite: "lax",                           // ✅ allows cross-site POST redirects
       secure: process.env.NODE_ENV === "production", // ✅ true only in HTTPS prod
