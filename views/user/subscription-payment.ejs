@@ -138,9 +138,33 @@
                 </div>
             </section>
             <!-- ======================= Content END -->
+        
+          <form id="hdfcSubscriptionForm" method="POST" action="/payment/initiate-subscription" style="display: none;">
+  <input type="hidden" name="email" />
+  <input type="hidden" name="price" />
+  <input type="hidden" name="subscription" />
+  <input type="hidden" name="role" />
+</form>
 
-            
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  document.getElementById("payNowBtn").addEventListener("click", function () {
+    const email = "<%= userDetails.email %>";
+    const subscription = "<%= subscription %>";
+    const role = "<%= role %>";
+    let amount = "100"; // Get from DOM like before
+
+    const form = document.getElementById("hdfcSubscriptionForm");
+    form.email.value = email;
+    form.price.value = amount.replace(/[^0-9.]/g, "");
+    form.subscription.value = subscription;
+    form.role.value = role;
+    form.submit();
+  });
+</script>
+
+
+
+<!-- <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -218,7 +242,7 @@
 	});
 
 });
-</script>
+</script> -->
         </main>
         <!-- **************** MAIN CONTENT END **************** -->
 

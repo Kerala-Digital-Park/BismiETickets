@@ -1,11 +1,15 @@
 const express = require('express')
+const path = require('path')
 var logger = require('morgan');
 require('dotenv').config()
-const app = express()
-const PORT = 3000;
-const path = require('path')
+const mongoose = require("mongoose");
 const nocache = require('nocache')
 const session = require('express-session')
+const MongoStore = require('connect-mongo');
+const cookieParser = require("cookie-parser");
+
+const app = express()
+const PORT = process.env.BASE_URL || 3000;
 
 // Only apply preventCache to routes, NOT static files
 app.use((req, res, next) => {
@@ -18,10 +22,6 @@ app.use((req, res, next) => {
   next();
 });
 
-const userRouter = require('./routes/userRouter')
-const adminRouter = require('./routes/adminRouter')
-
-const mongoose = require("mongoose");
 const connect = mongoose.connect(process.env.MONGODB)
 connect
 .then(()=>{
@@ -30,6 +30,10 @@ connect
 .catch((error)=>{
     console.log("Error connecting to MongoDB",error);
 })
+
+const userRouter = require('./routes/userRouter')
+const adminRouter = require('./routes/adminRouter')
+const paymentRouter = require('./routes/paymentRouter')
 
 //setting ejs
 app.set('views',path.join(__dirname,'views'))
@@ -42,14 +46,38 @@ app.use(express.urlencoded({ extended: true }));
 //using nocache for session management
 app.use(nocache());
 
-//using session
+app.use(cookieParser());
+
+// app.use(
+//   session({
+//     secret: process.env.SECRET_KEY || "secret key",
+//     resave: false,
+//     saveUninitialized: false,
+//     store: MongoStore.create({
+//       mongoUrl: process.env.MONGODB,
+//     }),
+//     cookie: {
+//       sameSite: "lax",      // ✅ required for HDFC post-back
+//       secure: false         // ✅ for localhost
+//     }
+//   })
+// );
+
+
 app.use(
-    session({
-      secret: "secret key",
-      resave: false,
-      saveUninitialized: true,
-    })
-  ); 
+  session({
+    secret: process.env.SECRET_KEY || "supersecretkey12345",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB,
+    }),
+    cookie: {
+      sameSite: "lax",                           // ✅ allows cross-site POST redirects
+      secure: process.env.NODE_ENV === "production", // ✅ true only in HTTPS prod
+    },
+  })
+);
 
   app.use('/uploads', express.static(path.join(__dirname, "public")));
   app.use("/admin", express.static(path.join(__dirname, "public")));
@@ -58,6 +86,8 @@ app.use(
 
   app.use('/',userRouter); 
   app.use('/admin',adminRouter);
+  app.use('/payment', paymentRouter);
+  
   app.use((req,res,next)=>{
     res.status(404).render("error");
 })  

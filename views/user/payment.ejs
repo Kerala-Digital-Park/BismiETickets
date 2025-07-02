@@ -1,0 +1,10 @@
+<!-- views/user/payment.ejs -->
+<form action="/payment/payment" method="POST">
+  <input type="hidden" name="amount" value="<%= totalFare %>" />
+  <input type="hidden" name="email" value="<%= email %>" />
+  <input type="hidden" name="mobile_number" value="<%= mobile_number %>" />
+  <input type="hidden" name="bookingData" value='<%= JSON.stringify(bookingData) %>' />
+  <input type="hidden" name="flightDetails" value='<%= JSON.stringify(flightDetails) %>' />
+
+  <button type="submit" class="btn btn-primary">Pay with HDFC</button>
+</form>

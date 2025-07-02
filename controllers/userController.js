@@ -1021,7 +1021,8 @@ const viewSellerBooking = async (req, res) => {
   try {
     const bookings = await Bookings.findById(bookingId).populate("userId").populate("flight");
     const requests = await Requests.find({ bookingId: bookingId });
-    res.render("user/seller-booking", { requestDetails: "" , bookings, requests, success: req.query.success, error: req.query.error });
+    const transaction = await Transactions.find({ bookingId: bookingId });
+    res.render("user/seller-booking", { requestDetails: "" , bookings, requests, transaction, success: req.query.success, error: req.query.error });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -1880,16 +1881,17 @@ const subscription = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    if (subscription === "Free") {
-      if (user.subscription.subscription === "Free") {
+    if (subscription === "Starter") {
+      console.log("HI")
+      if (user.subscription.subscription === "Starter") {
         return res.json({
           redirectUrl: "/subscription",
-          message: "Free subscription already active. Choose another plan",
+          message: "Starter subscription already active. Choose another plan",
         });
       } else if (user.kyc === "Pending") {
         return res.json({
           redirectUrl: "/kyc",
-          message: "Complete Initial KYC for free subscription",
+          message: "Complete Initial KYC for Starter subscription",
         });
       }
     } else if (subscription === "Pro") {

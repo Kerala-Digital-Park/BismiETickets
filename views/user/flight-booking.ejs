@@ -15,96 +15,22 @@ Main Content START -->
 				<div class="card bg-transparent p-0">
 					<!-- Card header START -->
 					<div class="card-header bg-transparent p-0">
-						<h1 class="card-title fs-2 mb-0">Enter Your Payment Details</h1>
-					</div>
+      <h3 class="card-title fs-3 fw-bold mb-0">
+        Make Your Payment via HDFC
+      </h3>					</div>
 					<!-- Card header END -->
 
 					<!-- Card body START -->
-					<div class="card-body p-0 mt-3">
+					  <div class="card-body px-4 py-5">
+
 						<!-- Alert box -->
-						<div class="alert alert-success" role="alert" id="discountMessage">
-							
-						</div>
+						<div class="alert alert-success" role="alert" id="discountMessage"></div>
+						 		
+						      <!-- Instruction text -->
+      <div class="text-dark mb-4">
+        Secure your booking with a quick and easy payment through HDFC gateway. Click the button below to proceed.
+      </div>
 
-						 <!-- Payment Tabs -->
-						 <ul class="nav nav-tabs" id="paymentTabs">
-							<li class="nav-item">
-								<a class="nav-link active" data-bs-toggle="tab" href="#card">Card</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" data-bs-toggle="tab" href="#upi">UPI</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" data-bs-toggle="tab" href="#wallet">Wallet</a>
-							</li>
-						</ul>
-
-						 <!-- Tab Content -->
-						 <div class="tab-content mt-3">
-							<!-- Card Payment -->
-							<div class="tab-pane fade show active" id="card">
-								<form class="bg-light rounded-3 p-4">
-									<div class="row g-3">
-										<div class="col-12">
-											<label class="form-label">Card Number *</label>
-											<div class="position-relative">
-												<input type="text" class="form-control" maxlength="16" placeholder="XXXX XXXX XXXX XXXX">
-												<img src="/assets/images/element/visa.svg" class="w-30px position-absolute top-50 end-0 translate-middle-y me-2 d-none d-sm-block" alt="">
-											</div>
-										</div>
-										<div class="col-md-6">
-											<label class="form-label">Expiration Date *</label>
-											<div class="input-group">
-												<input type="text" class="form-control" maxlength="2" placeholder="MM">
-												<input type="text" class="form-control" maxlength="4" placeholder="YYYY">
-											</div>
-										</div>
-										<div class="col-md-6">
-											<label class="form-label">CVV / CVC *</label>
-											<input type="text" class="form-control" maxlength="3" placeholder="XXX">
-										</div>
-										<div class="col-12">
-											<label class="form-label">Name on Card *</label>
-											<input type="text" class="form-control" placeholder="Enter cardholder name">
-										</div>
-									</div>
-								</form>
-							</div>
-			
-							<!-- UPI Payment -->
-							<div class="tab-pane fade show active" id="upi">
-								<form class="bg-light rounded-3 p-4">
-									<div class="mb-3">
-										<label class="form-label">UPI ID *</label>
-										<input type="text" id="upiId" class="form-control" placeholder="example@upi">
-									</div>
-									<div class="mb-3">
-										<label class="form-label">Mobile Number *</label>
-										<input type="text" id="mobileNumber" class="form-control" placeholder="Enter your mobile number">
-									</div>
-								</form>
-							</div>
-
-							<!-- Wallet Payment -->
-							<div class="tab-pane fade" id="wallet">
-								<form class="bg-light rounded-3 p-4">
-									<div class="mb-3">
-										<label class="form-label">Wallet Provider *</label>
-										<select class="form-select">
-											<option>Select Wallet</option>
-											<option>PayPal</option>
-											<option>Google Pay</option>
-											<option>Amazon Pay</option>
-										</select>
-									</div>
-									<div class="mb-3">
-										<label class="form-label">Mobile Number *</label>
-										<input type="text" class="form-control" placeholder="Enter your mobile number">
-									</div>
-								</form>
-							</div>
-						</div>
-			
 						<!-- Pay Now Button -->
 						<div class="col-12 mt-3">
 							<button class="btn btn-primary w-100" id="payNowBtn">Pay Now</button>
@@ -115,6 +41,7 @@ Main Content START -->
 				</div>
 			</div>
 			<!-- Left Content END -->
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const paymentTabs = document.querySelectorAll('#paymentTabs a');
@@ -128,7 +55,65 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<form id="hdfcPaymentForm" action="/payment/initiate-booking" method="POST" style="display: none;">
+  <input type="hidden" name="email" id="emailField" />
+  <input type="hidden" name="mobile_number" id="mobileNumberField" />
+  <input type="hidden" name="bookingData" id="bookingDataField" />
+  <input type="hidden" name="flightDetails" id="flightDetailsField" />
+</form>
+
+<script>
+	document.getElementById("payNowBtn").addEventListener("click", function () {
+  const bookingData = JSON.parse(sessionStorage.getItem("bookingData"));
+  const flightDetails = JSON.parse(sessionStorage.getItem("flightDetails"));
+
+  console.log("Booking Data:", bookingData);
+  console.log("Flight Details:", flightDetails);
+
+  if (!bookingData || !flightDetails) {
+    alert("Missing booking data.");
+    return;
+  }
+
+  // Fill form values
+  document.getElementById("emailField").value = bookingData.email;
+  document.getElementById("mobileNumberField").value = bookingData.mobile_number;
+  document.getElementById("bookingDataField").value = JSON.stringify(bookingData);
+  document.getElementById("flightDetailsField").value = JSON.stringify(flightDetails);
+
+  // Submit form
+  document.getElementById("hdfcPaymentForm").submit();
+});
+</script>
+
+<!-- <script>
+	// Before opening Razorpay, submit form to backend
+const bookingData = JSON.parse(sessionStorage.getItem("bookingData"));
+const flightDetails = JSON.parse(sessionStorage.getItem("flightDetails"));
+
+fetch("/payment/render-form", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    email: bookingData.email,
+    mobile_number: bookingData.mobile_number,
+    bookingData,
+    flightDetails
+  })
+})
+.then(res => res.text())
+.then(html => {
+  // Replace body content with the payment form
+  document.body.innerHTML = html;
+})
+.catch(error => {
+  console.error("Render form error:", error);
+});
+
+</script> -->
+<!-- <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
 	document.getElementById("payNowBtn").addEventListener("click", function () {
@@ -224,7 +209,8 @@ document.addEventListener("DOMContentLoaded", function () {
 		var razorpayInstance = new Razorpay(options);
 		razorpayInstance.open();
 	});
-</script>
+</script> -->
+
 			<!-- Right content START -->
 			<aside class="col-xl-4">
 				<div class="row g-4">

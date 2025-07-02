@@ -995,7 +995,7 @@ Swal.fire({
 
       </script>
 
-      <script>
+      <!-- <script>
         document.addEventListener("DOMContentLoaded", function () {
           const adults = Number(<%= requestDetails.adults %>);
           const children = Number(<%= requestDetails.children %>);
@@ -1045,8 +1045,58 @@ Swal.fire({
             clearInterval(interval);
           }
         });
-      </script>
+      </script> -->
 
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const timerEl = document.getElementById("timer");
+    if (!timerEl) return;
+
+    const adults = Number(<%= requestDetails.adults || 0 %>);
+    const children = Number(<%= requestDetails.children || 0 %>);
+    const infants = Number(<%= requestDetails.infants || 0 %>);
+    const pax = adults + children + infants;
+
+    const paxTime = pax > 4 ? 20 * 60 : 15 * 60;
+    const flightId = "<%= flightDetails._id %>" || "default";
+    const timerKey = `flight_timer_${flightId}`;
+
+    // Clear old timer if on bookings page
+    if (window.location.pathname === "/bookings") {
+      localStorage.removeItem(timerKey);
+      return;
+    }
+
+    let expireAt = localStorage.getItem(timerKey);
+    if (!expireAt) {
+      expireAt = Date.now() + paxTime * 1000;
+      localStorage.setItem(timerKey, expireAt);
+    } else {
+      expireAt = parseInt(expireAt, 10);
+    }
+
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const remaining = Math.max(0, Math.floor((expireAt - now) / 1000));
+
+      const minutes = String(Math.floor(remaining / 60)).padStart(2, '0');
+      const seconds = String(remaining % 60).padStart(2, '0');
+      timerEl.textContent = `${minutes}:${seconds}`;
+
+      if (remaining <= 0) {
+        clearInterval(interval);
+        localStorage.removeItem(timerKey);
+        Swal.fire({
+          icon: 'warning',
+          title: 'Session Expired',
+          text: 'Your session has expired. Please start again.'
+        }).then(() => {
+          window.location.href = "/";
+        });
+      }
+    }, 1000);
+  });
+</script>
       <!-- =======================
     Main Content END -->
     </main>
