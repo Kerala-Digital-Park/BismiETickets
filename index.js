@@ -9,7 +9,7 @@ const MongoStore = require('connect-mongo');
 const cookieParser = require("cookie-parser");
 
 const app = express()
-const PORT = process.env.BASE_URL || 3000;
+const PORT = 3000;
 
 // Only apply preventCache to routes, NOT static files
 app.use((req, res, next) => {
@@ -47,22 +47,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(nocache());
 
 app.use(cookieParser());
-
-// app.use(
-//   session({
-//     secret: process.env.SECRET_KEY || "secret key",
-//     resave: false,
-//     saveUninitialized: false,
-//     store: MongoStore.create({
-//       mongoUrl: process.env.MONGODB,
-//     }),
-//     cookie: {
-//       sameSite: "lax",      // ✅ required for HDFC post-back
-//       secure: false         // ✅ for localhost
-//     }
-//   })
-// );
-
 
 app.use(
   session({
