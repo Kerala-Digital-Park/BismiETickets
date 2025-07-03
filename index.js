@@ -55,7 +55,6 @@ app.use(
     saveUninitialized: false,
     cookie: {
       sameSite: "lax",                           // ✅ allows cross-site POST redirects
-      secure: process.env.NODE_ENV === "production", // ✅ true only in HTTPS prod
     },
   })
 );
