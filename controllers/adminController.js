@@ -15,6 +15,7 @@ const Support = require("../models/supportModel");
 const Airport = require("../models/airportModel");
 const PopularFlight = require("../models/popularFlightModel");
 const ProfileUpdates = require("../models/profileUpdateModel");
+const FilterAirport = require("../models/filterAirportModel");
 
 const viewLogin = async (req, res) => {
   try {
@@ -83,6 +84,9 @@ const viewDashboard = async (req, res) => {
     const sellers = await User.find({userRole:"Agent"});
     const popularFlights = await PopularFlight.find().limit(4);
     const airports = await Airport.find().limit(2);
+    const supports = await Support.find({ reply: { $size: 0 } })
+      .sort({ createdAt: -1 })
+      .limit(1);
 
     res.render("admin/dashboard", {
       bookings,
@@ -91,6 +95,7 @@ const viewDashboard = async (req, res) => {
       sellers,
       popularFlights,
       airports,
+      supports
     });
   } catch (error) {
     console.log(error);
@@ -1127,49 +1132,41 @@ const viewWithdrawalsById = async (req, res) => {
         const transaction = await Transaction.findOne({
           bookingId: booking._id,
         });
-        const paymentStatus = transaction ? transaction.paymentStatus : null;
+        const paymentStatus = transaction ? transaction.withdrawalStatus : null;
 
         withdrawalList.push({
           ...booking.toObject(),
           paymentStatus,
         });
+
       }
     }
+    const seller = await User.findById(sellerId)
 
-    return res.render("admin/withdrawalList", { withdrawalList });
+    return res.render("admin/withdrawalList", { withdrawalList, seller });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
-const withdrawalPayment = async (req, res) => {
-  const bookingId = req.params.id;
-  const { razorpay_payment_id, baseFare } = req.body;
+const markBookingAsWithdrawn = async (req, res) => {
+  const { bookingId } = req.params;
 
   try {
-    // Validate request data
-    if (!razorpay_payment_id || !baseFare) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
-
-    let paid;
-    razorpay_payment_id ? (paid = "Paid") : (paid = "Unpaid");
-
-    const transaction = await Transaction.findOne({ bookingId });
+   const transaction = await Transaction.findOne({ bookingId });
 
     if (!transaction) {
       return res.status(404).json({ message: "Transaction not found" });
     }
 
-    transaction.paymentStatus = paid;
-    transaction.baseFare = baseFare;
+    transaction.withdrawalStatus = "Paid";
     await transaction.save();
 
-    return res.status(201).json({ message: "Payment successful" });
+    res.json({ success: true });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error marking booking as withdrawn:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -1343,6 +1340,47 @@ const addFlight = async (req, res) => {
     });
 
     await newFlight.save();
+
+    const fromValue = oneWayFlight.from;
+        const toValue = oneWayFlight.to;
+    
+        const existingFilter = await FilterAirport.findOne({ "fromAirport.value": fromValue });
+    
+        const toAirportObject = {
+          value: toValue,
+          name: oneWayFlight.arrivalName,
+          city: oneWayFlight.toCity,
+          country: oneWayFlight.toCountry,
+          status: "active",
+        };
+    
+        if (!existingFilter) {
+          // Create new fromAirport with toAirports array
+          const newFilter = new FilterAirport({
+            fromAirport: {
+              value: fromValue,
+              name: oneWayFlight.departureName,
+              city: oneWayFlight.fromCity,
+              country: oneWayFlight.fromCountry,
+              status: "active",
+              toAirports: [toAirportObject],
+            },
+          });
+          await newFilter.save();
+        } else {
+          // Check if toAirport already exists in array
+          const toAlreadyExists = existingFilter.fromAirport.toAirports.some(
+            (airport) => airport.value === toValue
+          );
+    
+          if (!toAlreadyExists) {
+            await FilterAirport.updateOne(
+              { "fromAirport.value": fromValue },
+              { $push: { "fromAirport.toAirports": toAirportObject } }
+            );
+          }
+        }
+
     return res.json({
       message: "Flight added successfully",
       success: true,
@@ -2582,6 +2620,24 @@ const updateProfileDetail = async (req, res) => {
   }
 };
 
+const getSupports = async (req, res) => {
+  try {
+    const { search } = req.query;
+
+    let query = {};
+    if (search) {
+      query.enquiryId = { $regex: search, $options: "i" }; // case-insensitive match
+    }
+
+    const supports = await Support.find(query).sort({ createdAt: -1 }).limit(10);
+
+    res.json({ success: true, supports });
+  } catch (error) {
+    console.error("Error fetching supports:", error);
+    res.status(500).json({ success: false });
+  }
+};
+
 module.exports = {
   viewLogin,
   loginAdmin,
@@ -2613,7 +2669,7 @@ module.exports = {
   updateKycDetail,
   viewTransactions,
   viewWithdrawalsById,
-  withdrawalPayment,
+  markBookingAsWithdrawn,
   viewMessages,
   sendResponse,
   addFlight,
@@ -2638,5 +2694,6 @@ module.exports = {
   viewClosedInventory,
   viewProfileUpdates,
   updateProfileDetail,
+  getSupports,
 
 };

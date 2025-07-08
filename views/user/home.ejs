@@ -871,9 +871,9 @@ Client END-->
         document.addEventListener("DOMContentLoaded", function () {
           const staticSelectors = [
             "#fixedFrom",
-            "#fixedTo",
+            // "#fixedTo",
             "#from",
-            "#to"
+            // "#to"
           ];
 
           const doneTypingInterval = 100;
@@ -898,10 +898,10 @@ Client END-->
             element.addEventListener('showDropdown', async () => {
               if (!defaultLoaded) {
                 try {
-                  const res = await fetch("/search-airports");
+                  const res = await fetch("/search-filtered-airports");
                   const airports = await res.json();
                   choices.setChoices(
-                    airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
+                    airports.map(a => ({ value: a.value, label: `${a.city} (${a.value})` })),
                     "value",
                     "label",
                     true
@@ -919,10 +919,10 @@ Client END-->
               if (searchTerm.length >= 2) {
                 typingTimer = setTimeout(async () => {
                   try {
-                    const res = await fetch(`/search-airports?q=${encodeURIComponent(searchTerm)}`);
+                    const res = await fetch(`/search-filtered-airports?q=${encodeURIComponent(searchTerm)}`);
                     const airports = await res.json();
                     choices.setChoices(
-                      airports.map(a => ({ value: a.Value, label: `${a.Airport} (${a.Value})` })),
+                      airports.map(a => ({ value: a.value, label: `${a.city} (${a.value})` })),
                       "value",
                       "label",
                       true
@@ -945,6 +945,58 @@ Client END-->
           observer.observe(document.body, { childList: true, subtree: true });
         });
       </script>
+
+      <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const fromSelectors = ["#fixedFrom", "#from"];
+    const toSelectors = ["#fixedTo", "#to"];
+
+    fromSelectors.forEach((fromSelector, index) => {
+      const fromElement = document.querySelector(fromSelector);
+      const toElement = document.querySelector(toSelectors[index]);
+
+      if (!fromElement || !toElement) return;
+
+      fromElement.addEventListener("change", async () => {
+        const fromValue = fromElement.value;
+        if (!fromValue) return;
+
+        try {
+          const res = await fetch(`/get-to-airports?from=${fromValue}`);
+          const toAirports = await res.json();
+
+          // Destroy Choices instance if already initialized
+          if (toElement._choicesInstance) {
+            toElement._choicesInstance.destroy();
+            toElement.classList.remove("choices-initialized");
+          }
+
+          // Clear and repopulate the "To" dropdown
+          toElement.innerHTML = '<option value="">Select location</option>';
+          toAirports.forEach(a => {
+            const option = document.createElement("option");
+            option.value = a.value;
+            option.text = `${a.city} (${a.value})`;
+            toElement.appendChild(option);
+          });
+
+          // Re-initialize Choices.js
+          const choices = new Choices(toElement, {
+            searchEnabled: true,
+            shouldSort: false,
+            allowHTML: true,
+            placeholderValue: "Select Airport",
+          });
+          toElement._choicesInstance = choices;
+
+        } catch (error) {
+          console.error("Error fetching to airports:", error);
+        }
+      });
+    });
+  });
+</script>
+
     </main>
     <!-- **************** MAIN CONTENT END **************** -->
 

@@ -39,7 +39,7 @@ adminRouter.get("/api/airports", adminController.getAirportsApi);
 adminRouter.get("/inventory/active", isLogin, adminController.viewActiveInventory);
 adminRouter.get("/inventory/past", isLogin, adminController.viewPastInventory);
 adminRouter.get("/inventory/closed", isLogin, adminController.viewClosedInventory);
-
+adminRouter.get('/supports/search', isLogin, adminController.getSupports);
 
 
 
@@ -51,7 +51,6 @@ adminRouter.post('/edit-subscription/:id',isLogin, adminController.editSubscript
 adminRouter.post('/delete-subscription/:id',isLogin, adminController.deleteSubscription);
 adminRouter.post('/update-bank-detail/:id',isLogin, adminController.updateBankDetail);
 adminRouter.post('/update-kyc-detail/:id',isLogin, adminController.updateKycDetail);
-adminRouter.post('/withdrawal-payment/:id', isLogin, adminController.withdrawalPayment);
 adminRouter.post('/send-response', isLogin, adminController.sendResponse);
 adminRouter.post("/add-flight", isLogin, adminController.addFlight);
 adminRouter.post("/api/flights", isLogin, adminController.getApiFlights);
@@ -62,6 +61,9 @@ adminRouter.post("/add-airport", isLogin, adminController.addAirport);
 adminRouter.post("/update-airport", isLogin, adminController.updateAirport);
 adminRouter.post('/delete-popular-flight/:id', isLogin, adminController.deletePopularFlight);
 adminRouter.post('/update-profile-detail/:id', isLogin, adminController.updateProfileDetail);
+adminRouter.post('/withdrawn-payment-status/:bookingId', isLogin, adminController.markBookingAsWithdrawn);
+
+
 
 adminRouter.delete('/delete-user/:id',isLogin, adminController.deleteUser);
 adminRouter.delete('/delete-agent/:id',isLogin, adminController.deleteAgent);

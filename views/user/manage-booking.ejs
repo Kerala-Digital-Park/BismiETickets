@@ -71,7 +71,7 @@ Page banner END -->
   </div>
 <% } %>
 
-		<section>
+		<section class="pt-3">
 			<div class="container">
 			<!-- Tabs START -->
                 <div class="row">
@@ -223,10 +223,14 @@ Page banner END -->
                                             <div class="card-footer pt-4">
                                                 <ul
                                                     class="list-inline bg-light rounded-2 d-sm-flex text-center justify-content-sm-between mb-0 px-4 py-2">
-                                                    <li class="list-inline-item text-danger">Non-refundable</li>
-                                                    <li class="list-inline-item text-primary">Checked baggage : 25 kg
+                                                    <%
+                                                    refundableClass = bookings.flight.refundable ? 'text-success' : 'text-danger';
+                                                    refundableText = bookings.flight.refundable ? 'Refundable' : 'Non-Refundable';
+                                                    %>
+                                                    <li class="list-inline-item <%= refundableClass %>"><%= refundableText %></li>
+                                                    <li class="list-inline-item text-primary">Checked baggage : <%= bookings.flight.baggage.adult.checkIn.weightPerPiece %> kg
                                                     </li>
-                                                    <li class="list-inline-item text-primary"> Carry-on baggage : 7 Kg
+                                                    <li class="list-inline-item text-primary"> Carry-on baggage :  <%= bookings.flight.baggage.adult.cabin.weightPerPiece %> Kg
                                                     </li>
                                                 </ul>
                                             </div>
@@ -509,7 +513,7 @@ Page banner END -->
 													<%
 														let total = bookings.baseFare + bookings.tax;
 														let discount = bookings.discount || 0;
-														discountPercentage = discount / total * 100;
+														discountPercentage = Math.floor(discount / total * 100);
 													%>
                                                     <li
                                                         class="list-group-item d-flex justify-content-between align-items-center">

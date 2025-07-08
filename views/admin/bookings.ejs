@@ -315,9 +315,14 @@
 		const reason = cancelReasonInput.value.trim();
   
 		if (!reason) {
-		  alert("Please enter a reason.");
-		  return;
-		}
+        Swal.fire({
+          icon: 'warning',
+          title: 'Missing Reason',
+          text: 'Please enter a reason for cancellation.',
+          confirmButtonText: 'OK'
+        });
+        return;
+      }
   
 		try {
 		  const res = await fetch("/admin/cancel-booking", {
@@ -328,18 +333,34 @@
 			body: JSON.stringify({ bookingId, reason })
 		  });
   
-		  if (res.ok) {
-			alert("Booking cancelled successfully.");
-			const modal = bootstrap.Modal.getInstance(document.getElementById("cancelBookingModal"));
-			modal.hide();
-			location.reload(); // Optional: refresh page
-		  } else {
-			alert("Failed to cancel booking.");
-		  }
-		} catch (err) {
-		  console.error(err);
-		  alert("An error occurred.");
-		}
+		   if (res.ok) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Booking Cancelled',
+            text: 'Booking was successfully cancelled.',
+            confirmButtonText: 'OK'
+          }).then(() => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById("cancelBookingModal"));
+            modal.hide();
+            location.reload(); // Optional: refresh page
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Failed',
+            text: 'Failed to cancel booking.',
+            confirmButtonText: 'OK'
+          });
+        }
+      } catch (err) {
+        console.error(err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while cancelling the booking.',
+          confirmButtonText: 'OK'
+        });
+      }
 	  });
 	});
   </script>

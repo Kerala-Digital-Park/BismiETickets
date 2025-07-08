@@ -499,27 +499,6 @@
               
                 <hr class="my-0">
               
-                <!-- Return Stops -->
-                <!-- <div class="card card-body rounded-0 p-4">
-                  <h6 class="mb-2">Return Stops</h6>
-                  <ul class="list-inline mb-0 g-3">
-                    <li class="list-inline-item mb-0">
-                      <input type="checkbox" class="btn-check" id="return-direct" name="returnStops" value="0">
-                      <label class="btn btn-sm btn-light btn-primary-soft-check" for="return-direct">Direct</label>
-                    </li>
-                    <li class="list-inline-item mb-0">
-                      <input type="checkbox" class="btn-check" id="return-1stop" name="returnStops" value="1">
-                      <label class="btn btn-sm btn-light btn-primary-soft-check" for="return-1stop">1 Stop</label>
-                    </li>
-                    <li class="list-inline-item mb-0">
-                      <input type="checkbox" class="btn-check" id="return-2plus" name="returnStops" value="2">
-                      <label class="btn btn-sm btn-light btn-primary-soft-check" for="return-2plus">2+ Stops</label>
-                    </li>
-                  </ul>
-                </div> -->
-              
-                <!-- <hr class="my-0"> -->
-              
                 <!-- Preferred Airline -->
                 <div class="card card-body rounded-0 p-4">
                   <h6 class="mb-2">Preferred Airline</h6>
@@ -530,24 +509,6 @@
                         <label class="form-check-label" for="airline<%= index %>"><%= airline %></label>
                       </div>
                     <% }); %>
-                    <!-- <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="airlines" value="Blogzine" id="airlineType1">
-                      <label class="form-check-label" for="airlineType1">
-                        <img src="assets/images/element/12.svg" class="h-15px fa-fw me-2" alt="">Blogzine
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="airlines" value="Wizixo" id="airlineType2">
-                      <label class="form-check-label" for="airlineType2">
-                        <img src="assets/images/element/13.svg" class="h-15px fa-fw me-2" alt="">Wizixo
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="airlines" value="Folio airline" id="airlineType3">
-                      <label class="form-check-label" for="airlineType3">
-                        <img src="assets/images/element/14.svg" class="h-15px fa-fw me-2" alt="">Folio airline
-                      </label>
-                    </div> -->
                   </div>
                 </div>
               
@@ -563,19 +524,6 @@
                         <label class="form-check-label" for="layover<%= index %>"><%= city %></label>
                       </div>
                     <% }); %>
-                    <!-- <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="layovers" value="Abu Dhabi" id="layover1">
-                      <label class="form-check-label" for="layover1">Abu Dhabi</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="layovers" value="Amsterdam" id="layover2">
-                      <label class="form-check-label" for="layover2">Amsterdam</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="layovers" value="Doha" id="layover3">
-                      <label class="form-check-label" for="layover3">Doha</label>
-                    </div> -->
-                    <!-- add more as needed -->
                   </div>
                 </div>
               
@@ -1309,105 +1257,14 @@ if (userData?.subscription?.serviceCharge) {
         });
 
       </script>
-
-      <!-- <script>
-        document.addEventListener("DOMContentLoaded", function () {
-          const staticSelectors = [
-            "#fixedFrom",
-            "#fixedTo",
-            "#from",
-            "#to"
-          ];
-
-          const doneTypingInterval = 100;
-
-          function initChoicesForElement(element) {
-            if (!element || element.classList.contains('choices-initialized')) return;
-            element.classList.add('choices-initialized');
-
-            const selectedValue = element.getAttribute('data-selected');
-
-            const choices = new Choices(element, {
-              searchEnabled: true,
-              placeholderValue: "Select Airport",
-              searchChoices: false,
-              shouldSort: false,
-              allowHTML: true,
-              itemSelectText: '',
-            });
-
-            element._choicesInstance = choices;
-
-            let defaultLoaded = false;
-            let typingTimer;
-
-            element.addEventListener('showDropdown', async () => {
-              if (!defaultLoaded) {
-                try {
-                  const res = await fetch("/search-airports");
-                  const airports = await res.json();
-
-                  choices.setChoices(
-                    airports.map(a => ({ 
-                      value: a.Value, 
-                      label: `${a.Airport} (${a.Value})`,
-                      selected: a.Value === selectedValue
-                     })),
-                    "value",
-                    "label",
-                    true
-                  );
-                  defaultLoaded = true;
-                } catch (err) {
-                  console.error("Error loading default airports:", err);
-                }
-              }
-            });
-
-            element.addEventListener('search', function (e) {
-              clearTimeout(typingTimer);
-              const searchTerm = e.detail.value.trim();
-              if (searchTerm.length >= 2) {
-                typingTimer = setTimeout(async () => {
-                  try {
-                    const res = await fetch(`/search-airports?q=${encodeURIComponent(searchTerm)}`);
-                    const airports = await res.json();
-                    choices.setChoices(
-                      airports.map(a => ({
-                        value: a.Value, 
-                        label: `${a.Airport} (${a.Value})`,
-                        selected: a.Value === selectedValue
-                      })),
-                      "value",
-                      "label",
-                      true
-                    );
-                  } catch (err) {
-                    console.error("Error searching airports:", err);
-                  }
-                }, doneTypingInterval);
-              }
-            });
-          }
-
-          // ✅ Init static selects
-          staticSelectors.forEach(selector => {
-            const element = document.querySelector(selector);
-            if (element) initChoicesForElement(element);
-          });
-
-
-          observer.observe(document.body, { childList: true, subtree: true });
-        });
-      </script> -->
-
+<!-- 
       <script>
         document.addEventListener("DOMContentLoaded", async function () {
           const staticSelectors = [
             "#fixedFrom",
-            "#fixedTo",
+            // "#fixedTo",
             "#from",
-            "#to"
+            // "#to"
           ];
       
           const doneTypingInterval = 100;
@@ -1416,7 +1273,7 @@ if (userData?.subscription?.serviceCharge) {
       
           // ✅ 1. Fetch all airports once on page load
           try {
-            const res = await fetch("/search-airports");
+            const res = await fetch("/search-filtered-airports");
             airportList = await res.json();
           } catch (err) {
             console.error("Error preloading airports:", err);
@@ -1442,9 +1299,9 @@ if (userData?.subscription?.serviceCharge) {
             // ✅ 2. Set initial choices with selected one marked
             choices.setChoices(
               airportList.map(a => ({
-                value: a.Value,
-                label: `${a.Airport} (${a.Value})`,
-                selected: a.Value === selectedValue
+                value: a.value,
+                label: `${a.city} (${a.value})`,
+                selected: a.value === selectedValue
               })),
               "value",
               "label",
@@ -1460,14 +1317,14 @@ if (userData?.subscription?.serviceCharge) {
               if (searchTerm.length >= 2) {
                 typingTimer = setTimeout(async () => {
                   try {
-                    const res = await fetch(`/search-airports?q=${encodeURIComponent(searchTerm)}`);
+                    const res = await fetch(`/search-filtered-airports?q=${encodeURIComponent(searchTerm)}`);
                     const airports = await res.json();
       
                     choices.setChoices(
                       airports.map(a => ({
-                        value: a.Value,
-                        label: `${a.Airport} (${a.Value})`,
-                        selected: a.Value === selectedValue
+                        value: a.value,
+                        label: `${a.airport} (${a.value})`,
+                        selected: a.value === selectedValue
                       })),
                       "value",
                       "label",
@@ -1489,6 +1346,158 @@ if (userData?.subscription?.serviceCharge) {
         });
       </script>
       
+            <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const fromSelectors = ["#fixedFrom", "#from"];
+    const toSelectors = ["#fixedTo", "#to"];
+
+    fromSelectors.forEach((fromSelector, index) => {
+      const fromElement = document.querySelector(fromSelector);
+      const toElement = document.querySelector(toSelectors[index]);
+
+      if (!fromElement || !toElement) return;
+
+      fromElement.addEventListener("change", async () => {
+        const fromValue = fromElement.value;
+        if (!fromValue) return;
+
+        try {
+          const res = await fetch(`/get-to-airports?from=${fromValue}`);
+          const toAirports = await res.json();
+
+          // Destroy Choices instance if already initialized
+          if (toElement._choicesInstance) {
+            toElement._choicesInstance.destroy();
+            toElement.classList.remove("choices-initialized");
+          }
+
+          // Clear and repopulate the "To" dropdown
+          toElement.innerHTML = '<option value="">Select location</option>';
+          toAirports.forEach(a => {
+            const option = document.createElement("option");
+            option.value = a.value;
+            option.text = `${a.city} (${a.value})`;
+            toElement.appendChild(option);
+          });
+
+          // Re-initialize Choices.js
+          const choices = new Choices(toElement, {
+            searchEnabled: true,
+            shouldSort: false,
+            allowHTML: true,
+            placeholderValue: "Select Airport",
+          });
+          toElement._choicesInstance = choices;
+
+        } catch (error) {
+          console.error("Error fetching to airports:", error);
+        }
+      });
+    });
+  });
+</script> -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", async function () {
+    const fromSelectors = ["#fixedFrom", "#from"];
+    const toSelectors = ["#fixedTo", "#to"];
+
+    // 🔁 Fetch all fromAirports for dropdown
+    let fromAirports = [];
+    try {
+      const res = await fetch("/search-filtered-airports");
+      fromAirports = await res.json();
+    } catch (err) {
+      console.error("Error loading fromAirports:", err);
+    }
+
+    // 🔁 Initialize FROM dropdowns
+    fromSelectors.forEach((fromSelector, index) => {
+      const fromElement = document.querySelector(fromSelector);
+      const toElement = document.querySelector(toSelectors[index]);
+
+      if (!fromElement || !toElement) return;
+
+      const selectedFrom = fromElement.getAttribute("data-selected");
+      const selectedTo = toElement.getAttribute("data-selected");
+
+      // 🛠️ Initialize FROM dropdown with Choices
+      const fromChoices = new Choices(fromElement, {
+        searchEnabled: true,
+        placeholderValue: "Select Airport",
+        shouldSort: false,
+        allowHTML: true,
+        itemSelectText: ''
+      });
+
+      fromElement._choicesInstance = fromChoices;
+
+      // Load options
+      fromChoices.setChoices(
+        fromAirports.map(a => ({
+          value: a.value,
+          label: `${a.city} (${a.value})`,
+          selected: a.value === selectedFrom
+        })),
+        "value",
+        "label",
+        true
+      );
+
+      // 🔁 Function to load TO airports based on selected FROM
+      async function loadToAirports(fromValue, preselectTo = null) {
+        try {
+          const res = await fetch(`/get-to-airports?from=${fromValue}`);
+          const toAirports = await res.json();
+
+          // Destroy old instance
+          if (toElement._choicesInstance) {
+            toElement._choicesInstance.destroy();
+            toElement.classList.remove("choices-initialized");
+          }
+
+          // Clear options
+          toElement.innerHTML = '<option value="">Select location</option>';
+
+          // Add new options
+          toAirports.forEach((a) => {
+            const option = document.createElement("option");
+            option.value = a.value;
+            option.text = `${a.city} (${a.value})`;
+            if (a.value === preselectTo) option.selected = true;
+            toElement.appendChild(option);
+          });
+
+          // Reinitialize Choices for TO dropdown
+          const toChoices = new Choices(toElement, {
+            searchEnabled: true,
+            shouldSort: false,
+            allowHTML: true,
+            placeholderValue: "Select Airport"
+          });
+
+          toElement._choicesInstance = toChoices;
+
+        } catch (err) {
+          console.error("Error loading toAirports:", err);
+        }
+      }
+
+      // 🔁 On page load: populate TO if FROM is preselected
+      if (selectedFrom) {
+        loadToAirports(selectedFrom, selectedTo);
+      }
+
+      // 🔁 On FROM change: update TO
+      fromElement.addEventListener("change", () => {
+        const fromValue = fromElement.value;
+        if (!fromValue) return;
+        loadToAirports(fromValue);
+      });
+    });
+  });
+</script>
+
       <script>
         window.history.replaceState(null, "", window.location.href)
       </script>

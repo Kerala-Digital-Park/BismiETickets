@@ -229,8 +229,18 @@
                                         } else {
                                             confirmed = confirm("Are you sure you want to reject this update?");
                                         }
-                                        if (!confirmed) return;
+                                        const result = await Swal.fire({
+          title: "Confirm Action",
+          text: confirmText,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#6c757d",
+          confirmButtonText: "Yes, continue",
+          cancelButtonText: "Cancel"
+        });
 
+        if (!result.isConfirmed) return;
 
                                         try {
                                             const response = await fetch(`/admin/update-profile-detail/${updateId}`, {
@@ -243,22 +253,36 @@
                                             console.log("Response: ", response);
                                             const result = await response.json();
                                             console.log("Result: ", result);
-                                            if (response.ok) {
-                                                alert(result.message || "Update accepted successfully.");
-                                                location.reload(); // Or remove the row from table dynamically
-                                            } else {
-                                                alert("Error: " + result.message || "Failed to update.");
-                                            }
-                                        } catch (error) {
-                                            console.error("Error in updating:", error);
-                                            alert("An error occurred.");
-                                        }
+                                             if (response.ok) {
+            Swal.fire({
+              icon: "success",
+              title: "Success",
+              text: result.message || "Update processed successfully.",
+              confirmButtonText: "OK"
+            }).then(() => {
+              location.reload();
+            });
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Failed",
+              text: result.message || "Failed to update.",
+              confirmButtonText: "OK"
+            });
+          }
+        } catch (error) {
+          console.error("Error in updating:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "An error occurred while processing the update.",
+            confirmButtonText: "OK"
+          });
+        }
                                     });
                                 });
                             });
                         </script>
-
-
 
                     </div>
                     <!-- Page main content END -->

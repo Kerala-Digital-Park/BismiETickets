@@ -58,7 +58,7 @@
 				.forEach(toggle => {
 					toggle.addEventListener('click', () => {
 						const theme = toggle.getAttribute('data-bs-theme-value')
-						localStorage.setItem('theme', theme)
+						mlocalStorage.setItem('theme', theme)
 						setTheme(theme)
 						showActiveTheme(theme)
 					})
@@ -88,5 +88,4 @@
 	<!-- Theme CSS -->
 	<link rel="stylesheet" type="text/css" href="/assets/css/style.css">
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 </head>

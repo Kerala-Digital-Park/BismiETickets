@@ -50,7 +50,12 @@ const transactionSchema = new mongoose.Schema(
       type: String,
       enum: ["Paid", "Unpaid"],
       default: "Unpaid"
-    }
+    },
+    withdrawalStatus: {
+      type: String,
+      enum: ["Paid", "Unpaid"],
+      default: "Unpaid"
+    },
   },
   { timestamps: true }
 );

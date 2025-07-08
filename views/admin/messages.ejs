@@ -298,11 +298,21 @@
 											document.getElementById("replyTextInput").value = "";
 											document.getElementById("replyContainer").style.display = "block";
 										} else {
-											alert("Failed to send reply.");
+											Swal.fire({
+						icon: "error",
+						title: "Reply Failed",
+						text: "Failed to send reply.",
+						confirmButtonText: "OK"
+					});
 										}
 									} catch (err) {
 										console.error(err);
-										alert("Server error");
+										Swal.fire({
+					icon: "error",
+					title: "Server Error",
+					text: "Something went wrong. Please try again.",
+					confirmButtonText: "OK"
+				});
 									}
 								});
 							});

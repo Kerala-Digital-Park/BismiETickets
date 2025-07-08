@@ -101,6 +101,8 @@ userRouter.get("/user-bookings", isLogin, userController.viewUserBookings);
 userRouter.get("/user-bookings/:id", isLogin, userController.viewUserBookingDetail);
 userRouter.get("/api/countries", userController.getApiCountries);
 userRouter.get("/search-airports", userController.searchAirports);
+userRouter.get("/search-filtered-airports", userController.searchFilteredAirports);
+userRouter.get("/get-to-airports", userController.getToAirports);
 userRouter.get("/search-airlines", userController.searchAirlines);
 userRouter.get("/agent-subscription", isLogin, userController.viewAgentSubscription);
 userRouter.get("/transactions", isLogin, userController.viewTransactions);

@@ -16,6 +16,7 @@ const PopularFlight = require("../models/popularFlightModel");
 const ProfileUpdate = require("../models/profileUpdateModel");
 const Coupons = require("../models/couponModel");
 const Requests = require("../models/requestModel");
+const FilterAirport = require("../models/filterAirportModel")
 const { countries } = require('countries-list');
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -613,6 +614,7 @@ const viewSupportTicket = async (req, res) => {
 
 // const findTicket = async (req, res) => {
 //   console.log("Find flights");
+
 //   try {
 //     const {
 //       fixedFrom,
@@ -630,14 +632,16 @@ const viewSupportTicket = async (req, res) => {
 
 //     const flexible = dateTypeCheckbox === "on";
 
+//     // Validate basic input
 //     if (flexible && (!from || !to || !departureDate || !returnDate)) {
-//       res.redirect("/");
+//       return res.redirect("/");
 //     }
 
 //     if (!flexible && (!fixedFrom || !fixedTo || !departure)) {
-//       res.redirect("/");
+//       return res.redirect("/");
 //     }
 
+//     // Default passenger counts
 //     const requestDetails = {
 //       from,
 //       to,
@@ -646,15 +650,18 @@ const viewSupportTicket = async (req, res) => {
 //       departure,
 //       returnDate,
 //       departureDate,
-//       flexible: flexible === true, // Convert back to boolean
-//       adults: (adults) || 1,
+//       flexible: flexible === true,
+//       adults: parseInt(adults) || 1,
 //       children: parseInt(children) || 0,
 //       infants: parseInt(infants) || 0,
 //     };
-    
+
+//     const totalPassengers =
+//       requestDetails.adults + requestDetails.children + requestDetails.infants;
+
 //     const flights = await Flights.find();
 
-//     // Function to check if a date falls within a range
+//     // Helper to check if date is within range
 //     const isDateInRange = (dateStr, startDateStr, endDateStr) => {
 //       const date = new Date(dateStr);
 //       const startDate = new Date(startDateStr);
@@ -662,60 +669,85 @@ const viewSupportTicket = async (req, res) => {
 //       return date >= startDate && date <= endDate;
 //     };
 
-//     // Filter flights based on from, to, and flexible criteria
+//     // Filter flights by route, date, and seat availability
 //     const filteredFlights = flights.filter((flight) => {
-//       if (flexible) {
-//         return (
-//           isDateInRange(
-//             flight.departureDate,
-//             departureDate,
-//             returnDate
-//           ) &&
-//           flight.from.toUpperCase() === from &&
-//           flight.to.toUpperCase() === to
-//         );
-//       } else {
-//         return (
-//           flight.departureDate === departure &&
-//           flight.from.toUpperCase() === fixedFrom &&
-//           flight.to.toUpperCase() === fixedTo
-//         );
+//       const inventory = flight.inventoryDates?.[0];
+//       if (!inventory) return false;
+
+//       const availableSeats = inventory.seats || 0;
+//       const bookedSeats = inventory.seatsBooked || 0;
+//       const remainingSeats = availableSeats - bookedSeats;
+
+//       const matchesRoute = flexible
+//         ? (
+//             isDateInRange(flight.departureDate, departureDate, returnDate) &&
+//             flight.from.toUpperCase() === from &&
+//             flight.to.toUpperCase() === to
+//           )
+//         : (
+//             flight.departureDate === departure &&
+//             flight.from.toUpperCase() === fixedFrom &&
+//             flight.to.toUpperCase() === fixedTo
+//           );
+
+//       return matchesRoute && remainingSeats >= totalPassengers;
+//     });
+
+//     // Build airline → best fare map
+//     const airlineMap = new Map();
+
+//     filteredFlights.forEach((flight) => {
+//       const inventory = flight.inventoryDates?.[0];
+//       const airline = flight.stops?.[0]?.airline || "Unknown";
+//       const fare = inventory?.fare?.adults || Infinity;
+
+//       const availableSeats = inventory.seats || 0;
+//       const bookedSeats = inventory.seatsBooked || 0;
+//       const remainingSeats = availableSeats - bookedSeats;
+
+//       if (remainingSeats >= totalPassengers) {
+//         if (!airlineMap.has(airline) || fare < airlineMap.get(airline).fare) {
+//           airlineMap.set(airline, { flight, fare });
+//         }
 //       }
 //     });
 
-//     // Total passengers
-// const totalPassengers =
-// parseInt(requestDetails.adults) +
-// parseInt(requestDetails.children) +
-// parseInt(requestDetails.infants);
+//     const airlineSet = new Set();
+// const layoverSet = new Set();
 
-// // Create a map to track the lowest fare per airline for flights with enough seats
-// const airlineMap = new Map();
+// filteredFlights.forEach((flight) => {
+//   const airline = flight.stops?.[0]?.airline;
+//   if (airline) airlineSet.add(airline);
 
-// filteredFlights.forEach(flight => {
-// const inventory = flight.inventoryDates?.[0];
-// const airline = flight.stops?.[0]?.airline || "Unknown";
-// const fare = inventory?.fare?.adults || Infinity;
-// const seatsAvailable = inventory?.seats || 0;
-
-// if (seatsAvailable >= totalPassengers) {
-//   if (!airlineMap.has(airline) || fare < airlineMap.get(airline).fare) {
-//     airlineMap.set(airline, { flight, fare });
-//   }
-// }
+//   const layovers = flight.stops?.slice(0, -1).map(stop => stop.arrivalCity);
+//   layovers.forEach(city => layoverSet.add(city));
 // });
 
-// // Extract the best fare flight for each airline
-// const refilteredFlights = Array.from(airlineMap.values()).map(entry => entry.flight);
+// const availableAirlines = Array.from(airlineSet);
+// const availableLayovers = Array.from(layoverSet);
 
+//    // Extract flights with best fare per airline
+// const refilteredFlights = Array.from(airlineMap.values()).map(
+//   (entry) => entry.flight
+// );
+
+// // Compute min/max fare from filtered flights
+// const fares = filteredFlights.map(f => f.inventoryDates?.[0]?.fare?.adults || 0);
+// const minFare = fares.length > 0 ? Math.min(...fares) : 0;
+// const maxFare = fares.length > 0 ? Math.max(...fares) : 0;
+
+// // Render results
 // res.render("user/flight-list", {
-//   flights: filteredFlights,          
-//   refilteredFlights,                 
+//   flights: filteredFlights,
+//   refilteredFlights,
 //   requestDetails,
+//   minFare,
+//   maxFare,
+//   availableAirlines,
+//   availableLayovers,
 // });
-
 //   } catch (error) {
-//     console.error(error);
+//     console.error("Error in findTicket:", error);
 //     res.render("error", { error });
 //   }
 // };
@@ -736,6 +768,12 @@ const findTicket = async (req, res) => {
       children,
       infants,
       dateTypeCheckbox,
+      stops,
+      airlines,
+      layovers,
+      refundable,
+      minPrice,
+      maxPrice,
     } = req.body;
 
     const flexible = dateTypeCheckbox === "on";
@@ -749,7 +787,6 @@ const findTicket = async (req, res) => {
       return res.redirect("/");
     }
 
-    // Default passenger counts
     const requestDetails = {
       from,
       to,
@@ -769,7 +806,6 @@ const findTicket = async (req, res) => {
 
     const flights = await Flights.find();
 
-    // Helper to check if date is within range
     const isDateInRange = (dateStr, startDateStr, endDateStr) => {
       const date = new Date(dateStr);
       const startDate = new Date(startDateStr);
@@ -777,8 +813,7 @@ const findTicket = async (req, res) => {
       return date >= startDate && date <= endDate;
     };
 
-    // Filter flights by route, date, and seat availability
-    const filteredFlights = flights.filter((flight) => {
+    let filteredFlights = flights.filter((flight) => {
       const inventory = flight.inventoryDates?.[0];
       if (!inventory) return false;
 
@@ -801,7 +836,49 @@ const findTicket = async (req, res) => {
       return matchesRoute && remainingSeats >= totalPassengers;
     });
 
-    // Build airline → best fare map
+    // Apply filters from sidebar:
+    filteredFlights = filteredFlights.filter((flight) => {
+      const inventory = flight.inventoryDates?.[0];
+      if (!inventory) return false;
+
+      const airline = flight.stops?.[0]?.airline || "";
+      const fare = inventory.fare?.adults || 0;
+      const layoverCities = flight.stops?.slice(0, -1).map((stop) => stop.arrivalCity);
+      const stopCount = flight.stops?.length-1 || 0;
+
+      // Refundable filter
+      if (refundable === "true" && flight.refundable !== true) return false;
+
+      // Stops filter (0, 1, 2+)
+      if (stops) {
+        const selectedStops = Array.isArray(stops) ? stops : [stops];
+        if (!selectedStops.includes(stopCount >= 2 ? "2" : stopCount.toString())) {
+          return false;
+        }
+      }
+
+      // Airline filter
+      if (airlines) {
+        const selectedAirlines = Array.isArray(airlines) ? airlines : [airlines];
+        if (!selectedAirlines.includes(airline)) return false;
+      }
+
+      // Layover filter
+      if (layovers) {
+        const selectedLayovers = Array.isArray(layovers) ? layovers : [layovers];
+        const match = layoverCities?.some((city) => selectedLayovers.includes(city));
+        if (!match) return false;
+      }
+
+      // Price range filter
+      const min = parseInt(minPrice) || 0;
+      const max = parseInt(maxPrice) || Infinity;
+      if (fare < min || fare > max) return false;
+
+      return true;
+    });
+
+    // Build airline map (best fare flight per airline)
     const airlineMap = new Map();
 
     filteredFlights.forEach((flight) => {
@@ -821,39 +898,36 @@ const findTicket = async (req, res) => {
     });
 
     const airlineSet = new Set();
-const layoverSet = new Set();
+    const layoverSet = new Set();
 
-filteredFlights.forEach((flight) => {
-  const airline = flight.stops?.[0]?.airline;
-  if (airline) airlineSet.add(airline);
+    filteredFlights.forEach((flight) => {
+      const airline = flight.stops?.[0]?.airline;
+      if (airline) airlineSet.add(airline);
 
-  const layovers = flight.stops?.slice(0, -1).map(stop => stop.arrivalCity);
-  layovers.forEach(city => layoverSet.add(city));
-});
+      const layovers = flight.stops?.slice(0, -1).map((stop) => stop.arrivalCity);
+      layovers?.forEach((city) => layoverSet.add(city));
+    });
 
-const availableAirlines = Array.from(airlineSet);
-const availableLayovers = Array.from(layoverSet);
+    const availableAirlines = Array.from(airlineSet);
+    const availableLayovers = Array.from(layoverSet);
 
-   // Extract flights with best fare per airline
-const refilteredFlights = Array.from(airlineMap.values()).map(
-  (entry) => entry.flight
-);
+    const refilteredFlights = Array.from(airlineMap.values()).map(
+      (entry) => entry.flight
+    );
 
-// Compute min/max fare from filtered flights
-const fares = filteredFlights.map(f => f.inventoryDates?.[0]?.fare?.adults || 0);
-const minFare = fares.length > 0 ? Math.min(...fares) : 0;
-const maxFare = fares.length > 0 ? Math.max(...fares) : 0;
+    const fares = filteredFlights.map((f) => f.inventoryDates?.[0]?.fare?.adults || 0);
+    const minFare = fares.length > 0 ? Math.min(...fares) : 0;
+    const maxFare = fares.length > 0 ? Math.max(...fares) : 0;
 
-// Render results
-res.render("user/flight-list", {
-  flights: filteredFlights,
-  refilteredFlights,
-  requestDetails,
-  minFare,
-  maxFare,
-  availableAirlines,
-  availableLayovers,
-});
+    res.render("user/flight-list", {
+      flights: filteredFlights,
+      refilteredFlights,
+      requestDetails,
+      minFare,
+      maxFare,
+      availableAirlines,
+      availableLayovers,
+    });
   } catch (error) {
     console.error("Error in findTicket:", error);
     res.render("error", { error });
@@ -861,21 +935,6 @@ res.render("user/flight-list", {
 };
 
 let flightRequests  // Temporary in-memory storage
-
-// const getFlightDetail = async (req, res) => {
-//   const { id, requestDetails } = req.body;
-
-//   try {
-//     // Store requestDetails temporarily in memory
-//     flightRequests.set(id, requestDetails);
-
-//     // Send redirect URL to frontend
-//     res.status(200).json({ redirectUrl: `/flight-detail?id=${id}` });
-//   } catch (error) {
-//     console.error("Error fetching flight details:", error);
-//     res.status(400).json({ error: "Invalid flight data" });
-//   }
-// };
 
 const getFlightDetail = async (req, res) => {
   const { flightId, agentId } = req.body;
@@ -1304,63 +1363,6 @@ const viewProfile = async (req, res) => {
     res.render("error", { error });
   }
 };
-
-// const viewBookings = async (req, res) => {
-//   try {
-//     const userId = req.session.userId;
-
-//     const bookings = await Bookings.find({ userId: userId });
-
-//     const bookingsWithFlights = await Promise.all(
-//       bookings.map(async (booking) => {
-//         const flightDetails = await Flights.findById(booking.flight);
-//         return { ...booking.toObject(), flightDetails };
-//       })
-//     );
-
-//     const userDetails = await Users.findById(userId);
-
-//     const today = new Date();
-
-//     const upcomingBookings = [];
-//     const completedBookings = [];
-//     const cancelledBookings = [];
-
-//     bookingsWithFlights.forEach((booking) => {
-//       if (
-//         booking.flightDetails &&
-//         booking.flightDetails.departureDate &&
-//         booking.flightDetails.departureTime
-//       ) {
-//         const formattedDateStr = booking.flightDetails.departureDate + " 20:00"; // Adding a default time for parsing
-//         const departureDate = new Date(Date.parse(formattedDateStr));
-//         // If the arrival time is given separately, merge it
-//         if (booking.flightDetails.departureTime) {
-//           const [hours, minutes] =
-//             booking.flightDetails.departureTime.split(":");
-//           departureDate.setHours(parseInt(hours), parseInt(minutes));
-//         }
-
-//         if (departureDate <= today) {
-//           completedBookings.push(booking);
-//         } else {
-//           upcomingBookings.push(booking);
-//         }
-//       } else {
-//         upcomingBookings.push(booking);
-//       }
-//     });
-
-//     res.render("user/bookings", {
-//       upcomingBookings,
-//       completedBookings,
-//       user: userDetails,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.render("error", { error });
-//   }
-// };
 
 const viewBookings = async (req, res) => {
   try {
@@ -2354,7 +2356,6 @@ const viewAddListing = async (req, res) => {
   }
 };
 
-
 const searchAirports = async (req, res) => {
   try {
     const q = (req.query.q || "").trim();
@@ -2391,6 +2392,56 @@ const searchAirports = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 }
+
+const searchFilteredAirports = async (req, res) => {
+  try {
+    const q = (req.query.q || "").trim();
+
+    const matchStage = q
+      ? {
+          $or: [
+            { "fromAirport.name": { $regex: q, $options: "i" } },
+            { "fromAirport.value": { $regex: q, $options: "i" } },
+            { "fromAirport.city": { $regex: q, $options: "i" } },
+            { "fromAirport.country": { $regex: q, $options: "i" } }
+          ]
+        }
+      : {};
+
+    const airports = await FilterAirport.aggregate([
+      { $match: matchStage },
+      {
+        $project: {
+          _id: 0,
+          value: "$fromAirport.value",
+          name: "$fromAirport.name",
+          city: "$fromAirport.city",
+          country: "$fromAirport.country"
+        }
+      },
+      { $limit: 25 }
+    ]);
+
+    res.json(airports);
+  } catch (err) {
+    console.error("Airport search error:", err);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+const getToAirports = async (req, res) => {
+  const from = req.query.from;
+  if (!from) return res.status(400).json({ success: false, message: "Missing 'from'" });
+
+  try {
+    const doc = await FilterAirport.findOne({ "fromAirport.value": from });
+    const toAirports = doc?.fromAirport?.toAirports || [];
+    res.json(toAirports);
+  } catch (error) {
+    console.error("Error fetching toAirports:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
 const searchAirlines = async (req, res) => { 
   try {
@@ -2602,13 +2653,53 @@ const addFlight = async (req, res) => {
     
     await newFlight.save();
     
+    const fromValue = oneWayFlight.from;
+    const toValue = oneWayFlight.to;
+
+    const existingFilter = await FilterAirport.findOne({ "fromAirport.value": fromValue });
+
+    const toAirportObject = {
+      value: toValue,
+      name: oneWayFlight.arrivalName,
+      city: oneWayFlight.toCity,
+      country: oneWayFlight.toCountry,
+      status: "active",
+    };
+
+    if (!existingFilter) {
+      // Create new fromAirport with toAirports array
+      const newFilter = new FilterAirport({
+        fromAirport: {
+          value: fromValue,
+          name: oneWayFlight.departureName,
+          city: oneWayFlight.fromCity,
+          country: oneWayFlight.fromCountry,
+          status: "active",
+          toAirports: [toAirportObject],
+        },
+      });
+      await newFilter.save();
+    } else {
+      // Check if toAirport already exists in array
+      const toAlreadyExists = existingFilter.fromAirport.toAirports.some(
+        (airport) => airport.value === toValue
+      );
+
+      if (!toAlreadyExists) {
+        await FilterAirport.updateOne(
+          { "fromAirport.value": fromValue },
+          { $push: { "fromAirport.toAirports": toAirportObject } }
+        );
+      }
+    }
+
     const userId = req.session.userId;
     const user = await Users.findById(userId);
     const userEmail = user?.email;
     
     if (userEmail) {
       const templateFile =
-  type === "oneWay"
+      type === "oneWay"
     ? "addInventoryMail.ejs"
     : "addConnectingInventoryMail.ejs";
     
@@ -3368,6 +3459,8 @@ module.exports = {
   getApiCountries,
   updateListingById,
   searchAirports,
+  searchFilteredAirports,
+  getToAirports,
   searchAirlines,
   changeStatus,
   viewAgentSubscription,

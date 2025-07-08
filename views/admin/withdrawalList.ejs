@@ -40,6 +40,7 @@
                                                 <th>Amount</th>
                                                 <th>Base Fare</th>
                                                 <th>Tax & <br>Service Charges</th>
+                                                <th>Bank Details</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -95,18 +96,28 @@
                                                             <%= withdrawal.tax %>
                                                         </td>
                                                         <td>
-                                                            <% if (withdrawal.paymentStatus === "Paid") { %>
-                                                              <button class="btn btn-secondary w-100" disabled>
-                                                                Withdrawn
-                                                              </button>
-                                                            <% } else { %>
-                                                              <button class="btn btn-primary w-100 payNowBtn"
-                                                                data-booking='<%- JSON.stringify(withdrawal) %>'>
-                                                                Withdraw
-                                                              </button>
-                                                            <% } %>
-                                                          </td>
-                                                          
+                                                            <button type="button"
+                                                                class="btn btn-outline-dark viewBankBtn"
+                                                                data-user='<%- JSON.stringify(seller.bankDetails || {}) %>'
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#bankDetailsModal">
+                                                                View
+                                                            </button>
+                                                        </td>
+
+                                                        <td>
+                                                            <% if (withdrawal.paymentStatus==="Paid" ) { %>
+                                                                <button class="btn btn-secondary w-100" disabled>
+                                                                    Withdrawn
+                                                                </button>
+                                                                <% } else { %>
+                                                                    <button class="btn btn-primary w-100 payNowBtn"
+                                                                        data-id="<%= withdrawal._id %>">
+                                                                        Withdraw
+                                                                    </button>
+                                                                    <% } %>
+                                                        </td>
+
                                                     </tr>
                                                     <% }) %>
                                                         <% } else { %>
@@ -131,61 +142,104 @@
             </div>
             <!-- Page content END -->
 
-            <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+            <!-- Bank Details Modal -->
+<div class="modal fade" id="bankDetailsModal" tabindex="-1" aria-labelledby="bankDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Bank Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-2">
+          <label class="form-label">Account Holder Name</label>
+          <input type="text" class="form-control" id="bankName" readonly>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Account Number</label>
+          <input type="text" class="form-control" id="accountNumber" readonly>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">IFSC Code</label>
+          <input type="text" class="form-control" id="ifscCode" readonly>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Bank Name</label>
+          <input type="text" class="form-control" id="bankBankName" readonly>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Branch Name</label>
+          <input type="text" class="form-control" id="branchName" readonly>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Status</label>
+          <input type="text" class="form-control" id="bankStatus" readonly>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-            <script>
-                document.querySelectorAll(".payNowBtn").forEach(button => {
-                  button.addEventListener("click", function () {
-                    const bookingData = JSON.parse(this.dataset.booking);
-              
-                    // Get the editable baseFare input in the same row
-                    const baseFareInput = this.closest("tr").querySelector('input[name="baseFare"]');
-                    const baseFare = baseFareInput?.value;
-              
-                    if (!baseFare) {
-                      alert("Base fare is required!");
-                      return;
-                    }
-              
-                    const amountInPaise = parseFloat(baseFare) * 100;
-                    console.log("Booking Data:", bookingData);
-                    console.log("Amount in paise:", amountInPaise);
-              
-                    const options = {
-                      key: "rzp_test_1ziG9HjgAv6f6j",
-                      amount: amountInPaise,
-                      currency: "INR",
-                      name: "Bismi",
-                      description: "UPI Payment",
-                      image: "https://your-logo-url.com/logo.png",
-              
-                      handler: function (response) {
-                        const paymentDetails = {
-                          razorpay_payment_id: response.razorpay_payment_id,
-                          baseFare: parseFloat(baseFare)
-                        };
-              
-                        fetch(`/admin/withdrawal-payment/${bookingData._id}`, {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify(paymentDetails)
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                          alert(data.message || "Payment successful");
-                          window.location.href = "/admin/transactions";
-                        })
-                        .catch(err => console.error("Error:", err));
-                      },
-                      theme: { color: "#3399cc" }
-                    };
-              
-                    const razorpayInstance = new Razorpay(options);
-                    razorpayInstance.open();
-                  });
-                });
-              </script>
-              
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // Handle withdraw
+    document.querySelectorAll(".payNowBtn").forEach(button => {
+      button.addEventListener("click", async function () {
+        const bookingId = this.dataset.id;
+        const btn = this;
+
+        const result = await Swal.fire({
+          title: "Confirm Withdrawal?",
+          text: "Are you sure you want to mark this booking as withdrawn?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes, Withdraw",
+          cancelButtonText: "Cancel"
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+          const res = await fetch(`/admin/withdrawn-payment-status/${bookingId}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          const data = await res.json();
+          if (res.ok && data.success) {
+            Swal.fire("Success!", "Booking marked as withdrawn.", "success");
+            btn.classList.remove("btn-primary");
+            btn.classList.add("btn-secondary");
+            btn.textContent = "Withdrawn";
+            btn.disabled = true;
+          } else {
+            Swal.fire("Failed", data.message || "Could not process withdrawal.", "error");
+          }
+        } catch (error) {
+          console.error("Withdraw error:", error);
+          Swal.fire("Error", "Something went wrong.", "error");
+        }
+      });
+    });
+
+    // Handle View Bank button
+    document.querySelectorAll(".viewBankBtn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const data = JSON.parse(btn.dataset.user || '{}');
+
+        document.getElementById("bankName").value = data.accountHolderName || "";
+        document.getElementById("accountNumber").value = data.accountNumber || "";
+        document.getElementById("ifscCode").value = data.ifscCode || "";
+        document.getElementById("bankBankName").value = data.bankName || "";
+        document.getElementById("branchName").value = data.branchName || "";
+        document.getElementById("bankStatus").value = data.status || "";
+      });
+    });
+  });
+</script>
+
     </main>
     <!-- **************** MAIN CONTENT END **************** -->
 
