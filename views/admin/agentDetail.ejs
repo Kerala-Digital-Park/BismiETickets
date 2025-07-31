@@ -15,9 +15,9 @@
                     <div class="page-content-wrapper p-xxl-4">
 
                         <!-- Counter START -->
-                        <div class="row g-4 mb-4">
+                        <div class="row g-2 mb-4">
                             <!-- Counter item -->
-                            <div class="col-lg-4">
+                            <div class="col-lg-3">
                                 <div
                                     class="card card-body border border-primary bg-primary bg-opacity-10 border-opacity-25 p-4 h-100">
                                     <div class="d-flex justify-content-between align-items-center">
@@ -26,17 +26,17 @@
                                             <h3 class="mb-0 fw-bold">
                                                 <%= flights.length %>
                                             </h3>
-                                            <span class="mb-0 h6 fw-light">Total Listings</span>
+                                            <span class="mb-0 h6 fw-light">Total Inventory</span>
                                         </div>
                                         <!-- Icon -->
                                         <div class="icon-lg rounded-circle flex-shrink-0 bg-primary text-white mb-0"><i
-                                                class="fa-solid fa-hotel fa-fw"></i></div>
+                                        class="bi bi-list-check fa-fw"></i></div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Counter item -->
-                            <div class="col-lg-4">
+                            <div class="col-lg-3">
                                 <div
                                     class="card card-body border border-warning bg-warning bg-opacity-10 border-opacity-25 p-4 h-100">
                                     <div class="d-flex justify-content-between align-items-center">
@@ -53,14 +53,31 @@
                             </div>
 
                             <!-- Counter item -->
-                            <div class="col-lg-4">
+                            <div class="col-lg-3">
                                 <div
                                     class="card card-body border border-success bg-success bg-opacity-10 border-opacity-25 p-4 h-100">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <!-- Digit -->
                                         <div>
-                                            <h3 class="mb-0 fw-bold">$2486.95</h3>
+                                            <h3 class="mb-0 fw-bold">₹ 2480 </h3>
                                             <span class="mb-0 h6 fw-light">Earning this month</span>
+                                        </div>
+                                        <!-- Icon -->
+                                        <div class="icon-lg rounded-circle flex-shrink-0 bg-success text-white mb-0"><i
+                                                class="fa-solid fa-money-bill-trend-up fa-fw"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Counter item -->
+                            <div class="col-lg-3">
+                                <div
+                                    class="card card-body border border-success bg-success bg-opacity-10 border-opacity-25 p-4 h-100">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <!-- Digit -->
+                                        <div>
+                                            <h3 class="mb-0 fw-bold">₹ 5000</h3>
+                                            <span class="mb-0 h6 fw-light">Wallet Balance</span>
                                         </div>
                                         <!-- Icon -->
                                         <div class="icon-lg rounded-circle flex-shrink-0 bg-success text-white mb-0"><i
@@ -77,21 +94,20 @@
                                 <div class="card bg-light">
                                     <!-- Dropdown button -->
                                     <div class="dropdown position-absolute top-0 end-0 m-3">
-                                        <!-- <a href="#" class="btn btn-sm btn-white btn-round lh-lg mb-0" role="button"
+                                        <a href="#" class="btn btn-sm btn-white btn-round lh-lg mb-0" role="button"
                                             id="dropdownShare1" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="bi bi-three-dots fa-fw"></i>
                                         </a>
                                         <ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded"
-                                            aria-labelledby="dropdownShare1">
-                                            <li><a class="dropdown-item" href="#"><i
-                                                        class="bi bi-pencil-square fa-fw me-2"></i>Edit</a></li>
+                                    aria-labelledby="dropdownShare1">
+                                    <li><a class="dropdown-item suspend-user" href="#" data-user-id="<%= agent._id %>"><i
+                                                class="bi bi-ban text-danger fa-fw me-2"></i>Suspend</a>
+                                    </li>
                                             <li><div class="dropdown-item delete-agent-btn"
                                                 data-agent-id="<%= agent._id %>"><i
-                                                        class="bi bi-trash fa-fw me-2"></i>Remove</div></li>
-                                        </ul> -->
-                                        <div class="dropdown-item delete-agent-btn"
-                                                data-agent-id="<%= agent._id %>"><i
-                                                        class="bi bi-trash fa-fw me-2 text-danger"></i></div>
+                                                        class="bi bi-trash-fill text-danger fa-fw me-2"></i>Remove</div></li>
+                                        </ul>
+                                        
                                     </div>
                                     <!-- Card body -->
                                     <div class="card-body text-center">
@@ -140,18 +156,34 @@
                                             </div>
                                         </div>
 
-                                        <!-- Phone -->
-                                        <div class="d-flex align-items-center mb-3">
-                                            <div class="icon-md bg-mode h6 mb-0 rounded-circle flex-shrink-0"><i
-                                                    class="bi bi-geo-alt-fill"></i></div>
-                                            <div class="ms-2">
-                                                <small>Address</small>
-                                                <h6 class="fw-normal small mb-0">
-                                                    <%= agent.address %>
-                                                    <%= agent.nationality ? ', ' + agent.nationality : '' %>
-                                                </h6>
+                                      <% let kycClass; if(agent.kyc==="Completed" ){ kycClass="text-success" ; } else
+                                            if(agent.kyc==="Initial" ){ kycClass="text-warning" ; } else{
+                                            kycClass="text-danger" } %>
+                                            <!-- Phone -->
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="icon-md bg-mode h6 mb-0 rounded-circle flex-shrink-0"><i
+                                                        class="bi bi-file-zip-fill"></i></div>
+                                                <div class="ms-2">
+                                                    <small>Kyc Status</small>
+                                                    <h6 class="fw-normal small mb-0">
+                                                        <span class="<%= kycClass %>">
+                                                            <%= agent.kyc %>
+                                                        </span>
+                                                    </h6>
+                                                </div>
                                             </div>
-                                        </div>
+                                            <!-- Phone -->
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="icon-md bg-mode h6 mb-0 rounded-circle flex-shrink-0">
+                                                    <i class="bi bi-whatsapp text-success"></i>
+                                                </div>
+                                                <div class="ms-2">
+                                                    <small>Whatsapp</small>
+                                                    <h6 class="fw-normal small mb-0">
+                                                        <%= agent.whatsapp %>
+                                                    </h6>
+                                                </div>
+                                            </div>                                      
 
                                         <!-- Skype -->
                                         <!-- <div class="d-flex align-items-center">
@@ -172,7 +204,12 @@
                                 <div class="card shadow">
                                     <!-- Card header -->
                                     <div class="card-header border-bottom">
-                                        <h5 class="mb-0">Personal Information</h5>
+                                        <div class="d-sm-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0">Personal Information</h5>
+                                            <button class="btn btn-outline-info waves-effect waves-light "
+                                                title="KYC Details" data-bs-toggle="modal"
+                                                data-bs-target="#paxupdate"><i class="bi bi-pencil-square"></i></button>
+                                        </div>
                                     </div>
                                     <!-- Card body -->
                                     <div class="card-body">
@@ -195,16 +232,16 @@
                                                     </li>
 
                                                     <li class="list-group-item mb-3">
-                                                        <span>Mobile Number:</span>
+                                                        <span>Whatsapp Number:</span>
                                                         <span class="h6 fw-normal ms-1 mb-0">
-                                                            <%= agent.mobile %>
+                                                            <%= agent.whatsapp %>
                                                         </span>
                                                     </li>
 
                                                     <li class="list-group-item mb-3">
                                                         <span>Subscription:</span>
                                                         <span class="h6 fw-normal ms-1 mb-0">
-                                                            <%= agent.subscription.subscription %> Plan
+                                                            <%= agent.subscription.subscription %>
                                                         </span>
                                                     </li>
 
@@ -221,6 +258,12 @@
                                                             <%= new Date(agent.expiryDate).toDateString() %>
                                                         </span>
                                                     </li>
+                                                    <li class="list-group-item mb-3">
+                                                        <span>Last Login:</span>
+                                                        <span class="h6 fw-normal ms-1 mb-0">
+                                                            Fri Aug 01 2025
+                                                        </span>
+                                                    </li>
                                                 </ul>
                                             </div>
 
@@ -235,9 +278,21 @@
                                                     </li>
 
                                                     <li class="list-group-item mb-3">
-                                                        <span>Gender:</span>
+                                                        <span>Agency Name:</span>
                                                         <span class="h6 fw-normal ms-1 mb-0">
-                                                            <%= agent.gender %>
+                                                            <%= agent.agencyName %>
+                                                        </span>
+                                                    </li>
+                                                    <li class="list-group-item mb-3">
+                                                        <span>Agency Type:</span>
+                                                        <span class="h6 fw-normal ms-1 mb-0">
+                                                            <%= agent.proprietorship %>
+                                                        </span>
+                                                    </li>
+                                                    <li class="list-group-item mb-3">
+                                                        <span>Role of User:</span>
+                                                        <span class="h6 fw-normal ms-1 mb-0">
+                                                            <%= agent.userRole %>
                                                         </span>
                                                     </li>
 
@@ -245,7 +300,6 @@
                                                         <span>Location:</span>
                                                         <span class="h6 fw-normal ms-1 mb-0">
                                                             <%= agent.address %>
-                                                            <%= agent.nationality ? ', ' + agent.nationality : '' %>
                                                         </span>
                                                     </li>
 
@@ -255,18 +309,21 @@
                                                             <%= new Date(agent.createdAt).toDateString() %>
                                                         </span>
                                                     </li>
+                                                    <% let statusClass; if(agent.status==="Active" ){
+                                                        statusClass="text-success" ; } else if(agent.status==="Inactive"
+                                                        ){ statusClass="text-warning" ; } else{
+                                                        statusClass="text-danger" } %>
+                                                        <li class="list-group-item mb-3">
+                                                            <span>Status:</span>
+                                                            <span class="h6 fw-normal ms-1 mb-0">
+                                                                <span class="<%= statusClass %>">
+                                                                    <%= agent.status %>
+                                                                </span>
+                                                            </span>
+                                                        </li>
                                                 </ul>
                                             </div>
 
-                                            <!-- Information item -->
-                                            <!-- <div class="col-12">
-                            <ul class="list-group list-group-borderless">
-                                <li class="list-group-item">
-                                    <span>Description: </span>
-                                    <p class="h6 fw-normal mb-0">As it so contrasted oh estimating instrument. Size-like body someone had. Are conduct viewing boy minutes warrant the expense Tolerably behavior may admit daughters offending her ask own? Praise effect wishes to change way and any wanted. Lively use looked latter regard had. Does he it part last in</p>
-                                </li>
-                            </ul>
-                        </div> -->
                                         </div>
                                     </div>
                                 </div>
@@ -277,62 +334,1773 @@
                         <!-- Hotel list START -->
                         <div class="row g-4">
                             <!-- Title -->
-                            <div class="col-12">
-                                <h4 class="mb-0">Inventory List</h4>
-                            </div>
+                            <ul class="nav nav-tabs nav-bottom-line mb-3">
 
-                            <% if(flights.length===0) { %>
-                                <div class="col-12">
-                                    <div class="alert alert-warning mb-0" role="alert">
-                                        <i class="bi bi-exclamation-triangle me-2"></i> No listings found.
+                                <li class="nav-item"> <a class="nav-link active" data-bs-toggle="tab" href="#tab-3-1">
+                                Inventory List </a> </li>
+
+                                <li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-7-7">
+                                        Booking
+                                        History
+                                    </a>
+                                </li>
+                                <li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-3-2">
+                                        Documents
+                                    </a>
+                                </li>
+                                <li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-4-4">Booking
+                                        Transactions
+                                    </a>
+                                </li>
+                                <li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-5-5"> Listing
+                                Transactions
+                            </a>
+                        </li>
+                        <li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-8-8"> Payout
+                            </a>
+                        </li>
+                                <li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-9-9">
+                                        Subscriptions
+                                    </a>
+                                </li>
+                                <li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-3-4">
+                                        Approvals
+                                    </a>
+                                </li>
+                                <li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-6-6"> Utility
+                                        Actions
+                                    </a>
+                                </li>
+                                <li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-3-3"> Activity
+                                    </a>
+                                </li>
+
+                            </ul>
+                            <div class="tab-content">
+
+                            <div class="tab-pane show active" id="tab-3-1">
+                            <div class="row g-4">
+                                <% if(flights.length===0) { %>
+<div class="col-12">
+<div class="alert alert-warning mb-0" role="alert">
+<i class="bi bi-exclamation-triangle me-2"></i> No listings found.
+</div>
+</div>
+<% } else { %>
+<% flights.forEach((flight)=> { %>
+                                <div class="col-lg-6">
+                                    <div class="card border">
+                                        <div class="card-header border-bottom">
+                                            <div class="d-sm-flex justify-content-between align-items-center">
+                                                <div class="d-sm-flex align-items-center mb-1 mb-sm-0">
+                                                    <!-- Avatar -->
+                                                    <div class="avatar avatar-md flex-shrink-0">
+                                                        <img class="rounded-circle"
+                                                            src="<%= flight.stops[0].airlineLogo ? flight.stops[0].airlineLogo : '/assets/images/category/hotel/4by3/10.jpg' %>">
+                                                    </div>
+                                                    <!-- Info -->
+                                                    <div class="ms-sm-3 mt-2 mt-sm-0">
+                                                        <a href="/admin/inventory/<%= flight._id %>">
+                                                            <h6 class="mb-1"><%= flight.from.toUpperCase() %> ➝ <%= flight.to.toUpperCase() %>
+                                                                on <%= flight.stops[0].airline %></h6>
+                                                        </a>
+                                                        <ul class="nav nav-divider small">
+                                                            <li class="nav-item"> Trip Date: <%= flight.departureDate %></li>
+                                                            <li class="nav-item"> <%= flight.inventoryId %> </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <a href="/admin/withdrawal/<%= flight._id %>/<%= flight.sellerId %>"
+                                                    class="btn btn-sm btn-dark flex-shrink-0 mb-0 ms-3">View
+                                                    Details</a>
+                                            </div>
+                                        </div>
+                                        <div class="card-body bg-light">
+
+
+                                            <!-- Info -->
+                                            <div class="hstack gap-2 gap-md-5 flex-wrap mt-2 ">
+                                                <div>
+                                                    <small>Total Seats</small>
+                                                    <h6 class="fw-normal mb-0"><%= flight.inventoryDates[0].seats %> Seats</h6>
+                                                </div>
+                                                <div>
+                                                    <small>Sold Seats</small>
+                                                    <h6 class="fw-normal mb-0"><%= flight.inventoryDates[0].seatsBooked %> Seats</h6>
+                                                </div>
+                                                <div>
+                                                    <small>Hold Seats</small>
+                                                    <h6 class="fw-normal mb-0">2 Seats</h6>
+                                                </div>
+
+                                                <div>
+                                                    <small>Price</small>
+                                                    <h5 class="mb-0 fw-3">₹ <%= flight.inventoryDates[0].fare?.adults %></h5>
+                                                </div>
+                                                <%
+                                                let statusClass; 
+                                                let status;
+                                                if(flight.isActive){
+                                                    statusClass="text-success" ; 
+                                                    status="Active";
+                                                } else{
+                                                    statusClass="text-danger" 
+                                                    status="Inactive"
+                                                }
+                                                %>
+                                                <div>
+                                                    <small>Sales Status</small>
+                                                    <h6 class="<%= statusClass %> fw-normal mb-0"><%= status %></h6>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </div>
-                                <% } else { %>
-                                    <% flights.forEach((flight)=> { %>
-                                        <!-- Hotel item -->
-                                        <div class="col-lg-6">
-                                            <div class="card shadow p-3">
-                                                <div class="row g-4">
-                                                    <!-- Card img -->
-                                                    <div class="col-sm-3">
-                                                        <img src="<%= flight.stops[0].airlineLogo ? flight.stops[0].airlineLogo : '/assets/images/category/hotel/4by3/10.jpg' %>"
-                                                            class="rounded-2" alt="Card image">
-                                                    </div>
+                                <% }) %>
+<!-- Hotel item END -->
+<% } %>
+                            </div>
+                                </div>
 
-                                                    <!-- Card body -->
-                                                    <div class="col-sm-9">
-                                                        <div
-                                                            class="card-body position-relative d-flex flex-column p-0 h-100">
-
-                                                            <!-- Title -->
-                                                            <h5 class="card-title mb-2 me-5"><%= flight.inventoryName %></h5>
-                                                            <small><%= flight.from.toUpperCase() %> → <%= flight.to.toUpperCase() %> (<%= flight.stops[0].airlineCode %> - <%= flight.stops[0].flightNumber %> )</small>
-
-                                                            <!-- Price and Button -->
+                                <div class="tab-pane" id="tab-7-7">
+                                    <div class="row g-4">
+                                        <% if (bookings && bookings.length> 0) { %>
+                                            <% bookings.forEach((booking)=> { %>
+                                                <div class="col-lg-6">
+                                                    <div class="card border mb-3">
+                                                        <div class="card-header border-bottom">
                                                             <div
-                                                                class="d-flex justify-content-between align-items-center mt-3 mt-md-auto">
-                                                                <!-- Price -->
-                                                                <div class="d-flex align-items-center">
-                                                                    <h5 class="fw-bold mb-0 me-1">₹ <%= flight.inventoryDates[0].fare.adults %></h5>
-                                                                    <span class="mb-0 me-2">/adult</span>
+                                                                class="d-sm-flex justify-content-between align-items-center">
+                                                                <div class="d-sm-flex align-items-center mb-1 mb-sm-0">
+                                                                    <div class="avatar avatar-md flex-shrink-0">
+                                                                        <img class="rounded-circle"
+                                                                            src="<%= booking.flight.stops[0].airlineLogo %>">
+                                                                    </div>
+                                                                    <div class="ms-sm-3 mt-2 mt-sm-0">
+                                                                        <h6 class="mb-1">
+                                                                            <%= booking.flight.fromCity %> ➝ <%=
+                                                                                    booking.flight.toCity %>
+                                                                                    on <%=
+                                                                                        booking.flight.stops[0].airline
+                                                                                        %>
+                                                                        </h6>
+                                                                        <ul class="nav nav-divider small">
+                                                                            <li class="nav-item">Trip Date: <%=
+                                                                                    booking.flight.departureDate %>
+                                                                            </li>
+                                                                            <li class="nav-item">
+                                                                                <%= booking.bookingId %>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
                                                                 </div>
-                                                                <!-- Button -->
-                                                                <a href="/admin/withdrawal/<%= flight._id %>/<%= flight.sellerId %>" 
-                                                                class="btn btn-sm btn-primary px-2 mb-0 withdraw-btn" 
-                                                                data-flight='<%- JSON.stringify(flight) %>'
-                                                                >
-                                                                Withdraw
-                                                                </a>
+                                                                <a href="/admin/booking/<%= booking._id %>"
+                                                                    class="btn btn-sm btn-dark flex-shrink-0 mb-0 ms-3">View
+                                                                    Details</a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-body bg-light">
+                                                            <div class="hstack gap-2 gap-md-5 flex-wrap mt-2">
+                                                                <div>
+                                                                    <small>Pax Name</small>
+                                                                    <h6 class="fw-normal mb-0">
+                                                                        <%= booking.travelers[0].first_name %>
+                                                                            <%= booking.travelers[0].last_name %>
+                                                                    </h6>
+                                                                </div>
+                                                                <div>
+                                                                    <small>Price</small>
+                                                                    <h5 class="mb-0 fw-3">₹ <%= booking.amount %>
+                                                                    </h5>
+                                                                </div>
+                                                                <div>
+                                                                    <small>Travel Status</small>
+                                                                    <h6
+                                                                        class="text-<%= booking.status === 'active' ? 'success' : 'danger' %> fw-normal mb-0">
+                                                                        <%= booking.status==='active' ? 'Upcoming'
+                                                                            : 'Cancelled' %>
+                                                                    </h6>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <% }) %>
+                                                    <% } else { %>
+                                                        <div class="col-12">
+                                                            <div class="alert alert-warning mb-0" role="alert">
+                                                                <i class="bi bi-exclamation-triangle me-2"></i> No
+                                                                bookings found.
+                                                            </div>
+                                                        </div>
+                                                        <% } %>
+                                    </div>
+
+                                </div>
+
+                                <div class="tab-pane" id="tab-3-2">
+                                    <div class="card">
+                                        <div class="card header mb-3">
+                                            <h4 class="h4 mb-3 mb-sm-0">Agency Logo</h4>
+                                            <p>Logo for the Profile and Print</p>
+                                        </div>
+                                        <div class="card body mb-3">
+                                            <div class="row g-4">
+                                                <!-- Overlay item -->
+                                                <div class="col-lg-3">
+                                                    <% if (agent.image) { %>
+                                                        <a data-glightbox data-gallery="gallery"
+                                                            href="<%= agent.image %>">
+                                                            <div
+                                                                class="card card-element-hover card-overlay-hover overflow-hidden">
+                                                                <!-- Image -->
+                                                                <img src="<%= agent.image %>"
+                                                                    class="card-img-top img-fluid"
+                                                                    style="height: 250px; width: 100%;"
+                                                                    alt="User Image">
+
+                                                                <!-- Overlay -->
+                                                                <div class="card-img-overlay d-flex flex-column p-3">
+                                                                    <!-- Card overlay top -->
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        <div class="badge text-bg-dark">Profile Logo
+                                                                        </div>
+
+                                                                        <div class="hover-element w-100 h-100">
+                                                                            <i
+                                                                                class="bi bi-fullscreen fs-6 text-white position-absolute top-50 start-50 translate-middle bg-dark rounded-1 p-2 lh-1"></i>
+                                                                        </div>
+
+                                                                        <!-- Dropdown -->
+                                                                        <div class="list-inline-item dropdown">
+                                                                            <a href="#"
+                                                                                class="btn btn-sm btn-round btn-light"
+                                                                                role="button" id="dropdownAction1"
+                                                                                data-bs-toggle="dropdown"
+                                                                                aria-expanded="false">
+                                                                                <i
+                                                                                    class="bi bi-three-dots-vertical"></i>
+                                                                            </a>
+                                                                            <ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded small"
+                                                                                aria-labelledby="dropdownAction1">
+                                                                                <li>
+                                                                                    <a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-pencil-square text-primary fa-fw me-2"></i>Change</a>
+                                                                                </li>
+                                                                                <li>
+                                                                                    <a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-trash-fill text-danger fa-fw me-2"></i>Remove</a>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                        <% } else { %>
+                                                            <div class="card card-element-hover card-overlay-hover overflow-hidden bg-light d-flex align-items-center justify-content-center"
+                                                                style="height: 200px;">
+                                                                <!-- No image fallback -->
+                                                                <div class="text-center">
+                                                                    <i
+                                                                        class="bi bi-person-circle fs-1 text-secondary"></i>
+                                                                    <div class="badge text-bg-dark mt-2">No Profile
+                                                                        Image</div>
+                                                                </div>
+                                                            </div>
+                                                            <% } %>
+                                                </div>
+
+                                                <!-- End Overlay item -->
+                                                <!-- Overlay item -->
+                                                <div class="col-lg-3">
+                                                    <% if (agent.logo) { %>
+                                                        <a data-glightbox data-gallery="gallery"
+                                                            href="<%= agent.logo %>">
+                                                            <div
+                                                                class="card card-element-hover card-overlay-hover overflow-hidden">
+                                                                <!-- Image -->
+                                                                <img src="<%= agent.logo %>"
+                                                                    class="card-img-top img-fluid"
+                                                                    style="height: 250px; width: 100%;"
+                                                                    alt="Card image">
+                                                                <!-- Overlay -->
+
+                                                                <div class="card-img-overlay d-flex flex-column p-3">
+                                                                    <!-- Card overlay top -->
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        <div class="badge text-bg-dark">Print Logo
+                                                                        </div>
+                                                                        <div class="hover-element w-100 h-100">
+                                                                            <i
+                                                                                class="bi bi-fullscreen fs-6 text-white position-absolute top-50 start-50 translate-middle bg-dark rounded-1 p-2 lh-1"></i>
+                                                                        </div>
+                                                                        <!-- Buttons -->
+                                                                        <div class="list-inline-item dropdown">
+                                                                            <!-- Dropdown button -->
+                                                                            <a href="#"
+                                                                                class="btn btn-sm btn-round btn-light"
+                                                                                role="button" id="dropdownAction1"
+                                                                                data-bs-toggle="dropdown"
+                                                                                aria-expanded="false">
+                                                                                <i
+                                                                                    class="bi bi-three-dots-vertical"></i>
+                                                                            </a>
+                                                                            <!-- dropdown items -->
+                                                                            <ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded small"
+                                                                                aria-labelledby="dropdownAction1">
+
+                                                                                <li><a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-pencil-square text-primary fa-fw me-2"></i>Change</a>
+                                                                                </li>
+                                                                                <li><a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-trash-fill text-danger fa-fw me-2"></i>Remove</a>
+                                                                                </li>
+
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                        <% } else { %>
+                                                            <div class="card card-element-hover card-overlay-hover overflow-hidden bg-light d-flex align-items-center justify-content-center"
+                                                                style="height: 200px;">
+                                                                <!-- No image fallback -->
+                                                                <div class="text-center">
+                                                                    <i
+                                                                        class="bi bi-person-circle fs-1 text-secondary"></i>
+                                                                    <div class="badge text-bg-dark mt-2">No Print Logo
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <% } %>
+                                                </div>
+                                                <!-- End Overlay item -->
                                             </div>
                                         </div>
-                                    <% }) %>
-                                    <!-- Hotel item END -->
-                                <% } %>
+                                        <div class="card header mb-3">
+                                            <h4 class="h4 mb-3 mb-sm-0">Minimum Kyc Files</h4>
+                                            <p>Account holder uploaded Kyc Files</p>
+                                        </div>
+                                        <div class="card body mb-3">
+                                            <div class="row g-4">
+                                                <!-- Overlay item -->
+                                                <div class="col-lg-3">
+                                                    <% if (agent.visitingCard) { %>
+                                                        <a data-glightbox data-gallery="gallery"
+                                                            href="<%= agent.visitingCard %>">
+                                                  <!-- Overlay item -->
+                                                          <div
+                                                                class="card card-element-hover card-overlay-hover overflow-hidden">
+                                                                <!-- Image -->
+                                                                <img src="<%= agent.visitingCard %>"
+                                                                    class="card-img-top img-fluid"
+                                                                    style="height: 250px; width: 100%;"
+                                                                    alt="visiting card">
+
+                                                                <!-- Overlay -->
+                                                                <div class="card-img-overlay d-flex flex-column p-3">
+                                                                    <!-- Card overlay top -->
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        <div class="badge text-bg-dark">Visiting Card
+                                                                        </div>
+
+                                                                        <div class="hover-element w-100 h-100">
+                                                                            <i
+                                                                                class="bi bi-fullscreen fs-6 text-white position-absolute top-50 start-50 translate-middle bg-dark rounded-1 p-2 lh-1"></i>
+                                                                        </div>
+
+                                                                        <!-- Dropdown -->
+                                                                        <div class="list-inline-item dropdown">
+                                                                            <a href="#"
+                                                                                class="btn btn-sm btn-round btn-light"
+                                                                                role="button" id="dropdownAction1"
+                                                                                data-bs-toggle="dropdown"
+                                                                                aria-expanded="false">
+                                                                                <i
+                                                                                    class="bi bi-three-dots-vertical"></i>
+                                                                            </a>
+                                                                            <ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded small"
+                                                                                aria-labelledby="dropdownAction1">
+                                                                                <li>
+                                                                                    <a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-pencil-square text-primary fa-fw me-2"></i>Attach kyc</a>
+                                                                                </li>
+                                                                                <li>
+                                                                                    <a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-trash-fill text-danger fa-fw me-2"></i>Remove</a>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                        <% } else { %>
+                                                            <div class="card card-element-hover card-overlay-hover overflow-hidden bg-light d-flex align-items-center justify-content-center"
+                                                                style="height: 200px;">
+                                                                <!-- No image fallback -->
+                                                                <div class="text-center">
+                                                                    <i
+                                                                        class="bi bi-person-circle fs-1 text-secondary"></i>
+                                                                    <div class="badge text-bg-dark mt-2">No Visiting
+                                                                        Card</div>
+                                                                </div>
+                                                            </div>
+                                                            <% } %>
+                                                </div>
+
+                                                <!-- End Overlay item -->
+                                                <!-- Overlay item -->
+                                                <div class="col-lg-3">
+                                                    <% if (agent.panCard) { %>
+                                                        <a data-glightbox data-gallery="gallery"
+                                                            href="<%= agent.panCard %>">
+                                                            <div
+                                                                class="card card-element-hover card-overlay-hover overflow-hidden">
+                                                                <!-- Image -->
+                                                                <img src="<%= agent.panCard %>"
+                                                                    class="card-img-top img-fluid"
+                                                                    style="height: 250px; width: 100%;"
+                                                                    alt="Card image">
+                                                                <!-- Overlay -->
+
+                                                                <div class="card-img-overlay d-flex flex-column p-3">
+                                                                    <!-- Card overlay top -->
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        <div class="badge text-bg-dark">Pan Card
+                                                                        </div>
+                                                                        <div class="hover-element w-100 h-100">
+                                                                            <i
+                                                                                class="bi bi-fullscreen fs-6 text-white position-absolute top-50 start-50 translate-middle bg-dark rounded-1 p-2 lh-1"></i>
+                                                                        </div>
+                                                                        <!-- Buttons -->
+                                                                        <div class="list-inline-item dropdown">
+                                                                            <!-- Dropdown button -->
+                                                                            <a href="#"
+                                                                                class="btn btn-sm btn-round btn-light"
+                                                                                role="button" id="dropdownAction1"
+                                                                                data-bs-toggle="dropdown"
+                                                                                aria-expanded="false">
+                                                                                <i
+                                                                                    class="bi bi-three-dots-vertical"></i>
+                                                                            </a>
+                                                                            <!-- dropdown items -->
+                                                                            <ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded small"
+                                                                                aria-labelledby="dropdownAction1">
+
+                                                                                <li><a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-pencil-square text-primary fa-fw me-2"></i>Attach Kyc</a>
+                                                                                </li>
+                                                                                <li><a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-trash-fill text-danger fa-fw me-2"></i>Remove</a>
+                                                                                </li>
+
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                        <% } else { %>
+                                                            <div class="card card-element-hover card-overlay-hover overflow-hidden bg-light d-flex align-items-center justify-content-center"
+                                                                style="height: 200px;">
+                                                                <!-- No image fallback -->
+                                                                <div class="text-center">
+                                                                    <i
+                                                                        class="bi bi-person-circle fs-1 text-secondary"></i>
+                                                                    <div class="badge text-bg-dark mt-2">No Pan Card
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <% } %>
+                                                </div>
+                                                <!-- End Overlay item -->
+                                            </div>
+                                        </div>
+                                        <div class="card header mb-3">
+                                            <h4 class="h4 mb-3 mb-sm-0">Full KYC Files</h4>
+                                            <p>Account holder uploaded Kyc Files</p>
+                                        </div>
+                                        <div class="card body mb-3">
+                                            <div class="row g-4">
+                                                <!-- Overlay item -->
+                                                <div class="col-lg-3">
+                                                    <% if (agent.aadhaarCardFront) { %>
+                                                        <a data-glightbox data-gallery="gallery"
+                                                            href="<%= agent.aadhaarCardFront %>">
+                                                            <div
+                                                                class="card card-element-hover card-overlay-hover overflow-hidden">
+                                                                <!-- Image -->
+                                                                <img src="<%= agent.aadhaarCardFront %>"
+                                                                    class="card-img-top img-fluid"
+                                                                    style="height: 250px; width: 100%;"
+                                                                    alt="">
+
+                                                                <!-- Overlay -->
+                                                                <div class="card-img-overlay d-flex flex-column p-3">
+                                                                    <!-- Card overlay top -->
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        <div class="badge text-bg-dark">Aadhaar Card
+                                                                        </div>
+
+                                                                        <div class="hover-element w-100 h-100">
+                                                                            <i
+                                                                                class="bi bi-fullscreen fs-6 text-white position-absolute top-50 start-50 translate-middle bg-dark rounded-1 p-2 lh-1"></i>
+                                                                        </div>
+
+                                                                        <!-- Dropdown -->
+                                                                        <div class="list-inline-item dropdown">
+                                                                            <a href="#"
+                                                                                class="btn btn-sm btn-round btn-light"
+                                                                                role="button" id="dropdownAction1"
+                                                                                data-bs-toggle="dropdown"
+                                                                                aria-expanded="false">
+                                                                                <i
+                                                                                    class="bi bi-three-dots-vertical"></i>
+                                                                            </a>
+                                                                            <ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded small"
+                                                                                aria-labelledby="dropdownAction1">
+                                                                                <li>
+                                                                                    <a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-pencil-square text-primary fa-fw me-2"></i>Attach Kyc</a>
+                                                                                </li>
+                                                                                <li>
+                                                                                    <a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-trash-fill text-danger fa-fw me-2"></i>Remove</a>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                        <% } else { %>
+                                                            <div class="card card-element-hover card-overlay-hover overflow-hidden bg-light d-flex align-items-center justify-content-center"
+                                                                style="height: 200px;">
+                                                                <!-- No image fallback -->
+                                                                <div class="text-center">
+                                                                    <i
+                                                                        class="bi bi-person-circle fs-1 text-secondary"></i>
+                                                                    <div class="badge text-bg-dark mt-2">No Aadhaar Card</div>
+                                                                </div>
+                                                            </div>
+                                                            <% } %>
+                                                </div>
+
+                                                <!-- End Overlay item -->
+                                                <!-- Overlay item -->
+                                                <div class="col-lg-3">
+                                                    <% if (agent.aadhaarCardBack) { %>
+                                                        <a data-glightbox data-gallery="gallery"
+                                                            href="<%= agent.aadhaarCardBack %>">
+                                                            <div
+                                                                class="card card-element-hover card-overlay-hover overflow-hidden">
+                                                                <!-- Image -->
+                                                                <img src="<%= agent.aadhaarCardBack %>"
+                                                                    class="card-img-top img-fluid"
+                                                                    style="height: 250px; width: 100%;"
+                                                                    alt="Card image">
+                                                                <!-- Overlay -->
+
+                                                                <div class="card-img-overlay d-flex flex-column p-3">
+                                                                    <!-- Card overlay top -->
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        <div class="badge text-bg-dark">Aadhaar Card
+                                                                        </div>
+                                                                        <div class="hover-element w-100 h-100">
+                                                                            <i
+                                                                                class="bi bi-fullscreen fs-6 text-white position-absolute top-50 start-50 translate-middle bg-dark rounded-1 p-2 lh-1"></i>
+                                                                        </div>
+                                                                        <!-- Buttons -->
+                                                                        <div class="list-inline-item dropdown">
+                                                                            <!-- Dropdown button -->
+                                                                            <a href="#"
+                                                                                class="btn btn-sm btn-round btn-light"
+                                                                                role="button" id="dropdownAction1"
+                                                                                data-bs-toggle="dropdown"
+                                                                                aria-expanded="false">
+                                                                                <i
+                                                                                    class="bi bi-three-dots-vertical"></i>
+                                                                            </a>
+                                                                            <!-- dropdown items -->
+                                                                            <ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded small"
+                                                                                aria-labelledby="dropdownAction1">
+
+                                                                                <li><a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-pencil-square text-primary fa-fw me-2"></i>Attach Kyc</a>
+                                                                                </li>
+                                                                                <li><a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-trash-fill text-danger fa-fw me-2"></i>Remove</a>
+                                                                                </li>
+
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                        <% } else { %>
+                                                            <div class="card card-element-hover card-overlay-hover overflow-hidden bg-light d-flex align-items-center justify-content-center"
+                                                                style="height: 200px;">
+                                                                <!-- No image fallback -->
+                                                                <div class="text-center">
+                                                                    <i
+                                                                        class="bi bi-person-circle fs-1 text-secondary"></i>
+                                                                    <div class="badge text-bg-dark mt-2">No Aadhaar Card
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <% } %>
+                                                </div>
+                                                <!-- End Overlay item -->
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                                <div class="tab-pane" id="tab-3-3">
+                                    <div class="row">
+                                        <div class="card">
+                                            <div class="card header mb-3">
+                                                <h4 class="h4 mb-3 mb-sm-0">Login Activity</h4>
+                                                <p>User Login Details</p>
+                                            </div>
+                                            <div class="card body mb-3">
+                                                <table class="table table-ulogs">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th class="tb-col-os"><span class="overline-title">Browser
+                                                                    <span class="d-sm-none">/ IP</span></span>
+                                                            </th>
+                                                            <th class="tb-col-ip"><span class="overline-title">IP</span>
+                                                            </th>
+                                                            <th class="tb-col-time"><span
+                                                                    class="overline-title">Time</span>
+                                                            </th>
+
+                                                            <th class="tb-col-time"><span
+                                                                    class="overline-title">Platform</span></th>
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% if (loginActivities.length > 0) { %>
+                                                            <% loginActivities.forEach((activity) => { %>
+                                                            <tr>
+                                                            <td class="tb-col-os"><%= activity.browser %></td>
+                                                            <td class="tb-col-ip"><span
+                                                                    class="sub-text"><%= activity.ip %></span>
+                                                            </td>
+                                                            <td class="tb-col-time">
+                                                                <span class="sub-text">
+                                                                    <%= new Date(activity.loginTime).toLocaleString("en-US", {
+                                                                      year: "numeric",
+                                                                      month: "short",
+                                                                      day: "2-digit",
+                                                                      hour: "2-digit",
+                                                                      minute: "2-digit",
+                                                                      hour12: true
+                                                                    }) %>
+                                                                  </span>
+                                                                </td>
+                                                            <td class="tb-col-time">
+                                                                <%= activity.platform %>
+                                                            </td>
+                                                        </tr>
+                                                            <% }) %>
+                                                       
+                                                        <% } else { %>
+                                                            <tr>
+                                                                <td colspan="4" class="text-center">No login activity found.
+                                                            </tr>
+                                                        <% } %>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <!-- <div class="card-footer">
+
+                                                Pagination START
+                                                
+                                            </div> -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Security settings START -->
+                                    <div class="card border">
+                                        <!-- Card header -->
+                                        <div class="card-header border-bottom">
+                                            <h4 class="card-header-title">Active sessions</h4>
+                                        </div>
+
+                                        <!-- Card body START -->
+                                        <!-- <div class="card-body">
+                                            <% if (sessions && sessions.length > 0) { %>
+                                            <% sessions.forEach(session => { %>
+                                            <form class="mb-3" action="/admin/signout-user" method="POST">
+                                                <h6><%= session.browser %></h6>
+                                                <p class="mb-2">Selecting "Sign out" will sign you out from all devices
+                                                    except this one. This can take up to 10 minutes.</p>
+                                                <button class="btn btn-sm btn-danger mb-0">Sign Out</button>
+                                            </form>
+                                            <% }) %>
+                                            <% } else { %>
+                                                <p>No active sessions found.</p>
+                                            <% } %>
+                                        </div> -->
+                                        <div class="card-body">
+  <% if (sessions && sessions.length > 0) { %>
+    <% sessions.forEach(session => { %>
+      <form class="mb-3" action="/admin/signout-user" method="POST">
+        <input type="hidden" name="sessionId" value="<%= session._id %>">
+        <h6><%= session.browser %> - <%= session.platform %></h6>
+        <p>IP: <%= session.ip %></p>
+        <p>Logged in at: 
+          <%= new Date(session.loginTime).toLocaleString("en-US", {
+            month: "short", day: "numeric", year: "numeric",
+            hour: "numeric", minute: "2-digit", hour12: true
+          }) %>
+        </p>
+        <p class="mb-2">Selecting "Sign out" will sign out this session. This can take up to 10 minutes.</p>
+        <button class="btn btn-sm btn-danger mb-0">Sign Out</button>
+      </form>
+    <% }) %>
+  <% } else { %>
+    <p>No active sessions found.</p>
+  <% } %>
+</div>
+
+                                        <!-- Card body END -->
+                                    </div>
+                                    <!-- Security settings END -->
+                                </div>
+                                
+                                <div class="tab-pane" id="tab-4-4">
+                                    <div class="row">
+                                        <div class="card">
+                                            <div
+                                                class="card-header border-bottom d-md-flex justify-content-md-between  mb-3">
+                                                <div class="card-body text-dark">
+                                                    <h5 class="card-header-title"> Booking Ledger
+                                                    </h5>
+                                                </div>
+                                                <button type="button" class="btn btn-dark btn-sm me-2"
+                                                    data-bs-toggle="modal" data-bs-target="#newaddon"
+                                                    title="Create Transactions">
+                                                    <i class="bi bi-plus-square-fill"></i> Add Transactions
+                                                </button>
+                                                <button type="button" class="btn btn-info btn-sm me-2"
+                                                    data-bs-toggle="modal" data-bs-target="#newaddon" title="Email"> <i
+                                                        class="bi bi-envelope-at-fill"></i> Email
+                                                </button>
+
+                                                <button type="button" class="btn btn-primary btn-sm me-2"
+                                                    data-bs-toggle="modal" data-bs-target="#newaddon"
+                                                    title="Pdf Download">
+                                                    <i class="bi bi-download me-2"></i> PDF
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-sm me-2"
+                                                    data-bs-toggle="modal" data-bs-target="#newaddon"
+                                                    title="Excel Download">
+                                                    <i class="bi bi-file-earmark-spreadsheet-fill "></i> Excel
+                                                </button>
+                                                <form class="rounded position-relative me-2">
+                                                    <input class="form-control  bg-transparent" type="search"
+                                                        placeholder="Search Data" aria-label="Search">
+                                                    <button
+                                                        class="bg-transparent p-2 position-absolute end-0 translate-middle-y border-0 text-primary-hover text-reset"
+                                                        style="top: 35%;"
+                                                        type="submit">
+                                                        <i class="fas fa-search fs-6"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+
+                                        </div>
+                                        <div class="card body mb-3">
+                                            <table class="table table-ulogs">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Ref. No</th>
+                                                        <th>Date</th>
+                                                        <th>Booking Id</th>
+                                                        <th>Particulars</th>
+                                                        <th>Destination</th>
+                                                        <th>Travel Date</th>
+                                                        <th>Amount</th>
+                                                        <th>Balance</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+  <% if (transactions.length > 0) { %>
+    <% transactions.forEach(transaction => { %>
+      <% 
+        let particulars;
+        let balance;
+        if (transaction.credit === 0) { 
+          particulars = "Deposit";
+          balance = transaction.debit;
+        } else {
+          particulars = "Withdrawn";
+          balance = transaction.credit;
+        }
+
+        const booking = transaction.bookingId;
+        const flight = booking && booking.flight;
+      %>
+      <tr>
+        <td><%= transaction.transactionId %></td>
+        <td><%= new Date(transaction.createdAt).toLocaleString('en-IN') %></td>
+        <td><%= booking ? booking.bookingId : 'N/A' %></td>
+        <td><%= particulars %></td>
+        <td>
+          <% if (flight) { %>
+            <%= flight.arrivalName %>, <%= flight.toCountry %>
+          <% } else { %>
+            N/A
+          <% } %>
+        </td>
+        <td>
+          <% if (flight) { %>
+            <%= new Date(flight.departureDate).toLocaleDateString('en-IN') %>
+          <% } else { %>
+            N/A
+          <% } %>
+        </td>
+        <td>₹ <%= transaction.totalAmount %></td>
+        <td>₹ <%= balance %></td>
+      </tr>
+    <% }) %>
+  <% } else { %>
+    <tr>
+      <td colspan="8" class="text-center">No transactions found.</td> 
+    </tr>
+  <% } %>
+</tbody>
+
+                                            </table>
+                                        </div>
+                                        <!-- <div class="card-footer">
+                                            Pagination START
+                                            
+                                        </div> -->
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="tab-5-5">
+                            <div class="row">
+                                <div class="card">
+                                    <div class="card-header border-bottom d-md-flex justify-content-md-between  mb-3">
+                                        <div class="card-body text-dark">
+                                            <h5 class="card-header-title"> Listing Ledger </h5>
+                                        </div>
+                                        <button type="button" class="btn btn-dark btn-sm me-2"
+                                            data-bs-toggle="modal" data-bs-target="#newaddon"
+                                            title="Create Transactions">
+                                            <i class="bi bi-plus-square-fill"></i> Add Transactions
+                                        </button>
+                                        <button type="button" class="btn btn-info btn-sm me-2"
+                                            data-bs-toggle="modal" data-bs-target="#newaddon" title="Email"> Email
+                                            <i class="bi bi-envelope-at-fill"></i> </button>
+
+                                        <button type="button" class="btn btn-primary btn-sm me-2"
+                                            data-bs-toggle="modal" data-bs-target="#newaddon" title="Pdf Download">
+                                            PDF
+                                            <i class="bi bi-download me-2"></i></button>
+                                        <button type="button" class="btn btn-primary btn-sm me-2"
+                                            data-bs-toggle="modal" data-bs-target="#newaddon" title="Excel Download">
+                                            Excel
+                                            <i class="bi bi-file-earmark-spreadsheet-fill "></i> </button>
+                                        <form class="rounded position-relative me-2">
+                                            <input class="form-control  bg-transparent" type="search"
+                                                placeholder="Search Data" aria-label="Search">
+                                            <button
+                                                class="bg-transparent p-2 position-absolute end-0 translate-middle-y border-0 text-primary-hover text-reset"
+                                                style="top: 35%;"
+                                                type="submit">
+                                                <i class="fas fa-search fs-6"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                </div>
+                                <div class="card body mb-3">
+                                    <table class="table table-ulogs">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Ref. No</th>
+                                                <th>Date</th>
+                                                <th>Inventory ID</th>
+                                                <th>Particulars</th>
+                                                <th>Travel Date</th>
+                                                <th>Booking ID</th>
+                                                <th>Amount</th>
+                                                <th>Balance</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                              <% if (listingTransactions.length > 0) { %>
+    <% listingTransactions.forEach(transaction => { %>
+      <% 
+        let balance;
+        if (transaction.credit === 0) { 
+          balance = -transaction.debit;
+        } else {
+          balance = transaction.credit;
+        }
+
+        const booking = transaction.bookingId;
+        const flight = booking && booking.flight;
+      %>
+                                            <tr>
+                                                <td><%= transaction.transactionId %></td>
+                                                <td><%= new Date(transaction.createdAt).toLocaleString('en-IN', {
+                                                    day: '2-digit',
+                                                    month: '2-digit',
+                                                    year: 'numeric',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit',
+                                                    hour12: true
+                                                    }) %>
+                                                </td>
+                                                <td><%= flight.inventoryId %></td>
+                                                <td>PNR: <%= flight.inventoryDates[0].pnr %> - <%= flight.fromCity %> // <%= flight.toCity%> (<%= flight.stops[0].airlineCode %> <%= flight.stops[0].flightNumber %> )</td>
+                                                <%
+  const depDate = new Date(flight.departureDate);
+  const formattedDate = `${depDate.getDate().toString().padStart(2, '0')}-${(depDate.getMonth() + 1).toString().padStart(2, '0')}-${depDate.getFullYear()}`;
+%>
+<td><%= formattedDate %></td>
+
+                                                <td><%= booking.bookingId %></td>
+                                                <td>₹ <%= transaction.totalAmount %></td>
+                                                <td>₹ <%= balance %></td>
+                                            </tr>
+                                                <% }) %>
+  <% } else { %>
+    <tr>
+      <td colspan="8" class="text-center">No transactions found.</td> 
+    </tr>
+  <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
+
+                        <div class="tab-pane" id="tab-8-8">
+                            <div class="row">
+                                <div class="card">
+                                    <div class="card-header border-bottom d-md-flex justify-content-md-between  mb-3">
+                                        <div class="card-body text-dark">
+                                            <h4 class="card-header-title">Payout Ledger</h4>
+                                        </div>
+                                        <button type="button" class="btn btn-dark btn-sm me-2"
+                                            data-bs-toggle="modal" data-bs-target="#newaddon"
+                                            title="Create Transactions">
+                                            <i class="bi bi-plus-square-fill"></i> Add Transactions
+                                        </button>
+                                        <button type="button" class="btn btn-info btn-sm me-2"
+                                            data-bs-toggle="modal" data-bs-target="#newaddon" title="Email">
+                                            <i class="bi bi-envelope-at-fill"></i> Email
+                                        </button>
+
+                                        <button type="button" class="btn btn-primary btn-sm me-2"
+                                            data-bs-toggle="modal" data-bs-target="#newaddon" title="Pdf Download">
+                                            <i class="bi bi-download me-2"></i> PDF
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-sm me-2"
+                                            data-bs-toggle="modal" data-bs-target="#newaddon" title="Excel Download">
+                                            <i class="bi bi-file-earmark-spreadsheet-fill "></i> Excel
+                                        </button>
+                                        <form class="rounded position-relative me-2">
+                                            <input class="form-control  bg-transparent" type="search"
+                                                placeholder="Search Data" aria-label="Search">
+                                            <button
+                                                class="bg-transparent p-2 position-absolute end-0 translate-middle-y border-0 text-primary-hover text-reset"
+                                                style="top: 35%;"
+                                                type="submit">
+                                                <i class="fas fa-search fs-6"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                </div>
+
+                                <div class="card body mb-3">
+                                    <table class="table table-ulogs">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Ref. No</th>
+                                                <th>Date</th>
+                                                <th>Particulars</th>
+                                                <th>Bank Details</th>
+                                                <th>IFSC CODE</th>
+                                                <th>From Account</th>
+                                                <th>Amount</th>
+                                                <th>Balance</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% if (transactions.length > 0) { %>
+    <% transactions.forEach(transaction => { %>
+      <% 
+        let particulars;
+        let balance;
+        if (transaction.credit === 0) { 
+          particulars = "Deposited";
+          balance = -transaction.debit;
+        } else {
+          particulars = "Withdrawn";
+          balance = transaction.credit;
+        }
+
+        const booking = transaction.bookingId;
+        const flight = booking && booking.flight;
+      %>
+                                            <tr>
+                                                <td><%= transaction.transactionId %></td>
+                                                <td><%= new Date(transaction.createdAt).toLocaleString('en-IN') %></td>
+                                                <td><%= particulars %></td>
+                                                <td><%= agent.bankDetails.bankName %></td>
+                                                <td><%= agent.bankDetails.ifscCode %></td>
+                                                <td><%= agent.bankDetails.accountHolderName %></td>
+                                                <td> ₹ <%= transaction.totalAmount %></td>
+                                                <td>₹ <%= balance %> </td>
+                                            </tr>
+<% }) %>
+  <% } else { %>
+    <tr>
+      <td colspan="8" class="text-center">No transactions found.</td> 
+    </tr>
+  <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- <div class="card-footer">
+
+                                    <div class="d-sm-flex justify-content-sm-between align-items-sm-center mt-4">
+                                        <p class="mb-sm-0 text-center text-sm-start">Showing 1 to 8 of 20 entries
+                                        </p>
+                                        <nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
+                                            <ul class="pagination pagination-sm pagination-primary-soft mb-0">
+                                                <li class="page-item disabled">
+                                                    <a class="page-link" href="#" tabindex="-1">Prev</a>
+                                                </li>
+                                                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                                <li class="page-item active"><a class="page-link"
+                                                        href="#">2</a>
+                                                </li>
+                                                <li class="page-item disabled"><a class="page-link"
+                                                        href="#">..</a>
+                                                </li>
+                                                <li class="page-item"><a class="page-link" href="#">15</a></li>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="#">Next</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div> -->
+                                <div class="card header mb-3">
+                                    <h4 class="h4 mb-3 mb-sm-0">Bank Details</h4>
+                                    <p>Agency Bank Info</p>
+                                </div>
+                                <div class="card body mb-3">
+                                    <table class="table table-ulogs">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Ref. No</th>
+                                                <th>Date</th>
+                                                <th>Bank Name</th>
+                                                <th>Bank Account</th>
+                                                <th>IFSC CODE</th>
+                                                <th>Bank Branch</th>
+                                                <th>Status</th>
+                                                <!-- <th>Action</th> -->
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><%= agent.userId %></td>
+                                                <td><%= new Date(agent.createdAt).toLocaleString('en-IN') %></td>
+                                                <td><%= agent.bankDetails.bankName %></td>
+                                                <td><%= agent.bankDetails.accountNumber %></td>
+                                                <td><%= agent.bankDetails.ifscCode %></td>
+                                                <td><%= agent.bankDetails.branchName %></td>
+                                                <% 
+                                                let bank_status;
+                                                if(agent.bankDetails.isActive){
+                                                    bank_status = "Active";
+                                                } else {
+                                                    bank_status = "Inactive";
+                                                } %>
+                                                <td><%= bank_status %></td>
+                                                <!-- <td> 
+                                                    <button type="button" class="btn btn-primary btn-sm me-2"
+                                                        data-bs-toggle="modal" data-bs-target="#newaddon"
+                                                        title="Bank Details">
+                                                        <i class="bi bi-archive"></i>
+                                                    </button>
+                                                </td> -->
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- <div class="card-footer">
+
+                                    Pagination START
+                                    
+                                </div> -->
+                            </div>
+                        </div>
+
+                                <div class="tab-pane" id="tab-6-6">
+                                    <div class="vstack gap-4">
+                                        <!-- Notifications START -->
+                                        <div class="card border">
+
+                                            <!-- Card header -->
+                                            <div class="card-header border-bottom">
+                                                <h4 class="card-header-title">Notification Settings</h4>
+                                            </div>
+
+                                            <!-- Form START -->
+                                            <form class="card-body" id="notificationForm">
+                                               <input type="hidden" name="userId" id="userId" value="<%= agent._id %>">
+                                                <!-- Radio -->
+                                                <div class="mb-4">
+          <label class="form-label">Newsletter & Promotions<span class="text-danger">*</span></label>
+          <div class="d-flex gap-2 gap-sm-4 flex-wrap">
+            <div class="form-check radio-bg-light">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="Daily"
+                <%= agent.notificationSettings?.newsletter === 'Daily' ? 'checked' : '' %>>
+              <label class="form-check-label" for="flexRadioDefault1">Daily</label>
+            </div>
+            <div class="form-check radio-bg-light">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Twice a week"
+                <%= agent.notificationSettings?.newsletter === 'Twice a week' ? 'checked' : '' %>>
+              <label class="form-check-label" for="flexRadioDefault2">Twice a week</label>
+            </div>
+            <div class="form-check radio-bg-light">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" value="Weekly"
+                <%= agent.notificationSettings?.newsletter === 'Weekly' ? 'checked' : '' %>>
+              <label class="form-check-label" for="flexRadioDefault3">Weekly</label>
+            </div>
+            <div class="form-check radio-bg-light">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault4" value="Never"
+                <%= agent.notificationSettings?.newsletter === 'Never' ? 'checked' : '' %>>
+              <label class="form-check-label" for="flexRadioDefault4">Never</label>
+            </div>
+          </div>
+        </div>
+                                                <!-- Switches -->
+        <div class="form-check form-switch form-check-md d-flex justify-content-between mb-4">
+          <label class="form-check-label ps-0 pe-4" for="checkPrivacy1">Notify me via email when logging in</label>
+          <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy1"
+            <%= agent.notificationSettings?.loginEmailNotifications ? 'checked' : '' %>>
+        </div>
+
+        <div class="form-check form-switch form-check-md d-flex justify-content-between mb-4">
+          <label class="form-check-label ps-0 pe-4" for="checkPrivacy3">I would like to receive emails about Booking promotions</label>
+          <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy3"
+            <%= agent.notificationSettings?.bookingEmailNotifications ? 'checked' : '' %>>
+        </div>
+
+        <div class="form-check form-switch form-check-md d-flex justify-content-between mb-4">
+          <label class="form-check-label ps-0 pe-4" for="checkPrivacy2">I would like to activate hotel booking</label>
+          <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy2"
+            <%= agent.notificationSettings?.hotelBooking ? 'checked' : '' %>>
+        </div>
+
+        <div class="form-check form-switch form-check-md d-flex justify-content-between mb-4">
+          <label class="form-check-label ps-0 pe-4" for="checkPrivacy7">I would like to activate Saudi Muqeem Print Options</label>
+          <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy7"
+            <%= agent.notificationSettings?.SaudiMuqeemPrint ? 'checked' : '' %>>
+        </div>
+
+        <div class="form-check form-switch form-check-md d-flex justify-content-between mb-4">
+          <label class="form-check-label ps-0 pe-4" for="checkPrivacy4">I would like to activate Booking itinerary for dummy Print Purpose</label>
+          <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy4"
+            <%= agent.notificationSettings?.bookingDummyPrint ? 'checked' : '' %>>
+        </div>
+
+        <div class="form-check form-switch form-check-md d-flex justify-content-between mb-4">
+          <label class="form-check-label ps-0 pe-4" for="checkPrivacy6">Send confirmation for all online payments</label>
+          <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy6"
+            <%= agent.notificationSettings?.onlinePaymentConfirmation ? 'checked' : '' %>>
+        </div>
+
+        <div class="form-check form-switch form-check-md d-flex justify-content-between mb-4">
+          <label class="form-check-label ps-0 pe-4" for="checkPrivacy5">Check which device(s) access your account</label>
+          <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy5"
+            <%= agent.notificationSettings?.deviceAccess ? 'checked' : '' %>>
+        </div>
+
+                                                <!-- Button -->
+                                                <div class="d-sm-flex justify-content-end">
+                                                    <!-- <button type="button" class="btn btn-sm btn-primary me-2 mb-0">Save
+                                                        changes</button> -->
+                                                    <button type="button" class="btn btn-sm btn-primary me-2 mb-0" id="saveNotificationBtn">Save changes</button>
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary mb-0">Cancel</a>
+                                                </div>
+                                            </form>
+                                            <!-- Form END -->
+
+                                        </div>
+                                        <!-- Notifications END -->
+                                    </div>
+                                </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("saveNotificationBtn").addEventListener("click", async () => {
+        const form = document.getElementById("notificationForm");
+
+        const selectedRadio = form.querySelector('input[name="flexRadioDefault"]:checked')?.id;
+        let newsletterValue = "";
+switch (selectedRadio) {
+    case "flexRadioDefault1": newsletterValue = "Daily"; break;
+    case "flexRadioDefault2": newsletterValue = "Twice a week"; break;
+    case "flexRadioDefault3": newsletterValue = "Weekly"; break;
+    case "flexRadioDefault4": newsletterValue = "Never"; break;
+}
+
+        const data = {
+            newsletterPreference: newsletterValue, // flexRadioDefault1 / 2 / 3 / 4
+            notifyOnLogin: document.getElementById("checkPrivacy1").checked,
+            receivePromotions: document.getElementById("checkPrivacy3").checked,
+            activateHotelBooking: document.getElementById("checkPrivacy2").checked,
+            activateMuqeem: document.getElementById("checkPrivacy7").checked,
+            activateDummyItinerary: document.getElementById("checkPrivacy4").checked,
+            sendPaymentConfirmation: document.getElementById("checkPrivacy6").checked,
+            checkDeviceAccess: document.getElementById("checkPrivacy5").checked,
+            userId: document.getElementById("userId").value
+        };
+
+        try {
+            const response = await fetch("/admin/notification-settings", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert("Notification settings saved!");
+            } else {
+                alert("Failed to save settings.");
+            }
+        } catch (err) {
+            console.error("Error:", err);
+            alert("Something went wrong.");
+        }
+    });
+});
+</script>
+
+                                <div class="tab-pane" id="tab-3-4">
+                                    <div class="card">
+                                        <div class="card header mb-3">
+                                            <h4 class="h4 mb-3 mb-sm-0">Approvals</h4>
+                                            <p>Kyc & Profile</p>
+                                        </div>
+
+
+                                        <div class="card body mb-3">
+                                            <table class="table table-ulogs">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Particulars</th>
+                                                        <th>Status</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+<tbody>
+  <% if (approvals.length === 0) { %>
+    <tr>
+      <td colspan="4" class="text-center">No approvals found.</td>
+    </tr>
+  <% } else { %>
+    <% approvals.forEach(update => { %>
+      <tr>
+        <td><%= new Date(update.createdAt).toLocaleString('en-IN') %></td>
+        <td><%= update.type %></td>
+        <td>
+            <% if (update.status === "pending") { %>
+                <span class="badge bg-warning">Pending</span>
+            <% } else if (update.status === "approved") { %>
+                <span class="badge bg-success">Approved</span>
+            <% } else if (update.status === "rejected") { %>
+                <span class="badge bg-danger">Rejected</span>
+            <% } %>
+        </td>
+        <td>
+          <!-- <% if (update.status === 'pending') { %>
+            <% if(update.type === "Profile Update") {%>
+            <a href="/admin/update-profile-detail/<%= update._id %>" class="btn btn-success mb-0">
+              <i class="bi bi-check2-circle"></i>
+            </a>
+            <a href="/admin/update-profile-detail/<%= update._id %>" class="btn btn-danger mb-0">
+              <i class="bi bi-x-circle-fill"></i>
+            </a>
+            <% } else { %>
+                <a href="/admin/update-kyc-detail/<%= update._id %>" class="btn btn-success mb-0">
+              <i class="bi bi-check2-circle"></i>
+            </a>
+            <a href="/admin/update-kyc-detail/<%= update._id %>" class="btn btn-danger mb-0">
+              <i class="bi bi-x-circle-fill"></i>
+            </a>
+            <% } %>
+          <% } else { %>
+            <a href="/admin/approval/view/<%= update._id %>" class="btn btn-primary mb-0">
+              <i class="bi bi-eye"></i>
+            </a>
+          <% } %> -->
+           <% if (update.status === 'pending') { %>
+            <% if(update.type === "Profile Update") {%>
+            <button class="btn btn-success mb-0 profile-update-btn"
+            data-update-id="<%= update._id %>" title="Accept"
+            data-title="accept" data-bs-toggle="tooltip"
+            data-bs-placement="top">
+              <i class="bi bi-check2-circle"></i>
+            </button>
+            <button class="btn btn-danger mb-0 profile-update-btn"
+            data-update-id="<%= update._id %>" title="Reject"
+            data-title="reject" data-bs-toggle="tooltip"
+            data-bs-placement="top">
+              <i class="bi bi-x-circle-fill"></i>
+            </button>
+            <% } else { %>
+            <button class="btn btn-success mb-0 kyc-update-btn"
+            data-update-id="<%= update._id %>" title="Accept"
+            data-title="accept" data-bs-toggle="tooltip"
+            data-bs-placement="top">
+              <i class="bi bi-check2-circle"></i>
+            </button>
+            <button class="btn btn-danger mb-0 kyc-update-btn"
+            data-update-id="<%= update._id %>" title="Reject"
+            data-title="reject" data-bs-toggle="tooltip"
+            data-bs-placement="top">
+              <i class="bi bi-x-circle-fill"></i>
+            </button>
+            <% } %>
+          <% } else { %>
+            <% if(update.type === "Profile Update") {%>
+            <button class="btn btn-primary mb-0 view-profile-update-btn"
+            data-update='<%= JSON.stringify(update) %>' title="View"
+			data-bs-toggle="tooltip" data-bs-placement="top">
+              <i class="bi bi-eye"></i>
+            </button>
+            <% } else { %>
+            <button class="btn btn-primary mb-0 view-kyc-update-btn"
+            data-update='<%= JSON.stringify(update) %>' title="View"
+			data-bs-toggle="tooltip" data-bs-placement="top">
+              <i class="bi bi-eye"></i>
+            </button>
+            <% } %>
+          <% } %>
+        </td>
+      </tr>
+    <% }) %>
+  <% } %>
+</tbody>
+
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+<script>
+                            document.addEventListener("DOMContentLoaded", function () {
+  const acceptButtons = document.querySelectorAll(".profile-update-btn");
+
+  acceptButtons.forEach(button => {
+    button.addEventListener("click", async function () {
+      const updateId = this.getAttribute("data-update-id");
+      const status = this.getAttribute("data-title");
+
+      console.log("Status: ", status);
+      console.log("Update ID: ", updateId);
+
+      const confirmText = status === "accept"
+        ? "Are you sure you want to accept this update?"
+        : "Are you sure you want to reject this update?";
+
+      const result = await Swal.fire({
+        title: "Confirm Action",
+        text: confirmText,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, continue",
+        cancelButtonText: "Cancel"
+      });
+
+      if (!result.isConfirmed) return;
+
+      try {
+        const response = await fetch(`/admin/update-profile-detail/${updateId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status }),
+        });
+
+        const resultData = await response.json();
+        if (response.ok) {
+          await Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: resultData.message || "Update processed successfully.",
+            confirmButtonText: "OK"
+          });
+          location.reload();
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Failed",
+            text: resultData.message || "Failed to update.",
+            confirmButtonText: "OK"
+          });
+        }
+      } catch (error) {
+        console.error("Error in updating:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "An error occurred while processing the update.",
+          confirmButtonText: "OK"
+        });
+      }
+    });
+  });
+});
+</script>
+
+<script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                const acceptButtons = document.querySelectorAll(".kyc-update-btn");
+
+                                acceptButtons.forEach(button => {
+                                    button.addEventListener("click", async function () {
+                                        const updateId = this.getAttribute("data-update-id");
+                                        const status = this.getAttribute("data-title");
+                                        console.log("Status: ", status);
+                                        console.log("Update ID: ", updateId);
+                                        // Confirm with the user
+
+                                        let confirmed;
+                                        if (status === "accept") {
+                                            confirmed = confirm("Are you sure you want to accept this update?");
+                                        } else {
+                                            confirmed = confirm("Are you sure you want to reject this update?");
+                                        }
+                                        const result = await Swal.fire({
+          title: "Confirm Action",
+          text: confirmMessage,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#6c757d",
+          confirmButtonText: "Yes, continue",
+          cancelButtonText: "Cancel"
+        });
+
+        if (!result.isConfirmed) return;
+
+
+                                        try {
+                                            const response = await fetch(`/admin/update-kyc-detail/${updateId}`, {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                },
+                                                body: JSON.stringify({ status }),
+                                            });
+                                            console.log("Response: ", response);
+                                            const result = await response.json();
+                                            console.log("Result: ", result);
+                                            if (response.ok) {
+            Swal.fire({
+              icon: "success",
+              title: "Success",
+              text: data.message || "KYC update processed successfully.",
+              confirmButtonText: "OK"
+            }).then(() => {
+              location.reload();
+            });
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Failed",
+              text: data.message || "Failed to process KYC update.",
+              confirmButtonText: "OK"
+            });
+          }
+        } catch (error) {
+          console.error("Error in updating:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Server Error",
+            text: "Something went wrong while processing the update.",
+            confirmButtonText: "OK"
+          });
+        }
+                                    });
+                                });
+                            });
+</script>
+
+<div class="modal fade" id="updateViewModal" tabindex="-1" aria-labelledby="userViewModalLabel"
+							aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered modal-lg">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="userViewModalLabel">Update Details</h5>
+										<button type="button" class="btn-close" data-bs-dismiss="modal"
+											aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+										<form id="userDetailsForm">
+											<div class="row g-3">
+												<div class="col-md-4">
+													<label class="form-label">User ID</label>
+													<input type="text" class="form-control" id="viewUserId" readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Name</label>
+													<input type="text" class="form-control" id="viewName" readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">PAN</label>
+													<input type="text" class="form-control" id="viewPan" readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Gender</label>
+													<input type="text" class="form-control" id="viewGender" readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">KYC Status</label>
+													<input type="text" class="form-control" id="viewKyc" readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Subscription</label>
+													<input type="text" class="form-control" id="viewSubscription"
+														readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Visiting Card</label>
+													<img id="viewVisitingCard" class="img-fluid rounded border"
+														alt="Visiting Card" />
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">PAN Card</label>
+													<img id="viewPanCard" class="img-fluid rounded border"
+														alt="PAN Card" />
+												</div>
+												<div class="col-md-6">
+													<label class="form-label">Aadhaar Front</label>
+													<img id="viewAadhaarFront" class="img-fluid rounded border"
+														alt="Aadhaar Front" />
+												</div>
+												<div class="col-md-6">
+													<label class="form-label">Aadhaar Back</label>
+													<img id="viewAadhaarBack" class="img-fluid rounded border"
+														alt="Aadhaar Back" />
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+</div>
+
+<script>
+							document.addEventListener("DOMContentLoaded", function () {
+								const viewButtons = document.querySelectorAll(".view-kyc-update-btn");
+
+								viewButtons.forEach((btn) => {
+									btn.addEventListener("click", function () {
+										const update = JSON.parse(this.dataset.update);
+
+										// Text fields
+										document.getElementById("viewUserId").value = update.agent.userId || '';
+										document.getElementById("viewName").value = update.agent.name || '';
+										document.getElementById("viewPan").value = update.agent.pan || '';
+										document.getElementById("viewGender").value = update.agent.gender || '';
+										document.getElementById("viewKyc").value = update.kyc || '';
+										document.getElementById("viewSubscription").value = update.subscription?.subscription || 'N/A';
+										
+										const fallback = '/assets/images/avatar/placeholder.png';
+
+										// Get image container elements
+										const visitingCardEl = document.getElementById("viewVisitingCard").parentElement;
+										const panCardEl = document.getElementById("viewPanCard").parentElement;
+										const aadhaarFrontEl = document.getElementById("viewAadhaarFront").parentElement;
+										const aadhaarBackEl = document.getElementById("viewAadhaarBack").parentElement;
+
+										// Hide all by default
+										visitingCardEl.style.display = 'none';
+										panCardEl.style.display = 'none';
+										aadhaarFrontEl.style.display = 'none';
+										aadhaarBackEl.style.display = 'none';
+
+										if (update.visitingCard && update.panCard) {
+												visitingCardEl.style.display = '';
+												panCardEl.style.display = '';
+												document.getElementById("viewVisitingCard").src = update.visitingCard || fallback;
+												document.getElementById("viewPanCard").src = update.panCard || fallback;
+                                        } else if (update.aadhaarCardBack && update.aadhaarCardFront) {
+												aadhaarFrontEl.style.display = '';
+												aadhaarBackEl.style.display = '';
+												document.getElementById("viewAadhaarFront").src = update.aadhaarCardFront || fallback;
+												document.getElementById("viewAadhaarBack").src = update.aadhaarCardBack || fallback;
+										}
+
+										// Show modal
+										const modal = new bootstrap.Modal(document.getElementById("updateViewModal"));
+										modal.show();
+									});
+								});
+							});
+</script>
+
+                                <div class="tab-pane" id="tab-9-9">
+                                    <div class="col-lg-12 col-xxl-12">
+                                        <div class="card border  h-100">
+                                            <!-- Card body START -->
+                                            <div class="card-body">
+                                                <table class="table table-tranx">
+                                                    <thead>
+                                                        <tr class="tb-tnx-head">
+                                                            <!-- <th class="tb-tnx-id"><span class="">#</span></th> -->
+                                                            <th class="tb-tnx-info">
+                                                                <span class="tb-tnx-desc d-none d-sm-inline-block">
+                                                                    <span>Bill For</span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="tb-tnx-info">Issued Date</th>
+                                                            <th class="tb-tnx-info">Due Date</th>
+                                                            <th class="tb-tnx-amount">
+                                                                <span class="tb-tnx-total">Total</span>
+
+                                                            </th>
+                                                            <th class="tb-tnx-info"> <span
+                                                                    class="tb-tnx-status d-none d-md-inline-block">Status</span>
+                                                            </th>
+                                                            <th class="tb-tnx-info"></th>
+
+                                                    </thead>
+                                                    <tbody>
+<%
+  function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  }
+
+  const today = new Date();
+  const expiry = new Date(agent.expiryDate);
+
+  let status = '';
+  let badgeClass = '';
+
+  if (today.toDateString() === expiry.toDateString()) {
+    status = 'Due';
+    badgeClass = 'bg-warning';
+  } else if (today > expiry) {
+    status = 'Expired';
+    badgeClass = 'bg-danger';
+  } else {
+    status = 'Valid';
+    badgeClass = 'bg-success';
+  }
+%>
+                                                        <tr class="tb-tnx-item">
+                                                            <!-- <td class="tb-tnx-id">
+                                                                <a href="#"><span></span></a>
+                                                            </td> -->
+                                                            <td class="tb-tnx-info">
+                                                                <div class="tb-tnx-desc">
+                                                                    <span class="title"><%= agent.subscription.subscription %></span>
+                                                                </div>
+
+                                                            </td>
+                                                            <td class="tb-tnx-info"> <span
+                                                                    class="date"><%= formatDate(agent.subscriptionDate) %></span>
+                                                            </td>
+                                                            <td class="tb-tnx-info"> <span
+                                                                    class="date"><%= formatDate(agent.expiryDate) %></span>
+                                                            </td>
+                                                            <td class="tb-tnx-amount">
+                                                                <div class="tb-tnx-total">
+                                                                    <span class="amount">₹ <%= agent.subscription.price %></span>
+                                                                </div>
+                                                            </td>
+
+                                                            <td class="tb-tnx-amount">
+                                                                <span class="badge badge-dot <%= badgeClass %>"><%= status %></span>
+                                                            </td>
+                                                           
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <!-- Card body END -->
+                                            <!-- <div class="card-footer">
+
+                                                <div
+                                                    class="d-sm-flex justify-content-sm-between align-items-sm-center mt-4">
+                                                    <p class="mb-sm-0 text-center text-sm-start">Showing 1 to 8 of 20
+                                                        entries
+                                                    </p>
+                                                    <nav class="mb-sm-0 d-flex justify-content-center"
+                                                        aria-label="navigation">
+                                                        <ul
+                                                            class="pagination pagination-sm pagination-primary-soft mb-0">
+                                                            <li class="page-item disabled">
+                                                                <a class="page-link" href="#" tabindex="-1">Prev</a>
+                                                            </li>
+                                                            <li class="page-item"><a class="page-link" href="#">1</a>
+                                                            </li>
+                                                            <li class="page-item active"><a class="page-link"
+                                                                    href="#">2</a>
+                                                            </li>
+                                                            <li class="page-item disabled"><a class="page-link"
+                                                                    href="#">..</a>
+                                                            </li>
+                                                            <li class="page-item"><a class="page-link" href="#">15</a>
+                                                            </li>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="#">Next</a>
+                                                            </li>
+                                                        </ul>
+                                                    </nav>
+                                                </div>
+                                            </div> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div> 
                         <!-- Hotel list END -->
                     </div>
 
@@ -401,6 +2169,33 @@
                     });
                 });
             </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".suspend-user").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const userId = e.currentTarget.dataset.userId;
+
+        try {
+          const response = await fetch(`/admin/user-suspend?id=${userId}`);
+          const result = await response.json();
+
+          if (response.ok) {
+            alert("Agent suspended successfully");
+            // Optionally update the UI, e.g., disable button or show status
+			window.location.reload();
+          } else {
+            alert("Failed to suspend agent: " + result.message);
+          }
+        } catch (err) {
+          alert("Error suspending agent");
+          console.error(err);
+        }
+      });
+    });
+  });
+</script>
 
     </main>
     <!-- **************** MAIN CONTENT END **************** -->

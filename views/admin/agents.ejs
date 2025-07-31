@@ -1,290 +1,1352 @@
 <%- include('./partials/header') %>
 
-    <!-- **************** MAIN CONTENT START **************** -->
-    <main>
-        <!-- Sidebar START -->
-        <%- include('./partials/sideBar') %>
-            <!-- Sidebar END -->
-            <!-- Page content START -->
-            <div class="page-content">
-                <!-- Top bar START -->
-                <%- include('./partials/topBar') %>
-                    <!-- Top bar END -->
-                    <!-- Page main content START -->
+	<!-- **************** MAIN CONTENT START **************** -->
+	<main>
+		<!-- Sidebar START -->
+		<%- include('./partials/sideBar') %>
+			<!-- Sidebar END -->
+			<!-- Page content START -->
+			<div class="page-content">
+				<!-- Top bar START -->
+				<%- include('./partials/topBar') %>
+					<!-- Top bar END -->
+					<!-- Page main content START -->
 
-                    <div class="page-content-wrapper p-xxl-4">
+					<div class="page-content-wrapper p-xxl-4">
 
-                        <!-- Title -->
-                        <div class="row">
-                            <div class="col-12 mb-4 mb-sm-5">
-                                <div class="d-sm-flex justify-content-between align-items-center">
-                                    <h1 class="h3 mb-3 mb-sm-0">Agent List</h1>
-                                    <div class="col-md-6 col-lg-3">
-                                        <form class="rounded position-relative" method="get" action="/admin/agents">
-                                            <input class="form-control bg-transparent pe-5" type="search" name="search"
-                                                placeholder="Search" aria-label="Search" value="<%= search %>">
-                                            <button
-                                                class="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover "
-                                                type="submit">
-                                                <i class="fas fa-search fs-6"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                    <div class="d-grid"><a href="#" class="btn btn-primary mb-0"><i
-                                                class="bi bi-filetype-pdf me-2"></i>Generate Report</a> </div>
-                                </div>
-                            </div>
-                        </div>
+						<!-- Title -->
+						<div class="row">
+							<div class="col-12 mb-4 mb-sm-5">
+								<div class="d-sm-flex justify-content-between align-items-center">
+									<div class="card-body text-dark">
+										<h1 class="h4 mb-3 mb-sm-0">Agent List</h1>
+									</div>
 
-                        <!-- agent list START --> 
-                        <div class="card shadow mt-3">
-							<div class="card-body">
-								<div class="table-responsive">
-									<table class="table align-middle">
-										<thead class="bg-light">
-											<tr>
-												<th>Seller</th>
-												<th>Seller ID</th>
-												<th>Email</th>
-												<th>Mobile</th>
-												<!-- <th>Nationality</th> -->
-												<th>KYC</th>
-												<th>Subscription</th>
-												<th>Status</th>
-												<th>Action</th>
-											</tr>
-										</thead>
-										<tbody class="list">
-											<% if(agents && agents.length> 0) { %>
-												<% agents.forEach((agent, index)=> { %>
-													<tr>
-														<td>
-															<div class="d-flex align-items-center">
-																<div class="avatar avatar-xs flex-shrink-0">
-																	<img class="avatar-img rounded-circle"
-																		src="<%= agent.image ? agent.image : '/assets/images/avatar/09.jpg' %>"
-																		alt="avatar">
-																</div>
-																<div class="ms-2">
-																	<small class="mb-0 fw-light">
-																		<%= agent.name %>
-																	</small>
-																</div>
-															</div>
-														</td>
-														<td>
-															<h6 class="mb-0 fw-normal">
-																<%= agent.userId %>
-															</h6>
-														</td>
-														<td>
-															<h6 class="mb-0 fw-normal">
-																<%= agent.email %>
-															</h6>
-														</td>
-														<td>
-															<h6 class="mb-0 fw-normal">
-																<%= agent.mobile %>
-															</h6>
-														</td>
-														<!-- <td>
-															<h6 class="mb-0 fw-normal">
-																<%= agent.nationality %>
-															</h6>
-														</td> -->
-														<td>
-															<h6 class="mb-0 fw-normal">
-																<%= agent.kyc %>
-															</h6>
-														</td>
-														<td>
-															<h6 class="mb-0 fw-normal">
-																<%= agent.subscription ? agent.subscription.subscription
-																	: 'N/A' %>
-															</h6>
-														</td>
-														<% const today=new Date(); const expiryDate=new
-															Date(agent.expiryDate); let statusClass; let statusText; if
-															(expiryDate> today) {
-															statusClass = 'text-success';
-															statusText = 'Active';
-															} else {
-															statusClass = 'text-danger';
-															statusText = 'Inactive';
-															}
-															%>
-															<td>
-																<h6 class="mb-0 fw-normal <%= statusClass %>">
-																	<%= statusText %>
-																</h6>
-															</td>
-															<td>
-																<!-- <button class="btn btn-sm btn-primary view-user-btn"
-																	data-user='<%= JSON.stringify(agent) %>' title="View"
-																	data-bs-toggle="tooltip" data-bs-placement="top">
-																	<i class="fa-solid fa-eye"></i>
-																</button> -->
-                                                                <a href="/admin/agent-detail/<%= agent._id %>" class="btn btn-sm btn-primary view-agent-btn"
-                                                                    ><i class="fa-solid fa-eye"></i></a>
-																<button class="btn btn-sm btn-primary edit-user-btn"
-																	data-user='<%= JSON.stringify(agent) %>' title="Edit"
-																	data-bs-toggle="tooltip" data-bs-placement="top">
-																	<i class="fa-solid fa-pen-to-square"></i>
-																</button>
-																<!-- <button
-																	class="btn btn-sm btn-danger delete-user-btn ms-2"
-																	data-user-id="<%= agent._id %>" title="Delete"
-																	data-bs-toggle="tooltip" data-bs-placement="top">
-																	<i class="fa-solid fa-trash"></i>
-																</button> -->
-															</td>
-													</tr>
-													<% }) %>
-														<% } else { %>
-															<tr>
-																<td colspan="9" class="text-center">
-																	<p class="mb-0">No sellers found.</p>
-																</td>
-															</tr>
-															<% } %>
-										</tbody>
-									</table>
+									<form class="rounded position-relative" method="get" action="/admin/agents">
+										<input class="form-control bg-transparent pe-5" type="search" name="search"
+											placeholder="Search" aria-label="Search" value="<%= search %>">
+										<button
+											class="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover "
+											type="submit">
+											<i class="fas fa-search fs-6"></i>
+										</button>
+									</form>
+									<a href="#" class="btn btn-dark-soft text-nowrap mb-0 me-2" title="Remainder"><i
+											class="bi bi-bell"></i></a>
 								</div>
 							</div>
-
-							<!-- Card footer START -->
-							<div class="card-footer pt-0">
-								<!-- Pagination and content -->
-								<div class="d-sm-flex justify-content-sm-between align-items-sm-center">
-									<p class="mb-sm-0 text-center text-sm-start">
-									  Showing <%= (currentPage - 1) * limit + 1 %> to
-									  <%= Math.min(currentPage * limit, totalCount) %> of
-									  <%= totalCount %> entries
-									</p>
-									<nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
-									  <ul class="pagination pagination-sm pagination-primary-soft mb-0">
-										<li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-										  <a class="page-link" href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
-										</li>
-								  
-										<% for (let i = 1; i <= totalPages; i++) { %>
-										  <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-											<a class="page-link" href="?search=<%= search %>&page=<%= i %>"><%= i %></a>
-										  </li>
-										<% } %>
-								  
-										<li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-										  <a class="page-link" href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
-										</li>
-									  </ul>
-									</nav>
-								</div>								  
-							</div>
-							<!-- Card footer END -->
 						</div>
-                        <!-- agent list END -->
 
-                        <!-- Pagination START -->
-                        <!-- <div class="d-sm-flex justify-content-sm-between align-items-sm-center">
-                            <p class="mb-sm-0 text-center text-sm-start">
-                                Showing <%= (currentPage - 1) * limit + 1 %> to
-                                    <%= Math.min(currentPage * limit, totalCount) %> of
-                                        <%= totalCount %> entries
-                            </p>
-                            <nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
-                                <ul class="pagination pagination-sm pagination-primary-soft mb-0">
-                                    <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-                                        <a class="page-link"
-                                            href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
-                                    </li>
+						<!-- agent list START -->
+						<div class="row g-4">
+							<ul class="nav nav-pills nav-pills-primary-soft mb-3" id="tour-pills-tab" role="tablist">
+								<li class="nav-item me-2">
+									<a class="nav-link active" data-bs-toggle="tab" href="#tab-active">Active Sellers
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" data-bs-toggle="tab" href="#tab-inactive">Inactive Sellers</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" data-bs-toggle="tab" href="#tab-suspend">Suspended Sellers</a>
+								</li>
+							</ul>
+							<div class="tab-content">
+								<div class="tab-pane show active" id="tab-active">
+									<!-- Upcoming Arrival START -->
+									<div class="col-lg-12 col-xxl-12">
+										<div class="card border  h-100">
+											<!-- Card body START -->
+											<div class="card-body">
+												<table class="table">
+													<thead>
+														<tr>
+															<th>Seller Details</th>
+															<th>Balance</th>
+															<th>Mobile & Kyc</th>
+															<th>Subscription</th>
+															<th>Lists & Bookings</th>
+															<th>Status</th>
+															<th>Actions</th>
+														</tr>
+													</thead>
+													<tbody>
+														<% if(activeAgents && activeAgents.length> 0) { %>
+															<% activeAgents.forEach((user, index)=> { %>
+																<tr>
+																	<td>
+																		<div
+																			class="d-sm-flex align-items-center mb-1 mb-sm-0">
+																			<!-- Avatar -->
+																			<div class="avatar avatar-md flex-shrink-0">
+																				<img class="rounded-circle"
+																					src="<%= user.image ? user.image : '/assets/images/avatar/09.jpg' %>">
+																			</div>
+																			<!-- Info -->
+																			<div class="ms-sm-3 mt-2 mt-sm-0">
+																				<a
+																					href="/admin/agent-detail/<%=user._id%>">
+																					<h6 class="mb-1">
+																						<%= user.name %>
+																					</h6>
+																				</a>
+																				<ul class="nav nav-divider small">
+																					<li class="nav-item">
+																						<%= user.email %>
+																					</li>
+																					<li class="nav-item">
+																						<%= user.userId %>
+																					</li>
+																				</ul>
+																			</div>
+																		</div>
+																	</td>
+																	<td>
+																		<h5 class="mb-0 fw-3">₹ 26000</h5>
+																	</td>
+																	<% let kycClass; if(user.kyc==="Completed" ){
+																		kycClass="text-success" ; } else
+																		if(user.kyc==="Initial" ){
+																		kycClass="text-warning" ; } else{
+																		kycClass="text-danger" } %>
+																		<td>
+																			<div class="col">
+																				<h6 class="mb-0 fw-normal">
+																					<%= user.mobile %></small>
+																						<h6 class="mb-0 fw-normal">Kyc:
+																							<span class="<%= kycClass %>">
+																								<%= user.kyc %>
+																							</span></h6>
+																			</div>
+																		</td>
+																		<td>
+																			<div class="col">
+																				<h6 class="mb-0 fw-normal">
+																					<%= user.subscription ?
+																						user.subscription.subscription
+																						: 'N/A' %></small>
+																						<h6 class="mb-0 fw-normal">
+																							Validity: <%= new
+																								Date(user.expiryDate).toLocaleDateString('en-GB',
+																								{ day: '2-digit' ,
+																								month: 'short' ,
+																								year: 'numeric' }) %>
+																						</h6>
+																			</div>
+																		</td>
+																		<% let booking; if(user.totalBookings> 1){
+																			booking= "Bookings"
+																			}
+																			else{
+																			booking = "Booking"
+																			}
 
-                                    <% for (let i=1; i <=totalPages; i++) { %>
-                                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                                            <a class="page-link" href="?search=<%= search %>&page=<%= i %>">
-                                                <%= i %>
-                                            </a>
-                                        </li>
-                                        <% } %>
+																			let flights; if(user.flightCount> 1){
+																			flights= "Inventories"
+																			}
+																			else{
+																			flights = "Inventory"
+																			} %>
+																			%>
+																			<td>
+																				<div class="col">
+																					<h6 class="mb-0 fw-normal"><%= user.flightCount %>
+																								<%= flights %></small>
+																						<h6 class="mb-0 fw-normal">
+																							<%= user.totalBookings %>
+																								<%= booking %>
+																						</h6>
+																				</div>
+																			</td>
+																			<td> <span class="text-success">
+																					<%= user.status %>
+																				</span>
+																			</td>
+																			<!-- Button -->
+																			<td> <a href="#"
+																						class="btn btn-sm btn-info flex-shrink-0 mb-0 ms-3 view-active-user-btn"
+																						data-user='<%= JSON.stringify(user) %>'
+																						data-bs-toggle="tooltip"
+																						data-bs-placement="top"><i
+																							class="bi bi-eye"></i>
+																						View</a>
 
-                                            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-                                                <a class="page-link"
-                                                    href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
-                                            </li>
-                                </ul>
-                            </nav>
-                        </div> -->
-                        <!-- Pagination END -->
+																				<a href="#"
+																					class="btn btn-sm btn-primary small mb-0"
+																					role="button" id="dropdownShare6"
+																					data-bs-toggle="dropdown"
+																					aria-expanded="false"> More
+																					<i
+																						class="bi bi-three-dots fa-fw"></i>
+																				</a>
+																				<!-- dropdown button -->
+																				<ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded"
+																					aria-labelledby="dropdownShare6">
+																					<li><a href="#" class="dropdown-item suspend-user" data-user-id="<%= user._id %>">
+																						    <i class="bi bi-ban text-danger fa-fw me-2"></i>Suspend
+ 																						 </a>
+																					</li>
+																					<li><a class="dropdown-item"
+																							href="#"><i
+																								class="bi bi-file-zip-fill text-success fa-fw me-2"></i>
+																							Kyc Details</a></li>
+																				</ul>
 
-                    </div>
+																			</td>
 
-                    <!-- Page main content END -->
-            </div>
+																</tr>
+																<% }) %>
+																	<% } else { %>
+																		<tr>
+																			<td colspan="9" class="text-center">
+																				<p class="mb-0">No active agents found.
+																				</p>
+																			</td>
+																		</tr>
+																		<% } %>
+													</tbody>
+												</table>
+											</div>
+											<!-- Card body END -->
+											<div class="card-footer pt-0">
+												<div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+													<p class="mb-sm-0 text-center text-sm-start">
+														Showing <%= (currentPage - 1) * limit + 1 %> to
+															<%= Math.min(currentPage * limit, activeTotalCount) %> of
+																<%= activeTotalCount %> entries
+													</p>
+													<nav class="mb-sm-0 d-flex justify-content-center"
+														aria-label="navigation">
+														<ul
+															class="pagination pagination-sm pagination-primary-soft mb-0">
+															<li
+																class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+																<a class="page-link"
+																	href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
+															</li>
 
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    const deleteButtons = document.querySelectorAll(".delete-agent-btn");
+															<% for (let i=1; i <=activeTotalPages; i++) { %>
+																<li
+																	class="page-item <%= i === currentPage ? 'active' : '' %>">
+																	<a class="page-link"
+																		href="?search=<%= search %>&page=<%= i %>">
+																		<%= i %>
+																	</a>
+																</li>
+																<% } %>
 
-                    deleteButtons.forEach(button => {
-                        button.addEventListener("click", async function () {
-                            const agentId = this.dataset.agentId;
+																	<li
+																		class="page-item <%= currentPage === activeTotalPages ? 'disabled' : '' %>">
+																		<a class="page-link"
+																			href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
+																	</li>
+														</ul>
+													</nav>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!-- Upcoming Arrival END -->
+								<div class="tab-pane" id="tab-inactive">
 
-                            // Confirm with the user
-                            const result = await Swal.fire({
-          title: "Are you sure?",
-          text: "Do you really want to delete this agent?",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#d33",
-          cancelButtonColor: "#6c757d",
-          confirmButtonText: "Yes, delete it!",
-          cancelButtonText: "Cancel"
-        });
+									<div class="col-lg-12 col-xxl-12">
+										<div class="card border  h-100">
+											<!-- Card body START -->
+											<div class="card-body">
+												<table class="table">
+													<thead>
+														<tr>
+															<th>Seller Details</th>
+															<th>Balance</th>
+															<th>Mobile & Kyc</th>
+															<th>Subscription</th>
+															<th>Lists & Bookings</th>
+															<th>Status</th>
+															<th>Actions</th>
+														</tr>
+													</thead>
+													<tbody>
+														<% if(inactiveAgents && inactiveAgents.length> 0) { %>
+															<% inactiveAgents.forEach((user, index)=> { %>
+																<tr>
+																	<td>
+																		<div
+																			class="d-sm-flex align-items-center mb-1 mb-sm-0">
+																			<!-- Avatar -->
+																			<div class="avatar avatar-md flex-shrink-0">
+																				<img class="rounded-circle"
+																					src="<%= user.image ? user.image : '/assets/images/avatar/09.jpg' %>">
+																			</div>
+																			<!-- Info -->
+																			<div class="ms-sm-3 mt-2 mt-sm-0">
+																				<a
+																					href="/admin/agent-detail/<%=user._id%>">
+																					<h6 class="mb-1">
+																						<%= user.name %>
+																					</h6>
+																				</a>
+																				<ul class="nav nav-divider small">
+																					<li class="nav-item">
+																						<%= user.email %>
+																					</li>
+																					<li class="nav-item">
+																						<%= user.userId %>
+																					</li>
+																				</ul>
+																			</div>
+																		</div>
+																	</td>
+																	<td>
+																		<h5 class="mb-0 fw-3">₹ 26000</h5>
+																	</td>
+																	<% let kycClass; if(user.kyc==="Completed" ){
+																		kycClass="text-success" ; } else
+																		if(user.kyc==="Initial" ){
+																		kycClass="text-warning" ; } else{
+																		kycClass="text-danger" } %>
+																		<td>
+																			<div class="col">
+																				<h6 class="mb-0 fw-normal">
+																					<%= user.mobile %></small>
+																						<h6 class="mb-0 fw-normal">Kyc:
+																							<span class="<%= kycClass %>">
+																								<%= user.kyc %>
+																							</span></h6>
+																			</div>
+																		</td>
+																		<td>
+																			<div class="col">
+																				<h6 class="mb-0 fw-normal">
+																					<%= user.subscription ?
+																						user.subscription.subscription
+																						: 'N/A' %></small>
+																						<h6 class="mb-0 fw-normal">
+																							Validity: <%= new
+																								Date(user.expiryDate).toLocaleDateString('en-GB',
+																								{ day: '2-digit' ,
+																								month: 'short' ,
+																								year: 'numeric' }) %>
+																						</h6>
+																			</div>
+																		</td>
+																		<% let booking; if(user.totalBookings> 1){
+																			booking= "Bookings"
+																			}
+																			else{
+																			booking = "Booking"
+																			}
 
-        if (!result.isConfirmed) return;
+																			let flights; if(user.flightCount> 1){
+																			flights= "Inventories"
+																			}
+																			else{
+																			flights = "Inventory"
+																			} %>
+																			%>
+																			<td>
+																				<div class="col">
+																					<h6 class="mb-0 fw-normal"><%= user.flightCount %>
+																								<%= flights %></small>
+																						<h6 class="mb-0 fw-normal">
+																							<%= user.totalBookings %>
+																								<%= booking %>
+																						</h6>
+																				</div>
+																			</td>
+																			<td> <span class="text-success">
+																					<%= user.status %>
+																				</span>
+																			</td>
+																			<!-- Button -->
+																			<td> <a href="#"
+																						class="btn btn-sm btn-info flex-shrink-0 mb-0 ms-3 view-inactive-user-btn"
+																						data-user='<%= JSON.stringify(user) %>'
+																						data-bs-toggle="tooltip"
+																						data-bs-placement="top"><i
+																							class="bi bi-eye"></i>
+																						View</a>
 
-                            try {
-                                const response = await fetch(`/admin/delete-agent/${agentId}`, {
-                                    method: 'DELETE',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                    },
-                                });
+																				<a href="#"
+																					class="btn btn-sm btn-primary  small mb-0"
+																					role="button" id="dropdownShare6"
+																					data-bs-toggle="dropdown"
+																					aria-expanded="false"> More
+																					<i
+																						class="bi bi-three-dots fa-fw"></i>
+																				</a>
+																				<!-- dropdown button -->
+																				<ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded"
+																					aria-labelledby="dropdownShare6">
+																					<li><a href="#" class="dropdown-item suspend-user" data-user-id="<%= user._id %>">
+																						    <i class="bi bi-ban text-danger fa-fw me-2"></i>Suspend
+ 																						 </a>
+																					</li>
+																					<li><a class="dropdown-item"
+																							href="#"><i
+																								class="bi bi-file-zip-fill text-success fa-fw me-2"></i>
+																							Kyc Details</a></li>
+																				</ul>
 
-                                const result = await response.json();
+																			</td>
 
-                               if (response.ok) {
-            Swal.fire({
-              icon: "success",
-              title: "Deleted",
-              text: "Agent deleted successfully.",
-              confirmButtonText: "OK"
-            }).then(() => {
-              location.reload();
-            });
+																</tr>
+																<% }) %>
+																	<% } else { %>
+																		<tr>
+																			<td colspan="9" class="text-center">
+																				<p class="mb-0">No inactive agents found.
+																				</p>
+																			</td>
+																		</tr>
+																	<% } %>
+													</tbody>
+												</table>
+											</div>
+											<!-- Card body END -->
+											<div class="card-footer pt-0">
+												<div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+													<p class="mb-sm-0 text-center text-sm-start">
+														Showing <%= (currentPage - 1) * limit + 1 %> to
+															<%= Math.min(currentPage * limit, inactiveTotalCount) %> of
+																<%= inactiveTotalCount %> entries
+													</p>
+													<nav class="mb-sm-0 d-flex justify-content-center"
+														aria-label="navigation">
+														<ul
+															class="pagination pagination-sm pagination-primary-soft mb-0">
+															<li
+																class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+																<a class="page-link"
+																	href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
+															</li>
+
+															<% for (let i=1; i <=inactiveTotalPages; i++) { %>
+																<li
+																	class="page-item <%= i === currentPage ? 'active' : '' %>">
+																	<a class="page-link"
+																		href="?search=<%= search %>&page=<%= i %>">
+																		<%= i %>
+																	</a>
+																</li>
+																<% } %>
+
+																	<li
+																		class="page-item <%= currentPage === inactiveTotalPages ? 'disabled' : '' %>">
+																		<a class="page-link"
+																			href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
+																	</li>
+														</ul>
+													</nav>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="tab-pane" id="tab-suspend">
+
+									<div class="col-lg-12 col-xxl-12">
+										<div class="card border  h-100">
+											<!-- Card body START -->
+											<div class="card-body">
+												<table class="table">
+													<thead>
+														<tr>
+															<th>Seller Details</th>
+															<th>Balance</th>
+															<th>Mobile & Kyc</th>
+															<th>Subscription</th>
+															<th>Lists & Bookings</th>
+															<th>Status</th>
+															<th>Actions</th>
+														</tr>
+													</thead>
+													<tbody>
+														<% if(suspendedAgents && suspendedAgents.length> 0) { %>
+															<% suspendedAgents.forEach((user, index)=> { %>
+																<tr>
+																	<td>
+																		<div
+																			class="d-sm-flex align-items-center mb-1 mb-sm-0">
+																			<!-- Avatar -->
+																			<div class="avatar avatar-md flex-shrink-0">
+																				<img class="rounded-circle"
+																					src="<%= user.image ? user.image : '/assets/images/avatar/09.jpg' %>">
+																			</div>
+																			<!-- Info -->
+																			<div class="ms-sm-3 mt-2 mt-sm-0">
+																				<a
+																					href="/admin/agent-detail/<%=user._id%>">
+																					<h6 class="mb-1">
+																						<%= user.name %>
+																					</h6>
+																				</a>
+																				<ul class="nav nav-divider small">
+																					<li class="nav-item">
+																						<%= user.email %>
+																					</li>
+																					<li class="nav-item">
+																						<%= user.userId %>
+																					</li>
+																				</ul>
+																			</div>
+																		</div>
+																	</td>
+																	<td>
+																		<h5 class="mb-0 fw-3">₹ 26000</h5>
+																	</td>
+																	<% let kycClass; if(user.kyc==="Completed" ){
+																		kycClass="text-success" ; } else
+																		if(user.kyc==="Initial" ){
+																		kycClass="text-warning" ; } else{
+																		kycClass="text-danger" } %>
+																		<td>
+																			<div class="col">
+																				<h6 class="mb-0 fw-normal">
+																					<%= user.mobile %></small>
+																						<h6 class="mb-0 fw-normal">Kyc:
+																							<span class="<%= kycClass %>">
+																								<%= user.kyc %>
+																							</span></h6>
+																			</div>
+																		</td>
+																		<td>
+																			<div class="col">
+																				<h6 class="mb-0 fw-normal">
+																					<%= user.subscription ?
+																						user.subscription.subscription
+																						: 'N/A' %></small>
+																						<h6 class="mb-0 fw-normal">
+																							Validity: <%= new
+																								Date(user.expiryDate).toLocaleDateString('en-GB',
+																								{ day: '2-digit' ,
+																								month: 'short' ,
+																								year: 'numeric' }) %>
+																						</h6>
+																			</div>
+																		</td>
+																		<% let booking; if(user.totalBookings> 1){
+																			booking= "Bookings"
+																			}
+																			else{
+																			booking = "Booking"
+																			}
+
+																			let flights; if(user.flightCount> 1){
+																			flights= "Inventories"
+																			}
+																			else{
+																			flights = "Inventory"
+																			} %>
+																			%>
+																			<td>
+																				<div class="col">
+																					<h6 class="mb-0 fw-normal"><%= user.flightCount %>
+																								<%= flights %></small>
+																						<h6 class="mb-0 fw-normal">
+																							<%= user.totalBookings %>
+																								<%= booking %>
+																						</h6>
+																				</div>
+																			</td>
+																			<td> <span class="text-success">
+																					<%= user.status %>
+																				</span>
+																			</td>
+																			<!-- Button -->
+																			<td> <a href="#"
+																						class="btn btn-sm btn-info flex-shrink-0 mb-0 ms-3 view-suspend-user-btn"
+																						data-user='<%= JSON.stringify(user) %>'
+																						data-bs-toggle="tooltip"
+																						data-bs-placement="top"><i
+																							class="bi bi-eye"></i>
+																						View</a>
+
+																				<a href="#"
+																					class="btn btn-sm btn-primary  small mb-0"
+																					role="button" id="dropdownShare6"
+																					data-bs-toggle="dropdown"
+																					aria-expanded="false"> More
+																					<i
+																						class="bi bi-three-dots fa-fw"></i>
+																				</a>
+																				<!-- dropdown button -->
+																				<ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded"
+																					aria-labelledby="dropdownShare6">
+																					<li><a href="#" class="dropdown-item suspend-user" data-user-id="<%= user._id %>">
+																						    <i class="bi bi-ban text-danger fa-fw me-2"></i>Suspend
+ 																						 </a>
+																					</li>
+																					<li><a class="dropdown-item"
+																							href="#"><i
+																								class="bi bi-file-zip-fill text-success fa-fw me-2"></i>
+																							Kyc Details</a></li>
+																				</ul>
+
+																			</td>
+
+																</tr>
+																<% }) %>
+																	<% } else { %>
+																		<tr>
+																			<td colspan="9" class="text-center">
+																				<p class="mb-0">No suspended agents found.
+																				</p>
+																			</td>
+																		</tr>
+																	<% } %>
+													</tbody>
+												</table>
+											</div>
+											<!-- Card body END -->
+											<div class="card-footer pt-0">
+												<div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+													<p class="mb-sm-0 text-center text-sm-start">
+														Showing <%= (currentPage - 1) * limit + 1 %> to
+																<%= Math.min(currentPage * limit, suspendedTotalCount) %> of
+																<%= suspendedTotalCount %> entries
+													</p>
+													<nav class="mb-sm-0 d-flex justify-content-center"
+														aria-label="navigation">
+														<ul
+															class="pagination pagination-sm pagination-primary-soft mb-0">
+															<li
+																class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+																<a class="page-link"
+																	href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
+															</li>
+
+															<% for (let i=1; i <=suspendedTotalPages; i++) { %>
+																<li
+																	class="page-item <%= i === currentPage ? 'active' : '' %>">
+																	<a class="page-link"
+																		href="?search=<%= search %>&page=<%= i %>">
+																		<%= i %>
+																	</a>
+																</li>
+																<% } %>
+																<li
+																	class="page-item <%= currentPage === suspendedTotalPages ? 'disabled' : '' %>">
+																	<a class="page-link"
+																		href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
+																</li>
+														</ul>
+													</nav>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+
+						<!-- agent list END -->
+
+					</div>
+
+					<!-- Page main content END -->
+			</div>
+
+			<script>
+				document.addEventListener("DOMContentLoaded", function () {
+					const deleteButtons = document.querySelectorAll(".delete-agent-btn");
+
+					deleteButtons.forEach(button => {
+						button.addEventListener("click", async function () {
+							const agentId = this.dataset.agentId;
+
+							// Confirm with the user
+							const result = await Swal.fire({
+								title: "Are you sure?",
+								text: "Do you really want to delete this agent?",
+								icon: "warning",
+								showCancelButton: true,
+								confirmButtonColor: "#d33",
+								cancelButtonColor: "#6c757d",
+								confirmButtonText: "Yes, delete it!",
+								cancelButtonText: "Cancel"
+							});
+
+							if (!result.isConfirmed) return;
+
+							try {
+								const response = await fetch(`/admin/delete-agent/${agentId}`, {
+									method: 'DELETE',
+									headers: {
+										'Content-Type': 'application/json',
+									},
+								});
+
+								const result = await response.json();
+
+								if (response.ok) {
+									Swal.fire({
+										icon: "success",
+										title: "Deleted",
+										text: "Agent deleted successfully.",
+										confirmButtonText: "OK"
+									}).then(() => {
+										location.reload();
+									});
+								} else {
+									Swal.fire({
+										icon: "error",
+										title: "Failed",
+										text: result.message || "Failed to delete agent.",
+										confirmButtonText: "OK"
+									});
+								}
+							} catch (error) {
+								console.error("Error deleting agent:", error);
+								Swal.fire({
+									icon: "error",
+									title: "Error",
+									text: "An error occurred while deleting the agent.",
+									confirmButtonText: "OK"
+								});
+							}
+						});
+					});
+				});
+			</script>
+
+									<script>
+										document.addEventListener("DOMContentLoaded", function () {
+											const viewButtons = document.querySelectorAll(".view-active-user-btn");
+
+											viewButtons.forEach((btn) => {
+												btn.addEventListener("click", function () {
+													const user = JSON.parse(this.dataset.user);
+
+													// Text fields
+													document.getElementById("viewUserId").value = user.userId || '';
+													document.getElementById("viewName").value = user.name || '';
+													document.getElementById("viewEmail").value = user.email || '';
+													document.getElementById("viewPan").value = user.pan || '';
+													document.getElementById("viewMobile").value = user.mobile || '';
+													document.getElementById("viewNationality").value = user.nationality || '';
+													document.getElementById("viewGender").value = user.gender || '';
+													document.getElementById("viewAddress").value = user.address || '';
+													document.getElementById("viewKyc").value = user.kyc || '';
+													document.getElementById("viewSubscription").value = user.subscription?.subscription || 'N/A';
+													document.getElementById("viewSubscriptionDate").value = user.subscriptionDate
+														? new Date(user.subscriptionDate).toLocaleDateString()
+														: '';
+													document.getElementById("viewExpiryDate").value = user.expiryDate
+														? new Date(user.expiryDate).toLocaleDateString()
+														: '';
+													document.getElementById("viewTransactions").value = user.transactions ?? 0;
+													document.getElementById("viewTransactionAmount").value = user.transactionAmount ?? 0;
+
+													const isActive = new Date(user.expiryDate) > new Date();
+													document.getElementById("viewStatus").value = isActive ? "Active" : "Inactive";
+
+													const fallback = '/assets/images/avatar/placeholder.png';
+
+													// Always set profile image
+													document.getElementById("viewImage").src = user.image || fallback;
+
+													// Get image container elements
+													const visitingCardEl = document.getElementById("viewVisitingCard").parentElement;
+													const panCardEl = document.getElementById("viewPanCard").parentElement;
+													const aadhaarFrontEl = document.getElementById("viewAadhaarFront").parentElement;
+													const aadhaarBackEl = document.getElementById("viewAadhaarBack").parentElement;
+
+													// Hide all by default
+													visitingCardEl.style.display = 'none';
+													panCardEl.style.display = 'none';
+													aadhaarFrontEl.style.display = 'none';
+													aadhaarBackEl.style.display = 'none';
+
+													// Based on KYC status, selectively show images
+													switch (user.kyc) {
+														case "Initial":
+															visitingCardEl.style.display = '';
+															panCardEl.style.display = '';
+															document.getElementById("viewVisitingCard").src = user.visitingCard || fallback;
+															document.getElementById("viewPanCard").src = user.panCard || fallback;
+															break;
+
+														case "Completed":
+															visitingCardEl.style.display = '';
+															panCardEl.style.display = '';
+															aadhaarFrontEl.style.display = '';
+															aadhaarBackEl.style.display = '';
+															document.getElementById("viewVisitingCard").src = user.visitingCard || fallback;
+															document.getElementById("viewPanCard").src = user.panCard || fallback;
+															document.getElementById("viewAadhaarFront").src = user.aadhaarCardFront || fallback;
+															document.getElementById("viewAadhaarBack").src = user.aadhaarCardBack || fallback;
+															break;
+
+														// If "Pending", don't show any KYC-related docs (do nothing)
+													}
+
+													// Show modal
+													const modal = new bootstrap.Modal(document.getElementById("userActiveViewModal"));
+													modal.show();
+												});
+											});
+										});
+									</script>
+
+									<script>
+										document.addEventListener("DOMContentLoaded", function () {
+											const viewButtons = document.querySelectorAll(".view-inactive-user-btn");
+
+											viewButtons.forEach((btn) => {
+												btn.addEventListener("click", function () {
+													const user = JSON.parse(this.dataset.user);
+
+													// Text fields
+													document.getElementById("viewUserId").value = user.userId || '';
+													document.getElementById("viewName").value = user.name || '';
+													document.getElementById("viewEmail").value = user.email || '';
+													document.getElementById("viewPan").value = user.pan || '';
+													document.getElementById("viewMobile").value = user.mobile || '';
+													document.getElementById("viewNationality").value = user.nationality || '';
+													document.getElementById("viewGender").value = user.gender || '';
+													document.getElementById("viewAddress").value = user.address || '';
+													document.getElementById("viewKyc").value = user.kyc || '';
+													document.getElementById("viewSubscription").value = user.subscription?.subscription || 'N/A';
+													document.getElementById("viewSubscriptionDate").value = user.subscriptionDate
+														? new Date(user.subscriptionDate).toLocaleDateString()
+														: '';
+													document.getElementById("viewExpiryDate").value = user.expiryDate
+														? new Date(user.expiryDate).toLocaleDateString()
+														: '';
+													document.getElementById("viewTransactions").value = user.transactions ?? 0;
+													document.getElementById("viewTransactionAmount").value = user.transactionAmount ?? 0;
+
+													const isActive = new Date(user.expiryDate) > new Date();
+													document.getElementById("viewStatus").value = isActive ? "Active" : "Inactive";
+
+													const fallback = '/assets/images/avatar/placeholder.png';
+
+													// Always set profile image
+													document.getElementById("viewImage").src = user.image || fallback;
+
+													// Get image container elements
+													const visitingCardEl = document.getElementById("viewVisitingCard").parentElement;
+													const panCardEl = document.getElementById("viewPanCard").parentElement;
+													const aadhaarFrontEl = document.getElementById("viewAadhaarFront").parentElement;
+													const aadhaarBackEl = document.getElementById("viewAadhaarBack").parentElement;
+
+													// Hide all by default
+													visitingCardEl.style.display = 'none';
+													panCardEl.style.display = 'none';
+													aadhaarFrontEl.style.display = 'none';
+													aadhaarBackEl.style.display = 'none';
+
+													// Based on KYC status, selectively show images
+													switch (user.kyc) {
+														case "Initial":
+															visitingCardEl.style.display = '';
+															panCardEl.style.display = '';
+															document.getElementById("viewVisitingCard").src = user.visitingCard || fallback;
+															document.getElementById("viewPanCard").src = user.panCard || fallback;
+															break;
+
+														case "Completed":
+															visitingCardEl.style.display = '';
+															panCardEl.style.display = '';
+															aadhaarFrontEl.style.display = '';
+															aadhaarBackEl.style.display = '';
+															document.getElementById("viewVisitingCard").src = user.visitingCard || fallback;
+															document.getElementById("viewPanCard").src = user.panCard || fallback;
+															document.getElementById("viewAadhaarFront").src = user.aadhaarCardFront || fallback;
+															document.getElementById("viewAadhaarBack").src = user.aadhaarCardBack || fallback;
+															break;
+
+														// If "Pending", don't show any KYC-related docs (do nothing)
+													}
+
+													// Show modal
+													const modal = new bootstrap.Modal(document.getElementById("userInactiveViewModal"));
+													modal.show();
+												});
+											});
+										});
+									</script>
+
+									<script>
+										document.addEventListener("DOMContentLoaded", function () {
+											const viewButtons = document.querySelectorAll(".view-suspend-user-btn");
+
+											viewButtons.forEach((btn) => {
+												btn.addEventListener("click", function () {
+													const user = JSON.parse(this.dataset.user);
+
+													// Text fields
+													document.getElementById("viewUserId").value = user.userId || '';
+													document.getElementById("viewName").value = user.name || '';
+													document.getElementById("viewEmail").value = user.email || '';
+													document.getElementById("viewPan").value = user.pan || '';
+													document.getElementById("viewMobile").value = user.mobile || '';
+													document.getElementById("viewNationality").value = user.nationality || '';
+													document.getElementById("viewGender").value = user.gender || '';
+													document.getElementById("viewAddress").value = user.address || '';
+													document.getElementById("viewKyc").value = user.kyc || '';
+													document.getElementById("viewSubscription").value = user.subscription?.subscription || 'N/A';
+													document.getElementById("viewSubscriptionDate").value = user.subscriptionDate
+														? new Date(user.subscriptionDate).toLocaleDateString()
+														: '';
+													document.getElementById("viewExpiryDate").value = user.expiryDate
+														? new Date(user.expiryDate).toLocaleDateString()
+														: '';
+													document.getElementById("viewTransactions").value = user.transactions ?? 0;
+													document.getElementById("viewTransactionAmount").value = user.transactionAmount ?? 0;
+
+													const isActive = new Date(user.expiryDate) > new Date();
+													document.getElementById("viewStatus").value = isActive ? "Active" : "Inactive";
+
+													const fallback = '/assets/images/avatar/placeholder.png';
+
+													// Always set profile image
+													document.getElementById("viewImage").src = user.image || fallback;
+
+													// Get image container elements
+													const visitingCardEl = document.getElementById("viewVisitingCard").parentElement;
+													const panCardEl = document.getElementById("viewPanCard").parentElement;
+													const aadhaarFrontEl = document.getElementById("viewAadhaarFront").parentElement;
+													const aadhaarBackEl = document.getElementById("viewAadhaarBack").parentElement;
+
+													// Hide all by default
+													visitingCardEl.style.display = 'none';
+													panCardEl.style.display = 'none';
+													aadhaarFrontEl.style.display = 'none';
+													aadhaarBackEl.style.display = 'none';
+
+													// Based on KYC status, selectively show images
+													switch (user.kyc) {
+														case "Initial":
+															visitingCardEl.style.display = '';
+															panCardEl.style.display = '';
+															document.getElementById("viewVisitingCard").src = user.visitingCard || fallback;
+															document.getElementById("viewPanCard").src = user.panCard || fallback;
+															break;
+
+														case "Completed":
+															visitingCardEl.style.display = '';
+															panCardEl.style.display = '';
+															aadhaarFrontEl.style.display = '';
+															aadhaarBackEl.style.display = '';
+															document.getElementById("viewVisitingCard").src = user.visitingCard || fallback;
+															document.getElementById("viewPanCard").src = user.panCard || fallback;
+															document.getElementById("viewAadhaarFront").src = user.aadhaarCardFront || fallback;
+															document.getElementById("viewAadhaarBack").src = user.aadhaarCardBack || fallback;
+															break;
+
+														// If "Pending", don't show any KYC-related docs (do nothing)
+													}
+
+													// Show modal
+													const modal = new bootstrap.Modal(document.getElementById("userSuspendViewModal"));
+													modal.show();
+												});
+											});
+										});
+									</script>
+
+									<!-- User View Modal -->
+									<div class="modal fade" id="userActiveViewModal" tabindex="-1"
+										aria-labelledby="userViewModalLabel" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered modal-lg">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="userViewModalLabel">User Details</h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal"
+														aria-label="Close"></button>
+												</div>
+												<div class="modal-body">
+													<form id="userDetailsForm">
+														<div class="row g-3">
+															<div class="col-md-4">
+																<label class="form-label">User ID</label>
+																<input type="text" class="form-control" id="viewUserId"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Name</label>
+																<input type="text" class="form-control" id="viewName"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Email</label>
+																<input type="email" class="form-control" id="viewEmail"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Mobile</label>
+																<input type="text" class="form-control" id="viewMobile"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Nationality</label>
+																<input type="text" class="form-control"
+																	id="viewNationality" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">PAN</label>
+																<input type="text" class="form-control" id="viewPan"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Gender</label>
+																<input type="text" class="form-control" id="viewGender"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Address</label>
+																<textarea type="text" class="form-control"
+																	id="viewAddress" readonly></textarea>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">KYC Status</label>
+																<input type="text" class="form-control" id="viewKyc"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription</label>
+																<input type="text" class="form-control"
+																	id="viewSubscription" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription Date</label>
+																<input type="text" class="form-control"
+																	id="viewSubscriptionDate" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Expiry Date</label>
+																<input type="text" class="form-control"
+																	id="viewExpiryDate" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transactions</label>
+																<input type="text" class="form-control"
+																	id="viewTransactions" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transaction Amount</label>
+																<input type="text" class="form-control"
+																	id="viewTransactionAmount" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Status</label>
+																<input type="text" class="form-control" id="viewStatus"
+																	readonly>
+															</div>
+
+															<div class="col-md-4">
+																<label class="form-label">Profile Image</label>
+																<img id="viewImage" class="img-fluid rounded border"
+																	alt="Profile" />
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Visiting Card</label>
+																<img id="viewVisitingCard"
+																	class="img-fluid rounded border"
+																	alt="Visiting Card" />
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">PAN Card</label>
+																<img id="viewPanCard" class="img-fluid rounded border"
+																	alt="PAN Card" />
+															</div>
+															<div class="col-md-6">
+																<label class="form-label">Aadhaar Front</label>
+																<img id="viewAadhaarFront"
+																	class="img-fluid rounded border"
+																	alt="Aadhaar Front" />
+															</div>
+															<div class="col-md-6">
+																<label class="form-label">Aadhaar Back</label>
+																<img id="viewAadhaarBack"
+																	class="img-fluid rounded border"
+																	alt="Aadhaar Back" />
+															</div>
+														</div>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="modal fade" id="userInactiveViewModal" tabindex="-1"
+										aria-labelledby="userViewModalLabel" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered modal-lg">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="userViewModalLabel">User Details</h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal"
+														aria-label="Close"></button>
+												</div>
+												<div class="modal-body">
+													<form id="userDetailsForm">
+														<div class="row g-3">
+															<div class="col-md-4">
+																<label class="form-label">User ID</label>
+																<input type="text" class="form-control" id="viewUserId"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Name</label>
+																<input type="text" class="form-control" id="viewName"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Email</label>
+																<input type="email" class="form-control" id="viewEmail"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Mobile</label>
+																<input type="text" class="form-control" id="viewMobile"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Nationality</label>
+																<input type="text" class="form-control"
+																	id="viewNationality" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">PAN</label>
+																<input type="text" class="form-control" id="viewPan"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Gender</label>
+																<input type="text" class="form-control" id="viewGender"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Address</label>
+																<textarea type="text" class="form-control"
+																	id="viewAddress" readonly></textarea>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">KYC Status</label>
+																<input type="text" class="form-control" id="viewKyc"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription</label>
+																<input type="text" class="form-control"
+																	id="viewSubscription" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription Date</label>
+																<input type="text" class="form-control"
+																	id="viewSubscriptionDate" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Expiry Date</label>
+																<input type="text" class="form-control"
+																	id="viewExpiryDate" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transactions</label>
+																<input type="text" class="form-control"
+																	id="viewTransactions" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transaction Amount</label>
+																<input type="text" class="form-control"
+																	id="viewTransactionAmount" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Status</label>
+																<input type="text" class="form-control" id="viewStatus"
+																	readonly>
+															</div>
+
+															<div class="col-md-4">
+																<label class="form-label">Profile Image</label>
+																<img id="viewImage" class="img-fluid rounded border"
+																	alt="Profile" />
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Visiting Card</label>
+																<img id="viewVisitingCard"
+																	class="img-fluid rounded border"
+																	alt="Visiting Card" />
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">PAN Card</label>
+																<img id="viewPanCard" class="img-fluid rounded border"
+																	alt="PAN Card" />
+															</div>
+															<div class="col-md-6">
+																<label class="form-label">Aadhaar Front</label>
+																<img id="viewAadhaarFront"
+																	class="img-fluid rounded border"
+																	alt="Aadhaar Front" />
+															</div>
+															<div class="col-md-6">
+																<label class="form-label">Aadhaar Back</label>
+																<img id="viewAadhaarBack"
+																	class="img-fluid rounded border"
+																	alt="Aadhaar Back" />
+															</div>
+														</div>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="modal fade" id="userSuspendViewModal" tabindex="-1"
+										aria-labelledby="userViewModalLabel" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered modal-lg">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="userViewModalLabel">User Details</h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal"
+														aria-label="Close"></button>
+												</div>
+												<div class="modal-body">
+													<form id="userDetailsForm">
+														<div class="row g-3">
+															<div class="col-md-4">
+																<label class="form-label">User ID</label>
+																<input type="text" class="form-control" id="viewUserId"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Name</label>
+																<input type="text" class="form-control" id="viewName"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Email</label>
+																<input type="email" class="form-control" id="viewEmail"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Mobile</label>
+																<input type="text" class="form-control" id="viewMobile"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Nationality</label>
+																<input type="text" class="form-control"
+																	id="viewNationality" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">PAN</label>
+																<input type="text" class="form-control" id="viewPan"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Gender</label>
+																<input type="text" class="form-control" id="viewGender"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Address</label>
+																<textarea type="text" class="form-control"
+																	id="viewAddress" readonly></textarea>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">KYC Status</label>
+																<input type="text" class="form-control" id="viewKyc"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription</label>
+																<input type="text" class="form-control"
+																	id="viewSubscription" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription Date</label>
+																<input type="text" class="form-control"
+																	id="viewSubscriptionDate" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Expiry Date</label>
+																<input type="text" class="form-control"
+																	id="viewExpiryDate" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transactions</label>
+																<input type="text" class="form-control"
+																	id="viewTransactions" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transaction Amount</label>
+																<input type="text" class="form-control"
+																	id="viewTransactionAmount" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Status</label>
+																<input type="text" class="form-control" id="viewStatus"
+																	readonly>
+															</div>
+
+															<div class="col-md-4">
+																<label class="form-label">Profile Image</label>
+																<img id="viewImage" class="img-fluid rounded border"
+																	alt="Profile" />
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Visiting Card</label>
+																<img id="viewVisitingCard"
+																	class="img-fluid rounded border"
+																	alt="Visiting Card" />
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">PAN Card</label>
+																<img id="viewPanCard" class="img-fluid rounded border"
+																	alt="PAN Card" />
+															</div>
+															<div class="col-md-6">
+																<label class="form-label">Aadhaar Front</label>
+																<img id="viewAadhaarFront"
+																	class="img-fluid rounded border"
+																	alt="Aadhaar Front" />
+															</div>
+															<div class="col-md-6">
+																<label class="form-label">Aadhaar Back</label>
+																<img id="viewAadhaarBack"
+																	class="img-fluid rounded border"
+																	alt="Aadhaar Back" />
+															</div>
+														</div>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".suspend-user").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const userId = e.currentTarget.dataset.userId;
+
+        try {
+          const response = await fetch(`/admin/user-suspend?id=${userId}`);
+          const result = await response.json();
+
+          if (response.ok) {
+            alert("Agent suspended successfully");
+            // Optionally update the UI, e.g., disable button or show status
+			window.location.reload();
           } else {
-            Swal.fire({
-              icon: "error",
-              title: "Failed",
-              text: result.message || "Failed to delete agent.",
-              confirmButtonText: "OK"
-            });
+            alert("Failed to suspend agent: " + result.message);
           }
-        } catch (error) {
-          console.error("Error deleting agent:", error);
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "An error occurred while deleting the agent.",
-            confirmButtonText: "OK"
-          });
+        } catch (err) {
+          alert("Error suspending agent");
+          console.error(err);
         }
-                        });
-                    });
-                });
-            </script>
+      });
+    });
+  });
+</script>
+			<!-- Page content END -->
+	</main>
+	<!-- **************** MAIN CONTENT END **************** -->
 
-            <!-- Page content END -->
-    </main>
-    <!-- **************** MAIN CONTENT END **************** -->
-
-    <%- include('./partials/footer') %>
+	<%- include('./partials/footer') %>

@@ -132,8 +132,8 @@ flightSchema.pre("save", function (next) {
   if (flight.departureDate) {
     // Convert "25 Mar 2025" string to a Date object for comparison
     const depDate = new Date(flight.departureDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // normalize to start of today
+    const today = new Date();// normalize to start of today
+    today.setHours(0, 0, 0, 0); 
     depDate.setHours(0, 0, 0, 0); // normalize for fair comparison
 
     flight.status = depDate > today ? "pending" : "completed";

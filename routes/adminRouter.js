@@ -40,7 +40,7 @@ adminRouter.get("/inventory/active", isLogin, adminController.viewActiveInventor
 adminRouter.get("/inventory/past", isLogin, adminController.viewPastInventory);
 adminRouter.get("/inventory/closed", isLogin, adminController.viewClosedInventory);
 adminRouter.get('/supports/search', isLogin, adminController.getSupports);
-
+adminRouter.get('/user-suspend', isLogin, adminController.suspendUser);
 
 
 adminRouter.post('/login', adminController.loginAdmin);
@@ -62,6 +62,8 @@ adminRouter.post("/update-airport", isLogin, adminController.updateAirport);
 adminRouter.post('/delete-popular-flight/:id', isLogin, adminController.deletePopularFlight);
 adminRouter.post('/update-profile-detail/:id', isLogin, adminController.updateProfileDetail);
 adminRouter.post('/withdrawn-payment-status/:bookingId', isLogin, adminController.markBookingAsWithdrawn);
+adminRouter.post("/signout-user", isLogin, adminController.signOutUserSession);
+adminRouter.post('/notification-settings', isLogin, adminController.updateNotificationSettings);
 
 
 

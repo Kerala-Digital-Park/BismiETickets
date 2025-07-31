@@ -12,6 +12,7 @@ const profileUpdateSchema = mongoose.Schema(
     name: { type: String, required: false },
     email: { type: String, required: false },
     mobile: { type: Number, required: false },
+    whatsapp: { type: String, required: false },
     nationality: { type: String, required: false },
     gender: {
       type: String,

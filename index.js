@@ -26,6 +26,11 @@ const connect = mongoose.connect(process.env.MONGODB)
 connect
 .then(()=>{
     console.log("MongoDB is connected successfully");
+
+    mongoose.connection.db.collection("sessions").deleteMany({})
+    .then(() => console.log("🧹 All sessions cleared on server start"))
+    .catch((err) => console.error("❌ Failed to clear sessions:", err));
+
 })
 .catch((error)=>{
     console.log("Error connecting to MongoDB",error);
@@ -36,6 +41,7 @@ const adminRouter = require('./routes/adminRouter')
 const paymentRouter = require('./routes/paymentRouter')
 
 //setting ejs
+app.set('trust proxy', true); // Add this near top
 app.set('views',path.join(__dirname,'views'))
 app.set('view engine','ejs')
 //url encoding
@@ -48,13 +54,30 @@ app.use(nocache());
 
 app.use(cookieParser());
 
+// app.use(
+//   session({
+//     secret: process.env.SECRET_KEY || "supersecretkey12345",
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//       sameSite: "lax",                           // ✅ allows cross-site POST redirects
+//     },
+//   })
+// );
+
 app.use(
   session({
     secret: process.env.SECRET_KEY || "supersecretkey12345",
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB,
+      collectionName: "sessions",
+      ttl: 60 * 60, // Optional: 1 hr TTL for sessions
+    }),
     cookie: {
-      sameSite: "lax",                           // ✅ allows cross-site POST redirects
+      sameSite: "lax",
+      maxAge: 60 * 60 * 1000, // 1 hr
     },
   })
 );

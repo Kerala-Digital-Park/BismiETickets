@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>BISMI ETICKETS</title>
+</head>
+
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" width="100%"
+        style="border-collapse:collapse;border-spacing:0px;font-family:arial">
+        <tbody>
+            <tr>
+                <td valign="top" style="padding:20px 24px;">
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td dir="lft" style="padding-bottom:40px">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                        <tbody>
+                                            <tr>
+                                                <td align="left" width="40%">
+                                                    <table align="left" cellpadding="0" cellspacing="0"
+                                                        style="border-collapse:collapse;width:236.08px">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td height="26"
+                                                                    style="vertical-align:middle;color:rgb(0,0,0);font-size:13px;padding-right:6px">
+                                                                    <img alt="" height="26"
+                                                                        src="https://bismietickets.com/logos/4.png"
+                                                                        style="height:60px;vertical-align:middle">
+                                                                </td>
+                                                                <td
+                                                                    style="vertical-align:middle;color:rgb(0,0,0);font-size:13px;font-weight:bold">
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                                <td width="60%" style="vertical-align:top;padding-top:2px">
+                                                    <table align="right" cellpadding="0" cellspacing="0"
+                                                        style="border-collapse:collapse;width:354.119px">
+                                                        <tbody>
+                                                            <tr>
+
+                                                                <td style="text-align:right"><img alt="" height="25"
+                                                                        src="https://bismietickets.com/assets/images/powerline.png"
+                                                                        width="350"
+                                                                        style="width:350px;height:25px;vertical-align:middle">
+                                                                </td>
+                                                            </tr>
+
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td dir="lft"
+                                    style="font-size:16px;color:rgb(74,74,74);line-height:18px;padding-bottom:10px">
+                                    <strong>Hi <%= travelers[0]?.first_name.toUpperCase() %>
+                                            <%= travelers[0]?.last_name.toUpperCase() %></strong> , thank you for
+                                    booking with us.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="top" dir="lft"
+                                    style="border:1px solid rgb(192,222,216);border-radius:8px;background-color:rgb(247,254,250)">
+                                    <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:850px">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2" valign="top"
+                                                    style="padding-bottom:15px;padding-top:10px">
+                                                    <table cellpadding="0" cellspacing="0">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td height="22" valign="top" width="6"
+                                                                    style="width:6px;background-color:rgb(81,154,147);height:22px;border-top-right-radius:2px;border-bottom-right-radius:2px">
+                                                                </td>
+                                                                <td valign="top" width="2" style="width:2px"></td>
+                                                                <td valign="middle"
+                                                                    style="background-color:rgb(26,121,113);border-radius:2px;color:rgb(255,255,255);font-size:14px;line-height:14px;vertical-align:middle;padding:0px 8px;font-weight:bold">
+                                                                    Booking Confirmed</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" valign="top"
+                                                    style="padding-left:16px;padding-bottom:8px;padding-right:16px">
+                                                    <table cellpadding="0" cellspacing="0">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td
+                                                                    style="color:rgb(0,0,0);font-size:28px;font-weight:bold;line-height:22px">
+                                                                    <%= flightDetails.fromCity %> - <%=
+                                                                            flightDetails.toCity %>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2"
+                                                    style="font-size:17px;color:rgb(74,74,74);line-height:16px;font-weight:bold;padding-bottom:5px;padding-left:16px;padding-right:16px">
+                                                    One way • <%= new
+                                                        Date(flightDetails.departureDate).toLocaleDateString("en-IN", {
+                                                        weekday: 'short' , day: '2-digit' , month: 'short' ,
+                                                        year: 'numeric' }) %>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="bottom" width="80%"
+                                                    style="width:680px;padding-top:12px;vertical-align:bottom">
+                                                    <table cellpadding="0" cellspacing="0"
+                                                        style="border-collapse:collapse;width:680px">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td valign="top"
+                                                                    style="padding-left:16px;padding-bottom:8px;font-size:16px;color:rgb(74,74,74);line-height:16px">
+                                                                    <u></u>Booking ID: <strong>
+                                                                        <%= bookingId %>,
+                                                                    </strong><span style="color:rgb(116,116,116)"> (<wbr>Booked on
+                                                                        <%= new Date().toLocaleDateString("en-IN", {
+                                                                            day: '2-digit' , month: 'short' ,
+                                                                            year: 'numeric' }) %>
+                                                                            )
+                                                                    </span><u></u>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                                <td align="right" valign="bottom" width="20%" style="width:170px"><img
+                                                        alt="" height="65"
+                                                        src="https://ci6.googleusercontent.com/proxy/Ki3hHkO7cZMlUX7kpfxCCSCL05L7jr4KplPwZqPbi4BgdMyPmBt5HddPz70v9jTiefCXwWT-PzP-82TTm9BfPE4UvxFRJC-r3b7caFaQE-kxrkI=s0-d-e1-ft#http://imgak.mmtcdn.com/mojo/revampEmailVoucher/flightimage1.png"
+                                                        width="170"
+                                                        style="width:170px;height:65px;vertical-align:middle"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+
+            <tr>
+                <td height="24"></td>
+            </tr>
+            <tr>
+                <td>
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td height="20" valign="top" width="8"
+                                    style="background-color:rgb(26,121,113);width:8px;vertical-align:top"></td>
+                                <td valign="middle" width="170"
+                                    style="font-size:13px;color:rgb(74,74,74);font-weight:bold;vertical-align:middle;padding-left:8px;text-transform:uppercase;letter-spacing:2px;width:170px">
+                                    BOOKING DETAILS</td>
+                                <td>
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                        <tbody>
+                                            <tr>
+                                                <td style="border-top:1px solid rgb(14,14,14)"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:20px 0px 12px">
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td valign="top" style="font-size:20px;color:rgb(0,0,0);font-weight:bold"><%= flightDetails.fromCity %> - <%= flightDetails.toCity %></td>
+                            </tr>
+                            <tr>
+                                <td valign="top" style="font-size:12px;color:rgb(74,74,74);padding-top:5px"><span
+                                        style="display:inline-block;padding-right:3px"><%= new
+                                                        Date(flightDetails.departureDate).toLocaleDateString("en-IN", {
+                                                        weekday: 'short' , day: '2-digit' , month: 'short' ,
+                                                        year: 'numeric' }) %> • 0 stop
+                                        • <%= flightDetails.duration %></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td valign="top" style="border:1px solid rgb(14,14,14);border-radius:8px">
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td style="padding:0px">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                        <tbody>
+                                            <tr>
+                                                <td style="padding:0px;border-bottom:1px solid rgb(14,14,14)">
+                                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td valign="top" width="30%" style="padding:16px 0px">
+                                                                    <table border="0" cellpadding="0" cellspacing="0"
+                                                                        width="100%">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td
+                                                                                    style="font-size:14px;color:rgb(116,116,116);line-height:14px;padding-left:16px;padding-right:16px">
+                                                                                    <table border="0" cellpadding="0"
+                                                                                        cellspacing="0" width="100%">
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td valign="top"
+                                                                                                    width="32"
+                                                                                                    style="width:32px">
+                                                                                                    <img alt="airlogo"
+                                                                                                        src="<%= flightDetails.stops[0].airlineLogo %>"
+                                                                                                        width="32"
+                                                                                                        style="width:32px;height:32px">
+                                                                                                </td>
+                                                                                                <td valign="top"
+                                                                                                    style="padding-left:8px;padding-right:10px">
+                                                                                                    <div
+                                                                                                        style="margin:0px;padding:0px 0px 3px;font-size:12px;font-weight:bold;color:rgb(70,72,77)">
+                                                                                                        <%= flightDetails.stops[0].airline %>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        style="margin:0px;padding:0px;font-size:12px;color:rgb(119,119,119)">
+                                                                                                        <%= flightDetails.stops[0].airlineCode %>-<%= flightDetails.stops[0].flightNumber %></div>
+                                                                                                    <div
+                                                                                                        style="margin:0px;padding-top:25px;font-size:12px;color:rgb(119,119,119)">
+                                                                                                        aircraft </div>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </td>
+                                                                <td valign="top" width="70%"
+                                                                    style="padding:16px 0px;border-left:1px solid rgb(14,14,14)">
+                                                                    <table border="0" cellpadding="0" cellspacing="0"
+                                                                        width="100%">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td valign="top" width="40%"
+                                                                                    style="padding-left:20px">
+                                                                                    <table align="right" border="0"
+                                                                                        cellpadding="0" cellspacing="0"
+                                                                                        width="100%">
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td
+                                                                                                    style="font-size:14px;color:rgb(74,74,74);line-height:18px;padding-bottom:10px">
+                                                                                                    <div
+                                                                                                        style="font-weight:bold;color:rgb(0,0,0);margin:0px 0px 3px">
+                                                                                                        <%= flightDetails.stops[0].departureCity %></div>
+                                                                                                    <div
+                                                                                                        style="font-size:16px;color:rgb(79,82,90);margin:0px 0px 3px">
+                                                                                                        <%= flightDetails.stops[0].fromCode %> <span
+                                                                                                            style="color:rgb(0,0,0);font-weight:bold"><%= flightDetails.stops[0].departureTime %>
+                                                                                                            hrs</span>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        style="font-size:11px;margin:0px">
+                                                                                                        <%= new
+                                                        Date(flightDetails.stops[0].departureDay).toLocaleDateString("en-IN", {
+                                                        weekday: 'short' , day: '2-digit' , month: 'short' ,
+                                                        year: 'numeric' }) %></div>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td
+                                                                                                    style="font-size:11px;color:rgb(79,82,90);line-height:14px;border-top:1px solid rgb(14,14,14);padding-top:5px">
+                                                                                                    <%= flightDetails.stops[0].from %> | </td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </td>
+                                                                                <td valign="top" width="20%"
+                                                                                    style="padding-left:10px;padding-right:10px;padding-top:10px">
+                                                                                    <div
+                                                                                        style="color:rgb(137,139,145);font-size:12px;margin:0px;text-align:center;padding-right:15px">
+                                                                                        <%= flightDetails.stops[0].stopDuration %></div>
+                                                                                    <div
+                                                                                        style="margin:0px 0px 5px;text-align:center">
+                                                                                        <img alt="" height="12"
+                                                                                            src="https://ci6.googleusercontent.com/proxy/6SKYT_OYTXDE2ZunLCu4A9fG06gNVdkeC3ZyxdND5V-6zWKh8vjlLtml9NkhgasTpEYDSvHMNywvd4lZ86BDP29rHqHM9SbNwxDdTpvRXTzPOoA=s0-d-e1-ft#https://imgak.mmtcdn.com/mojo/revampEmailVoucher/durationImg.png"
+                                                                                            width="56"
+                                                                                            style="display:block;width:56px;margin:0px auto;height:12px">
+                                                                                    </div>
+
+                                                                                </td>
+                                                                                <td valign="top" width="40%"
+                                                                                    style="padding-right:20px">
+                                                                                    <table border="0" cellpadding="0"
+                                                                                        cellspacing="0" width="100%">
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td
+                                                                                                    style="font-size:14px;color:rgb(74,74,74);line-height:18px;padding:0px 0px 10px">
+                                                                                                    <div
+                                                                                                        style="font-weight:bold;color:rgb(0,0,0);margin:0px 0px 3px;text-align:right">
+                                                                                                        <%= flightDetails.stops[0].arrivalCity %>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        style="font-size:16px;color:rgb(79,82,90);margin:0px 0px 3px;text-align:right">
+                                                                                                        <span
+                                                                                                            style="color:rgb(0,0,0);font-weight:bold"><%= flightDetails.stops[0].arrivalTime %>
+                                                                                                            hrs
+                                                                                                        </span><%= flightDetails.stops[0].toCode %>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        style="font-size:11px;margin:0px;text-align:right">
+                                                                                                        <%= new
+                                                        Date(flightDetails.stops[0].arrivalDay).toLocaleDateString("en-IN", {
+                                                        weekday: 'short' , day: '2-digit' , month: 'short' ,
+                                                        year: 'numeric' }) %></div>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td
+                                                                                                    style="font-size:11px;color:rgb(79,82,90);line-height:14px;text-align:right;border-top:1px solid rgb(14,14,14);padding-top:5px">
+                                                                                                    <%= flightDetails.stops[0].to %> | </td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" style="padding:15px 10px">
+                                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td width="100%">
+                                                                    <table border="0" cellpadding="0" cellspacing="0"
+                                                                        width="100%">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <table border="0" cellpadding="0"
+                                                                                        cellspacing="0" width="100%">
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td width="20%"
+                                                                                                    style="vertical-align:top;padding:0px 7px">
+                                                                                                    <table border="0"
+                                                                                                        cellpadding="0"
+                                                                                                        cellspacing="0"
+                                                                                                        width="100%">
+                                                                                                        <tbody>
+                                                                                                            <tr>
+                                                                                                                <td valign="top"
+                                                                                                                    width="22"
+                                                                                                                    style="padding-right:3px">
+                                                                                                                    &#x2708;
+                                                                                                                </td>
+                                                                                                                <td
+                                                                                                                    style="color:rgb(74,74,74);font-size:12px;font-weight:bold;">
+                                                                                                                    Operated by <%= flightDetails.stops[0].airlineCode %>-<%= flightDetails.stops[0].flightNumber %>
+                                                                                                                </td>
+                                                                                                            </tr>
+                                                                                                        </tbody>
+                                                                                                    </table>
+                                                                                                </td>
+                                                                                                <td width="20%"
+                                                                                                    style="vertical-align:top;padding:0px 7px">
+                                                                                                    <table border="0"
+                                                                                                        cellpadding="0"
+                                                                                                        cellspacing="0"
+                                                                                                        width="100%">
+                                                                                                        <tbody>
+                                                                                                            <tr>
+                                                                                                                <td valign="top"
+                                                                                                                    width="22"
+                                                                                                                    style="padding-right:3px">
+                                                                                                                    &#8680;
+                                                                                                                </td>
+                                                                                                                <td
+                                                                                                                    style="color:rgb(74,74,74);font-size:12px">
+                                                                                                                    Economy
+                                                                                                                    Class
+                                                                                                                </td>
+                                                                                                            </tr>
+                                                                                                        </tbody>
+                                                                                                    </table>
+                                                                                                </td>
+                                                                                                <td width="20%"
+                                                                                                    style="vertical-align:top;padding:0px 7px">
+                                                                                                    <table border="0"
+                                                                                                        cellpadding="0"
+                                                                                                        cellspacing="0"
+                                                                                                        width="100%">
+                                                                                                        <tbody>
+                                                                                                            <tr>
+                                                                                                                <td valign="top"
+                                                                                                                    width="22"
+                                                                                                                    style="padding-right:3px">
+                                                                                                                    &#8680;
+                                                                                                                </td>
+                                                                                                                <td
+                                                                                                                    style="color:rgb(74,74,74);font-size:12px">
+                                                                                                                    Regular
+                                                                                                                </td>
+                                                                                                            </tr>
+                                                                                                        </tbody>
+                                                                                                    </table>
+                                                                                                </td>
+                                                                                                <td width="20%"
+                                                                                                    style="vertical-align:top;padding:0px 7px">
+                                                                                                    <table border="0"
+                                                                                                        cellpadding="0"
+                                                                                                        cellspacing="0"
+                                                                                                        width="100%">
+                                                                                                        <tbody>
+                                                                                                            <tr>
+
+                                                                                                                <td valign="top"
+                                                                                                                    width="22"
+                                                                                                                    style="padding-right:3px">
+                                                                                                                    &#8680;
+                                                                                                                </td>
+                                                                                                                <td
+                                                                                                                    style="color:rgb(74,74,74);font-size:12px">
+                                                                                                                    <a href="https://www.google.com/search?q=<%= flightDetails.stops[0].airlineCode %>-<%= flightDetails.stops[0].flightNumber %>+on+<%= new Date(flightDetails.stops[0].departureDay).toLocaleDateString('en-IN', { weekday: 'short' , day: '2-digit' , month: 'short' , year: 'numeric' }) %>"
+                                                                                                                        target="_blank"
+                                                                                                                        data-saferedirecturl="https://www.google.com/search?q=<%= flightDetails.stops[0].airlineCode %>-<%= flightDetails.stops[0].flightNumber %>+on+<%= new Date(flightDetails.stops[0].departureDay).toLocaleDateString('en-IN', { weekday: 'short' , day: '2-digit' , month: 'short' , year: 'numeric' }) %>">Flight
+                                                                                                                        Status</a>
+                                                                                                                </td>
+
+                                                                                                            </tr>
+                                                                                                        </tbody>
+                                                                                                    </table>
+                                                                                                </td>
+
+
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </td>
+                                                                            </tr>
+
+                                                                        </tbody>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td
+                                                    style="background-color:rgb(252,252,252);padding:15px 16px;border-top:1px solid rgb(14,14,14);border-bottom-left-radius:8px;border-bottom-right-radius:8px">
+                                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td valign="top"
+                                                                    style="font-size:11px;color:rgb(116,116,116);text-transform:uppercase;width:200px;padding-bottom:10px">
+                                                                    TRAVELERS</td>
+                                                                <td valign="top"
+                                                                    style="font-size:11px;color:rgb(116,116,116);text-transform:uppercase;width:40px;padding-bottom:10px">
+                                                                    PNR</td>
+                                                                <td valign="top"
+                                                                    style="font-size:11px;color:rgb(116,116,116);text-transform:uppercase;width:80px;padding-bottom:10px">
+                                                                    E-TICKET NO</td>
+                                                                <td valign="top"
+                                                                    style="font-size:11px;color:rgb(116,116,116);text-transform:uppercase;width:50px;padding-bottom:10px">
+                                                                    SEAT</td>
+                                                                <td
+                                                                    style="font-size:11px;color:rgb(116,116,116);text-transform:uppercase;width:70px;padding-left:5px;padding-bottom:10px">
+                                                                    CHECK IN</td>
+                                                                <td
+                                                                    style="font-size:11px;color:rgb(116,116,116);text-transform:uppercase;width:50px;padding-left:5px;padding-bottom:10px">
+                                                                    CABIN</td>
+                                                            </tr>
+                                                            
+<% travelers.forEach(t => { %>
+  <tr>
+    <td valign="top" style="width:200px;padding-bottom:15px">
+      <div style="font-size:13px;font-weight:bold">
+        <%= t.title.toUpperCase() %> <%= t.first_name.toUpperCase() %> <%= t.last_name.toUpperCase() %> <span style="color:rgb(119,119,119);font-weight:normal">(<%= t.type %>)</span>
+      </div>
+    </td>
+    <td valign="top" style="font-size:13px;font-weight:bold;"><%= flightDetails.inventoryDates[0]?.pnr %></td>
+    <td valign="top" style="font-size:13px;font-weight:bold;"><%= flightDetails.inventoryDates[0]?.pnr %></td>
+    <td valign="top" style="font-size:13px;">-</td>
+    <td valign="top" style="font-size:13px;font-weight:bold;"><%= flightDetails.baggage.adult.checkIn.weightPerPiece %> KG</td>
+    <td valign="top" style="font-size:13px;font-weight:bold;"><%= flightDetails.baggage.adult.cabin.weightPerPiece %> KG</td>
+  </tr>
+<% }) %>
+                                                           
+
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td height="20"></td>
+            </tr>
+
+            <tr>
+                <td style="background-color:#ffffff;padding:15px 16px;border-radius:8px;border:1px solid #e7e7e7">
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td colspan="2"
+                                    style="font-size:11px;color:#747474;text-transform:uppercase;width:230px;padding-bottom:10px"
+                                    valign="top"><%= travelers[0]?.first_name.toUpperCase() %>
+                                            <%= travelers[0]?.last_name.toUpperCase() %> FLIGHT ADD-ONS
+                                </td>
+                            </tr>
+                            <% if (requests.length > 0) { %>
+  <% requests.forEach((req) => { %>
+    <tr>
+      <td style="padding-bottom:15px;width:850px" valign="top" width="850">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+          <tbody>
+            <tr>
+              <td valign="top" width="20">
+                <img alt="flexiplus"
+                  src="https://ci5.googleusercontent.com/proxy/Lcv8nB8MNG825yw_VznXl8VANVaY7I6E_kqssIh61VtBgoxbNbWS6veFSqCyoGnYGHdt88bNI6Znm2-2zxmjYOoKPlODUqUpEayxXY4SwQ=s0-d-e1-ft#https://imgak.mmtcdn.com/mojo/revampEmailVoucher/tickpdf.png"
+                  style="display:block;width:20px" width="20">
+              </td>
+              <td style="font-size:13px;color:#000000;font-family:Arial,Helvetica,sans-serif;padding-left:5px;padding-top:2px"
+                valign="middle">
+                <%= flightDetails.inventoryDates[0]?.pnr %>: 
+                Added <%= req.subject.replace(/^Request\s+For\s+/i, '') %>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  <% }) %>
+<% } else { %>
+  <tr>
+    <td style="padding:10px 16px; font-size:13px; color:#555;">No add-on requests</td>
+  </tr>
+<% } %>
+
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td height="15"></td>
+            </tr>
+            <tr>
+                <td height="20"></td>
+            </tr>
+
+
+            <tr>
+                <td>
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td height="20" valign="top" width="8"
+                                    style="background-color:rgb(26,121,113);width:8px;vertical-align:top"></td>
+                                <td valign="middle" width="290"
+                                    style="font-size:13px;color:rgb(74,74,74);font-weight:bold;vertical-align:middle;padding-left:8px;letter-spacing:2px;text-transform:uppercase;width:270px">
+                                    IMPORTANT INFORMATION</td>
+                                <td>
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                        <tbody>
+                                            <tr>
+                                                <td style="border-top:1px solid rgb(14,14,14)"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td height="25"></td>
+            </tr>
+            <tr>
+                <td style="padding-left:15px;padding-right:10px">
+
+                    <table width="100%" cellpadding="12" cellspacing="0" border="0">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div style="overflow: hidden;">
+                                        <font size="-1">
+                                            <div dir="ltr">
+                                                <div dir="ltr" class="gmail_signature" data-smartmail="gmail_signature">
+                                                    <div dir="ltr">
+                                                        <ul style="color:rgb(0,0,0);margin:0px;padding:0px 16px">
+
+                                                            <li>
+                                                                <font face="verdana, sans-serif">All passengers,
+                                                                    including children and infants, have to present
+                                                                    their valid ID proof at the time of check - in.
+                                                                </font>
+                                                            </li>
+                                                            <li>
+                                                                <font face="verdana, sans-serif">We recommend you
+                                                                    check-in at least 3 hours prior to departure of your
+                                                                    domestic flight and 4 hours prior to your
+                                                                    international flight</font>
+                                                            </li>
+                                                            <li>
+                                                                <font face="verdana, sans-serif">To cancel tickets less
+                                                                    than 6 hours prior to departure, please contact the
+                                                                    airlines directly. We are not at all responsible for
+                                                                    any losses on receiving the request in such cases.
+                                                                    Any cancellations or changes as per the airline
+                                                                    policy and the airline not permitted case we can't
+                                                                    allow to do.</font>
+                                                            </li>
+                                                            <li>
+                                                                <font face="verdana, sans-serif">Kindly contact the
+                                                                    airline at least 24 Hours before to reconfirm your
+                                                                    flight details and baggage details giving reference
+                                                                    of Airline PNR Number.</font>
+                                                            </li>
+                                                            <li>
+                                                                <font face="verdana, sans-serif">All time indicated are
+                                                                    the local times (in 24 hrs. format) at the relevant
+                                                                    airport.</font>
+                                                            </li>
+                                                            <li>
+                                                                <font face="verdana, sans-serif">Except for medical
+                                                                    devices, electronic devices which are larger than a
+                                                                    cell phone/smart phone cannot be carried in the
+                                                                    cabin of the aircraft.</font>
+                                                            </li>
+                                                            <li>
+                                                                <font face="verdana, sans-serif">Only cell phones of
+                                                                    dimension Length: 16cm x Width: 9.3cm x Depth: 1.5cm
+                                                                    are allowed in the cabin baggage. Please carry all
+                                                                    other electronic
+                                                                    equipment inside check-in baggage.</font>
+                                                            </li>
+                                                            <li>
+                                                                <font face="verdana, sans-serif">In case of any
+                                                                    cancellation/rescheduling, relevant airline charges
+                                                                    will be applicable, which may vary depending on the
+                                                                    airline.All cancellations made by online or call
+                                                                    center we will charge our fees 1250 per passenger
+                                                                    for domestic travel and 2250 per passenger for
+                                                                    international booking. it is an additional does not
+                                                                    include airline fees..</font>
+                                                            </li>
+                                                            <li>
+                                                                <font face="verdana, sans-serif">Check that all printed
+                                                                    details on this ticket copy are correct and eligible
+                                                                    for this PNR from the airline. We are never
+                                                                    responsible for extra payments for printing errors
+                                                                </font>
+                                                            </li>
+                                                            <li>
+                                                                <font face="verdana, sans-serif">Kindly ensure that you
+                                                                    have the relevant visa, transit visa (if
+                                                                    applicable), immigration clearance and travel with a
+                                                                    passport, with a validity of at least 6 months as on
+                                                                    date of travel. (For international travel)</font>
+                                                            </li>
+                                                            <li>
+                                                                <font face="verdana, sans-serif">Some airports have
+                                                                    multiple terminals catering to
+                                                                    domestic/international flights, please check the
+                                                                    departure/arrival terminal of your flight with the
+                                                                    airlines before reaching the airport.</font>
+                                                            </li>
+                                                            <li>
+                                                                <font face="verdana, sans-serif">Convenience fee is
+                                                                    non-refundable in case of ticket cancellation by the
+                                                                    user, or by the airline.</font>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </font>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </td>
+            </tr>
+            <tr>
+                <td height="10"></td>
+            </tr>
+            <tr>
+                <td
+                    style="vertical-align:top;font-family:arial;padding:10px 15px;border-top:1px solid rgb(221,221,221);font-size:12px;color:rgb(137,139,145)">
+                    Note: Please do not reply to this e-mail. This was sent from an automated mail service that cannot
+                    accept incoming emails. Please reference the Airline PNR Number when communicating with the airline
+                    regarding this booking. For our support please keep booking Id.</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+
+</html>

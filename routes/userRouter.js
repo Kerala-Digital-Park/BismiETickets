@@ -120,6 +120,7 @@ userRouter.post("/flight-detail", userController.getFlightDetail);
 userRouter.post("/seller-list", userController.getSellerList)
 userRouter.post("/flight-booking",isLogin, userController.flightBooking);
 userRouter.post("/update-email",isLogin, userController.updateEmail);
+userRouter.post("/update-whatsapp",isLogin, userController.updateWhatsapp);
 userRouter.post("/update-password",isLogin, userController.updatePassword);
 userRouter.post("/update-profile",isLogin, upload.fields([
   { name: "image",  maxCount: 1 },

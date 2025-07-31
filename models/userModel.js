@@ -11,7 +11,8 @@ const userSchema = mongoose.Schema(
     password: { type: String, required: true },
     resetToken: { type: String, default: null },
     resetTokenExpiry: { type: Date, default: null },
-    mobile: { type: Number, default: null },
+    mobile: { type: Number, required: false },
+    whatsapp: { type: Number, required: false },
     nationality: { type: String, default: null },
     proprietorship: { type: String, default: null },
     // gender: {
@@ -56,6 +57,21 @@ const userSchema = mongoose.Schema(
     },
     daysOfInactivity: { type: Number, default: 0 },
     isActive: { type: Boolean, default: true },
+    status: {
+      type: String,
+      enum: ["Active", "Inactive", "Suspended"],
+      default: "Active"
+    },
+    notificationSettings: {
+      newsletter: { type: String, enum: ["Daily", "Twice a week", "Weekly", "Never"], required: false },
+      loginEmailNotifications: { type: Boolean, default: true },
+      bookingEmailNotifications: { type: Boolean, default: true },
+      hotelBooking: { type: Boolean, default: true },
+      SaudiMuqeemPrint: { type: Boolean, default: true },
+      bookingDummyPrint: { type: Boolean, default: true },
+      onlinePaymentConfirmation: { type: Boolean, default: true },
+      deviceAccess: { type: Boolean, default: true },
+    }
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

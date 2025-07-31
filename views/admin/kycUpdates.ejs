@@ -287,21 +287,17 @@
                             document.addEventListener("DOMContentLoaded", function () {
                                 const acceptButtons = document.querySelectorAll(".update-btn");
 
-                                acceptButtons.forEach(button => {
-                                    button.addEventListener("click", async function () {
-                                        const updateId = this.getAttribute("data-update-id");
-                                        const status = this.getAttribute("data-title");
-                                        console.log("Status: ", status);
-                                        console.log("Update ID: ", updateId);
-                                        // Confirm with the user
+                                    acceptButtons.forEach(button => {
+      button.addEventListener("click", async function () {
+        const updateId = this.getAttribute("data-update-id");
+        const status = this.getAttribute("data-title");
 
-                                        let confirmed;
-                                        if (status === "accept") {
-                                            confirmed = confirm("Are you sure you want to accept this update?");
-                                        } else {
-                                            confirmed = confirm("Are you sure you want to reject this update?");
-                                        }
-                                        const result = await Swal.fire({
+        const confirmMessage =
+          status === "accept"
+            ? "Are you sure you want to accept this update?"
+            : "Are you sure you want to reject this update?";
+
+        const result = await Swal.fire({
           title: "Confirm Action",
           text: confirmMessage,
           icon: "question",
@@ -330,7 +326,7 @@
             Swal.fire({
               icon: "success",
               title: "Success",
-              text: data.message || "KYC update processed successfully.",
+              text: result.message || "KYC update processed successfully.",
               confirmButtonText: "OK"
             }).then(() => {
               location.reload();
@@ -339,7 +335,7 @@
             Swal.fire({
               icon: "error",
               title: "Failed",
-              text: data.message || "Failed to process KYC update.",
+              text: result.message || "Failed to process KYC update.",
               confirmButtonText: "OK"
             });
           }

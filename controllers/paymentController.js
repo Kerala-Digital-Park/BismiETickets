@@ -15,6 +15,28 @@ const Flights = require("../models/flightModel");
 const TempBooking = require("../models/tempBookingModel");
 const Subscriptions = require("../models/subscriptionModel");
 const TempSubscription = require("../models/tempSubscriptionModel");
+const Requests = require("../models/requestModel");
+const puppeteer = require("puppeteer");
+
+async function generatePDF(templatePath, data) {
+  const html = await ejs.renderFile(templatePath, data);
+
+  const browser = await puppeteer.launch({
+    headless: "new", // or true if puppeteer > 20
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
+
+  const page = await browser.newPage();
+  await page.setContent(html, { waitUntil: 'networkidle0' });
+
+  const pdfBuffer = await page.pdf({
+    format: 'A4',
+    printBackground: true,
+  });
+
+  await browser.close();
+  return pdfBuffer;
+}
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -207,10 +229,61 @@ exports.handleBookingResponse = async (req, res) => {
         return res.status(404).send("Flight or inventory date not found");
       }
 
-      // ✅ Send email
-      try {
-        const templatePath = path.join(__dirname, '../views/user/bookingConfirmationMail.ejs');
-        const html = await renderTemplate(templatePath, {
+const stopsCount = parsedFlight.stops?.length || 0;
+
+const requests = await Requests.find({
+  bookingId: newBooking._id,
+  category: "service"
+}).sort({ createdAt: -1 });
+
+function computeLayovers(stops) {
+  const layovers = [];
+
+  for (let i = 0; i < stops.length - 1; i++) {
+    const currentStop = stops[i];
+    const nextStop = stops[i + 1];
+
+    const parseTime = (timeStr) => {
+      const [hours, minutes] = timeStr.replace(' hrs', '').trim().split(':').map(Number);
+      return { hours: hours || 0, minutes: minutes || 0 };
+    };
+
+    const arrDate = new Date(currentStop.arrivalDay);
+    const depDate = new Date(nextStop.departureDay);
+
+    const arrTime = parseTime(currentStop.arrivalTime);
+    const depTime = parseTime(nextStop.departureTime);
+
+    arrDate.setHours(arrTime.hours, arrTime.minutes, 0, 0);
+    depDate.setHours(depTime.hours, depTime.minutes, 0, 0);
+
+    const layoverMs = depDate - arrDate;
+    const mins = Math.floor(layoverMs / 60000);
+    const hrs = Math.floor(mins / 60);
+    const rem = mins % 60;
+
+    layovers.push({
+      index: i,
+      city: currentStop.arrivalCity,
+      duration: `${hrs.toString().padStart(2, '0')}h ${rem.toString().padStart(2, '0')}m`,
+    });
+  }
+
+  return layovers;
+}
+
+// In your controller before rendering
+const layovers = computeLayovers(parsedFlight.stops || []);
+
+const templateFileName =
+  stopsCount <= 1
+    ? 'mail-oneWayBookingConfirmation.ejs'
+    : 'mail-connectingBookingConfirmation.ejs';
+
+    console.log("templateFileName", templateFileName);
+    try {
+      const templatePath = path.join(__dirname, '../views/user/', templateFileName);
+      const pdfBuffer = await generatePDF(templatePath, {
           travelers,
           flightDetails: parsedFlight,
           totalFare,
@@ -218,13 +291,22 @@ exports.handleBookingResponse = async (req, res) => {
           otherServices: otherServices.replace(/[^0-9.]/g, ""),
           discount: discount.replace(/[^0-9.]/g, ""),
           bookingId: newBooking.bookingId,
+          requests,
+          layovers,
         });
 
         await transporter.sendMail({
           from: process.env.EMAIL,
           to: email,
           subject: 'Your Flight Booking Confirmation',
-          html,
+          text: 'Please find your flight confirmation attached as a PDF.',
+          attachments: [
+          {
+            filename: 'BookingConfirmation.pdf',
+            content: pdfBuffer,
+            contentType: 'application/pdf',
+          },
+          ],
         });
       } catch (emailErr) {
         console.error('Error sending confirmation email:', emailErr);

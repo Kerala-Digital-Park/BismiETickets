@@ -16,6 +16,7 @@ const Airport = require("../models/airportModel");
 const PopularFlight = require("../models/popularFlightModel");
 const ProfileUpdates = require("../models/profileUpdateModel");
 const FilterAirport = require("../models/filterAirportModel");
+const LoginActivity = require("../models/loginActivityModel");
 
 const viewLogin = async (req, res) => {
   try {
@@ -53,7 +54,14 @@ const loginAdmin = async (req, res) => {
     req.session.admin = token;
     req.session.adminId = admin._id;
     
-    res.redirect("/admin/");
+    req.session.save((err) => {
+      if (err) {
+        console.error("❌ Error saving session:", err);
+        return res.status(500).send("Internal Server Error");
+      }
+      res.redirect("/admin/");
+    });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -62,8 +70,16 @@ const loginAdmin = async (req, res) => {
 
 const logoutAdmin = async (req, res) => {
   try {
-    req.session.destroy();
-    res.redirect("/admin/login");
+    // req.session.destroy();
+    // res.redirect("/admin/login");
+    req.session.destroy((err) => {
+  if (err) {
+    console.error("❌ Session destroy failed:", err);
+    return res.status(500).send("Logout failed");
+  }
+  res.clearCookie("connect.sid");
+  res.redirect("/admin/login");
+});
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -219,34 +235,82 @@ const viewUsers = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = 10;
   const skip = (page - 1) * limit;
+
   try {
-    let query = { userRole: "User" };
+    const statuses = ["Active", "Inactive", "Suspended"];
 
-    if (search) {
-      query.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
-        { userId: { $regex: search, $options: "i" } },
-      ];
-    }
+    // Helper to get data for each status
+    const getUsersByStatus = async (status) => {
+      let query = {
+        userRole: "User",
+        status,
+      };
 
-    const totalCount = await User.countDocuments(query);
-    const users = await User.find(query)
-      .populate("subscription")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+      if (search) {
+        query.$or = [
+          { name: { $regex: search, $options: "i" } },
+          { email: { $regex: search, $options: "i" } },
+          { userId: { $regex: search, $options: "i" } },
+        ];
+      }
 
-    const totalPages = Math.ceil(totalCount / limit);
+      const totalCount = await User.countDocuments(query);
+
+      const users = await User.find(query)
+        .populate("subscription")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
+
+      const userIds = users.map(user => user._id);
+
+      const bookingsCount = await Booking.aggregate([
+        { $match: { userId: { $in: userIds } } },
+        { $group: { _id: "$userId", totalBookings: { $sum: 1 } } },
+      ]);
+
+      const bookingsMap = {};
+      bookingsCount.forEach(b => {
+        bookingsMap[b._id.toString()] = b.totalBookings;
+      });
+
+      users.forEach(user => {
+        user.totalBookings = bookingsMap[user._id.toString()] || 0;
+      });
+
+      return {
+        users,
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+      };
+    };
+
+    // Get data for each status
+    const [activeData, inactiveData, suspendedData] = await Promise.all([
+      getUsersByStatus("Active"),
+      getUsersByStatus("Inactive"),
+      getUsersByStatus("Suspended"),
+    ]);
 
     res.render("admin/users", {
-      users,
       search,
       currentPage: page,
-      totalPages,
-      totalCount,
       limit,
+
+      activeUsers: activeData.users,
+      activeTotalCount: activeData.totalCount,
+      activeTotalPages: activeData.totalPages,
+
+      inactiveUsers: inactiveData.users,
+      inactiveTotalCount: inactiveData.totalCount,
+      inactiveTotalPages: inactiveData.totalPages,
+
+      suspendedUsers: suspendedData.users,
+      suspendedTotalCount: suspendedData.totalCount,
+      suspendedTotalPages: suspendedData.totalPages,
     });
+
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
@@ -254,66 +318,214 @@ const viewUsers = async (req, res) => {
 };
 
 const viewUserDetail = async (req, res) => {
+  const userId = req.query.id;
   try {
-    res.render("admin/userDetail", {});
+    const user = await User.findById(userId).populate("subscription");
+    const bookings = await Booking.find({ userId })
+      .populate("flight")
+      .sort({ createdAt: -1 }); 
+    const transactions = await Transaction.find({ userId: userId}).populate({
+    path: "bookingId",
+    populate: {
+      path: "flight", 
+      model: "Flights",
+    },
+    }).populate("userId");
+    const profileUpdates = await ProfileUpdates.find({ userId: userId }).sort({ createdAt: -1 });
+    const kycUpdates = await KycUpdates.find({ userId: userId }).sort({ createdAt: -1 });
+    const approvals = [
+  ...profileUpdates.map(u => ({ ...u.toObject(), type: 'Profile Update' })),
+  ...kycUpdates.map(u => ({ ...u.toObject(), type: 'KYC Request' }))
+];
+    const loginActivities = await LoginActivity.find({ user: userId }).sort({ loginTime: -1 });
+       
+  const db = mongoose.connection.db;
+  const rawSessions = await db.collection('sessions').find({}).toArray();
+
+const userSessions = rawSessions.map(s => ({
+  _id: s._id,
+  expires: s.expires,
+  sessionData: JSON.parse(s.session),
+}))    
+.filter(s => {
+      const data = s.sessionData;
+      return data.userId === userId && !data.adminId; // only user-only sessions
+    });
+
+    res.render("admin/userDetail", { user, bookings, loginActivities, sessions: userSessions, transactions, approvals });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
   }
 };
 
+// const viewAgents = async (req, res) => {
+//   const search = req.query.search || "";
+//   const page = parseInt(req.query.page) || 1;
+//   const limit = 10;
+//   const skip = (page - 1) * limit;
+//   try {
+//     let query = { userRole: "Agent" };
+
+//     if (search) {
+//       query.$or = [
+//         { name: { $regex: search, $options: "i" } },
+//         { userId: { $regex: search, $options: "i" } },
+//       ];
+//     }
+
+//     const totalCount = await User.countDocuments(query);
+//     const agents = await User.find(query)
+//       .populate("subscription")
+//       .sort({ createdAt: -1 })
+//       .skip(skip)
+//       .limit(limit);
+
+//     const totalPages = Math.ceil(totalCount / limit);
+
+//     const agentIds = agents.map((agent) => agent._id);
+
+//     const flights = await Flight.find({ sellerId: { $in: agentIds } });
+
+//     const flightCountMap = {};
+
+//     flights.forEach((flight) => {
+//       const sellerId = flight.sellerId.toString();
+//       flightCountMap[sellerId] = (flightCountMap[sellerId] || 0) + 1;
+//     });
+
+//     const agentsWithFlightCount = agents.map((agent) => {
+//       const agentObj = agent.toObject();
+//       agentObj.flightCount = flightCountMap[agent._id.toString()] || 0;
+//       return agentObj;
+//     });
+
+//     res.render("admin/agents", {
+//       agents: agentsWithFlightCount,
+//       search,
+//       currentPage: page,
+//       totalPages,
+//       totalCount,
+//       limit,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ success: false, message: "Internal Server error" });
+//   }
+// };
+
 const viewAgents = async (req, res) => {
   const search = req.query.search || "";
   const page = parseInt(req.query.page) || 1;
   const limit = 10;
   const skip = (page - 1) * limit;
+
   try {
-    let query = { userRole: "Agent" };
+    const statuses = ["Active", "Inactive", "Suspended"];
 
-    if (search) {
-      query.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { userId: { $regex: search, $options: "i" } },
-      ];
+    // Helper to get agent data by status
+    const getAgentsByStatus = async (status) => {
+      let query = {
+        userRole: "Agent",
+        status,
+      };
+
+      if (search) {
+        query.$or = [
+          { name: { $regex: search, $options: "i" } },
+          { userId: { $regex: search, $options: "i" } },
+        ];
+      }
+
+      const totalCount = await User.countDocuments(query);
+
+      const agents = await User.find(query)
+        .populate("subscription")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
+
+      const agentIds = agents.map(agent => agent._id.toString());
+
+      const flightCounts = await Flight.aggregate([
+        { $match: { sellerId: { $in: agentIds } } },
+        { $group: { _id: "$sellerId", totalFlights: { $sum: 1 } } },
+      ]);
+
+      const flightMap = {};
+      flightCounts.forEach(fc => {
+        flightMap[fc._id.toString()] = fc.totalFlights;
+      });
+
+      const bookingsCount = await Booking.aggregate([
+  {
+    $lookup: {
+      from: "flights", // collection name (lowercase, plural of model)
+      localField: "flight",
+      foreignField: "_id",
+      as: "flightData"
     }
+  },
+  { $unwind: "$flightData" },
+  {
+    $match: {
+      "flightData.sellerId": { $in: agentIds }
+    }
+  },
+  {
+    $group: {
+      _id: "$flightData.sellerId",
+      totalBookings: { $sum: 1 }
+    }
+  }
+]);
 
-    const totalCount = await User.countDocuments(query);
-    const agents = await User.find(query)
-      .populate("subscription")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+      const bookingsMap = {};
+      bookingsCount.forEach(b => {
+        bookingsMap[b._id.toString()] = b.totalBookings;
+      });
 
-    const totalPages = Math.ceil(totalCount / limit);
+      agents.forEach(agent => {
+        agent.flightCount = flightMap[agent._id.toString()] || 0;
+        agent.totalBookings = bookingsMap[agent._id.toString()] || 0;
+      });
 
-    const agentIds = agents.map((agent) => agent._id);
+      return {
+        agents,
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+      };
+    };
 
-    const flights = await Flight.find({ sellerId: { $in: agentIds } });
-
-    const flightCountMap = {};
-
-    flights.forEach((flight) => {
-      const sellerId = flight.sellerId.toString();
-      flightCountMap[sellerId] = (flightCountMap[sellerId] || 0) + 1;
-    });
-
-    const agentsWithFlightCount = agents.map((agent) => {
-      const agentObj = agent.toObject();
-      agentObj.flightCount = flightCountMap[agent._id.toString()] || 0;
-      return agentObj;
-    });
+    // Parallel fetch of each status
+    const [activeData, inactiveData, suspendedData] = await Promise.all([
+      getAgentsByStatus("Active"),
+      getAgentsByStatus("Inactive"),
+      getAgentsByStatus("Suspended"),
+    ]);
 
     res.render("admin/agents", {
-      agents: agentsWithFlightCount,
       search,
       currentPage: page,
-      totalPages,
-      totalCount,
       limit,
+
+      activeAgents: activeData.agents,
+      activeTotalCount: activeData.totalCount,
+      activeTotalPages: activeData.totalPages,
+
+      inactiveAgents: inactiveData.agents,
+      inactiveTotalCount: inactiveData.totalCount,
+      inactiveTotalPages: inactiveData.totalPages,
+
+      suspendedAgents: suspendedData.agents,
+      suspendedTotalCount: suspendedData.totalCount,
+      suspendedTotalPages: suspendedData.totalPages,
     });
+
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal Server error" });
+    console.error("Error loading agents:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
@@ -324,8 +536,55 @@ const viewAgentDetail = async (req, res) => {
     if (!agent) return res.status(404).send("Agent not found");
 
     const flights = await Flight.find({ sellerId: agentId });
+    const bookings = await Booking.find({ userId: agentId })
+      .populate("flight")
+      .sort({ createdAt: -1 }); 
+    const transactions = await Transaction.find({ userId: agentId}).populate({
+    path: "bookingId",
+    populate: {
+      path: "flight", 
+      model: "Flights",
+    },
+    }).populate("userId");
+    const listingTransactions = (
+  await Transaction.find()
+    .populate({
+      path: "bookingId",
+      populate: {
+        path: "flight",
+        model: "Flights",
+      },
+    })
+).filter((tx) => {
+  return (
+    tx.bookingId &&
+    tx.bookingId.flight &&
+    String(tx.bookingId.flight.sellerId) === String(agentId)
+  );
+});
 
-    res.render("admin/agentDetail", { agent, flights });
+    const profileUpdates = await ProfileUpdates.find({ userId: agentId }).sort({ createdAt: -1 });
+    const kycUpdates = await KycUpdates.find({ userId: agentId }).sort({ createdAt: -1 });
+    const approvals = [
+  ...profileUpdates.map(u => ({ ...u.toObject(), type: 'Profile Update' })),
+  ...kycUpdates.map(u => ({ ...u.toObject(), type: 'KYC Request' }))
+];
+    const loginActivities = await LoginActivity.find({ user: agentId }).sort({ loginTime: -1 });
+       
+  const db = mongoose.connection.db;
+  const rawSessions = await db.collection('sessions').find({}).toArray();
+
+const userSessions = rawSessions.map(s => ({
+  _id: s._id,
+  expires: s.expires,
+  sessionData: JSON.parse(s.session),
+}))    
+.filter(s => {
+      const data = s.sessionData;
+      return data.userId === agentId && !data.adminId; // only user-only sessions
+    });
+
+    res.render("admin/agentDetail", { agent, flights, bookings, loginActivities, sessions: userSessions, transactions, approvals, listingTransactions });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
@@ -2538,6 +2797,7 @@ const updateProfileDetail = async (req, res) => {
         name: update.name,
         email: update.email,
         mobile: update.mobile,
+        whatsapp: update.whatsapp,
         nationality: update.nationality,
         proprietorship: update.proprietorship,
         address: update.address,
@@ -2638,6 +2898,118 @@ const getSupports = async (req, res) => {
   }
 };
 
+const suspendUser = async (req, res) => {
+    try {
+    const userId = req.query.id;
+
+    const user = await User.findByIdAndUpdate(userId, {
+      status: "Suspended"
+    }, { new: true });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.json({ success: true, message: "User suspended successfully", user });
+  } catch (err) {
+    console.error("Error suspending user:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+}
+
+// const signOutUserSession = async (req, res) => {
+//   const { sessionId } = req.body;
+
+//   try {
+//     const store = req.sessionStore;
+
+//     if (!sessionId) return res.status(400).send("Session ID missing");
+
+//     // destroy session from store
+//     store.destroy(sessionId, (err) => {
+//       if (err) {
+//         console.error("Error destroying session:", err);
+//         return res.status(500).send("Failed to sign out session");
+//       }
+
+//       return res.redirect("back"); // or send JSON if AJAX
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).send("Internal Server Error");
+//   }
+// };
+
+const signOutUserSession = async (req, res) => {
+  const { sessionId } = req.body;
+
+  try {
+    const store = req.sessionStore;
+
+    if (!sessionId) {
+      return res.status(400).send("Session ID missing");
+    }
+
+    // ✅ Avoid destroying current admin session
+    if (sessionId === req.sessionID) {
+      return res.status(400).send("You cannot sign out your own session from here.");
+    }
+
+    // ✅ Destroy only the provided session from MongoDB
+    store.destroy(sessionId, (err) => {
+      if (err) {
+        console.error("Error destroying session:", err);
+        return res.status(500).send("Failed to sign out session");
+      }
+
+      return res.redirect("back");
+    });
+  } catch (err) {
+    console.error("Server error while signing out session:", err);
+    return res.status(500).send("Internal Server Error");
+  }
+};
+
+const updateNotificationSettings = async (req, res) => {
+  console.log("Update notification settings called");
+    const {
+      newsletterPreference,
+      notifyOnLogin,
+      receivePromotions,
+      activateHotelBooking,
+      activateMuqeem,
+      activateDummyItinerary,
+      sendPaymentConfirmation,
+      checkDeviceAccess,
+      userId
+    } = req.body;
+  console.log("Notification setting");
+  try {
+    
+    if (!userId) return res.status(401).json({ message: 'Not logged in' });
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.notificationSettings = {
+      newsletter: newsletterPreference,
+      loginEmailNotifications: notifyOnLogin,
+      bookingEmailNotifications: receivePromotions,
+      hotelBooking: activateHotelBooking,
+      SaudiMuqeemPrint: activateMuqeem,
+      bookingDummyPrint: activateDummyItinerary,
+      onlinePaymentConfirmation: sendPaymentConfirmation,
+      deviceAccess: checkDeviceAccess,
+    };
+
+    await user.save();
+    res.json({ success: true });
+    } catch (error) {
+    console.error('Error updating notification settings:', error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 module.exports = {
   viewLogin,
   loginAdmin,
@@ -2695,5 +3067,8 @@ module.exports = {
   viewProfileUpdates,
   updateProfileDetail,
   getSupports,
+  suspendUser,
+  signOutUserSession,
+  updateNotificationSettings,
 
 };

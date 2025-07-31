@@ -17,62 +17,49 @@
 					<!-- Page main content START -->
 					<div class="page-content-wrapper p-xxl-4">
 
-						                    <!-- Title -->
-											<div class="row">
-												<div class="col-12 mb-4 mb-sm-5">
-													<div
-														class="d-sm-flex justify-content-between align-items-center">
-														<h1 class="h3 mb-3 mb-sm-0">Customers List</h1>
-														<div class="d-grid"><a href="#"
-																class="btn btn-primary mb-0"><i
-																	class="bi bi-filetype-pdf me-2"></i>Generate
-																Report</a> </div>
-													</div>
-												</div>
-											</div>
-						
-											<!-- Filters START -->
-											<div class="row g-4 align-items-center">
-												<!-- Tabs -->
-												<div class="col-lg-6">
-													<ul class="nav nav-pills-shadow nav-responsive">
-														<li class="nav-item">
-															<a class="nav-link mb-0 active"
-																data-bs-toggle="tab"
-																href="#tab-1">Active Customers</a>
-														</li>
-														 <li class="nav-item">
-															<a class="nav-link mb-0"
-																data-bs-toggle="tab"
-																href="#tab-3">Inactive Customers</a>
-														</li>
-														<li class="nav-item">
-															<a class="nav-link mb-0"
-																data-bs-toggle="tab"
-																href="#tab-2">Suspended Customers</a>
-														</li>
-													   
-													</ul>
-												</div>
-						
-												<!-- Search -->
-												<div class="col-md-6 col-lg-3">
-						
-												</div>
-						
-												<!-- Select -->
-												<div class="col-md-6 col-lg-3">
-													<form class="rounded position-relative" method="get" action="/admin/users">
-														<input class="form-control bg-transparent pe-5" type="search" name="search"
-															placeholder="Search" aria-label="Search" value="<%= search %>">
-														<button
-															class="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover "
-															type="submit">
-															<i class="fas fa-search fs-6"></i>
-														</button>
-													</form>
-												</div>
-											</div>
+						<!-- Title -->
+						<div class="row">
+							<div class="col-12 mb-4 mb-sm-5">
+								<div class="d-sm-flex justify-content-between align-items-center">
+									<div class="card-body text-dark">
+										<h1 class="h4 mb-3 mb-sm-0">Customers List</h1>
+									</div>
+
+									<!-- Search -->
+									<form class="rounded position-relative me-2" method="get" action="/admin/users">
+										<input class="form-control bg-transparent pe-5" type="search" name="search"
+											placeholder="Search" aria-label="Search" value="<%= search %>">
+										<button
+											class="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover "
+											type="submit">
+											<i class="fas fa-search fs-6"></i>
+										</button>
+									</form>
+									<a href="#" class="btn btn-dark-soft text-nowrap mb-0 me-2" title="Reminder"><i
+											class="bi bi-bell"></i></a>
+								</div>
+							</div>
+						</div>
+
+						<!-- Filters START -->
+						<div class="row g-4 align-items-center">
+							<!-- Tabs -->
+							<ul class="nav nav-pills nav-pills-primary-soft mb-3 nav-responsive">
+								<li class="nav-item">
+									<a class="nav-link mb-0 active" data-bs-toggle="tab" href="#tab-active">Active
+										Customers</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link mb-0" data-bs-toggle="tab" href="#tab-inactive">Inactive
+										Customers</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link mb-0" data-bs-toggle="tab" href="#tab-suspend">Suspended
+										Customers</a>
+								</li>
+
+							</ul>
+						</div>
 						<!-- Title -->
 						<!-- <div class="row">
 							<div class="col-12 mb-4 mb-sm-5">
@@ -96,88 +83,144 @@
 						</div> -->
 
 						<!-- Guest list START -->
-						<div class="card shadow mt-3">
-							<div class="card-body">
-								<div class="table-responsive">
-									<table class="table align-middle">
-										<thead class="bg-light">
-											<tr>
-												<th>User</th>
-												<th>User ID</th>
-												<th>Email</th>
-												<th>Mobile</th>
-												<!-- <th>Nationality</th> -->
-												<th>KYC</th>
-												<th>Subscription</th>
-												<th>Status</th>
-												<th>Action</th>
-											</tr>
-										</thead>
-										<tbody class="list">
-											<% if(users && users.length> 0) { %>
-												<% users.forEach((user, index)=> { %>
-													<tr>
-														<td>
-															<div class="d-flex align-items-center">
-																<div class="avatar avatar-xs flex-shrink-0">
-																	<img class="avatar-img rounded-circle"
-																		src="<%= user.image ? user.image : '/assets/images/avatar/09.jpg' %>"
-																		alt="avatar">
-																</div>
-																<div class="ms-2">
-																	<small class="mb-0 fw-light">
-																		<%= user.name %>
-																	</small>
-																</div>
-															</div>
-														</td>
-														<td>
-															<h6 class="mb-0 fw-normal">
-																<%= user.userId %>
-															</h6>
-														</td>
-														<td>
-															<h6 class="mb-0 fw-normal">
-																<%= user.email %>
-															</h6>
-														</td>
-														<td>
-															<h6 class="mb-0 fw-normal">
-																<%= user.mobile %>
-															</h6>
-														</td>
-														<!-- <td>
-															<h6 class="mb-0 fw-normal">
-																<%= user.nationality %>
-															</h6>
-														</td> -->
-														<td>
-															<h6 class="mb-0 fw-normal">
-																<%= user.kyc %>
-															</h6>
-														</td>
-														<td>
-															<h6 class="mb-0 fw-normal">
-																<%= user.subscription ? user.subscription.subscription
-																	: 'N/A' %>
-															</h6>
-														</td>
-														<% const today=new Date(); const expiryDate=new
-															Date(user.expiryDate); let statusClass; let statusText; if
-															(expiryDate> today) {
-															statusClass = 'text-success';
-															statusText = 'Active';
-															} else {
-															statusClass = 'text-danger';
-															statusText = 'Inactive';
-															}
-															%>
-															<td>
-																<h6 class="mb-0 fw-normal <%= statusClass %>">
-																	<%= statusText %>
-																</h6>
-															</td>
-															<td>
+						<div class="tab-content">
+							<div class="tab-pane show active" id="tab-active">
+
+								<div class="col-lg-12 col-xxl-12">
+									<div class="card border  h-100">
+										<div class="card-body">
+											<div class="table-responsive">
+												<table class="table">
+													<thead>
+														<tr>
+															<th>Customers Details</th>
+															<th>Balance</th>
+															<th>Mobile & Kyc</th>
+															<th>Subscription</th>
+															<th>Bookings & Login</th>
+															<th>Status</th>
+															<th>Actions</th>
+														</tr>
+													</thead>
+													<tbody>
+														<% if(activeUsers && activeUsers.length> 0) { %>
+															<% activeUsers.forEach((user, index)=> { %>
+																<tr>
+																	<td>
+																		<div
+																			class="d-sm-flex align-items-center mb-1 mb-sm-0">
+																			<div class="avatar avatar-xs flex-shrink-0">
+																				<img class="rounded-circle"
+																					src="<%= user.image ? user.image : '/assets/images/avatar/09.jpg' %>"
+																					alt="avatar">
+																			</div>
+																			<div class="ms-sm-3 mt-2 mt-sm-0">
+																				<a href="/admin/user-detail?id=<%=user._id%>">
+																					<h6 class="mb-1">
+																						<%= user.name %>
+																					</h6>
+																				</a>
+																				<ul class="nav nav-divider small">
+																					<li class="nav-item">
+																						<%= user.email %>
+																					</li>
+																					<li class="nav-item">
+																						<%= user.userId %>
+																					</li>
+																				</ul>
+																			</div>
+																		</div>
+																	</td>
+																	<td>
+																		<h5 class="mb-0 fw-3">₹ 26000</h5>
+																	</td>
+																	<% let kycClass; if(user.kyc==="Completed" ){
+																		kycClass="text-success" ; } else
+																		if(user.kyc==="Initial" ){
+																		kycClass="text-warning" ; } else{
+																		kycClass="text-danger" } %>
+																		<td>
+																			<div class="col">
+																				<h6 class="mb-0 fw-normal">
+																					<%= user.mobile %></small>
+																						<h6 class="mb-0 fw-normal">Kyc:
+																							<span class=<%=kycClass %>>
+																								<%= user.kyc %></span>
+																						</h6>
+																			</div>
+																		</td>
+																		<td>
+																			<div class="col">
+																				<h6 class="mb-0 fw-normal">
+																					<%= user.subscription ?
+																						user.subscription.subscription
+																						: 'N/A' %></small>
+																						<h6 class="mb-0 fw-normal">
+																							Validity: <%= new
+																								Date(user.expiryDate).toLocaleDateString('en-GB',
+																								{ day: '2-digit' ,
+																								month: 'short' ,
+																								year: 'numeric' }) %>
+																						</h6>
+																			</div>
+																		</td>
+																		<% let booking; if(user.totalBookings> 1){
+																			booking= "Bookings"
+																			}
+																			else{
+																			booking = "Booking"
+																			}
+																			%>
+																			<td>
+																				<div class="col">
+																					<h6 class="mb-0 fw-normal">
+																						<%= user.totalBookings %>
+																							<%= booking %>
+																					</h6>
+																					<h6 class="mb-0 fw-normal">Last
+																						Login: 12 Jun 2025</h6>
+																				</div>
+																			</td>
+																			
+																				<td> <span class="text-success">
+																						<%= user.status %>
+																					</span>
+																				</td>
+																				<!-- Button -->
+																				<td> <a href="#"
+																						class="btn btn-sm btn-info flex-shrink-0 mb-0 ms-3 view-user-btn"
+																						data-user='<%= JSON.stringify(user) %>'
+																						data-bs-toggle="tooltip"
+																						data-bs-placement="top"><i
+																							class="bi bi-eye"></i>
+																						View</a>
+
+																					<a href="#"
+																						class="btn btn-sm btn-primary  small mb-0"
+																						role="button"
+																						id="dropdownShare6"
+																						data-bs-toggle="dropdown"
+																						aria-expanded="false"> More
+																						<i
+																							class="bi bi-three-dots fa-fw"></i>
+																					</a>
+																					<!-- dropdown button -->
+																					<ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded"
+																						aria-labelledby="dropdownShare6">
+																						<li>
+																						  <a href="#" class="dropdown-item suspend-user" data-user-id="<%= user._id %>">
+																						    <i class="bi bi-ban text-danger fa-fw me-2"></i>Suspend
+ 																						 </a>
+																						</li>
+
+																						<li><a class="dropdown-item"
+																								href="#"><i
+																									class="bi bi-file-zip-fill text-success fa-fw me-2"></i>
+																								Kyc Details</a></li>
+																					</ul>
+
+																				</td>
+																				<!-- <td>
 																<button class="btn btn-sm btn-primary view-user-btn"
 																	data-user='<%= JSON.stringify(user) %>' title="View"
 																	data-bs-toggle="tooltip" data-bs-placement="top">
@@ -188,482 +231,1858 @@
 																	data-bs-toggle="tooltip" data-bs-placement="top">
 																	<i class="fa-solid fa-pen-to-square"></i>
 																</button>
-																<!-- <button
+																<button
 																	class="btn btn-sm btn-danger delete-user-btn ms-2"
 																	data-user-id="<%= user._id %>" title="Delete"
 																	data-bs-toggle="tooltip" data-bs-placement="top">
 																	<i class="fa-solid fa-trash"></i>
-																</button> -->
-															</td>
-													</tr>
-													<% }) %>
-														<% } else { %>
-															<tr>
-																<td colspan="9" class="text-center">
-																	<p class="mb-0">No users found.</p>
-																</td>
-															</tr>
+																</button>
+															</td> -->
+																</tr>
+																<% }) %>
+																	<% } else { %>
+																		<tr>
+																			<td colspan="9" class="text-center">
+																				<p class="mb-0">No active users found.</p>
+																			</td>
+																		</tr>
+																		<% } %>
+													</tbody>
+												</table>
+											</div>
+										</div>
+
+										<!-- Card footer START -->
+										<div class="card-footer pt-0">
+											<!-- Pagination and content -->
+											<div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+												<p class="mb-sm-0 text-center text-sm-start">
+													Showing <%= (currentPage - 1) * limit + 1 %> to
+														<%= Math.min(currentPage * limit, activeTotalCount) %> of
+															<%= activeTotalCount %> entries
+												</p>
+												<nav class="mb-sm-0 d-flex justify-content-center"
+													aria-label="navigation">
+													<ul class="pagination pagination-sm pagination-primary-soft mb-0">
+														<li
+															class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+															<a class="page-link"
+																href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
+														</li>
+
+														<% for (let i=1; i <=activeTotalPages; i++) { %>
+															<li
+																class="page-item <%= i === currentPage ? 'active' : '' %>">
+																<a class="page-link"
+																	href="?search=<%= search %>&page=<%= i %>">
+																	<%= i %>
+																</a>
+															</li>
 															<% } %>
-										</tbody>
-									</table>
-								</div>
-							</div>
 
-							<!-- Card footer START -->
-							<div class="card-footer pt-0">
-								<!-- Pagination and content -->
-								<div class="d-sm-flex justify-content-sm-between align-items-sm-center">
-									<p class="mb-sm-0 text-center text-sm-start">
-									  Showing <%= (currentPage - 1) * limit + 1 %> to
-									  <%= Math.min(currentPage * limit, totalCount) %> of
-									  <%= totalCount %> entries
-									</p>
-									<nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
-									  <ul class="pagination pagination-sm pagination-primary-soft mb-0">
-										<li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-										  <a class="page-link" href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
-										</li>
-								  
-										<% for (let i = 1; i <= totalPages; i++) { %>
-										  <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-											<a class="page-link" href="?search=<%= search %>&page=<%= i %>"><%= i %></a>
-										  </li>
-										<% } %>
-								  
-										<li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-										  <a class="page-link" href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
-										</li>
-									  </ul>
-									</nav>
-								</div>								  
-							</div>
-							<!-- Card footer END -->
-						</div>
-						<!-- Guest list END -->
-
-						<!-- User View Modal -->
-						<div class="modal fade" id="userViewModal" tabindex="-1" aria-labelledby="userViewModalLabel"
-							aria-hidden="true">
-							<div class="modal-dialog modal-dialog-centered modal-lg">
-								<div class="modal-content">
-									<div class="modal-header">
-										<h5 class="modal-title" id="userViewModalLabel">User Details</h5>
-										<button type="button" class="btn-close" data-bs-dismiss="modal"
-											aria-label="Close"></button>
+																<li
+																	class="page-item <%= currentPage === activeTotalPages ? 'disabled' : '' %>">
+																	<a class="page-link"
+																		href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
+																</li>
+													</ul>
+												</nav>
+											</div>
+										</div>
+										<!-- Card footer END -->
 									</div>
-									<div class="modal-body">
-										<form id="userDetailsForm">
-											<div class="row g-3">
-												<div class="col-md-4">
-													<label class="form-label">User ID</label>
-													<input type="text" class="form-control" id="viewUserId" readonly>
-												</div>
-												<div class="col-md-4">
-													<label class="form-label">Name</label>
-													<input type="text" class="form-control" id="viewName" readonly>
-												</div>
-												<div class="col-md-4">
-													<label class="form-label">Email</label>
-													<input type="email" class="form-control" id="viewEmail" readonly>
-												</div>
-												<div class="col-md-4">
-													<label class="form-label">Mobile</label>
-													<input type="text" class="form-control" id="viewMobile" readonly>
-												</div>
-												<div class="col-md-4">
-													<label class="form-label">Nationality</label>
-													<input type="text" class="form-control" id="viewNationality"
-														readonly>
-												</div>
-												<div class="col-md-4">
-													<label class="form-label">PAN</label>
-													<input type="text" class="form-control" id="viewPan" readonly>
-												</div>
-												<div class="col-md-4">
-													<label class="form-label">Gender</label>
-													<input type="text" class="form-control" id="viewGender" readonly>
-												</div>
-												<div class="col-md-4">
-													<label class="form-label">Address</label>
-													<textarea type="text" class="form-control" id="viewAddress"
-														readonly></textarea>
-												</div>
-												<div class="col-md-4">
-													<label class="form-label">KYC Status</label>
-													<input type="text" class="form-control" id="viewKyc" readonly>
-												</div>
-												<div class="col-md-4">
-													<label class="form-label">Subscription</label>
-													<input type="text" class="form-control" id="viewSubscription"
-														readonly>
-												</div>
-												<div class="col-md-4">
-													<label class="form-label">Subscription Date</label>
-													<input type="text" class="form-control" id="viewSubscriptionDate"
-														readonly>
-												</div>
-												<div class="col-md-4">
-													<label class="form-label">Expiry Date</label>
-													<input type="text" class="form-control" id="viewExpiryDate"
-														readonly>
-												</div>
-												<div class="col-md-4">
-													<label class="form-label">Transactions</label>
-													<input type="text" class="form-control" id="viewTransactions"
-														readonly>
-												</div>
-												<div class="col-md-4">
-													<label class="form-label">Transaction Amount</label>
-													<input type="text" class="form-control" id="viewTransactionAmount"
-														readonly>
-												</div>
-												<div class="col-md-4">
-													<label class="form-label">Status</label>
-													<input type="text" class="form-control" id="viewStatus" readonly>
-												</div>
+									<!-- Guest list END -->
 
-												<div class="col-md-4">
-													<label class="form-label">Profile Image</label>
-													<img id="viewImage" class="img-fluid rounded border"
-														alt="Profile" />
+									<!-- User View Modal -->
+									<div class="modal fade" id="userViewModal" tabindex="-1"
+										aria-labelledby="userViewModalLabel" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered modal-lg">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="userViewModalLabel">User Details</h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal"
+														aria-label="Close"></button>
 												</div>
-												<div class="col-md-4">
-													<label class="form-label">Visiting Card</label>
-													<img id="viewVisitingCard" class="img-fluid rounded border"
-														alt="Visiting Card" />
-												</div>
-												<div class="col-md-4">
-													<label class="form-label">PAN Card</label>
-													<img id="viewPanCard" class="img-fluid rounded border"
-														alt="PAN Card" />
-												</div>
-												<div class="col-md-6">
-													<label class="form-label">Aadhaar Front</label>
-													<img id="viewAadhaarFront" class="img-fluid rounded border"
-														alt="Aadhaar Front" />
-												</div>
-												<div class="col-md-6">
-													<label class="form-label">Aadhaar Back</label>
-													<img id="viewAadhaarBack" class="img-fluid rounded border"
-														alt="Aadhaar Back" />
+												<div class="modal-body">
+													<form id="userDetailsForm">
+														<div class="row g-3">
+															<div class="col-md-4">
+																<label class="form-label">User ID</label>
+																<input type="text" class="form-control" id="viewUserId"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Name</label>
+																<input type="text" class="form-control" id="viewName"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Email</label>
+																<input type="email" class="form-control" id="viewEmail"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Mobile</label>
+																<input type="text" class="form-control" id="viewMobile"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Nationality</label>
+																<input type="text" class="form-control"
+																	id="viewNationality" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">PAN</label>
+																<input type="text" class="form-control" id="viewPan"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Gender</label>
+																<input type="text" class="form-control" id="viewGender"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Address</label>
+																<textarea type="text" class="form-control"
+																	id="viewAddress" readonly></textarea>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">KYC Status</label>
+																<input type="text" class="form-control" id="viewKyc"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription</label>
+																<input type="text" class="form-control"
+																	id="viewSubscription" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription Date</label>
+																<input type="text" class="form-control"
+																	id="viewSubscriptionDate" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Expiry Date</label>
+																<input type="text" class="form-control"
+																	id="viewExpiryDate" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transactions</label>
+																<input type="text" class="form-control"
+																	id="viewTransactions" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transaction Amount</label>
+																<input type="text" class="form-control"
+																	id="viewTransactionAmount" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Status</label>
+																<input type="text" class="form-control" id="viewStatus"
+																	readonly>
+															</div>
+
+															<div class="col-md-4">
+																<label class="form-label">Profile Image</label>
+																<img id="viewImage" class="img-fluid rounded border"
+																	alt="Profile" />
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Visiting Card</label>
+																<img id="viewVisitingCard"
+																	class="img-fluid rounded border"
+																	alt="Visiting Card" />
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">PAN Card</label>
+																<img id="viewPanCard" class="img-fluid rounded border"
+																	alt="PAN Card" />
+															</div>
+															<div class="col-md-6">
+																<label class="form-label">Aadhaar Front</label>
+																<img id="viewAadhaarFront"
+																	class="img-fluid rounded border"
+																	alt="Aadhaar Front" />
+															</div>
+															<div class="col-md-6">
+																<label class="form-label">Aadhaar Back</label>
+																<img id="viewAadhaarBack"
+																	class="img-fluid rounded border"
+																	alt="Aadhaar Back" />
+															</div>
+														</div>
+													</form>
 												</div>
 											</div>
-										</form>
+										</div>
 									</div>
+
+									<script>
+										document.addEventListener("DOMContentLoaded", function () {
+											const viewButtons = document.querySelectorAll(".view-user-btn");
+
+											viewButtons.forEach((btn) => {
+												btn.addEventListener("click", function () {
+													const user = JSON.parse(this.dataset.user);
+
+													// Text fields
+													document.getElementById("viewUserId").value = user.userId || '';
+													document.getElementById("viewName").value = user.name || '';
+													document.getElementById("viewEmail").value = user.email || '';
+													document.getElementById("viewPan").value = user.pan || '';
+													document.getElementById("viewMobile").value = user.mobile || '';
+													document.getElementById("viewNationality").value = user.nationality || '';
+													document.getElementById("viewGender").value = user.gender || '';
+													document.getElementById("viewAddress").value = user.address || '';
+													document.getElementById("viewKyc").value = user.kyc || '';
+													document.getElementById("viewSubscription").value = user.subscription?.subscription || 'N/A';
+													document.getElementById("viewSubscriptionDate").value = user.subscriptionDate
+														? new Date(user.subscriptionDate).toLocaleDateString()
+														: '';
+													document.getElementById("viewExpiryDate").value = user.expiryDate
+														? new Date(user.expiryDate).toLocaleDateString()
+														: '';
+													document.getElementById("viewTransactions").value = user.transactions ?? 0;
+													document.getElementById("viewTransactionAmount").value = user.transactionAmount ?? 0;
+
+													const isActive = new Date(user.expiryDate) > new Date();
+													document.getElementById("viewStatus").value = isActive ? "Active" : "Inactive";
+
+													const fallback = '/assets/images/avatar/placeholder.png';
+
+													// Always set profile image
+													document.getElementById("viewImage").src = user.image || fallback;
+
+													// Get image container elements
+													const visitingCardEl = document.getElementById("viewVisitingCard").parentElement;
+													const panCardEl = document.getElementById("viewPanCard").parentElement;
+													const aadhaarFrontEl = document.getElementById("viewAadhaarFront").parentElement;
+													const aadhaarBackEl = document.getElementById("viewAadhaarBack").parentElement;
+
+													// Hide all by default
+													visitingCardEl.style.display = 'none';
+													panCardEl.style.display = 'none';
+													aadhaarFrontEl.style.display = 'none';
+													aadhaarBackEl.style.display = 'none';
+
+													// Based on KYC status, selectively show images
+													switch (user.kyc) {
+														case "Initial":
+															visitingCardEl.style.display = '';
+															panCardEl.style.display = '';
+															document.getElementById("viewVisitingCard").src = user.visitingCard || fallback;
+															document.getElementById("viewPanCard").src = user.panCard || fallback;
+															break;
+
+														case "Completed":
+															visitingCardEl.style.display = '';
+															panCardEl.style.display = '';
+															aadhaarFrontEl.style.display = '';
+															aadhaarBackEl.style.display = '';
+															document.getElementById("viewVisitingCard").src = user.visitingCard || fallback;
+															document.getElementById("viewPanCard").src = user.panCard || fallback;
+															document.getElementById("viewAadhaarFront").src = user.aadhaarCardFront || fallback;
+															document.getElementById("viewAadhaarBack").src = user.aadhaarCardBack || fallback;
+															break;
+
+														// If "Pending", don't show any KYC-related docs (do nothing)
+													}
+
+													// Show modal
+													const modal = new bootstrap.Modal(document.getElementById("userViewModal"));
+													modal.show();
+												});
+											});
+										});
+									</script>
+
+									<!-- Edit User Modal -->
+									<div class="modal fade" id="userEditModal" tabindex="-1"
+										aria-labelledby="userEditModalLabel" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered modal-lg">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="userEditModalLabel">Edit User</h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal"
+														aria-label="Close"></button>
+												</div>
+												<div class="modal-body">
+													<form id="userEditForm">
+														<div class="row g-3">
+															<!-- Repeat same structure as view form, but without "readonly" attributes -->
+															<div class="col-md-4">
+																<label class="form-label">User ID</label>
+																<input type="text" class="form-control" id="editUserId"
+																	name="userId" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Name</label>
+																<input type="text" class="form-control" id="editName"
+																	name="name">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Email</label>
+																<input type="email" class="form-control" id="editEmail"
+																	name="email">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Mobile</label>
+																<input type="text" class="form-control" id="editMobile"
+																	name="mobile">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Nationality</label>
+																<input type="text" class="form-control"
+																	id="editNationality" name="nationality">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">PAN</label>
+																<input type="text" class="form-control" id="editPan"
+																	name="pan">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Gender</label>
+																<input type="text" class="form-control" id="editGender"
+																	name="gender">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Address</label>
+																<textarea class="form-control" id="editAddress"
+																	name="address"></textarea>
+															</div>
+															<!-- <div class="col-md-4">
+																<label class="form-label">KYC Status</label>
+																<input type="text" class="form-control" id="editKyc" name="kyc">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription</label>
+																<input type="text" class="form-control" id="editSubscription" name="subscription">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription Date</label>
+																<input type="date" class="form-control" id="editSubscriptionDate" name="subscriptionDate">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Expiry Date</label>
+																<input type="date" class="form-control" id="editExpiryDate" name="expiryDate">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transactions</label>
+																<input type="number" class="form-control" id="editTransactions" name="transactions">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transaction Amount</label>
+																<input type="number" class="form-control" id="editTransactionAmount" name="transactionAmount">
+															</div> -->
+															<div class="col-md-4">
+																<label class="form-label">Status</label>
+																<input type="text" class="form-control" id="editStatus"
+																	name="status" readonly>
+															</div>
+															<!-- You can include image uploaders if needed -->
+														</div>
+													</form>
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary"
+														data-bs-dismiss="modal">Close</button>
+													<button type="submit" form="userEditForm"
+														class="btn btn-primary">Save Changes</button>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<script>
+										document.addEventListener("DOMContentLoaded", function () {
+											const editButtons = document.querySelectorAll(".edit-user-btn");
+
+											editButtons.forEach((btn) => {
+												btn.addEventListener("click", function () {
+													const user = JSON.parse(this.dataset.user);
+
+													document.getElementById("editUserId").value = user.userId || '';
+													document.getElementById("editName").value = user.name || '';
+													document.getElementById("editEmail").value = user.email || '';
+													document.getElementById("editPan").value = user.pan || '';
+													document.getElementById("editMobile").value = user.mobile || '';
+													document.getElementById("editNationality").value = user.nationality || '';
+													document.getElementById("editGender").value = user.gender || '';
+													document.getElementById("editAddress").value = user.address || '';
+													// document.getElementById("editKyc").value = user.kyc || '';
+													// document.getElementById("editSubscription").value = user.subscription?.subscription || '';
+													// document.getElementById("editSubscriptionDate").value = user.subscriptionDate
+													// 	? new Date(user.subscriptionDate).toISOString().split('T')[0]
+													// 	: '';
+													// document.getElementById("editExpiryDate").value = user.expiryDate
+													// 	? new Date(user.expiryDate).toISOString().split('T')[0]
+													// 	: '';
+													// document.getElementById("editTransactions").value = user.transactions ?? 0;
+													// document.getElementById("editTransactionAmount").value = user.transactionAmount ?? 0;
+
+													const isActive = new Date(user.expiryDate) > new Date();
+													document.getElementById("editStatus").value = isActive ? "Active" : "Inactive";
+
+													// Show modal
+													const modal = new bootstrap.Modal(document.getElementById("userEditModal"));
+													modal.show();
+												});
+											});
+										});
+									</script>
+
+									<script>
+										document.getElementById("userEditForm").addEventListener("submit", function (e) {
+											e.preventDefault();
+
+											// Collect form data
+											const formData = new FormData(this);
+											const updatedUser = Object.fromEntries(formData.entries());
+
+											// Optional: Show loading spinner, disable button, etc.
+
+											fetch("/admin/edit-user", {
+												method: "POST",
+												headers: {
+													"Content-Type": "application/json"
+												},
+												body: JSON.stringify(updatedUser)
+											})
+												.then(response => {
+													if (!response.ok) throw new Error("Failed to save changes.");
+													return response.json();
+												})
+												.then(data => {
+													Swal.fire({
+														icon: 'success',
+														title: 'Updated',
+														text: 'User details updated successfully!',
+														confirmButtonText: 'OK'
+													}).then(() => {
+														const editModal = bootstrap.Modal.getInstance(document.getElementById("userEditModal"));
+														editModal.hide();
+														location.reload();
+													});
+												})
+												.catch(error => {
+													console.error("Error updating user:", error);
+													Swal.fire({
+														icon: 'error',
+														title: 'Error',
+														text: 'Something went wrong while updating the user.',
+														confirmButtonText: 'OK'
+													});
+												});
+										});
+									</script>
+
+									<script>
+										document.addEventListener("DOMContentLoaded", function () {
+											const deleteButtons = document.querySelectorAll(".delete-user-btn");
+
+											deleteButtons.forEach(button => {
+												button.addEventListener("click", async function () {
+													const userId = this.dataset.userId;
+
+													// Confirm with the user
+													const result = await Swal.fire({
+														title: 'Are you sure?',
+														text: "Do you really want to delete this user?",
+														icon: 'warning',
+														showCancelButton: true,
+														confirmButtonColor: '#d33',
+														cancelButtonColor: '#6c757d',
+														confirmButtonText: 'Yes, delete it!',
+														cancelButtonText: 'Cancel'
+													});
+
+													if (!result.isConfirmed) return;
+
+													try {
+														const response = await fetch(`/admin/delete-user/${userId}`, {
+															method: 'DELETE',
+															headers: {
+																'Content-Type': 'application/json',
+															},
+														});
+
+														const result = await response.json();
+
+														if (response.ok) {
+															await Swal.fire({
+																icon: 'success',
+																title: 'Deleted',
+																text: 'User deleted successfully.',
+																confirmButtonText: 'OK'
+															});
+															location.reload();
+														} else {
+															Swal.fire({
+																icon: 'error',
+																title: 'Failed',
+																text: result.message || 'Failed to delete user.',
+																confirmButtonText: 'OK'
+															});
+														}
+													} catch (error) {
+														console.error("Error deleting user:", error);
+														Swal.fire({
+															icon: 'error',
+															title: 'Error',
+															text: 'An error occurred while deleting the user.',
+															confirmButtonText: 'OK'
+														});
+													}
+												});
+											});
+										});
+									</script>
+
 								</div>
-							</div>
-						</div>
+							</div>	
 
-						<script>
-							document.addEventListener("DOMContentLoaded", function () {
-								const viewButtons = document.querySelectorAll(".view-user-btn");
+							<div class="tab-pane show" id="tab-inactive">
 
-								viewButtons.forEach((btn) => {
-									btn.addEventListener("click", function () {
-										const user = JSON.parse(this.dataset.user);
+								<div class="col-lg-12 col-xxl-12">
+									<div class="card border  h-100">
+										<div class="card-body">
+											<div class="table-responsive">
+												<table class="table">
+													<thead>
+														<tr>
+															<th>Customers Details</th>
+															<th>Balance</th>
+															<th>Mobile & Kyc</th>
+															<th>Subscription</th>
+															<th>Bookings & Login</th>
+															<th>Status</th>
+															<th>Actions</th>
+														</tr>
+													</thead>
+													<tbody>
+														<% if(inactiveUsers && inactiveUsers.length> 0) { %>
+															<% inactiveUsers.forEach((user, index)=> { %>
+																<tr>
+																	<td>
+																		<div
+																			class="d-sm-flex align-items-center mb-1 mb-sm-0">
+																			<div class="avatar avatar-xs flex-shrink-0">
+																				<img class="rounded-circle"
+																					src="<%= user.image ? user.image : '/assets/images/avatar/09.jpg' %>"
+																					alt="avatar">
+																			</div>
+																			<div class="ms-sm-3 mt-2 mt-sm-0">
+																				<a href="/admin/user-detail?id=<%=user._id%>">
+																					<h6 class="mb-1">
+																						<%= user.name %>
+																					</h6>
+																				</a>
+																				<ul class="nav nav-divider small">
+																					<li class="nav-item">
+																						<%= user.email %>
+																					</li>
+																					<li class="nav-item">
+																						<%= user.userId %>
+																					</li>
+																				</ul>
+																			</div>
+																		</div>
+																	</td>
+																	<td>
+																		<h5 class="mb-0 fw-3">₹ 26000</h5>
+																	</td>
+																	<% let kycClass; if(user.kyc==="Completed" ){
+																		kycClass="text-success" ; } else
+																		if(user.kyc==="Initial" ){
+																		kycClass="text-warning" ; } else{
+																		kycClass="text-danger" } %>
+																		<td>
+																			<div class="col">
+																				<h6 class="mb-0 fw-normal">
+																					<%= user.mobile %></small>
+																						<h6 class="mb-0 fw-normal">Kyc:
+																							<span class=<%=kycClass %>>
+																								<%= user.kyc %></span>
+																						</h6>
+																			</div>
+																		</td>
+																		<td>
+																			<div class="col">
+																				<h6 class="mb-0 fw-normal">
+																					<%= user.subscription ?
+																						user.subscription.subscription
+																						: 'N/A' %></small>
+																						<h6 class="mb-0 fw-normal">
+																							Validity: <%= new
+																								Date(user.expiryDate).toLocaleDateString('en-GB',
+																								{ day: '2-digit' ,
+																								month: 'short' ,
+																								year: 'numeric' }) %>
+																						</h6>
+																			</div>
+																		</td>
+																		<% let booking; if(user.totalBookings> 1){
+																			booking= "Bookings"
+																			}
+																			else{
+																			booking = "Booking"
+																			}
+																			%>
+																			<td>
+																				<div class="col">
+																					<h6 class="mb-0 fw-normal">
+																						<%= user.totalBookings %>
+																							<%= booking%>
+																					</h6>
+																					<h6 class="mb-0 fw-normal">Last
+																						Login: 12 Jun 2025</h6>
+																				</div>
+																			</td>
+																			<td> <span class="text-warning">
+																						<%= user.status %>
+																					</span>
+																				</td>
+																				<!-- Button -->
+																				<td> <a href="#"
+																						class="btn btn-sm btn-info flex-shrink-0 mb-0 ms-3 view-user-btn"
+																						data-user='<%= JSON.stringify(user) %>'
+																						data-bs-toggle="tooltip"
+																						data-bs-placement="top"><i
+																							class="bi bi-eye"></i>
+																						View</a>
 
-										// Text fields
-										document.getElementById("viewUserId").value = user.userId || '';
-										document.getElementById("viewName").value = user.name || '';
-										document.getElementById("viewEmail").value = user.email || '';
-										document.getElementById("viewPan").value = user.pan || '';
-										document.getElementById("viewMobile").value = user.mobile || '';
-										document.getElementById("viewNationality").value = user.nationality || '';
-										document.getElementById("viewGender").value = user.gender || '';
-										document.getElementById("viewAddress").value = user.address || '';
-										document.getElementById("viewKyc").value = user.kyc || '';
-										document.getElementById("viewSubscription").value = user.subscription?.subscription || 'N/A';
-										document.getElementById("viewSubscriptionDate").value = user.subscriptionDate
-											? new Date(user.subscriptionDate).toLocaleDateString()
-											: '';
-										document.getElementById("viewExpiryDate").value = user.expiryDate
-											? new Date(user.expiryDate).toLocaleDateString()
-											: '';
-										document.getElementById("viewTransactions").value = user.transactions ?? 0;
-										document.getElementById("viewTransactionAmount").value = user.transactionAmount ?? 0;
+																					<a href="#"
+																						class="btn btn-sm btn-primary  small mb-0"
+																						role="button"
+																						id="dropdownShare6"
+																						data-bs-toggle="dropdown"
+																						aria-expanded="false"> More
+																						<i
+																							class="bi bi-three-dots fa-fw"></i>
+																					</a>
+																					<!-- dropdown button -->
+																					<ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded"
+																						aria-labelledby="dropdownShare6">
+																						<li>
+																						  <a href="#" class="dropdown-item suspend-user" data-user-id="<%= user._id %>">
+																						    <i class="bi bi-ban text-danger fa-fw me-2"></i>Suspend
+ 																						 </a>
+																						</li>
+																						<li><a class="dropdown-item"
+																								href="#"><i
+																									class="bi bi-file-zip-fill text-success fa-fw me-2"></i>
+																								Kyc Details</a></li>
+																					</ul>
 
-										const isActive = new Date(user.expiryDate) > new Date();
-										document.getElementById("viewStatus").value = isActive ? "Active" : "Inactive";
+																				</td>
+																				<!-- <td>
+																<button class="btn btn-sm btn-primary view-user-btn"
+																	data-user='<%= JSON.stringify(user) %>' title="View"
+																	data-bs-toggle="tooltip" data-bs-placement="top">
+																	<i class="fa-solid fa-eye"></i>
+																</button>
+																<button class="btn btn-sm btn-primary edit-user-btn"
+																	data-user='<%= JSON.stringify(user) %>' title="Edit"
+																	data-bs-toggle="tooltip" data-bs-placement="top">
+																	<i class="fa-solid fa-pen-to-square"></i>
+																</button>
+																<button
+																	class="btn btn-sm btn-danger delete-user-btn ms-2"
+																	data-user-id="<%= user._id %>" title="Delete"
+																	data-bs-toggle="tooltip" data-bs-placement="top">
+																	<i class="fa-solid fa-trash"></i>
+																</button>
+															</td> -->
+																</tr>
+																<% }) %>
+																	<% } else { %>
+																		<tr>
+																			<td colspan="9" class="text-center">
+																				<p class="mb-0">No inactive users found.</p>
+																			</td>
+																		</tr>
+																		<% } %>
+													</tbody>
+												</table>
+											</div>
+										</div>
 
-										const fallback = '/assets/images/avatar/placeholder.png';
+										<!-- Card footer START -->
+										<div class="card-footer pt-0">
+											<!-- Pagination and content -->
+											<div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+												<p class="mb-sm-0 text-center text-sm-start">
+													Showing <%= (currentPage - 1) * limit + 1 %> to
+														<%= Math.min(currentPage * limit, inactiveTotalCount) %> of
+															<%= inactiveTotalCount %> entries
+												</p>
+												<nav class="mb-sm-0 d-flex justify-content-center"
+													aria-label="navigation">
+													<ul class="pagination pagination-sm pagination-primary-soft mb-0">
+														<li
+															class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+															<a class="page-link"
+																href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
+														</li>
 
-										// Always set profile image
-										document.getElementById("viewImage").src = user.image || fallback;
+														<% for (let i=1; i <=inactiveTotalPages; i++) { %>
+															<li
+																class="page-item <%= i === currentPage ? 'active' : '' %>">
+																<a class="page-link"
+																	href="?search=<%= search %>&page=<%= i %>">
+																	<%= i %>
+																</a>
+															</li>
+															<% } %>
 
-										// Get image container elements
-										const visitingCardEl = document.getElementById("viewVisitingCard").parentElement;
-										const panCardEl = document.getElementById("viewPanCard").parentElement;
-										const aadhaarFrontEl = document.getElementById("viewAadhaarFront").parentElement;
-										const aadhaarBackEl = document.getElementById("viewAadhaarBack").parentElement;
+																<li
+																	class="page-item <%= currentPage === inactiveTotalPages ? 'disabled' : '' %>">
+																	<a class="page-link"
+																		href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
+																</li>
+													</ul>
+												</nav>
+											</div>
+										</div>
+										<!-- Card footer END -->
+									</div>
+									<!-- Guest list END -->
 
-										// Hide all by default
-										visitingCardEl.style.display = 'none';
-										panCardEl.style.display = 'none';
-										aadhaarFrontEl.style.display = 'none';
-										aadhaarBackEl.style.display = 'none';
+									<!-- User View Modal -->
+									<div class="modal fade" id="userViewModal" tabindex="-1"
+										aria-labelledby="userViewModalLabel" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered modal-lg">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="userViewModalLabel">User Details</h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal"
+														aria-label="Close"></button>
+												</div>
+												<div class="modal-body">
+													<form id="userDetailsForm">
+														<div class="row g-3">
+															<div class="col-md-4">
+																<label class="form-label">User ID</label>
+																<input type="text" class="form-control" id="viewUserId"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Name</label>
+																<input type="text" class="form-control" id="viewName"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Email</label>
+																<input type="email" class="form-control" id="viewEmail"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Mobile</label>
+																<input type="text" class="form-control" id="viewMobile"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Nationality</label>
+																<input type="text" class="form-control"
+																	id="viewNationality" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">PAN</label>
+																<input type="text" class="form-control" id="viewPan"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Gender</label>
+																<input type="text" class="form-control" id="viewGender"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Address</label>
+																<textarea type="text" class="form-control"
+																	id="viewAddress" readonly></textarea>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">KYC Status</label>
+																<input type="text" class="form-control" id="viewKyc"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription</label>
+																<input type="text" class="form-control"
+																	id="viewSubscription" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription Date</label>
+																<input type="text" class="form-control"
+																	id="viewSubscriptionDate" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Expiry Date</label>
+																<input type="text" class="form-control"
+																	id="viewExpiryDate" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transactions</label>
+																<input type="text" class="form-control"
+																	id="viewTransactions" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transaction Amount</label>
+																<input type="text" class="form-control"
+																	id="viewTransactionAmount" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Status</label>
+																<input type="text" class="form-control" id="viewStatus"
+																	readonly>
+															</div>
 
-										// Based on KYC status, selectively show images
-										switch (user.kyc) {
-											case "Initial":
-												visitingCardEl.style.display = '';
-												panCardEl.style.display = '';
-												document.getElementById("viewVisitingCard").src = user.visitingCard || fallback;
-												document.getElementById("viewPanCard").src = user.panCard || fallback;
-												break;
+															<div class="col-md-4">
+																<label class="form-label">Profile Image</label>
+																<img id="viewImage" class="img-fluid rounded border"
+																	alt="Profile" />
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Visiting Card</label>
+																<img id="viewVisitingCard"
+																	class="img-fluid rounded border"
+																	alt="Visiting Card" />
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">PAN Card</label>
+																<img id="viewPanCard" class="img-fluid rounded border"
+																	alt="PAN Card" />
+															</div>
+															<div class="col-md-6">
+																<label class="form-label">Aadhaar Front</label>
+																<img id="viewAadhaarFront"
+																	class="img-fluid rounded border"
+																	alt="Aadhaar Front" />
+															</div>
+															<div class="col-md-6">
+																<label class="form-label">Aadhaar Back</label>
+																<img id="viewAadhaarBack"
+																	class="img-fluid rounded border"
+																	alt="Aadhaar Back" />
+															</div>
+														</div>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
 
-											case "Completed":
-												visitingCardEl.style.display = '';
-												panCardEl.style.display = '';
-												aadhaarFrontEl.style.display = '';
-												aadhaarBackEl.style.display = '';
-												document.getElementById("viewVisitingCard").src = user.visitingCard || fallback;
-												document.getElementById("viewPanCard").src = user.panCard || fallback;
-												document.getElementById("viewAadhaarFront").src = user.aadhaarCardFront || fallback;
-												document.getElementById("viewAadhaarBack").src = user.aadhaarCardBack || fallback;
-												break;
+									<script>
+										document.addEventListener("DOMContentLoaded", function () {
+											const viewButtons = document.querySelectorAll(".view-user-btn");
 
-											// If "Pending", don't show any KYC-related docs (do nothing)
-										}
+											viewButtons.forEach((btn) => {
+												btn.addEventListener("click", function () {
+													const user = JSON.parse(this.dataset.user);
 
-										// Show modal
-										const modal = new bootstrap.Modal(document.getElementById("userViewModal"));
-										modal.show();
-									});
-								});
-							});
-						</script>
+													// Text fields
+													document.getElementById("viewUserId").value = user.userId || '';
+													document.getElementById("viewName").value = user.name || '';
+													document.getElementById("viewEmail").value = user.email || '';
+													document.getElementById("viewPan").value = user.pan || '';
+													document.getElementById("viewMobile").value = user.mobile || '';
+													document.getElementById("viewNationality").value = user.nationality || '';
+													document.getElementById("viewGender").value = user.gender || '';
+													document.getElementById("viewAddress").value = user.address || '';
+													document.getElementById("viewKyc").value = user.kyc || '';
+													document.getElementById("viewSubscription").value = user.subscription?.subscription || 'N/A';
+													document.getElementById("viewSubscriptionDate").value = user.subscriptionDate
+														? new Date(user.subscriptionDate).toLocaleDateString()
+														: '';
+													document.getElementById("viewExpiryDate").value = user.expiryDate
+														? new Date(user.expiryDate).toLocaleDateString()
+														: '';
+													document.getElementById("viewTransactions").value = user.transactions ?? 0;
+													document.getElementById("viewTransactionAmount").value = user.transactionAmount ?? 0;
 
-						<!-- Edit User Modal -->
-<div class="modal fade" id="userEditModal" tabindex="-1" aria-labelledby="userEditModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="userEditModalLabel">Edit User</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<form id="userEditForm">
-					<div class="row g-3">
-						<!-- Repeat same structure as view form, but without "readonly" attributes -->
-						<div class="col-md-4">
-							<label class="form-label">User ID</label>
-							<input type="text" class="form-control" id="editUserId" name="userId" readonly>
-						</div>
-						<div class="col-md-4">
-							<label class="form-label">Name</label>
-							<input type="text" class="form-control" id="editName" name="name">
-						</div>
-						<div class="col-md-4">
-							<label class="form-label">Email</label>
-							<input type="email" class="form-control" id="editEmail" name="email">
-						</div>
-						<div class="col-md-4">
-							<label class="form-label">Mobile</label>
-							<input type="text" class="form-control" id="editMobile" name="mobile">
-						</div>
-						<div class="col-md-4">
-							<label class="form-label">Nationality</label>
-							<input type="text" class="form-control" id="editNationality" name="nationality">
-						</div>
-						<div class="col-md-4">
-							<label class="form-label">PAN</label>
-							<input type="text" class="form-control" id="editPan" name="pan">
-						</div>
-						<div class="col-md-4">
-							<label class="form-label">Gender</label>
-							<input type="text" class="form-control" id="editGender" name="gender">
-						</div>
-						<div class="col-md-4">
-							<label class="form-label">Address</label>
-							<textarea class="form-control" id="editAddress" name="address"></textarea>
-						</div>
-						<!-- <div class="col-md-4">
-							<label class="form-label">KYC Status</label>
-							<input type="text" class="form-control" id="editKyc" name="kyc">
-						</div>
-						<div class="col-md-4">
-							<label class="form-label">Subscription</label>
-							<input type="text" class="form-control" id="editSubscription" name="subscription">
-						</div>
-						<div class="col-md-4">
-							<label class="form-label">Subscription Date</label>
-							<input type="date" class="form-control" id="editSubscriptionDate" name="subscriptionDate">
-						</div>
-						<div class="col-md-4">
-							<label class="form-label">Expiry Date</label>
-							<input type="date" class="form-control" id="editExpiryDate" name="expiryDate">
-						</div>
-						<div class="col-md-4">
-							<label class="form-label">Transactions</label>
-							<input type="number" class="form-control" id="editTransactions" name="transactions">
-						</div>
-						<div class="col-md-4">
-							<label class="form-label">Transaction Amount</label>
-							<input type="number" class="form-control" id="editTransactionAmount" name="transactionAmount">
-						</div> -->
-						<div class="col-md-4">
-							<label class="form-label">Status</label>
-							<input type="text" class="form-control" id="editStatus" name="status" readonly>
-						</div>
-						<!-- You can include image uploaders if needed -->
-					</div>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				<button type="submit" form="userEditForm" class="btn btn-primary">Save Changes</button>
-			</div>
-		</div>
-	</div>
-</div>
+													const isActive = new Date(user.expiryDate) > new Date();
+													document.getElementById("viewStatus").value = isActive ? "Active" : "Inactive";
+
+													const fallback = '/assets/images/avatar/placeholder.png';
+
+													// Always set profile image
+													document.getElementById("viewImage").src = user.image || fallback;
+
+													// Get image container elements
+													const visitingCardEl = document.getElementById("viewVisitingCard").parentElement;
+													const panCardEl = document.getElementById("viewPanCard").parentElement;
+													const aadhaarFrontEl = document.getElementById("viewAadhaarFront").parentElement;
+													const aadhaarBackEl = document.getElementById("viewAadhaarBack").parentElement;
+
+													// Hide all by default
+													visitingCardEl.style.display = 'none';
+													panCardEl.style.display = 'none';
+													aadhaarFrontEl.style.display = 'none';
+													aadhaarBackEl.style.display = 'none';
+
+													// Based on KYC status, selectively show images
+													switch (user.kyc) {
+														case "Initial":
+															visitingCardEl.style.display = '';
+															panCardEl.style.display = '';
+															document.getElementById("viewVisitingCard").src = user.visitingCard || fallback;
+															document.getElementById("viewPanCard").src = user.panCard || fallback;
+															break;
+
+														case "Completed":
+															visitingCardEl.style.display = '';
+															panCardEl.style.display = '';
+															aadhaarFrontEl.style.display = '';
+															aadhaarBackEl.style.display = '';
+															document.getElementById("viewVisitingCard").src = user.visitingCard || fallback;
+															document.getElementById("viewPanCard").src = user.panCard || fallback;
+															document.getElementById("viewAadhaarFront").src = user.aadhaarCardFront || fallback;
+															document.getElementById("viewAadhaarBack").src = user.aadhaarCardBack || fallback;
+															break;
+
+														// If "Pending", don't show any KYC-related docs (do nothing)
+													}
+
+													// Show modal
+													const modal = new bootstrap.Modal(document.getElementById("userViewModal"));
+													modal.show();
+												});
+											});
+										});
+									</script>
+
+									<!-- Edit User Modal -->
+									<div class="modal fade" id="userEditModal" tabindex="-1"
+										aria-labelledby="userEditModalLabel" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered modal-lg">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="userEditModalLabel">Edit User</h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal"
+														aria-label="Close"></button>
+												</div>
+												<div class="modal-body">
+													<form id="userEditForm">
+														<div class="row g-3">
+															<!-- Repeat same structure as view form, but without "readonly" attributes -->
+															<div class="col-md-4">
+																<label class="form-label">User ID</label>
+																<input type="text" class="form-control" id="editUserId"
+																	name="userId" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Name</label>
+																<input type="text" class="form-control" id="editName"
+																	name="name">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Email</label>
+																<input type="email" class="form-control" id="editEmail"
+																	name="email">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Mobile</label>
+																<input type="text" class="form-control" id="editMobile"
+																	name="mobile">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Nationality</label>
+																<input type="text" class="form-control"
+																	id="editNationality" name="nationality">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">PAN</label>
+																<input type="text" class="form-control" id="editPan"
+																	name="pan">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Gender</label>
+																<input type="text" class="form-control" id="editGender"
+																	name="gender">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Address</label>
+																<textarea class="form-control" id="editAddress"
+																	name="address"></textarea>
+															</div>
+															<!-- <div class="col-md-4">
+																<label class="form-label">KYC Status</label>
+																<input type="text" class="form-control" id="editKyc" name="kyc">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription</label>
+																<input type="text" class="form-control" id="editSubscription" name="subscription">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription Date</label>
+																<input type="date" class="form-control" id="editSubscriptionDate" name="subscriptionDate">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Expiry Date</label>
+																<input type="date" class="form-control" id="editExpiryDate" name="expiryDate">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transactions</label>
+																<input type="number" class="form-control" id="editTransactions" name="transactions">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transaction Amount</label>
+																<input type="number" class="form-control" id="editTransactionAmount" name="transactionAmount">
+															</div> -->
+															<div class="col-md-4">
+																<label class="form-label">Status</label>
+																<input type="text" class="form-control" id="editStatus"
+																	name="status" readonly>
+															</div>
+															<!-- You can include image uploaders if needed -->
+														</div>
+													</form>
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary"
+														data-bs-dismiss="modal">Close</button>
+													<button type="submit" form="userEditForm"
+														class="btn btn-primary">Save Changes</button>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<script>
+										document.addEventListener("DOMContentLoaded", function () {
+											const editButtons = document.querySelectorAll(".edit-user-btn");
+
+											editButtons.forEach((btn) => {
+												btn.addEventListener("click", function () {
+													const user = JSON.parse(this.dataset.user);
+
+													document.getElementById("editUserId").value = user.userId || '';
+													document.getElementById("editName").value = user.name || '';
+													document.getElementById("editEmail").value = user.email || '';
+													document.getElementById("editPan").value = user.pan || '';
+													document.getElementById("editMobile").value = user.mobile || '';
+													document.getElementById("editNationality").value = user.nationality || '';
+													document.getElementById("editGender").value = user.gender || '';
+													document.getElementById("editAddress").value = user.address || '';
+													// document.getElementById("editKyc").value = user.kyc || '';
+													// document.getElementById("editSubscription").value = user.subscription?.subscription || '';
+													// document.getElementById("editSubscriptionDate").value = user.subscriptionDate
+													// 	? new Date(user.subscriptionDate).toISOString().split('T')[0]
+													// 	: '';
+													// document.getElementById("editExpiryDate").value = user.expiryDate
+													// 	? new Date(user.expiryDate).toISOString().split('T')[0]
+													// 	: '';
+													// document.getElementById("editTransactions").value = user.transactions ?? 0;
+													// document.getElementById("editTransactionAmount").value = user.transactionAmount ?? 0;
+
+													const isActive = new Date(user.expiryDate) > new Date();
+													document.getElementById("editStatus").value = isActive ? "Active" : "Inactive";
+
+													// Show modal
+													const modal = new bootstrap.Modal(document.getElementById("userEditModal"));
+													modal.show();
+												});
+											});
+										});
+									</script>
+
+									<script>
+										document.getElementById("userEditForm").addEventListener("submit", function (e) {
+											e.preventDefault();
+
+											// Collect form data
+											const formData = new FormData(this);
+											const updatedUser = Object.fromEntries(formData.entries());
+
+											// Optional: Show loading spinner, disable button, etc.
+
+											fetch("/admin/edit-user", {
+												method: "POST",
+												headers: {
+													"Content-Type": "application/json"
+												},
+												body: JSON.stringify(updatedUser)
+											})
+												.then(response => {
+													if (!response.ok) throw new Error("Failed to save changes.");
+													return response.json();
+												})
+												.then(data => {
+													Swal.fire({
+														icon: 'success',
+														title: 'Updated',
+														text: 'User details updated successfully!',
+														confirmButtonText: 'OK'
+													}).then(() => {
+														const editModal = bootstrap.Modal.getInstance(document.getElementById("userEditModal"));
+														editModal.hide();
+														location.reload();
+													});
+												})
+												.catch(error => {
+													console.error("Error updating user:", error);
+													Swal.fire({
+														icon: 'error',
+														title: 'Error',
+														text: 'Something went wrong while updating the user.',
+														confirmButtonText: 'OK'
+													});
+												});
+										});
+									</script>
+
+									<script>
+										document.addEventListener("DOMContentLoaded", function () {
+											const deleteButtons = document.querySelectorAll(".delete-user-btn");
+
+											deleteButtons.forEach(button => {
+												button.addEventListener("click", async function () {
+													const userId = this.dataset.userId;
+
+													// Confirm with the user
+													const result = await Swal.fire({
+														title: 'Are you sure?',
+														text: "Do you really want to delete this user?",
+														icon: 'warning',
+														showCancelButton: true,
+														confirmButtonColor: '#d33',
+														cancelButtonColor: '#6c757d',
+														confirmButtonText: 'Yes, delete it!',
+														cancelButtonText: 'Cancel'
+													});
+
+													if (!result.isConfirmed) return;
+
+													try {
+														const response = await fetch(`/admin/delete-user/${userId}`, {
+															method: 'DELETE',
+															headers: {
+																'Content-Type': 'application/json',
+															},
+														});
+
+														const result = await response.json();
+
+														if (response.ok) {
+															await Swal.fire({
+																icon: 'success',
+																title: 'Deleted',
+																text: 'User deleted successfully.',
+																confirmButtonText: 'OK'
+															});
+															location.reload();
+														} else {
+															Swal.fire({
+																icon: 'error',
+																title: 'Failed',
+																text: result.message || 'Failed to delete user.',
+																confirmButtonText: 'OK'
+															});
+														}
+													} catch (error) {
+														console.error("Error deleting user:", error);
+														Swal.fire({
+															icon: 'error',
+															title: 'Error',
+															text: 'An error occurred while deleting the user.',
+															confirmButtonText: 'OK'
+														});
+													}
+												});
+											});
+										});
+									</script>
+
+								</div>
+							</div>	
+
+							<div class="tab-pane show" id="tab-suspend">
+
+								<div class="col-lg-12 col-xxl-12">
+									<div class="card border  h-100">
+										<div class="card-body">
+											<div class="table-responsive">
+												<table class="table">
+													<thead>
+														<tr>
+															<th>Customers Details</th>
+															<th>Balance</th>
+															<th>Mobile & Kyc</th>
+															<th>Subscription</th>
+															<th>Bookings & Login</th>
+															<th>Status</th>
+															<th>Actions</th>
+														</tr>
+													</thead>
+													<tbody>
+														<% if(suspendedUsers && suspendedUsers.length> 0) { %>
+															<% suspendedUsers.forEach((user, index)=> { %>
+																<tr>
+																	<td>
+																		<div
+																			class="d-sm-flex align-items-center mb-1 mb-sm-0">
+																			<div class="avatar avatar-xs flex-shrink-0">
+																				<img class="rounded-circle"
+																					src="<%= user.image ? user.image : '/assets/images/avatar/09.jpg' %>"
+																					alt="avatar">
+																			</div>
+																			<div class="ms-sm-3 mt-2 mt-sm-0">
+																				<a href="/admin/user-detail?id=<%=user._id%>">
+																					<h6 class="mb-1">
+																						<%= user.name %>
+																					</h6>
+																				</a>
+																				<ul class="nav nav-divider small">
+																					<li class="nav-item">
+																						<%= user.email %>
+																					</li>
+																					<li class="nav-item">
+																						<%= user.userId %>
+																					</li>
+																				</ul>
+																			</div>
+																		</div>
+																	</td>
+																	<td>
+																		<h5 class="mb-0 fw-3">₹ 26000</h5>
+																	</td>
+																	<% let kycClass; if(user.kyc==="Completed" ){
+																		kycClass="text-success" ; } else
+																		if(user.kyc==="Initial" ){
+																		kycClass="text-warning" ; } else{
+																		kycClass="text-danger" } %>
+																		<td>
+																			<div class="col">
+																				<h6 class="mb-0 fw-normal">
+																					<%= user.mobile %></small>
+																						<h6 class="mb-0 fw-normal">Kyc:
+																							<span class=<%=kycClass %>>
+																								<%= user.kyc %></span>
+																						</h6>
+																			</div>
+																		</td>
+																		<td>
+																			<div class="col">
+																				<h6 class="mb-0 fw-normal">
+																					<%= user.subscription ?
+																						user.subscription.subscription
+																						: 'N/A' %></small>
+																						<h6 class="mb-0 fw-normal">
+																							Validity: <%= new
+																								Date(user.expiryDate).toLocaleDateString('en-GB',
+																								{ day: '2-digit' ,
+																								month: 'short' ,
+																								year: 'numeric' }) %>
+																						</h6>
+																			</div>
+																		</td>
+																		<% let booking; if(user.totalBookings> 1){
+																			booking= "Bookings"
+																			}
+																			else{
+																			booking = "Booking"
+																			}
+																			%>
+																			<td>
+																				<div class="col">
+																					<h6 class="mb-0 fw-normal">
+																						<%= user.totalBookings %>
+																							<%= booking%>
+																					</h6>
+																					<h6 class="mb-0 fw-normal">Last
+																						Login: 12 Jun 2025</h6>
+																				</div>
+																			</td>
+																			<td> <span class="text-danger">
+																						<%= user.status %>
+																					</span>
+																				</td>
+																				<!-- Button -->
+																				<td> <a href="#"
+																						class="btn btn-sm btn-info flex-shrink-0 mb-0 ms-3 view-user-btn"
+																						data-user='<%= JSON.stringify(user) %>'
+																						data-bs-toggle="tooltip"
+																						data-bs-placement="top"><i
+																							class="bi bi-eye"></i>
+																						View</a>
+
+																					<a href="#"
+																						class="btn btn-sm btn-primary  small mb-0"
+																						role="button"
+																						id="dropdownShare6"
+																						data-bs-toggle="dropdown"
+																						aria-expanded="false"> More
+																						<i
+																							class="bi bi-three-dots fa-fw"></i>
+																					</a>
+																					<!-- dropdown button -->
+																					<ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded"
+																						aria-labelledby="dropdownShare6">
+																						<li>
+																						  <a href="#" class="dropdown-item suspend-user" data-user-id="<%= user._id %>">
+																						    <i class="bi bi-ban text-danger fa-fw me-2"></i>Suspend
+ 																						 </a>
+																						</li>
+																						<li><a class="dropdown-item"
+																								href="#"><i
+																									class="bi bi-file-zip-fill text-success fa-fw me-2"></i>
+																								Kyc Details</a></li>
+																					</ul>
+
+																				</td>
+																				<!-- <td>
+																<button class="btn btn-sm btn-primary view-user-btn"
+																	data-user='<%= JSON.stringify(user) %>' title="View"
+																	data-bs-toggle="tooltip" data-bs-placement="top">
+																	<i class="fa-solid fa-eye"></i>
+																</button>
+																<button class="btn btn-sm btn-primary edit-user-btn"
+																	data-user='<%= JSON.stringify(user) %>' title="Edit"
+																	data-bs-toggle="tooltip" data-bs-placement="top">
+																	<i class="fa-solid fa-pen-to-square"></i>
+																</button>
+																<button
+																	class="btn btn-sm btn-danger delete-user-btn ms-2"
+																	data-user-id="<%= user._id %>" title="Delete"
+																	data-bs-toggle="tooltip" data-bs-placement="top">
+																	<i class="fa-solid fa-trash"></i>
+																</button>
+															</td> -->
+																</tr>
+																<% }) %>
+																	<% } else { %>
+																		<tr>
+																			<td colspan="9" class="text-center">
+																				<p class="mb-0">No suspended users found.</p>
+																			</td>
+																		</tr>
+																		<% } %>
+													</tbody>
+												</table>
+											</div>
+										</div>
+
+										<!-- Card footer START -->
+										<div class="card-footer pt-0">
+											<!-- Pagination and content -->
+											<div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+												<p class="mb-sm-0 text-center text-sm-start">
+													Showing <%= (currentPage - 1) * limit + 1 %> to
+														<%= Math.min(currentPage * limit, suspendedTotalCount) %> of
+															<%= suspendedTotalCount %> entries
+												</p>
+												<nav class="mb-sm-0 d-flex justify-content-center"
+													aria-label="navigation">
+													<ul class="pagination pagination-sm pagination-primary-soft mb-0">
+														<li
+															class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+															<a class="page-link"
+																href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
+														</li>
+
+														<% for (let i=1; i <=suspendedTotalPages; i++) { %>
+															<li
+																class="page-item <%= i === currentPage ? 'active' : '' %>">
+																<a class="page-link"
+																	href="?search=<%= search %>&page=<%= i %>">
+																	<%= i %>
+																</a>
+															</li>
+															<% } %>
+
+																<li
+																	class="page-item <%= currentPage === suspendedTotalPages ? 'disabled' : '' %>">
+																	<a class="page-link"
+																		href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
+																</li>
+													</ul>
+												</nav>
+											</div>
+										</div>
+										<!-- Card footer END -->
+									</div>
+									<!-- Guest list END -->
+
+									<!-- User View Modal -->
+									<div class="modal fade" id="userViewModal" tabindex="-1"
+										aria-labelledby="userViewModalLabel" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered modal-lg">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="userViewModalLabel">User Details</h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal"
+														aria-label="Close"></button>
+												</div>
+												<div class="modal-body">
+													<form id="userDetailsForm">
+														<div class="row g-3">
+															<div class="col-md-4">
+																<label class="form-label">User ID</label>
+																<input type="text" class="form-control" id="viewUserId"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Name</label>
+																<input type="text" class="form-control" id="viewName"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Email</label>
+																<input type="email" class="form-control" id="viewEmail"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Mobile</label>
+																<input type="text" class="form-control" id="viewMobile"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Nationality</label>
+																<input type="text" class="form-control"
+																	id="viewNationality" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">PAN</label>
+																<input type="text" class="form-control" id="viewPan"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Gender</label>
+																<input type="text" class="form-control" id="viewGender"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Address</label>
+																<textarea type="text" class="form-control"
+																	id="viewAddress" readonly></textarea>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">KYC Status</label>
+																<input type="text" class="form-control" id="viewKyc"
+																	readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription</label>
+																<input type="text" class="form-control"
+																	id="viewSubscription" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription Date</label>
+																<input type="text" class="form-control"
+																	id="viewSubscriptionDate" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Expiry Date</label>
+																<input type="text" class="form-control"
+																	id="viewExpiryDate" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transactions</label>
+																<input type="text" class="form-control"
+																	id="viewTransactions" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transaction Amount</label>
+																<input type="text" class="form-control"
+																	id="viewTransactionAmount" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Status</label>
+																<input type="text" class="form-control" id="viewStatus"
+																	readonly>
+															</div>
+
+															<div class="col-md-4">
+																<label class="form-label">Profile Image</label>
+																<img id="viewImage" class="img-fluid rounded border"
+																	alt="Profile" />
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Visiting Card</label>
+																<img id="viewVisitingCard"
+																	class="img-fluid rounded border"
+																	alt="Visiting Card" />
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">PAN Card</label>
+																<img id="viewPanCard" class="img-fluid rounded border"
+																	alt="PAN Card" />
+															</div>
+															<div class="col-md-6">
+																<label class="form-label">Aadhaar Front</label>
+																<img id="viewAadhaarFront"
+																	class="img-fluid rounded border"
+																	alt="Aadhaar Front" />
+															</div>
+															<div class="col-md-6">
+																<label class="form-label">Aadhaar Back</label>
+																<img id="viewAadhaarBack"
+																	class="img-fluid rounded border"
+																	alt="Aadhaar Back" />
+															</div>
+														</div>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<script>
+										document.addEventListener("DOMContentLoaded", function () {
+											const viewButtons = document.querySelectorAll(".view-user-btn");
+
+											viewButtons.forEach((btn) => {
+												btn.addEventListener("click", function () {
+													const user = JSON.parse(this.dataset.user);
+
+													// Text fields
+													document.getElementById("viewUserId").value = user.userId || '';
+													document.getElementById("viewName").value = user.name || '';
+													document.getElementById("viewEmail").value = user.email || '';
+													document.getElementById("viewPan").value = user.pan || '';
+													document.getElementById("viewMobile").value = user.mobile || '';
+													document.getElementById("viewNationality").value = user.nationality || '';
+													document.getElementById("viewGender").value = user.gender || '';
+													document.getElementById("viewAddress").value = user.address || '';
+													document.getElementById("viewKyc").value = user.kyc || '';
+													document.getElementById("viewSubscription").value = user.subscription?.subscription || 'N/A';
+													document.getElementById("viewSubscriptionDate").value = user.subscriptionDate
+														? new Date(user.subscriptionDate).toLocaleDateString()
+														: '';
+													document.getElementById("viewExpiryDate").value = user.expiryDate
+														? new Date(user.expiryDate).toLocaleDateString()
+														: '';
+													document.getElementById("viewTransactions").value = user.transactions ?? 0;
+													document.getElementById("viewTransactionAmount").value = user.transactionAmount ?? 0;
+
+													const isActive = new Date(user.expiryDate) > new Date();
+													document.getElementById("viewStatus").value = isActive ? "Active" : "Inactive";
+
+													const fallback = '/assets/images/avatar/placeholder.png';
+
+													// Always set profile image
+													document.getElementById("viewImage").src = user.image || fallback;
+
+													// Get image container elements
+													const visitingCardEl = document.getElementById("viewVisitingCard").parentElement;
+													const panCardEl = document.getElementById("viewPanCard").parentElement;
+													const aadhaarFrontEl = document.getElementById("viewAadhaarFront").parentElement;
+													const aadhaarBackEl = document.getElementById("viewAadhaarBack").parentElement;
+
+													// Hide all by default
+													visitingCardEl.style.display = 'none';
+													panCardEl.style.display = 'none';
+													aadhaarFrontEl.style.display = 'none';
+													aadhaarBackEl.style.display = 'none';
+
+													// Based on KYC status, selectively show images
+													switch (user.kyc) {
+														case "Initial":
+															visitingCardEl.style.display = '';
+															panCardEl.style.display = '';
+															document.getElementById("viewVisitingCard").src = user.visitingCard || fallback;
+															document.getElementById("viewPanCard").src = user.panCard || fallback;
+															break;
+
+														case "Completed":
+															visitingCardEl.style.display = '';
+															panCardEl.style.display = '';
+															aadhaarFrontEl.style.display = '';
+															aadhaarBackEl.style.display = '';
+															document.getElementById("viewVisitingCard").src = user.visitingCard || fallback;
+															document.getElementById("viewPanCard").src = user.panCard || fallback;
+															document.getElementById("viewAadhaarFront").src = user.aadhaarCardFront || fallback;
+															document.getElementById("viewAadhaarBack").src = user.aadhaarCardBack || fallback;
+															break;
+
+														// If "Pending", don't show any KYC-related docs (do nothing)
+													}
+
+													// Show modal
+													const modal = new bootstrap.Modal(document.getElementById("userViewModal"));
+													modal.show();
+												});
+											});
+										});
+									</script>
+
+									<!-- Edit User Modal -->
+									<div class="modal fade" id="userEditModal" tabindex="-1"
+										aria-labelledby="userEditModalLabel" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered modal-lg">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="userEditModalLabel">Edit User</h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal"
+														aria-label="Close"></button>
+												</div>
+												<div class="modal-body">
+													<form id="userEditForm">
+														<div class="row g-3">
+															<!-- Repeat same structure as view form, but without "readonly" attributes -->
+															<div class="col-md-4">
+																<label class="form-label">User ID</label>
+																<input type="text" class="form-control" id="editUserId"
+																	name="userId" readonly>
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Name</label>
+																<input type="text" class="form-control" id="editName"
+																	name="name">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Email</label>
+																<input type="email" class="form-control" id="editEmail"
+																	name="email">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Mobile</label>
+																<input type="text" class="form-control" id="editMobile"
+																	name="mobile">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Nationality</label>
+																<input type="text" class="form-control"
+																	id="editNationality" name="nationality">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">PAN</label>
+																<input type="text" class="form-control" id="editPan"
+																	name="pan">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Gender</label>
+																<input type="text" class="form-control" id="editGender"
+																	name="gender">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Address</label>
+																<textarea class="form-control" id="editAddress"
+																	name="address"></textarea>
+															</div>
+															<!-- <div class="col-md-4">
+																<label class="form-label">KYC Status</label>
+																<input type="text" class="form-control" id="editKyc" name="kyc">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription</label>
+																<input type="text" class="form-control" id="editSubscription" name="subscription">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Subscription Date</label>
+																<input type="date" class="form-control" id="editSubscriptionDate" name="subscriptionDate">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Expiry Date</label>
+																<input type="date" class="form-control" id="editExpiryDate" name="expiryDate">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transactions</label>
+																<input type="number" class="form-control" id="editTransactions" name="transactions">
+															</div>
+															<div class="col-md-4">
+																<label class="form-label">Transaction Amount</label>
+																<input type="number" class="form-control" id="editTransactionAmount" name="transactionAmount">
+															</div> -->
+															<div class="col-md-4">
+																<label class="form-label">Status</label>
+																<input type="text" class="form-control" id="editStatus"
+																	name="status" readonly>
+															</div>
+															<!-- You can include image uploaders if needed -->
+														</div>
+													</form>
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary"
+														data-bs-dismiss="modal">Close</button>
+													<button type="submit" form="userEditForm"
+														class="btn btn-primary">Save Changes</button>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<script>
+										document.addEventListener("DOMContentLoaded", function () {
+											const editButtons = document.querySelectorAll(".edit-user-btn");
+
+											editButtons.forEach((btn) => {
+												btn.addEventListener("click", function () {
+													const user = JSON.parse(this.dataset.user);
+
+													document.getElementById("editUserId").value = user.userId || '';
+													document.getElementById("editName").value = user.name || '';
+													document.getElementById("editEmail").value = user.email || '';
+													document.getElementById("editPan").value = user.pan || '';
+													document.getElementById("editMobile").value = user.mobile || '';
+													document.getElementById("editNationality").value = user.nationality || '';
+													document.getElementById("editGender").value = user.gender || '';
+													document.getElementById("editAddress").value = user.address || '';
+													// document.getElementById("editKyc").value = user.kyc || '';
+													// document.getElementById("editSubscription").value = user.subscription?.subscription || '';
+													// document.getElementById("editSubscriptionDate").value = user.subscriptionDate
+													// 	? new Date(user.subscriptionDate).toISOString().split('T')[0]
+													// 	: '';
+													// document.getElementById("editExpiryDate").value = user.expiryDate
+													// 	? new Date(user.expiryDate).toISOString().split('T')[0]
+													// 	: '';
+													// document.getElementById("editTransactions").value = user.transactions ?? 0;
+													// document.getElementById("editTransactionAmount").value = user.transactionAmount ?? 0;
+
+													const isActive = new Date(user.expiryDate) > new Date();
+													document.getElementById("editStatus").value = isActive ? "Active" : "Inactive";
+
+													// Show modal
+													const modal = new bootstrap.Modal(document.getElementById("userEditModal"));
+													modal.show();
+												});
+											});
+										});
+									</script>
+
+									<script>
+										document.getElementById("userEditForm").addEventListener("submit", function (e) {
+											e.preventDefault();
+
+											// Collect form data
+											const formData = new FormData(this);
+											const updatedUser = Object.fromEntries(formData.entries());
+
+											// Optional: Show loading spinner, disable button, etc.
+
+											fetch("/admin/edit-user", {
+												method: "POST",
+												headers: {
+													"Content-Type": "application/json"
+												},
+												body: JSON.stringify(updatedUser)
+											})
+												.then(response => {
+													if (!response.ok) throw new Error("Failed to save changes.");
+													return response.json();
+												})
+												.then(data => {
+													Swal.fire({
+														icon: 'success',
+														title: 'Updated',
+														text: 'User details updated successfully!',
+														confirmButtonText: 'OK'
+													}).then(() => {
+														const editModal = bootstrap.Modal.getInstance(document.getElementById("userEditModal"));
+														editModal.hide();
+														location.reload();
+													});
+												})
+												.catch(error => {
+													console.error("Error updating user:", error);
+													Swal.fire({
+														icon: 'error',
+														title: 'Error',
+														text: 'Something went wrong while updating the user.',
+														confirmButtonText: 'OK'
+													});
+												});
+										});
+									</script>
+
+									<script>
+										document.addEventListener("DOMContentLoaded", function () {
+											const deleteButtons = document.querySelectorAll(".delete-user-btn");
+
+											deleteButtons.forEach(button => {
+												button.addEventListener("click", async function () {
+													const userId = this.dataset.userId;
+
+													// Confirm with the user
+													const result = await Swal.fire({
+														title: 'Are you sure?',
+														text: "Do you really want to delete this user?",
+														icon: 'warning',
+														showCancelButton: true,
+														confirmButtonColor: '#d33',
+														cancelButtonColor: '#6c757d',
+														confirmButtonText: 'Yes, delete it!',
+														cancelButtonText: 'Cancel'
+													});
+
+													if (!result.isConfirmed) return;
+
+													try {
+														const response = await fetch(`/admin/delete-user/${userId}`, {
+															method: 'DELETE',
+															headers: {
+																'Content-Type': 'application/json',
+															},
+														});
+
+														const result = await response.json();
+
+														if (response.ok) {
+															await Swal.fire({
+																icon: 'success',
+																title: 'Deleted',
+																text: 'User deleted successfully.',
+																confirmButtonText: 'OK'
+															});
+															location.reload();
+														} else {
+															Swal.fire({
+																icon: 'error',
+																title: 'Failed',
+																text: result.message || 'Failed to delete user.',
+																confirmButtonText: 'OK'
+															});
+														}
+													} catch (error) {
+														console.error("Error deleting user:", error);
+														Swal.fire({
+															icon: 'error',
+															title: 'Error',
+															text: 'An error occurred while deleting the user.',
+															confirmButtonText: 'OK'
+														});
+													}
+												});
+											});
+										});
+									</script>
 
 <script>
-	document.addEventListener("DOMContentLoaded", function () {
-		const editButtons = document.querySelectorAll(".edit-user-btn");
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".suspend-user").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const userId = e.currentTarget.dataset.userId;
 
-		editButtons.forEach((btn) => {
-			btn.addEventListener("click", function () {
-				const user = JSON.parse(this.dataset.user);
+        try {
+          const response = await fetch(`/admin/user-suspend?id=${userId}`);
+          const result = await response.json();
 
-				document.getElementById("editUserId").value = user.userId || '';
-				document.getElementById("editName").value = user.name || '';
-				document.getElementById("editEmail").value = user.email || '';
-				document.getElementById("editPan").value = user.pan || '';
-				document.getElementById("editMobile").value = user.mobile || '';
-				document.getElementById("editNationality").value = user.nationality || '';
-				document.getElementById("editGender").value = user.gender || '';
-				document.getElementById("editAddress").value = user.address || '';
-				// document.getElementById("editKyc").value = user.kyc || '';
-				// document.getElementById("editSubscription").value = user.subscription?.subscription || '';
-				// document.getElementById("editSubscriptionDate").value = user.subscriptionDate
-				// 	? new Date(user.subscriptionDate).toISOString().split('T')[0]
-				// 	: '';
-				// document.getElementById("editExpiryDate").value = user.expiryDate
-				// 	? new Date(user.expiryDate).toISOString().split('T')[0]
-				// 	: '';
-				// document.getElementById("editTransactions").value = user.transactions ?? 0;
-				// document.getElementById("editTransactionAmount").value = user.transactionAmount ?? 0;
-
-				const isActive = new Date(user.expiryDate) > new Date();
-				document.getElementById("editStatus").value = isActive ? "Active" : "Inactive";
-
-				// Show modal
-				const modal = new bootstrap.Modal(document.getElementById("userEditModal"));
-				modal.show();
-			});
-		});
-	});
+          if (response.ok) {
+            alert("User suspended successfully");
+            // Optionally update the UI, e.g., disable button or show status
+			window.location.reload();
+          } else {
+            alert("Failed to suspend user: " + result.message);
+          }
+        } catch (err) {
+          alert("Error suspending user");
+          console.error(err);
+        }
+      });
+    });
+  });
 </script>
 
-<script>
-	document.getElementById("userEditForm").addEventListener("submit", function (e) {
-		e.preventDefault();
 
-		// Collect form data
-		const formData = new FormData(this);
-		const updatedUser = Object.fromEntries(formData.entries());
+								</div>
+							</div>								
 
-		// Optional: Show loading spinner, disable button, etc.
-
-		fetch("/admin/edit-user", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify(updatedUser)
-		})
-		.then(response => {
-			if (!response.ok) throw new Error("Failed to save changes.");
-			return response.json();
-		})
-		.then(data => {
-				Swal.fire({
-					icon: 'success',
-					title: 'Updated',
-					text: 'User details updated successfully!',
-					confirmButtonText: 'OK'
-				}).then(() => {
-					const editModal = bootstrap.Modal.getInstance(document.getElementById("userEditModal"));
-					editModal.hide();
-					location.reload();
-				});
-		})
-		.catch(error => {
-			console.error("Error updating user:", error);
-			Swal.fire({
-					icon: 'error',
-					title: 'Error',
-					text: 'Something went wrong while updating the user.',
-					confirmButtonText: 'OK'
-				});
-		});
-	});
-</script>
-
-<script>
-	document.addEventListener("DOMContentLoaded", function () {
-	  const deleteButtons = document.querySelectorAll(".delete-user-btn");
-  
-	  deleteButtons.forEach(button => {
-		button.addEventListener("click", async function () {
-		  const userId = this.dataset.userId;
-  
-		  // Confirm with the user
-		  const result = await Swal.fire({
-					title: 'Are you sure?',
-					text: "Do you really want to delete this user?",
-					icon: 'warning',
-					showCancelButton: true,
-					confirmButtonColor: '#d33',
-					cancelButtonColor: '#6c757d',
-					confirmButtonText: 'Yes, delete it!',
-					cancelButtonText: 'Cancel'
-				});
-
-				if (!result.isConfirmed) return;
-  
-		  try {
-			const response = await fetch(`/admin/delete-user/${userId}`, {
-			  method: 'DELETE',
-			  headers: {
-				'Content-Type': 'application/json',
-			  },
-			});
-  
-			const result = await response.json();
-  
-				if (response.ok) {
-						await Swal.fire({
-							icon: 'success',
-							title: 'Deleted',
-							text: 'User deleted successfully.',
-							confirmButtonText: 'OK'
-						});
-						location.reload();
-					} else {
-						Swal.fire({
-							icon: 'error',
-							title: 'Failed',
-							text: result.message || 'Failed to delete user.',
-							confirmButtonText: 'OK'
-						});
-					}
-		  } catch (error) {
-			console.error("Error deleting user:", error);
-			Swal.fire({
-						icon: 'error',
-						title: 'Error',
-						text: 'An error occurred while deleting the user.',
-						confirmButtonText: 'OK'
-					});
-		  }
-		});
-	  });
-	});
-  </script>
-
-					</div>
-					<!-- Page main content END -->
+						</div>
+						
+				</div>
+				<!-- Page main content END -->
 			</div>
 			<!-- Page content END -->
 

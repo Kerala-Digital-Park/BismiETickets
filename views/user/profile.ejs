@@ -189,10 +189,10 @@
 
                                                 <!-- Mobile -->
                                                 <div class="col-md-6">
-                                                    <label class="form-label">Mobile number (with Country Code)<span
+                                                    <label class="form-label">Whatsapp number (with Country Code)<span
                                                             class="text-danger">*</span></label>
                                                     <input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mobile"
-                                                    value="<%= userDetails.mobile %>" placeholder="Enter your mobile number"
+                                                    value="<%= userDetails.whatsapp %>" placeholder="Enter your mobile number"
                                                         <%= userDetails.mobile ? 'disabled' : '' %>>
                                                 </div>
 
@@ -213,7 +213,7 @@
                                                         <%= userDetails.proprietorship ? 'disabled' : '' %>>
                                                 </div>  
                                                 
-                                                <!-- Gender -->
+<!-- Gender -->
 <!-- <div class="col-md-6">
     <label class="form-label">Select Gender<span class="text-danger">*</span></label>
     <div class="d-flex gap-4">
@@ -234,7 +234,6 @@
         </div>
     </div>
 </div> -->
-
 
                                                 <!-- Address -->
                                                 <div class="col-12">
@@ -285,6 +284,34 @@
                                     </div>
                                     <!-- Update email END -->
 
+                                     <!-- Update whatsapp number START -->
+                                    <div class="card border">
+                                        <!-- Card header -->
+                                        <div class="card-header border-bottom">
+                                            <h4 class="card-header-title">Update Whatsapp Number</h4>
+                                            <p class="mb-0">Your current Whatsapp number is <span class="text-primary">
+                                                    <%= userDetails.whatsapp %>
+                                                </span></p>
+                                        </div>
+
+                                        <!-- Card body START -->
+                                        <div class="card-body">
+                                            <form id="whatsappForm">
+                                                <!-- Email -->
+                                                <label class="form-label">Enter your new whatsapp number (with country code)<span
+                                                        class="text-danger">*</span></label>
+                                                <input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="whatsapp"
+                                                    placeholder="Enter your whatsapp number">
+
+                                                <div class="text-end mt-3">
+                                                    <button class="btn btn-primary mb-0" id="saveWhatsappBtn">Submit Request</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <!-- Card body END -->
+                                    </div>
+                                    <!-- Update whatsapp number END -->
+
                                     <!-- Update Password START -->
                                     <div class="card border">
                                         <!-- Card header -->
@@ -300,8 +327,14 @@
                                             <!-- Current password -->
                                             <div class="mb-3">
                                                 <label class="form-label">Current password</label>
+                                                <div class="input-group">
                                                 <input class="form-control" type="password" id="crnt-pswd"
                                                     placeholder="Enter current password">
+                                                <span class="input-group-text p-0 bg-transparent">
+                                                        <i
+                                                            class="fakepasswordicon fas fa-eye-slash cursor-pointer p-2"></i>
+                                                </span>
+                                                </div>
                                             </div>
                                             <!-- New password -->
                                             <div class="mb-3">
@@ -318,8 +351,14 @@
                                             <!-- Confirm -->
                                             <div class="mb-3">
                                                 <label class="form-label">Confirm new password</label>
+                                                <div class="input-group">
                                                 <input class="form-control" type="password" id="cnfm-pswd"
                                                     placeholder="Confirm new password">
+                                                <span class="input-group-text p-0 bg-transparent">
+                                                        <i
+                                                            class="fakepasswordicon fas fa-eye-slash cursor-pointer p-2"></i>
+                                                </span>
+                                                </div>
                                             </div>
 
                                             <div class="text-end">
@@ -480,6 +519,57 @@ Swal.fire({
                 });
             </script>
 
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    document.getElementById("saveWhatsappBtn").addEventListener("click", async function (event) {
+                        event.preventDefault(); // Prevent form from reloading the page
+
+                        const whatsapp = document.getElementById("whatsapp").value;
+                        console.log(whatsapp);
+
+                        if (!whatsapp) {
+Swal.fire({
+  icon: 'warning',
+  title: 'Missing Whatsapp number',
+  text: 'Please enter a valid whatsapp number.'
+});                            return;
+                        }
+
+                        try {
+                            const response = await fetch("/update-whatsapp", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json", // Important: specify content type
+                                },
+                                body: JSON.stringify({ whatsapp: whatsapp }), // Send as JSON object
+                            });
+
+                            const data = await response.json();
+
+                            if (data.success) {
+                               Swal.fire({
+  icon: 'success',
+  title: 'Submitted!',
+  text: 'Whatsapp number update request submitted for admin approval.'
+}).then(() => location.reload());
+                            } else {
+Swal.fire({
+  icon: 'error',
+  title: 'Update Failed',
+  text: "Error submitting whatsapp number update request: " + data.message
+});                            }
+                        } catch (error) {
+                            console.error("Error:", error);
+                            Swal.fire({
+  icon: 'error',
+  title: 'Update Failed',
+  text: "An error occurred while updating your profile"
+});
+                        }
+                    });
+                });
+            </script>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("savePswdBtn").addEventListener("click", async function (event) {
@@ -568,7 +658,28 @@ Swal.fire({
     });
 </script>
   
-  
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
+  const toggleIcons = document.querySelectorAll(".fakepasswordicon");
+
+  toggleIcons.forEach(icon => {
+    icon.addEventListener("click", () => {
+      const input = icon.closest(".input-group").querySelector("input");
+
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      } else {
+        input.type = "password";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      }
+    });
+  });
+});
+</script>
+
         </main>
         <!-- **************** MAIN CONTENT END **************** -->
 

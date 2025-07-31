@@ -1,5 +1,5 @@
 const isLogin = (req, res, next) => {
-    if (req.session.admin) {
+    if (req.session.adminId) {
         next();
     } else {
         res.redirect("/admin/login");
@@ -7,7 +7,7 @@ const isLogin = (req, res, next) => {
 }
 
 const isLogout = (req, res, next) => {
-    if (req.session.admin) {
+    if (req.session.adminId) {
         res.redirect("/admin");
     }
     next();

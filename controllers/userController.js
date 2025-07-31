@@ -16,7 +16,10 @@ const PopularFlight = require("../models/popularFlightModel");
 const ProfileUpdate = require("../models/profileUpdateModel");
 const Coupons = require("../models/couponModel");
 const Requests = require("../models/requestModel");
-const FilterAirport = require("../models/filterAirportModel")
+const FilterAirport = require("../models/filterAirportModel");
+const LoginActivity = require("../models/loginActivityModel");
+const useragent = require("useragent");
+const requestIp = require("request-ip");
 const { countries } = require('countries-list');
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -47,28 +50,6 @@ const renderTemplate = (templatePath, data) => {
   });
 };
 
-// const viewHomepage = async (req, res) => {
-//   const userId = req.session.userId;
-//   try {
-//     const popularFlights = await PopularFlight.find().limit(6);
-//     const user = await Users.findById(userId).populate("subscription");
-//     if(userId){
-//       const userKyc = await KycUpdate.findOne({ userId: userId });
-//       if(userKyc && userKyc.status === "rejected") {
-//         return res.render("user/home", {
-//           popularFlights,
-//           message: "Your KYC is rejected or suspended. Please complete your KYC to book flights.",
-//           user
-//         });
-//       }
-//     }
-//     res.render("user/home", {popularFlights, user});
-//   } catch (error) {
-//     console.error(error);
-//     res.render("error", { error });
-//   }
-// };
-
 const viewHomepage = async (req, res) => {
   const userId = req.session.userId;
   let message = null;
@@ -89,8 +70,8 @@ const viewHomepage = async (req, res) => {
     res.render("user/home", {
       popularFlights,
       userId,
-      user,          // ✅ now passed
-      message        // ✅ now passed
+      user,          
+      message       
     });
   } catch (error) {
     console.error(error);
@@ -165,143 +146,6 @@ const viewDashboard = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
-// const viewFlightList = async (req, res) => {
-//   try {
-//     const {
-//       from,
-//       to,
-//       departureDate,
-//       returnDate,
-//       adults,
-//       children,
-//       infants,
-//       flexible,
-//     } = req.query;
-//     console.log(req.body)
-
-//     // Convert numeric values back from query string
-//     const requestDetails = {
-//       from,
-//       to,
-//       departureDate,
-//       returnDate,
-//       flexible: flexible === "true", // Convert back to boolean
-//       adults: parseInt(adults) || 1,
-//       children: parseInt(children) || 0,
-//       infants: parseInt(infants) || 0,
-//     };
-
-//     console.log(requestDetails)
-//     res.render("user/flight-list", { flights: [],refilteredFlights:[], requestDetails });
-//   } catch (error) {
-//     console.error(error);
-//     res.render("error", { error });
-//   }
-// };
-
-// const viewFlightDetail = async (req, res) => {
-//   try {
-//     res.render("user/flight-detail", {selectedFlight: []});
-//   } catch (error) {
-//     console.error(error);
-//     res.render("error", { error });
-//   }
-// };
-
-// const viewFlightList = async (req, res) => {
-//   try {
-//     const {
-//       from,
-//       to,
-//       departureDate,
-//       returnDate,
-//       adults,
-//       children,
-//       infants,
-//       flexible,
-//       airlines,
-//       stops, // "0", "1", "2"
-//       refundable
-//     } = req.query;
-
-//     const flights = await Flights.find();
-
-//     const requestDetails = {
-//       from,
-//       to,
-//       departureDate,
-//       returnDate,
-//       flexible: flexible === "true",
-//       adults: parseInt(adults) || 1,
-//       children: parseInt(children) || 0,
-//       infants: parseInt(infants) || 0,
-//     };
-
-//     const totalPassengers = requestDetails.adults + requestDetails.children + requestDetails.infants;
-
-//     // Helper to check date in range
-//     const isDateInRange = (dateStr, startStr, endStr) => {
-//       const date = new Date(dateStr);
-//       return date >= new Date(startStr) && date <= new Date(endStr);
-//     };
-
-//     const filteredFlights = flights.filter(flight => {
-//       const inventory = flight.inventoryDates?.[0];
-//       if (!inventory) return false;
-
-//       const seats = (inventory.seats || 0) - (inventory.seatsBooked || 0);
-//       if (seats < totalPassengers) return false;
-
-//       const matchesRoute = flexible === "true"
-//         ? isDateInRange(flight.departureDate, departureDate, returnDate) &&
-//           flight.from === from && flight.to === to
-//         : flight.departureDate === departureDate &&
-//           flight.from === from && flight.to === to;
-
-//       let matchesAirline = true;
-//       if (airlines) {
-//         const selectedAirlines = Array.isArray(airlines) ? airlines : [airlines];
-//         matchesAirline = selectedAirlines.includes(flight.stops[0]?.airline);
-//       }
-
-//       let matchesStops = true;
-//       if (stops) {
-//         const selectedStops = Array.isArray(stops) ? stops : [stops];
-//         const stopCount = flight.stops.length;
-//         matchesStops = selectedStops.includes(
-//           stopCount === 0 ? "0" : stopCount === 1 ? "1" : "2"
-//         );
-//       }
-
-//       const matchesRefundable = refundable ? flight.refundable === true : true;
-
-//       return matchesRoute && matchesAirline && matchesStops && matchesRefundable;
-//     });
-
-//     // Group best fare by airline
-//     const airlineMap = new Map();
-//     filteredFlights.forEach(flight => {
-//       const airline = flight.stops?.[0]?.airline || "Unknown";
-//       const fare = flight.inventoryDates?.[0]?.fare?.adults || Infinity;
-//       if (!airlineMap.has(airline) || fare < airlineMap.get(airline).fare) {
-//         airlineMap.set(airline, { flight, fare });
-//       }
-//     });
-
-//     const refilteredFlights = Array.from(airlineMap.values()).map(item => item.flight);
-
-//     res.render("user/flight-list", {
-//       flights: filteredFlights,
-//       refilteredFlights,
-//       requestDetails
-//     });
-
-//   } catch (error) {
-//     console.error(error);
-//     res.render("error", { error });
-//   }
-// };
 
 const viewFlightList = async (req, res) => {
   try {
@@ -611,146 +455,6 @@ const viewSupportTicket = async (req, res) => {
     res.render("error", { error });
   }
 };
-
-// const findTicket = async (req, res) => {
-//   console.log("Find flights");
-
-//   try {
-//     const {
-//       fixedFrom,
-//       fixedTo,
-//       from,
-//       to,
-//       departure,
-//       departureDate,
-//       returnDate,
-//       adults,
-//       children,
-//       infants,
-//       dateTypeCheckbox,
-//     } = req.body;
-
-//     const flexible = dateTypeCheckbox === "on";
-
-//     // Validate basic input
-//     if (flexible && (!from || !to || !departureDate || !returnDate)) {
-//       return res.redirect("/");
-//     }
-
-//     if (!flexible && (!fixedFrom || !fixedTo || !departure)) {
-//       return res.redirect("/");
-//     }
-
-//     // Default passenger counts
-//     const requestDetails = {
-//       from,
-//       to,
-//       fixedFrom,
-//       fixedTo,
-//       departure,
-//       returnDate,
-//       departureDate,
-//       flexible: flexible === true,
-//       adults: parseInt(adults) || 1,
-//       children: parseInt(children) || 0,
-//       infants: parseInt(infants) || 0,
-//     };
-
-//     const totalPassengers =
-//       requestDetails.adults + requestDetails.children + requestDetails.infants;
-
-//     const flights = await Flights.find();
-
-//     // Helper to check if date is within range
-//     const isDateInRange = (dateStr, startDateStr, endDateStr) => {
-//       const date = new Date(dateStr);
-//       const startDate = new Date(startDateStr);
-//       const endDate = new Date(endDateStr);
-//       return date >= startDate && date <= endDate;
-//     };
-
-//     // Filter flights by route, date, and seat availability
-//     const filteredFlights = flights.filter((flight) => {
-//       const inventory = flight.inventoryDates?.[0];
-//       if (!inventory) return false;
-
-//       const availableSeats = inventory.seats || 0;
-//       const bookedSeats = inventory.seatsBooked || 0;
-//       const remainingSeats = availableSeats - bookedSeats;
-
-//       const matchesRoute = flexible
-//         ? (
-//             isDateInRange(flight.departureDate, departureDate, returnDate) &&
-//             flight.from.toUpperCase() === from &&
-//             flight.to.toUpperCase() === to
-//           )
-//         : (
-//             flight.departureDate === departure &&
-//             flight.from.toUpperCase() === fixedFrom &&
-//             flight.to.toUpperCase() === fixedTo
-//           );
-
-//       return matchesRoute && remainingSeats >= totalPassengers;
-//     });
-
-//     // Build airline → best fare map
-//     const airlineMap = new Map();
-
-//     filteredFlights.forEach((flight) => {
-//       const inventory = flight.inventoryDates?.[0];
-//       const airline = flight.stops?.[0]?.airline || "Unknown";
-//       const fare = inventory?.fare?.adults || Infinity;
-
-//       const availableSeats = inventory.seats || 0;
-//       const bookedSeats = inventory.seatsBooked || 0;
-//       const remainingSeats = availableSeats - bookedSeats;
-
-//       if (remainingSeats >= totalPassengers) {
-//         if (!airlineMap.has(airline) || fare < airlineMap.get(airline).fare) {
-//           airlineMap.set(airline, { flight, fare });
-//         }
-//       }
-//     });
-
-//     const airlineSet = new Set();
-// const layoverSet = new Set();
-
-// filteredFlights.forEach((flight) => {
-//   const airline = flight.stops?.[0]?.airline;
-//   if (airline) airlineSet.add(airline);
-
-//   const layovers = flight.stops?.slice(0, -1).map(stop => stop.arrivalCity);
-//   layovers.forEach(city => layoverSet.add(city));
-// });
-
-// const availableAirlines = Array.from(airlineSet);
-// const availableLayovers = Array.from(layoverSet);
-
-//    // Extract flights with best fare per airline
-// const refilteredFlights = Array.from(airlineMap.values()).map(
-//   (entry) => entry.flight
-// );
-
-// // Compute min/max fare from filtered flights
-// const fares = filteredFlights.map(f => f.inventoryDates?.[0]?.fare?.adults || 0);
-// const minFare = fares.length > 0 ? Math.min(...fares) : 0;
-// const maxFare = fares.length > 0 ? Math.max(...fares) : 0;
-
-// // Render results
-// res.render("user/flight-list", {
-//   flights: filteredFlights,
-//   refilteredFlights,
-//   requestDetails,
-//   minFare,
-//   maxFare,
-//   availableAirlines,
-//   availableLayovers,
-// });
-//   } catch (error) {
-//     console.error("Error in findTicket:", error);
-//     res.render("error", { error });
-//   }
-// };
 
 const findTicket = async (req, res) => {
   console.log("Find flights");
@@ -1164,18 +868,46 @@ const signin = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await Users.findOne({ email });
-    if (!user)
-      return res.render("user/sign-in", {
+        if (!user) {
+      return res.status(401).json({
+        success: false,
         message: "Invalid credentials",
-        messageType: "danger",
       });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.render("user/sign-in", {
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
         message: "Invalid credentials",
-        messageType: "danger",
       });
+    }
+
+    const ip = requestIp.getClientIp(req); // handles proxies
+    const agent = useragent.parse(req.headers["user-agent"]);
+    const uaString = req.headers["user-agent"].toLowerCase();
+
+    // Determine platform (Mobile / Computer / Tablet)
+    let platform = "Computer";
+    if (/mobile|iphone|android|blackberry|phone/i.test(uaString)) {
+      platform = "Mobile";
+    } else if (/tablet|ipad/i.test(uaString)) {
+      platform = "Tablet";
+    }
+
+        // ✅ Store session-related info (important!)
+    req.session.userId = user._id.toString();
+    req.session.browser = `${agent.family} on ${agent.os.family}`;
+    req.session.platform = platform;
+    req.session.ip = ip;
+    req.session.loginTime = new Date().toISOString(); // MUST be valid date format
+
+    await LoginActivity.create({
+      user: user._id,
+      ip,
+      browser: `${agent.family} on ${agent.os.family}`,
+      platform,
+    });
 
     const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
       expiresIn: "7d",
@@ -1187,10 +919,18 @@ const signin = async (req, res) => {
     const redirectUrl = req.session?.originalUrl || "/";
     if (req.session) delete req.session.originalUrl;
 
-    return res.json({
-      success: true,
-      message: "Login successful",
-      redirect: redirectUrl,
+    // ✅ Save session before sending response
+    req.session.save((err) => {
+      if (err) {
+        console.error("❌ Session save failed:", err);
+        return res.status(500).json({ error: "Session save failed" });
+      }
+
+      return res.json({
+        success: true,
+        message: "Login successful",
+        redirect: redirectUrl,
+      });
     });
     
   } catch (error) {
@@ -1201,10 +941,18 @@ const signin = async (req, res) => {
 
 const signOut = async (req, res) => {
   try {
-    req.session.destroy();
-    res.redirect("/");
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("❌ Session destroy error:", err);
+        return res.status(500).send("Could not log out");
+      }
+
+      // Optionally clear cookie explicitly
+      res.clearCookie("connect.sid"); // Ensure session cookie is removed from browser
+      res.redirect("/");
+    });
   } catch (error) {
-    console.error(error);
+    console.error("❌ Signout error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -1523,6 +1271,9 @@ const flightBooking = async (req, res) => {
     let paid;
     razorpay_payment_id ? (paid = true) : (paid = false);
 
+    let payment_status;
+    razorpay_payment_id ? (payment_status = "Paid") : (payment_status = "Unpaid");
+
     const newBooking = new Bookings({
       userId: req.session.userId,
       flight: flightDetails,
@@ -1546,6 +1297,8 @@ const flightBooking = async (req, res) => {
       baseFare: baseFare,
       tax: otherServices,
       discount,
+      paymentStatus: payment_status,
+      credit: baseFare,
     });
 
     await newTransaction.save();
@@ -1574,8 +1327,20 @@ const flightBooking = async (req, res) => {
       return res.status(404).json({ message: "Flight or inventory date not found" });
     }
 
+const stopsCount = flightDetails.stops?.length || 0;
+
+const requests = await Requests.find({
+  bookingId: newBooking._id,
+  category: "service"
+}).sort({ createdAt: -1 });
+
+const templateFileName =
+  stopsCount <= 1
+    ? 'mail-oneWayBookingConfirmation.ejs'
+    : 'mail-connectingBookingConfirmation.ejs';
+
     try {
-      const templatePath = path.join(__dirname, '../views/user/bookingConfirmationMail.ejs');
+      const templatePath = path.join(__dirname, '../views/user/', templateFileName);
       const html = await renderTemplate(templatePath, {
         travelers,
         flightDetails,
@@ -1584,6 +1349,7 @@ const flightBooking = async (req, res) => {
         otherServices,
         discount,
         bookingId: newBooking.bookingId,
+        requests
       });
 
       await transporter.sendMail({
@@ -1697,6 +1463,38 @@ const updateEmail = async (req, res) => {
 
   } catch (error) {
     console.error("Error submitting email update request:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const updateWhatsapp = async (req, res) => {
+  const { whatsapp } = req.body;
+  try {
+    const userId = req.session.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Save only email update request for admin approval
+    const profileUpdate = new ProfileUpdate({
+      userId,
+      whatsapp,
+    });
+
+    await profileUpdate.save();
+
+    res.json({
+      success: true,
+      message: "Whatsapp number update request submitted for admin approval.",
+    });
+
+  } catch (error) {
+    console.error("Error submitting whatsapp number update request:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -3435,6 +3233,7 @@ module.exports = {
   flightBooking,
   updateProfile,
   updateEmail,
+  updateWhatsapp,
   updatePassword,
   verifyCard,
   verifyAadhaar,

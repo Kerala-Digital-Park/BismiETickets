@@ -1,217 +1,1765 @@
 <%- include('./partials/header') %>
 
-<!-- **************** MAIN CONTENT START **************** -->
-<main>
-	
-	<!-- Sidebar START -->
-	<%- include('./partials/sideBar') %>
-	<!-- Sidebar END -->
-	
-	<!-- Page content START -->
-	<div class="page-content">
-	
-		<!-- Top bar START -->
-		<%- include('./partials/topBar') %>
-		<!-- Top bar END -->
-	
-		<!-- Page main content START -->
-		<div class="page-content-wrapper p-xxl-4">
-	
-			<div class="card shadow">
-				<!-- Card header -->
-				<div class="card-header border-bottom d-sm-flex justify-content-between align-items-center">
-					<!-- Avatar and content -->
-					<div class="d-flex align-items-center flex-shrink-0">
-						<!-- Avatar -->
-						<div class="avatar avatar-lg">
-							<img class="avatar-img rounded-circle" src="/assets/images/avatar/09.jpg" alt="avatar">
-						</div>
-						<!-- Info -->
-						<div class="ms-3">
-							<h5 class="mb-0">Lori Stevens</h5>
-						</div>
-					</div>
+    <!-- **************** MAIN CONTENT START **************** -->
+    <main>
 
-					<div class="d-block d-lg-flex gap-lg-5 flex-wrap mt-3 mt-lg-0">
-						<!-- Email address -->
-						<h6 class="mb-2 mb-lg-0"><i class="bi bi-envelope-fill fa-fw me-1"></i>Email id:<a href="#" class="fw-normal"> hello@gmail.com</a></h6>
-						<!-- Email address -->
-						<h6 class="mb-0"><i class="bi bi-headset fa-fw me-1"></i>Contact no:<a href="#" class="fw-normal"> +1(404) 586-854</a></h6>
-					</div>
-				</div>
-				
-				<!-- Card body -->
-				<div class="card-body">
-					
-					<!-- Title -->
-					<h5 class="mb-3">Booking History</h5>
-					
-					<!-- Table head -->
-					<div class="bg-light rounded p-3 d-none d-lg-block">
-						<div class="row row-cols-6 justify-content-between g-4">
-							<div class="col"><h6 class="mb-0">Room Name</h6></div>
-							<div class="col"><h6 class="mb-0">Bed type</h6></div>
-							<div class="col"><h6 class="mb-0">Room Floor</h6></div>
-							<div class="col"><h6 class="mb-0">Book Date</h6></div>
-							<div class="col"><h6 class="mb-0">Action</h6></div>
-						</div>
-					</div>
+        <!-- Sidebar START -->
+        <%- include('./partials/sideBar') %>
+            <!-- Sidebar END -->
 
-					<!-- Table data -->
-					<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-2 g-sm-4 align-items-md-center justify-content-between border-bottom px-2 py-4">
-						<!-- Data item -->
-						<div class="col">
-							<small class="d-block d-lg-none">Room name:</small>
-							<div class="d-flex align-items-center">
-								<!-- Image -->
-								<div class="w-80px flex-shrink-0">
-									<img src="/assets/images/category/hotel/4by3/01.jpg" class="rounded" alt="">
+            <!-- Page content START -->
+            <div class="page-content">
+
+                <!-- Top bar START -->
+                <%- include('./partials/topBar') %>
+                    <!-- Top bar END -->
+
+                    <!-- Page main content START -->
+                    <div class="page-content-wrapper p-xxl-4">
+
+                        <!-- Counter START -->
+                        <div class="row g-4 mb-4">
+                            <!-- Counter item -->
+                            <div class="col-lg-4">
+                                <div
+                                    class="card card-body border border-primary bg-primary bg-opacity-10 border-opacity-25 p-4 h-100">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <!-- Digit -->
+                                        <div>
+                                            <h3 class="mb-0 fw-bold">
+                                                <%= bookings.length %>
+                                            </h3>
+                                            <span class="mb-0 h6 fw-light">Total Bookings</span>
+                                        </div>
+                                        <!-- Icon -->
+                                        <div class="icon-lg rounded-circle flex-shrink-0 bg-primary text-white mb-0"><i
+                                                class="bi bi-list-check fa-fw"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Counter item -->
+                            <div class="col-lg-4">
+                                <div
+                                    class="card card-body border border-warning bg-warning bg-opacity-10 border-opacity-25 p-4 h-100">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <!-- Digit -->
+                                        <div>
+                                            <h3 class="mb-0 fw-bold">
+                                                <%= bookings.length %>
+                                            </h3>
+                                            <span class="mb-0 h6 fw-light">Booking this month</span>
+                                        </div>
+                                        <!-- Icon -->
+                                        <div class="icon-lg rounded-circle flex-shrink-0 bg-warning text-white mb-0"><i
+                                                class="fa-regular fa-calendar-days fa-fw"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Counter item -->
+                            <div class="col-lg-4">
+                                <div
+                                    class="card card-body border border-success bg-success bg-opacity-10 border-opacity-25 p-4 h-100">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <!-- Digit -->
+                                        <div>
+                                            <h3 class="mb-0 fw-bold">₹ 2500</h3>
+                                            <span class="mb-0 h6 fw-light">Wallet Balance</span>
+                                        </div>
+                                        <!-- Icon -->
+                                        <div class="icon-lg rounded-circle flex-shrink-0 bg-success text-white mb-0"><i
+                                                class="fa-solid fa-money-bill-trend-up fa-fw"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Counter END -->
+
+                        <div class="row g-4 mb-5">
+                            <!-- Agent info START -->
+                            <div class="col-md-4 col-xxl-3">
+                                <div class="card bg-light">
+                                    <!-- Dropdown button -->
+                                    <div class="dropdown position-absolute top-0 end-0 m-3">
+                                        <a href="#" class="btn btn-sm btn-white btn-round lh-lg mb-0" role="button"
+                                            id="dropdownShare1" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots fa-fw"></i>
+                                        </a>
+                                        <!-- dropdown button -->
+                                        <ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded"
+                                            aria-labelledby="dropdownShare1">
+                                            <li><a href="#" class="dropdown-item suspend-user"
+                                                    data-user-id="<%= user._id %>">
+                                                    <i class="bi bi-ban text-danger fa-fw me-2"></i>Suspend</a>
+                                            </li>
+                                            <li><a class="dropdown-item" href="#"><i
+                                                        class="bi bi-trash-fill text-danger fa-fw me-2"></i>Remove</a>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                    <!-- Card body -->
+                                    <div class="card-body text-center">
+                                        <!-- Avatar Image -->
+                                        <div class="avatar avatar-xl flex-shrink-0 mb-3">
+                                            <img class="avatar-img rounded-circle" src="assets/images/avatar/05.jpg"
+                                                alt="avatar">
+                                        </div>
+                                        <!-- Title -->
+                                        <h5 class="mb-2">
+                                            <%= user.name %>
+                                        </h5>
+                                        <!-- <ul class="list-inline small mb-0">
+                                    <li class="list-inline-item me-0"><i class="fa-solid fa-star text-warning"></i>
+                                    </li>
+                                    <li class="list-inline-item me-0"><i class="fa-solid fa-star text-warning"></i>
+                                    </li>
+                                    <li class="list-inline-item me-0"><i class="fa-solid fa-star text-warning"></i>
+                                    </li>
+                                    <li class="list-inline-item me-0"><i class="fa-solid fa-star text-warning"></i>
+                                    </li>
+                                    <li class="list-inline-item"><i
+                                            class="fa-solid fa-star-half-alt text-warning"></i></li>
+                                </ul> -->
+                                    </div>
+                                    <!-- Card footer -->
+                                    <div class="card-footer bg-light border-top">
+                                        <h6 class="mb-3">Contact Details</h6>
+                                        <!-- Email id -->
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="icon-md bg-mode h6 mb-0 rounded-circle flex-shrink-0"><i
+                                                    class="bi bi-envelope-fill"></i></div>
+                                            <div class="ms-2">
+                                                <small>Email id</small>
+                                                <h6 class="fw-normal small mb-0"><a href="#">
+                                                        <%= user.email %>
+                                                    </a></h6>
+                                            </div>
+                                        </div>
+
+                                        <!-- Phone -->
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="icon-md bg-mode h6 mb-0 rounded-circle flex-shrink-0"><i
+                                                    class="bi bi-telephone-fill"></i></div>
+                                            <div class="ms-2">
+                                                <small>Phone</small>
+                                                <h6 class="fw-normal small mb-0">
+                                                    <%= user.mobile %>
+                                                </h6>
+                                            </div>
+                                        </div>
+
+                                        <% let kycClass; if(user.kyc==="Completed" ){ kycClass="text-success" ; } else
+                                            if(user.kyc==="Initial" ){ kycClass="text-warning" ; } else{
+                                            kycClass="text-danger" } %>
+                                            <!-- Phone -->
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="icon-md bg-mode h6 mb-0 rounded-circle flex-shrink-0"><i
+                                                        class="bi bi-file-zip-fill"></i></div>
+                                                <div class="ms-2">
+                                                    <small>Kyc Status</small>
+                                                    <h6 class="fw-normal small mb-0">
+                                                        <span class="<%= kycClass %>">
+                                                            <%= user.kyc %>
+                                                        </span>
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <!-- Phone -->
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="icon-md bg-mode h6 mb-0 rounded-circle flex-shrink-0">
+                                                    <i class="bi bi-whatsapp text-success"></i>
+                                                </div>
+                                                <div class="ms-2">
+                                                    <small>Whatsapp</small>
+                                                    <h6 class="fw-normal small mb-0">
+                                                        <%= user.whatsapp %>
+                                                    </h6>
+                                                </div>
+                                            </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Agent info END -->
+
+                            <div class="col-md-8 col-xxl-9">
+                                <!-- Personal info START -->
+                                <div class="card shadow">
+                                    <!-- Card header -->
+                                    <div class="card-header border-bottom">
+                                        <div class="d-sm-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0">Personal Information</h5>
+                                            <button class="btn btn-outline-info waves-effect waves-light "
+                                                title="KYC Details" data-bs-toggle="modal"
+                                                data-bs-target="#paxupdate"><i class="bi bi-pencil-square"></i></button>
+                                        </div>
+                                    </div>
+                                    <!-- Card body -->
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <!-- Information item -->
+                                            <div class="col-md-6">
+                                                <ul class="list-group list-group-borderless">
+                                                    <li class="list-group-item mb-3">
+                                                        <span>Full Name:</span>
+                                                        <span class="h6 fw-normal ms-1 mb-0">
+                                                            <%= user.name %>
+                                                        </span>
+                                                    </li>
+
+                                                    <li class="list-group-item mb-3">
+                                                        <span>User ID:</span>
+                                                        <span class="h6 fw-normal ms-1 mb-0">
+                                                            <%= user.userId %>
+                                                        </span>
+                                                    </li>
+
+                                                    <li class="list-group-item mb-3">
+                                                        <span>Whatsapp Number:</span>
+                                                        <span class="h6 fw-normal ms-1 mb-0">
+                                                            <%= user.whatsapp %>
+                                                        </span>
+                                                    </li>
+
+                                                    <li class="list-group-item mb-3">
+                                                        <span>Subscription:</span>
+                                                        <span class="h6 fw-normal ms-1 mb-0">
+                                                            <%= user.subscription.subscription %>
+                                                        </span>
+                                                    </li>
+
+                                                    <li class="list-group-item mb-3">
+                                                        <span>Subscription Date:</span>
+                                                        <span class="h6 fw-normal ms-1 mb-0">
+                                                            <%= new Date(user.subscriptionDate).toDateString() %>
+                                                        </span>
+                                                    </li>
+
+                                                    <li class="list-group-item mb-3">
+                                                        <span>Expiry Date:</span>
+                                                        <span class="h6 fw-normal ms-1 mb-0">
+                                                            <%= new Date(user.expiryDate).toDateString() %>
+                                                        </span>
+                                                    </li>
+                                                    <li class="list-group-item mb-3">
+                                                        <span>Last Login:</span>
+                                                        <span class="h6 fw-normal ms-1 mb-0">
+                                                            Fri Aug 01 2025
+                                                        </span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+
+                                            <!-- Information item -->
+                                            <div class="col-md-6">
+                                                <ul class="list-group list-group-borderless">
+                                                    <li class="list-group-item mb-3">
+                                                        <span>Email ID:</span>
+                                                        <span class="h6 fw-normal ms-1 mb-0">
+                                                            <%= user.email %>
+                                                        </span>
+                                                    </li>
+
+                                                    <li class="list-group-item mb-3">
+                                                        <span>Agency Name:</span>
+                                                        <span class="h6 fw-normal ms-1 mb-0">
+                                                            <%= user.agencyName %>
+                                                        </span>
+                                                    </li>
+                                                    <li class="list-group-item mb-3">
+                                                        <span>Agency Type:</span>
+                                                        <span class="h6 fw-normal ms-1 mb-0">
+                                                            <%= user.proprietorship %>
+                                                        </span>
+                                                    </li>
+                                                    <li class="list-group-item mb-3">
+                                                        <span>Role of User:</span>
+                                                        <span class="h6 fw-normal ms-1 mb-0">
+                                                            <%= user.userRole %>
+                                                        </span>
+                                                    </li>
+
+                                                    <li class="list-group-item mb-3">
+                                                        <span>Location:</span>
+                                                        <span class="h6 fw-normal ms-1 mb-0">
+                                                            <%= user.address %>
+                                                        </span>
+                                                    </li>
+
+                                                    <li class="list-group-item mb-3">
+                                                        <span>Joining Date:</span>
+                                                        <span class="h6 fw-normal ms-1 mb-0">
+                                                            <%= new Date(user.createdAt).toDateString() %>
+                                                        </span>
+                                                    </li>
+                                                    <% let statusClass; if(user.status==="Active" ){
+                                                        statusClass="text-success" ; } else if(user.status==="Inactive"
+                                                        ){ statusClass="text-warning" ; } else{
+                                                        statusClass="text-danger" } %>
+                                                        <li class="list-group-item mb-3">
+                                                            <span>Status:</span>
+                                                            <span class="h6 fw-normal ms-1 mb-0">
+                                                                <span class="<%= statusClass %>">
+                                                                    <%= user.status %>
+                                                                </span>
+                                                            </span>
+                                                        </li>
+                                                </ul>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Personal info END -->
+                            </div>
+                        </div> <!-- Row END -->
+
+                        <!-- Hotel list START -->
+                        <div class="row g-4">
+                            <!-- Title -->
+                            <ul class="nav nav-tabs nav-bottom-line mb-3">
+
+                                <li class="nav-item"> <a class="nav-link active" data-bs-toggle="tab" href="#tab-7-7">
+                                        Booking
+                                        History
+                                    </a>
+                                </li>
+                                <li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-3-2">
+                                        Documents
+                                    </a>
+                                </li>
+                                <li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-4-4">Booking
+                                        Transactions
+                                    </a>
+                                </li>
+                                <li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-9-9">
+                                        Subscriptions
+                                    </a>
+                                </li>
+                                <li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-3-4">
+                                        Approvals
+                                    </a>
+                                </li>
+                                <li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-6-6"> Utility
+                                        Actions
+                                    </a>
+                                </li>
+                                <li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-3-3"> Activity
+                                    </a>
+                                </li>
+
+                            </ul>
+                            <div class="tab-content">
+
+                                <div class="tab-pane show active" id="tab-7-7">
+                                    <div class="row g-4">
+                                        <% if (bookings && bookings.length> 0) { %>
+                                            <% bookings.forEach((booking)=> { %>
+                                                <div class="col-lg-6">
+                                                    <div class="card border mb-3">
+                                                        <div class="card-header border-bottom">
+                                                            <div
+                                                                class="d-sm-flex justify-content-between align-items-center">
+                                                                <div class="d-sm-flex align-items-center mb-1 mb-sm-0">
+                                                                    <div class="avatar avatar-md flex-shrink-0">
+                                                                        <img class="rounded-circle"
+                                                                            src="<%= booking.flight.stops[0].airlineLogo %>">
+                                                                    </div>
+                                                                    <div class="ms-sm-3 mt-2 mt-sm-0">
+                                                                        <h6 class="mb-1">
+                                                                            <%= booking.flight.fromCity %> ➝ <%=
+                                                                                    booking.flight.toCity %>
+                                                                                    on <%=
+                                                                                        booking.flight.stops[0].airline
+                                                                                        %>
+                                                                        </h6>
+                                                                        <ul class="nav nav-divider small">
+                                                                            <li class="nav-item">Trip Date: <%=
+                                                                                    booking.flight.departureDate %>
+                                                                            </li>
+                                                                            <li class="nav-item">
+                                                                                <%= booking.bookingId %>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                                <a href="/admin/booking/<%= booking._id %>"
+                                                                    class="btn btn-sm btn-dark flex-shrink-0 mb-0 ms-3">View
+                                                                    Details</a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-body bg-light">
+                                                            <div class="hstack gap-2 gap-md-5 flex-wrap mt-2">
+                                                                <div>
+                                                                    <small>Pax Name</small>
+                                                                    <h6 class="fw-normal mb-0">
+                                                                        <%= booking.travelers[0].first_name %>
+                                                                            <%= booking.travelers[0].last_name %>
+                                                                    </h6>
+                                                                </div>
+                                                                <div>
+                                                                    <small>Price</small>
+                                                                    <h5 class="mb-0 fw-3">₹ <%= booking.amount %>
+                                                                    </h5>
+                                                                </div>
+                                                                <div>
+                                                                    <small>Travel Status</small>
+                                                                    <h6
+                                                                        class="text-<%= booking.status === 'active' ? 'success' : 'danger' %> fw-normal mb-0">
+                                                                        <%= booking.status==='active' ? 'Upcoming'
+                                                                            : 'Cancelled' %>
+                                                                    </h6>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <% }) %>
+                                                    <% } else { %>
+                                                        <div class="col-12">
+                                                            <div class="alert alert-warning mb-0" role="alert">
+                                                                <i class="bi bi-exclamation-triangle me-2"></i> No
+                                                                bookings found.
+                                                            </div>
+                                                        </div>
+                                                        <% } %>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="tab-3-2">
+                                    <div class="card">
+                                        <div class="card header mb-3">
+                                            <h4 class="h4 mb-3 mb-sm-0">Agency Logo</h4>
+                                            <p>Logo for the Profile and Print</p>
+                                        </div>
+                                        <div class="card body mb-3">
+                                            <div class="row g-4">
+                                                <!-- Overlay item -->
+                                                <div class="col-lg-3">
+                                                    <% if (user.image) { %>
+                                                        <a data-glightbox data-gallery="gallery"
+                                                            href="<%= user.image %>">
+                                                            <div
+                                                                class="card card-element-hover card-overlay-hover overflow-hidden">
+                                                                <!-- Image -->
+                                                                <img src="<%= user.image %>"
+                                                                    class="card-img-top img-fluid"
+                                                                    style="height: 250px; width: 100%;"
+                                                                    alt="User Image">
+
+                                                                <!-- Overlay -->
+                                                                <div class="card-img-overlay d-flex flex-column p-3">
+                                                                    <!-- Card overlay top -->
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        <div class="badge text-bg-dark">Profile Logo
+                                                                        </div>
+
+                                                                        <div class="hover-element w-100 h-100">
+                                                                            <i
+                                                                                class="bi bi-fullscreen fs-6 text-white position-absolute top-50 start-50 translate-middle bg-dark rounded-1 p-2 lh-1"></i>
+                                                                        </div>
+
+                                                                        <!-- Dropdown -->
+                                                                        <div class="list-inline-item dropdown">
+                                                                            <a href="#"
+                                                                                class="btn btn-sm btn-round btn-light"
+                                                                                role="button" id="dropdownAction1"
+                                                                                data-bs-toggle="dropdown"
+                                                                                aria-expanded="false">
+                                                                                <i
+                                                                                    class="bi bi-three-dots-vertical"></i>
+                                                                            </a>
+                                                                            <ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded small"
+                                                                                aria-labelledby="dropdownAction1">
+                                                                                <li>
+                                                                                    <a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-pencil-square text-primary fa-fw me-2"></i>Change</a>
+                                                                                </li>
+                                                                                <li>
+                                                                                    <a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-trash-fill text-danger fa-fw me-2"></i>Remove</a>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                        <% } else { %>
+                                                            <div class="card card-element-hover card-overlay-hover overflow-hidden bg-light d-flex align-items-center justify-content-center"
+                                                                style="height: 200px;">
+                                                                <!-- No image fallback -->
+                                                                <div class="text-center">
+                                                                    <i
+                                                                        class="bi bi-person-circle fs-1 text-secondary"></i>
+                                                                    <div class="badge text-bg-dark mt-2">No Profile
+                                                                        Image</div>
+                                                                </div>
+                                                            </div>
+                                                            <% } %>
+                                                </div>
+
+                                                <!-- End Overlay item -->
+                                                <!-- Overlay item -->
+                                                <div class="col-lg-3">
+                                                    <% if (user.logo) { %>
+                                                        <a data-glightbox data-gallery="gallery"
+                                                            href="<%= user.logo %>">
+                                                            <div
+                                                                class="card card-element-hover card-overlay-hover overflow-hidden">
+                                                                <!-- Image -->
+                                                                <img src="<%= user.logo %>"
+                                                                    class="card-img-top img-fluid"
+                                                                    style="height: 250px; width: 100%;"
+                                                                    alt="Card image">
+                                                                <!-- Overlay -->
+
+                                                                <div class="card-img-overlay d-flex flex-column p-3">
+                                                                    <!-- Card overlay top -->
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        <div class="badge text-bg-dark">Print Logo
+                                                                        </div>
+                                                                        <div class="hover-element w-100 h-100">
+                                                                            <i
+                                                                                class="bi bi-fullscreen fs-6 text-white position-absolute top-50 start-50 translate-middle bg-dark rounded-1 p-2 lh-1"></i>
+                                                                        </div>
+                                                                        <!-- Buttons -->
+                                                                        <div class="list-inline-item dropdown">
+                                                                            <!-- Dropdown button -->
+                                                                            <a href="#"
+                                                                                class="btn btn-sm btn-round btn-light"
+                                                                                role="button" id="dropdownAction1"
+                                                                                data-bs-toggle="dropdown"
+                                                                                aria-expanded="false">
+                                                                                <i
+                                                                                    class="bi bi-three-dots-vertical"></i>
+                                                                            </a>
+                                                                            <!-- dropdown items -->
+                                                                            <ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded small"
+                                                                                aria-labelledby="dropdownAction1">
+
+                                                                                <li><a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-pencil-square text-primary fa-fw me-2"></i>Change</a>
+                                                                                </li>
+                                                                                <li><a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-trash-fill text-danger fa-fw me-2"></i>Remove</a>
+                                                                                </li>
+
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                        <% } else { %>
+                                                            <div class="card card-element-hover card-overlay-hover overflow-hidden bg-light d-flex align-items-center justify-content-center"
+                                                                style="height: 200px;">
+                                                                <!-- No image fallback -->
+                                                                <div class="text-center">
+                                                                    <i
+                                                                        class="bi bi-person-circle fs-1 text-secondary"></i>
+                                                                    <div class="badge text-bg-dark mt-2">No Print Logo
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <% } %>
+                                                </div>
+                                                <!-- End Overlay item -->
+                                            </div>
+                                        </div>
+                                        <div class="card header mb-3">
+                                            <h4 class="h4 mb-3 mb-sm-0">Minimum Kyc Files</h4>
+                                            <p>Account holder uploaded Kyc Files</p>
+                                        </div>
+                                        <div class="card body mb-3">
+                                            <div class="row g-4">
+                                                <!-- Overlay item -->
+                                                <div class="col-lg-3">
+                                                    <% if (user.visitingCard) { %>
+                                                        <a data-glightbox data-gallery="gallery"
+                                                            href="<%= user.visitingCard %>">
+                                                  <!-- Overlay item -->
+                                                          <div
+                                                                class="card card-element-hover card-overlay-hover overflow-hidden">
+                                                                <!-- Image -->
+                                                                <img src="<%= user.visitingCard %>"
+                                                                    class="card-img-top img-fluid"
+                                                                    style="height: 250px; width: 100%;"
+                                                                    alt="visiting card">
+
+                                                                <!-- Overlay -->
+                                                                <div class="card-img-overlay d-flex flex-column p-3">
+                                                                    <!-- Card overlay top -->
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        <div class="badge text-bg-dark">Visiting Card
+                                                                        </div>
+
+                                                                        <div class="hover-element w-100 h-100">
+                                                                            <i
+                                                                                class="bi bi-fullscreen fs-6 text-white position-absolute top-50 start-50 translate-middle bg-dark rounded-1 p-2 lh-1"></i>
+                                                                        </div>
+
+                                                                        <!-- Dropdown -->
+                                                                        <div class="list-inline-item dropdown">
+                                                                            <a href="#"
+                                                                                class="btn btn-sm btn-round btn-light"
+                                                                                role="button" id="dropdownAction1"
+                                                                                data-bs-toggle="dropdown"
+                                                                                aria-expanded="false">
+                                                                                <i
+                                                                                    class="bi bi-three-dots-vertical"></i>
+                                                                            </a>
+                                                                            <ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded small"
+                                                                                aria-labelledby="dropdownAction1">
+                                                                                <li>
+                                                                                    <a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-pencil-square text-primary fa-fw me-2"></i>Attach kyc</a>
+                                                                                </li>
+                                                                                <li>
+                                                                                    <a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-trash-fill text-danger fa-fw me-2"></i>Remove</a>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                        <% } else { %>
+                                                            <div class="card card-element-hover card-overlay-hover overflow-hidden bg-light d-flex align-items-center justify-content-center"
+                                                                style="height: 200px;">
+                                                                <!-- No image fallback -->
+                                                                <div class="text-center">
+                                                                    <i
+                                                                        class="bi bi-person-circle fs-1 text-secondary"></i>
+                                                                    <div class="badge text-bg-dark mt-2">No Visiting
+                                                                        Card</div>
+                                                                </div>
+                                                            </div>
+                                                            <% } %>
+                                                </div>
+
+                                                <!-- End Overlay item -->
+                                                <!-- Overlay item -->
+                                                <div class="col-lg-3">
+                                                    <% if (user.panCard) { %>
+                                                        <a data-glightbox data-gallery="gallery"
+                                                            href="<%= user.panCard %>">
+                                                            <div
+                                                                class="card card-element-hover card-overlay-hover overflow-hidden">
+                                                                <!-- Image -->
+                                                                <img src="<%= user.panCard %>"
+                                                                    class="card-img-top img-fluid"
+                                                                    style="height: 250px; width: 100%;"
+                                                                    alt="Card image">
+                                                                <!-- Overlay -->
+
+                                                                <div class="card-img-overlay d-flex flex-column p-3">
+                                                                    <!-- Card overlay top -->
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        <div class="badge text-bg-dark">Pan Card
+                                                                        </div>
+                                                                        <div class="hover-element w-100 h-100">
+                                                                            <i
+                                                                                class="bi bi-fullscreen fs-6 text-white position-absolute top-50 start-50 translate-middle bg-dark rounded-1 p-2 lh-1"></i>
+                                                                        </div>
+                                                                        <!-- Buttons -->
+                                                                        <div class="list-inline-item dropdown">
+                                                                            <!-- Dropdown button -->
+                                                                            <a href="#"
+                                                                                class="btn btn-sm btn-round btn-light"
+                                                                                role="button" id="dropdownAction1"
+                                                                                data-bs-toggle="dropdown"
+                                                                                aria-expanded="false">
+                                                                                <i
+                                                                                    class="bi bi-three-dots-vertical"></i>
+                                                                            </a>
+                                                                            <!-- dropdown items -->
+                                                                            <ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded small"
+                                                                                aria-labelledby="dropdownAction1">
+
+                                                                                <li><a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-pencil-square text-primary fa-fw me-2"></i>Attach Kyc</a>
+                                                                                </li>
+                                                                                <li><a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-trash-fill text-danger fa-fw me-2"></i>Remove</a>
+                                                                                </li>
+
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                        <% } else { %>
+                                                            <div class="card card-element-hover card-overlay-hover overflow-hidden bg-light d-flex align-items-center justify-content-center"
+                                                                style="height: 200px;">
+                                                                <!-- No image fallback -->
+                                                                <div class="text-center">
+                                                                    <i
+                                                                        class="bi bi-person-circle fs-1 text-secondary"></i>
+                                                                    <div class="badge text-bg-dark mt-2">No Pan Card
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <% } %>
+                                                </div>
+                                                <!-- End Overlay item -->
+                                            </div>
+                                        </div>
+                                        <div class="card header mb-3">
+                                            <h4 class="h4 mb-3 mb-sm-0">Full KYC Files</h4>
+                                            <p>Account holder uploaded Kyc Files</p>
+                                        </div>
+                                        <div class="card body mb-3">
+                                            <div class="row g-4">
+                                                <!-- Overlay item -->
+                                                <div class="col-lg-3">
+                                                    <% if (user.aadhaarCardFront) { %>
+                                                        <a data-glightbox data-gallery="gallery"
+                                                            href="<%= user.aadhaarCardFront %>">
+                                                            <div
+                                                                class="card card-element-hover card-overlay-hover overflow-hidden">
+                                                                <!-- Image -->
+                                                                <img src="<%= user.aadhaarCardFront %>"
+                                                                    class="card-img-top img-fluid"
+                                                                    style="height: 250px; width: 100%;"
+                                                                    alt="">
+
+                                                                <!-- Overlay -->
+                                                                <div class="card-img-overlay d-flex flex-column p-3">
+                                                                    <!-- Card overlay top -->
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        <div class="badge text-bg-dark">Aadhaar Card
+                                                                        </div>
+
+                                                                        <div class="hover-element w-100 h-100">
+                                                                            <i
+                                                                                class="bi bi-fullscreen fs-6 text-white position-absolute top-50 start-50 translate-middle bg-dark rounded-1 p-2 lh-1"></i>
+                                                                        </div>
+
+                                                                        <!-- Dropdown -->
+                                                                        <div class="list-inline-item dropdown">
+                                                                            <a href="#"
+                                                                                class="btn btn-sm btn-round btn-light"
+                                                                                role="button" id="dropdownAction1"
+                                                                                data-bs-toggle="dropdown"
+                                                                                aria-expanded="false">
+                                                                                <i
+                                                                                    class="bi bi-three-dots-vertical"></i>
+                                                                            </a>
+                                                                            <ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded small"
+                                                                                aria-labelledby="dropdownAction1">
+                                                                                <li>
+                                                                                    <a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-pencil-square text-primary fa-fw me-2"></i>Attach Kyc</a>
+                                                                                </li>
+                                                                                <li>
+                                                                                    <a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-trash-fill text-danger fa-fw me-2"></i>Remove</a>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                        <% } else { %>
+                                                            <div class="card card-element-hover card-overlay-hover overflow-hidden bg-light d-flex align-items-center justify-content-center"
+                                                                style="height: 200px;">
+                                                                <!-- No image fallback -->
+                                                                <div class="text-center">
+                                                                    <i
+                                                                        class="bi bi-person-circle fs-1 text-secondary"></i>
+                                                                    <div class="badge text-bg-dark mt-2">No Aadhaar Card</div>
+                                                                </div>
+                                                            </div>
+                                                            <% } %>
+                                                </div>
+
+                                                <!-- End Overlay item -->
+                                                <!-- Overlay item -->
+                                                <div class="col-lg-3">
+                                                    <% if (user.aadhaarCardBack) { %>
+                                                        <a data-glightbox data-gallery="gallery"
+                                                            href="<%= user.aadhaarCardBack %>">
+                                                            <div
+                                                                class="card card-element-hover card-overlay-hover overflow-hidden">
+                                                                <!-- Image -->
+                                                                <img src="<%= user.aadhaarCardBack %>"
+                                                                    class="card-img-top img-fluid"
+                                                                    style="height: 250px; width: 100%;"
+                                                                    alt="Card image">
+                                                                <!-- Overlay -->
+
+                                                                <div class="card-img-overlay d-flex flex-column p-3">
+                                                                    <!-- Card overlay top -->
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        <div class="badge text-bg-dark">Aadhaar Card
+                                                                        </div>
+                                                                        <div class="hover-element w-100 h-100">
+                                                                            <i
+                                                                                class="bi bi-fullscreen fs-6 text-white position-absolute top-50 start-50 translate-middle bg-dark rounded-1 p-2 lh-1"></i>
+                                                                        </div>
+                                                                        <!-- Buttons -->
+                                                                        <div class="list-inline-item dropdown">
+                                                                            <!-- Dropdown button -->
+                                                                            <a href="#"
+                                                                                class="btn btn-sm btn-round btn-light"
+                                                                                role="button" id="dropdownAction1"
+                                                                                data-bs-toggle="dropdown"
+                                                                                aria-expanded="false">
+                                                                                <i
+                                                                                    class="bi bi-three-dots-vertical"></i>
+                                                                            </a>
+                                                                            <!-- dropdown items -->
+                                                                            <ul class="dropdown-menu dropdown-menu-end min-w-auto shadow rounded small"
+                                                                                aria-labelledby="dropdownAction1">
+
+                                                                                <li><a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-pencil-square text-primary fa-fw me-2"></i>Attach Kyc</a>
+                                                                                </li>
+                                                                                <li><a class="dropdown-item" href="#"><i
+                                                                                            class="bi bi-trash-fill text-danger fa-fw me-2"></i>Remove</a>
+                                                                                </li>
+
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                        <% } else { %>
+                                                            <div class="card card-element-hover card-overlay-hover overflow-hidden bg-light d-flex align-items-center justify-content-center"
+                                                                style="height: 200px;">
+                                                                <!-- No image fallback -->
+                                                                <div class="text-center">
+                                                                    <i
+                                                                        class="bi bi-person-circle fs-1 text-secondary"></i>
+                                                                    <div class="badge text-bg-dark mt-2">No Aadhaar Card
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <% } %>
+                                                </div>
+                                                <!-- End Overlay item -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                                <div class="tab-pane" id="tab-3-3">
+                                    <div class="row">
+                                        <div class="card">
+                                            <div class="card header mb-3">
+                                                <h4 class="h4 mb-3 mb-sm-0">Login Activity</h4>
+                                                <p>User Login Details</p>
+                                            </div>
+                                            <div class="card body mb-3">
+                                                <table class="table table-ulogs">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th class="tb-col-os"><span class="overline-title">Browser
+                                                                    <span class="d-sm-none">/ IP</span></span>
+                                                            </th>
+                                                            <th class="tb-col-ip"><span class="overline-title">IP</span>
+                                                            </th>
+                                                            <th class="tb-col-time"><span
+                                                                    class="overline-title">Time</span>
+                                                            </th>
+
+                                                            <th class="tb-col-time"><span
+                                                                    class="overline-title">Platform</span></th>
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% if (loginActivities.length > 0) { %>
+                                                            <% loginActivities.forEach((activity) => { %>
+                                                            <tr>
+                                                            <td class="tb-col-os"><%= activity.browser %></td>
+                                                            <td class="tb-col-ip"><span
+                                                                    class="sub-text"><%= activity.ip %></span>
+                                                            </td>
+                                                            <td class="tb-col-time">
+                                                                <span class="sub-text">
+                                                                    <%= new Date(activity.loginTime).toLocaleString("en-US", {
+                                                                      year: "numeric",
+                                                                      month: "short",
+                                                                      day: "2-digit",
+                                                                      hour: "2-digit",
+                                                                      minute: "2-digit",
+                                                                      hour12: true
+                                                                    }) %>
+                                                                  </span>
+                                                                </td>
+                                                            <td class="tb-col-time">
+                                                                <%= activity.platform %>
+                                                            </td>
+                                                        </tr>
+                                                            <% }) %>
+                                                       
+                                                        <% } else { %>
+                                                            <tr>
+                                                                <td colspan="4" class="text-center">No login activity found.
+                                                            </tr>
+                                                        <% } %>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <!-- <div class="card-footer">
+
+                                                Pagination START
+                                                
+                                            </div> -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Security settings START -->
+                                    <div class="card border">
+                                        <!-- Card header -->
+                                        <div class="card-header border-bottom">
+                                            <h4 class="card-header-title">Active sessions</h4>
+                                        </div>
+
+                                        <!-- Card body START -->
+                                        <!-- <div class="card-body">
+                                            <% if (sessions && sessions.length > 0) { %>
+                                            <% sessions.forEach(session => { %>
+                                            <form class="mb-3" action="/admin/signout-user" method="POST">
+                                                <h6><%= session.browser %></h6>
+                                                <p class="mb-2">Selecting "Sign out" will sign you out from all devices
+                                                    except this one. This can take up to 10 minutes.</p>
+                                                <button class="btn btn-sm btn-danger mb-0">Sign Out</button>
+                                            </form>
+                                            <% }) %>
+                                            <% } else { %>
+                                                <p>No active sessions found.</p>
+                                            <% } %>
+                                        </div> -->
+                                        <div class="card-body">
+  <% if (sessions && sessions.length > 0) { %>
+    <% sessions.forEach(session => { %>
+      <form class="mb-3" action="/admin/signout-user" method="POST">
+        <input type="hidden" name="sessionId" value="<%= session._id %>">
+        <h6><%= session.browser %> - <%= session.platform %></h6>
+        <p>IP: <%= session.ip %></p>
+        <p>Logged in at: 
+          <%= new Date(session.loginTime).toLocaleString("en-US", {
+            month: "short", day: "numeric", year: "numeric",
+            hour: "numeric", minute: "2-digit", hour12: true
+          }) %>
+        </p>
+        <p class="mb-2">Selecting "Sign out" will sign out this session. This can take up to 10 minutes.</p>
+        <button class="btn btn-sm btn-danger mb-0">Sign Out</button>
+      </form>
+    <% }) %>
+  <% } else { %>
+    <p>No active sessions found.</p>
+  <% } %>
+</div>
+
+                                        <!-- Card body END -->
+                                    </div>
+                                    <!-- Security settings END -->
+                                </div>
+                                
+                                <div class="tab-pane" id="tab-4-4">
+                                    <div class="row">
+                                        <div class="card">
+                                            <div
+                                                class="card-header border-bottom d-md-flex justify-content-md-between  mb-3">
+                                                <div class="card-body text-dark">
+                                                    <h5 class="card-header-title"> Booking Ledger
+                                                    </h5>
+                                                </div>
+                                                <button type="button" class="btn btn-dark btn-sm me-2"
+                                                    data-bs-toggle="modal" data-bs-target="#newaddon"
+                                                    title="Create Transactions">
+                                                    <i class="bi bi-plus-square-fill"></i> Add Transactions
+                                                </button>
+                                                <button type="button" class="btn btn-info btn-sm me-2"
+                                                    data-bs-toggle="modal" data-bs-target="#newaddon" title="Email"> <i
+                                                        class="bi bi-envelope-at-fill"></i> Email
+                                                </button>
+
+                                                <button type="button" class="btn btn-primary btn-sm me-2"
+                                                    data-bs-toggle="modal" data-bs-target="#newaddon"
+                                                    title="Pdf Download">
+                                                    <i class="bi bi-download me-2"></i> PDF
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-sm me-2"
+                                                    data-bs-toggle="modal" data-bs-target="#newaddon"
+                                                    title="Excel Download">
+                                                    <i class="bi bi-file-earmark-spreadsheet-fill "></i> Excel
+                                                </button>
+                                                <form class="rounded position-relative me-2">
+                                                    <input class="form-control  bg-transparent" type="search"
+                                                        placeholder="Search Data" aria-label="Search">
+                                                    <button
+                                                        class="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover text-reset"
+                                                        type="submit">
+                                                        <i class="fas fa-search fs-6"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+
+                                        </div>
+                                        <div class="card body mb-3">
+                                            <table class="table table-ulogs">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Ref. No</th>
+                                                        <th>Date</th>
+                                                        <th>Booking Id</th>
+                                                        <th>Particulars</th>
+                                                        <th>Destination</th>
+                                                        <th>Travel Date</th>
+                                                        <th>Amount</th>
+                                                        <th>Balance</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+  <% if (transactions.length > 0) { %>
+    <% transactions.forEach(transaction => { %>
+      <% 
+        let particulars;
+        let balance;
+        if (transaction.credit === 0) { 
+          particulars = "Deposited";
+          balance = -transaction.debit;
+        } else {
+          particulars = "Withdrawn";
+          balance = transaction.credit;
+        }
+
+        const booking = transaction.bookingId;
+        const flight = booking && booking.flight;
+      %>
+      <tr>
+        <td><%= transaction.transactionId %></td>
+        <td><%= new Date(transaction.createdAt).toLocaleString('en-IN') %></td>
+        <td><%= booking ? booking.bookingId : 'N/A' %></td>
+        <td><%= particulars %></td>
+        <td>
+          <% if (flight) { %>
+            <%= flight.arrivalName %>, <%= flight.toCountry %>
+          <% } else { %>
+            N/A
+          <% } %>
+        </td>
+        <td>
+          <% if (flight) { %>
+            <%= new Date(flight.departureDate).toLocaleDateString('en-IN') %>
+          <% } else { %>
+            N/A
+          <% } %>
+        </td>
+        <td>₹ <%= transaction.totalAmount %></td>
+        <td>₹ <%= balance %></td>
+      </tr>
+    <% }) %>
+  <% } else { %>
+    <tr>
+      <td colspan="8" class="text-center">No transactions found.</td> 
+    </tr>
+  <% } %>
+</tbody>
+
+                                            </table>
+                                        </div>
+                                        <!-- <div class="card-footer">
+                                            Pagination START
+                                            
+                                        </div> -->
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="tab-6-6">
+                                    <div class="vstack gap-4">
+                                        <!-- Notifications START -->
+                                        <div class="card border">
+
+                                            <!-- Card header -->
+                                            <div class="card-header border-bottom">
+                                                <h4 class="card-header-title">Notification Settings</h4>
+                                            </div>
+
+                                            <!-- Form START -->
+                                            <form class="card-body" id="notificationForm">
+                                               <input type="hidden" name="userId" id="userId" value="<%= user._id %>">
+                                                <!-- Radio -->
+                                                <div class="mb-4">
+          <label class="form-label">Newsletter & Promotions<span class="text-danger">*</span></label>
+          <div class="d-flex gap-2 gap-sm-4 flex-wrap">
+            <div class="form-check radio-bg-light">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="Daily"
+                <%= user.notificationSettings?.newsletter === 'Daily' ? 'checked' : '' %>>
+              <label class="form-check-label" for="flexRadioDefault1">Daily</label>
+            </div>
+            <div class="form-check radio-bg-light">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Twice a week"
+                <%= user.notificationSettings?.newsletter === 'Twice a week' ? 'checked' : '' %>>
+              <label class="form-check-label" for="flexRadioDefault2">Twice a week</label>
+            </div>
+            <div class="form-check radio-bg-light">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" value="Weekly"
+                <%= user.notificationSettings?.newsletter === 'Weekly' ? 'checked' : '' %>>
+              <label class="form-check-label" for="flexRadioDefault3">Weekly</label>
+            </div>
+            <div class="form-check radio-bg-light">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault4" value="Never"
+                <%= user.notificationSettings?.newsletter === 'Never' ? 'checked' : '' %>>
+              <label class="form-check-label" for="flexRadioDefault4">Never</label>
+            </div>
+          </div>
+        </div>
+                                                <!-- Switches -->
+        <div class="form-check form-switch form-check-md d-flex justify-content-between mb-4">
+          <label class="form-check-label ps-0 pe-4" for="checkPrivacy1">Notify me via email when logging in</label>
+          <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy1"
+            <%= user.notificationSettings?.loginEmailNotifications ? 'checked' : '' %>>
+        </div>
+
+        <div class="form-check form-switch form-check-md d-flex justify-content-between mb-4">
+          <label class="form-check-label ps-0 pe-4" for="checkPrivacy3">I would like to receive emails about Booking promotions</label>
+          <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy3"
+            <%= user.notificationSettings?.bookingEmailNotifications ? 'checked' : '' %>>
+        </div>
+
+        <div class="form-check form-switch form-check-md d-flex justify-content-between mb-4">
+          <label class="form-check-label ps-0 pe-4" for="checkPrivacy2">I would like to activate hotel booking</label>
+          <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy2"
+            <%= user.notificationSettings?.hotelBooking ? 'checked' : '' %>>
+        </div>
+
+        <div class="form-check form-switch form-check-md d-flex justify-content-between mb-4">
+          <label class="form-check-label ps-0 pe-4" for="checkPrivacy7">I would like to activate Saudi Muqeem Print Options</label>
+          <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy7"
+            <%= user.notificationSettings?.SaudiMuqeemPrint ? 'checked' : '' %>>
+        </div>
+
+        <div class="form-check form-switch form-check-md d-flex justify-content-between mb-4">
+          <label class="form-check-label ps-0 pe-4" for="checkPrivacy4">I would like to activate Booking itinerary for dummy Print Purpose</label>
+          <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy4"
+            <%= user.notificationSettings?.bookingDummyPrint ? 'checked' : '' %>>
+        </div>
+
+        <div class="form-check form-switch form-check-md d-flex justify-content-between mb-4">
+          <label class="form-check-label ps-0 pe-4" for="checkPrivacy6">Send confirmation for all online payments</label>
+          <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy6"
+            <%= user.notificationSettings?.onlinePaymentConfirmation ? 'checked' : '' %>>
+        </div>
+
+        <div class="form-check form-switch form-check-md d-flex justify-content-between mb-4">
+          <label class="form-check-label ps-0 pe-4" for="checkPrivacy5">Check which device(s) access your account</label>
+          <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy5"
+            <%= user.notificationSettings?.deviceAccess ? 'checked' : '' %>>
+        </div>
+
+                                                <!-- Button -->
+                                                <div class="d-sm-flex justify-content-end">
+                                                    <!-- <button type="button" class="btn btn-sm btn-primary me-2 mb-0">Save
+                                                        changes</button> -->
+                                                    <button type="button" class="btn btn-sm btn-primary me-2 mb-0" id="saveNotificationBtn">Save changes</button>
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary mb-0">Cancel</a>
+                                                </div>
+                                            </form>
+                                            <!-- Form END -->
+
+                                        </div>
+                                        <!-- Notifications END -->
+                                    </div>
+                                </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("saveNotificationBtn").addEventListener("click", async () => {
+        const form = document.getElementById("notificationForm");
+
+        const selectedRadio = form.querySelector('input[name="flexRadioDefault"]:checked')?.id;
+        let newsletterValue = "";
+switch (selectedRadio) {
+    case "flexRadioDefault1": newsletterValue = "Daily"; break;
+    case "flexRadioDefault2": newsletterValue = "Twice a week"; break;
+    case "flexRadioDefault3": newsletterValue = "Weekly"; break;
+    case "flexRadioDefault4": newsletterValue = "Never"; break;
+}
+
+        const data = {
+            newsletterPreference: newsletterValue, // flexRadioDefault1 / 2 / 3 / 4
+            notifyOnLogin: document.getElementById("checkPrivacy1").checked,
+            receivePromotions: document.getElementById("checkPrivacy3").checked,
+            activateHotelBooking: document.getElementById("checkPrivacy2").checked,
+            activateMuqeem: document.getElementById("checkPrivacy7").checked,
+            activateDummyItinerary: document.getElementById("checkPrivacy4").checked,
+            sendPaymentConfirmation: document.getElementById("checkPrivacy6").checked,
+            checkDeviceAccess: document.getElementById("checkPrivacy5").checked,
+            userId: document.getElementById("userId").value
+        };
+
+        try {
+            const response = await fetch("/admin/notification-settings", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert("Notification settings saved!");
+            } else {
+                alert("Failed to save settings.");
+            }
+        } catch (err) {
+            console.error("Error:", err);
+            alert("Something went wrong.");
+        }
+    });
+});
+</script>
+
+                                <div class="tab-pane" id="tab-3-4">
+                                    <div class="card">
+                                        <div class="card header mb-3">
+                                            <h4 class="h4 mb-3 mb-sm-0">Approvals</h4>
+                                            <p>Kyc & Profile</p>
+                                        </div>
+
+
+                                        <div class="card body mb-3">
+                                            <table class="table table-ulogs">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Particulars</th>
+                                                        <th>Status</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+<tbody>
+  <% if (approvals.length === 0) { %>
+    <tr>
+      <td colspan="4" class="text-center">No approvals found.</td>
+    </tr>
+  <% } else { %>
+    <% approvals.forEach(update => { %>
+      <tr>
+        <td><%= new Date(update.createdAt).toLocaleString('en-IN') %></td>
+        <td><%= update.type %></td>
+        <td>
+            <% if (update.status === "pending") { %>
+                <span class="badge bg-warning">Pending</span>
+            <% } else if (update.status === "approved") { %>
+                <span class="badge bg-success">Approved</span>
+            <% } else if (update.status === "rejected") { %>
+                <span class="badge bg-danger">Rejected</span>
+            <% } %>
+        </td>
+        <td>
+          <!-- <% if (update.status === 'pending') { %>
+            <% if(update.type === "Profile Update") {%>
+            <a href="/admin/update-profile-detail/<%= update._id %>" class="btn btn-success mb-0">
+              <i class="bi bi-check2-circle"></i>
+            </a>
+            <a href="/admin/update-profile-detail/<%= update._id %>" class="btn btn-danger mb-0">
+              <i class="bi bi-x-circle-fill"></i>
+            </a>
+            <% } else { %>
+                <a href="/admin/update-kyc-detail/<%= update._id %>" class="btn btn-success mb-0">
+              <i class="bi bi-check2-circle"></i>
+            </a>
+            <a href="/admin/update-kyc-detail/<%= update._id %>" class="btn btn-danger mb-0">
+              <i class="bi bi-x-circle-fill"></i>
+            </a>
+            <% } %>
+          <% } else { %>
+            <a href="/admin/approval/view/<%= update._id %>" class="btn btn-primary mb-0">
+              <i class="bi bi-eye"></i>
+            </a>
+          <% } %> -->
+           <% if (update.status === 'pending') { %>
+            <% if(update.type === "Profile Update") {%>
+            <button class="btn btn-success mb-0 profile-update-btn"
+            data-update-id="<%= update._id %>" title="Accept"
+            data-title="accept" data-bs-toggle="tooltip"
+            data-bs-placement="top">
+              <i class="bi bi-check2-circle"></i>
+            </button>
+            <button class="btn btn-danger mb-0 profile-update-btn"
+            data-update-id="<%= update._id %>" title="Reject"
+            data-title="reject" data-bs-toggle="tooltip"
+            data-bs-placement="top">
+              <i class="bi bi-x-circle-fill"></i>
+            </button>
+            <% } else { %>
+            <button class="btn btn-success mb-0 kyc-update-btn"
+            data-update-id="<%= update._id %>" title="Accept"
+            data-title="accept" data-bs-toggle="tooltip"
+            data-bs-placement="top">
+              <i class="bi bi-check2-circle"></i>
+            </button>
+            <button class="btn btn-danger mb-0 kyc-update-btn"
+            data-update-id="<%= update._id %>" title="Reject"
+            data-title="reject" data-bs-toggle="tooltip"
+            data-bs-placement="top">
+              <i class="bi bi-x-circle-fill"></i>
+            </button>
+            <% } %>
+          <% } else { %>
+            <% if(update.type === "Profile Update") {%>
+            <button class="btn btn-primary mb-0 view-profile-update-btn"
+            data-update='<%= JSON.stringify(update) %>' title="View"
+			data-bs-toggle="tooltip" data-bs-placement="top">
+              <i class="bi bi-eye"></i>
+            </button>
+            <% } else { %>
+            <button class="btn btn-primary mb-0 view-kyc-update-btn"
+            data-update='<%= JSON.stringify(update) %>' title="View"
+			data-bs-toggle="tooltip" data-bs-placement="top">
+              <i class="bi bi-eye"></i>
+            </button>
+            <% } %>
+          <% } %>
+        </td>
+      </tr>
+    <% }) %>
+  <% } %>
+</tbody>
+
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+<script>
+                            document.addEventListener("DOMContentLoaded", function () {
+  const acceptButtons = document.querySelectorAll(".profile-update-btn");
+
+  acceptButtons.forEach(button => {
+    button.addEventListener("click", async function () {
+      const updateId = this.getAttribute("data-update-id");
+      const status = this.getAttribute("data-title");
+
+      console.log("Status: ", status);
+      console.log("Update ID: ", updateId);
+
+      const confirmText = status === "accept"
+        ? "Are you sure you want to accept this update?"
+        : "Are you sure you want to reject this update?";
+
+      const result = await Swal.fire({
+        title: "Confirm Action",
+        text: confirmText,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, continue",
+        cancelButtonText: "Cancel"
+      });
+
+      if (!result.isConfirmed) return;
+
+      try {
+        const response = await fetch(`/admin/update-profile-detail/${updateId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status }),
+        });
+
+        const resultData = await response.json();
+        if (response.ok) {
+          await Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: resultData.message || "Update processed successfully.",
+            confirmButtonText: "OK"
+          });
+          location.reload();
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Failed",
+            text: resultData.message || "Failed to update.",
+            confirmButtonText: "OK"
+          });
+        }
+      } catch (error) {
+        console.error("Error in updating:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "An error occurred while processing the update.",
+          confirmButtonText: "OK"
+        });
+      }
+    });
+  });
+});
+</script>
+
+<script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                const acceptButtons = document.querySelectorAll(".kyc-update-btn");
+
+                                acceptButtons.forEach(button => {
+                                    button.addEventListener("click", async function () {
+                                        const updateId = this.getAttribute("data-update-id");
+                                        const status = this.getAttribute("data-title");
+                                        console.log("Status: ", status);
+                                        console.log("Update ID: ", updateId);
+                                        // Confirm with the user
+
+                                        let confirmed;
+                                        if (status === "accept") {
+                                            confirmed = confirm("Are you sure you want to accept this update?");
+                                        } else {
+                                            confirmed = confirm("Are you sure you want to reject this update?");
+                                        }
+                                        const result = await Swal.fire({
+          title: "Confirm Action",
+          text: confirmMessage,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#6c757d",
+          confirmButtonText: "Yes, continue",
+          cancelButtonText: "Cancel"
+        });
+
+        if (!result.isConfirmed) return;
+
+
+                                        try {
+                                            const response = await fetch(`/admin/update-kyc-detail/${updateId}`, {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                },
+                                                body: JSON.stringify({ status }),
+                                            });
+                                            console.log("Response: ", response);
+                                            const result = await response.json();
+                                            console.log("Result: ", result);
+                                            if (response.ok) {
+            Swal.fire({
+              icon: "success",
+              title: "Success",
+              text: data.message || "KYC update processed successfully.",
+              confirmButtonText: "OK"
+            }).then(() => {
+              location.reload();
+            });
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Failed",
+              text: data.message || "Failed to process KYC update.",
+              confirmButtonText: "OK"
+            });
+          }
+        } catch (error) {
+          console.error("Error in updating:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Server Error",
+            text: "Something went wrong while processing the update.",
+            confirmButtonText: "OK"
+          });
+        }
+                                    });
+                                });
+                            });
+</script>
+
+<div class="modal fade" id="updateViewModal" tabindex="-1" aria-labelledby="userViewModalLabel"
+							aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered modal-lg">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="userViewModalLabel">Update Details</h5>
+										<button type="button" class="btn-close" data-bs-dismiss="modal"
+											aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+										<form id="userDetailsForm">
+											<div class="row g-3">
+												<div class="col-md-4">
+													<label class="form-label">User ID</label>
+													<input type="text" class="form-control" id="viewUserId" readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Name</label>
+													<input type="text" class="form-control" id="viewName" readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">PAN</label>
+													<input type="text" class="form-control" id="viewPan" readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Gender</label>
+													<input type="text" class="form-control" id="viewGender" readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">KYC Status</label>
+													<input type="text" class="form-control" id="viewKyc" readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Subscription</label>
+													<input type="text" class="form-control" id="viewSubscription"
+														readonly>
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">Visiting Card</label>
+													<img id="viewVisitingCard" class="img-fluid rounded border"
+														alt="Visiting Card" />
+												</div>
+												<div class="col-md-4">
+													<label class="form-label">PAN Card</label>
+													<img id="viewPanCard" class="img-fluid rounded border"
+														alt="PAN Card" />
+												</div>
+												<div class="col-md-6">
+													<label class="form-label">Aadhaar Front</label>
+													<img id="viewAadhaarFront" class="img-fluid rounded border"
+														alt="Aadhaar Front" />
+												</div>
+												<div class="col-md-6">
+													<label class="form-label">Aadhaar Back</label>
+													<img id="viewAadhaarBack" class="img-fluid rounded border"
+														alt="Aadhaar Back" />
+												</div>
+											</div>
+										</form>
+									</div>
 								</div>
-								<!-- Title -->
-								<h6 class="mb-0 ms-2">Deluxe Pool View with Breakfast</h6>
 							</div>
-						</div>	
-
-						<!-- Data item -->
-						<div class="col">
-							<small class="d-block d-lg-none">Bed type:</small>
-							<h6 class="mb-0 fw-normal">King size</h6>
 						</div>
 
-						<!-- Data item -->
-						<div class="col">
-							<small class="d-block d-lg-none">Room Floor:</small>
-							<h6 class="mb-0 fw-normal">Ground floor: G5</h6>
-						</div>
+<script>
+							document.addEventListener("DOMContentLoaded", function () {
+								const viewButtons = document.querySelectorAll(".view-kyc-update-btn");
 
-						<!-- Data item -->
-						<div class="col">
-							<small class="d-block d-lg-none">Book date:</small>
-							<h6 class="text-success mb-0">22 Nov 2022</h6>
-						</div>
+								viewButtons.forEach((btn) => {
+									btn.addEventListener("click", function () {
+										const update = JSON.parse(this.dataset.update);
 
-						<!-- Data item -->
-						<div class="col"><a href="#" class="btn btn-sm btn-light mb-0">View</a></div>
-					</div>
+										// Text fields
+										document.getElementById("viewUserId").value = update.user.userId || '';
+										document.getElementById("viewName").value = update.user.name || '';
+										document.getElementById("viewPan").value = update.user.pan || '';
+										document.getElementById("viewGender").value = update.user.gender || '';
+										document.getElementById("viewKyc").value = update.kyc || '';
+										document.getElementById("viewSubscription").value = update.subscription?.subscription || 'N/A';
+										
+										const fallback = '/assets/images/avatar/placeholder.png';
 
-					<!-- Table data -->
-					<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-2 g-sm-4 align-items-md-center justify-content-between border-bottom px-2 py-4">
-						<!-- Data item -->
-						<div class="col">
-							<small class="d-block d-lg-none">Room name:</small>
-							<div class="d-flex align-items-center">
-								<!-- Image -->
-								<div class="w-80px flex-shrink-0">
-									<img src="/assets/images/category/hotel/4by3/02.jpg" class="rounded" alt="">
-								</div>
-								<!-- Title -->
-								<h6 class="mb-0 ms-2">Premium Room With Balcony</h6>
-							</div>
-						</div>	
+										// Get image container elements
+										const visitingCardEl = document.getElementById("viewVisitingCard").parentElement;
+										const panCardEl = document.getElementById("viewPanCard").parentElement;
+										const aadhaarFrontEl = document.getElementById("viewAadhaarFront").parentElement;
+										const aadhaarBackEl = document.getElementById("viewAadhaarBack").parentElement;
 
-						<!-- Data item -->
-						<div class="col">
-							<small class="d-block d-lg-none">Bed type:</small>
-							<h6 class="mb-0 fw-normal">Single Bed</h6>
-						</div>
+										// Hide all by default
+										visitingCardEl.style.display = 'none';
+										panCardEl.style.display = 'none';
+										aadhaarFrontEl.style.display = 'none';
+										aadhaarBackEl.style.display = 'none';
 
-						<!-- Data item -->
-						<div class="col">
-							<small class="d-block d-lg-none">Room Floor:</small>
-							<h6 class="mb-0 fw-normal">First Floor: F3</h6>
-						</div>
+										if (update.visitingCard && update.panCard) {
+												visitingCardEl.style.display = '';
+												panCardEl.style.display = '';
+												document.getElementById("viewVisitingCard").src = update.visitingCard || fallback;
+												document.getElementById("viewPanCard").src = update.panCard || fallback;
+                                        } else if (update.aadhaarCardBack && update.aadhaarCardFront) {
+												aadhaarFrontEl.style.display = '';
+												aadhaarBackEl.style.display = '';
+												document.getElementById("viewAadhaarFront").src = update.aadhaarCardFront || fallback;
+												document.getElementById("viewAadhaarBack").src = update.aadhaarCardBack || fallback;
+										}
 
-						<!-- Data item -->
-						<div class="col">
-							<small class="d-block d-lg-none">Book date:</small>
-							<h6 class="text-success mb-0">20 Nov 2022</h6>
-						</div>
+										// Show modal
+										const modal = new bootstrap.Modal(document.getElementById("updateViewModal"));
+										modal.show();
+									});
+								});
+							});
+</script>
 
-						<!-- Data item -->
-						<div class="col"><a href="#" class="btn btn-sm btn-light mb-0">View</a></div>
-					</div>
 
-					<!-- Table data -->
-					<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-2 g-sm-4 align-items-md-center justify-content-between border-bottom px-2 py-4">
-						<!-- Data item -->
-						<div class="col">
-							<small class="d-block d-lg-none">Room name:</small>
-							<div class="d-flex align-items-center">
-								<!-- Image -->
-								<div class="w-80px flex-shrink-0">
-									<img src="/assets/images/category/hotel/4by3/03.jpg" class="rounded" alt="">
-								</div>
-								<!-- Title -->
-								<h6 class="mb-0 ms-2">Deluxe Pool View</h6>
-							</div>
-						</div>	
+                                <div class="tab-pane" id="tab-9-9">
+                                    <div class="col-lg-12 col-xxl-12">
+                                        <div class="card border  h-100">
+                                            <!-- Card body START -->
+                                            <div class="card-body">
+                                                <table class="table table-tranx">
+                                                    <thead>
+                                                        <tr class="tb-tnx-head">
+                                                            <!-- <th class="tb-tnx-id"><span class="">#</span></th> -->
+                                                            <th class="tb-tnx-info">
+                                                                <span class="tb-tnx-desc d-none d-sm-inline-block">
+                                                                    <span>Bill For</span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="tb-tnx-info">Issued Date</th>
+                                                            <th class="tb-tnx-info">Due Date</th>
+                                                            <th class="tb-tnx-amount">
+                                                                <span class="tb-tnx-total">Total</span>
 
-						<!-- Data item -->
-						<div class="col">
-							<small class="d-block d-lg-none">Bed type:</small>
-							<h6 class="mb-0 fw-normal">Family Bed</h6>
-						</div>
+                                                            </th>
+                                                            <th class="tb-tnx-info"> <span
+                                                                    class="tb-tnx-status d-none d-md-inline-block">Status</span>
+                                                            </th>
+                                                            <th class="tb-tnx-info"></th>
 
-						<!-- Data item -->
-						<div class="col">
-							<small class="d-block d-lg-none">Room Floor:</small>
-							<h6 class="mb-0 fw-normal">Ground Floor: G3</h6>
-						</div>
+                                                    </thead>
+                                                    <tbody>
+<%
+  function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  }
 
-						<!-- Data item -->
-						<div class="col">
-							<small class="d-block d-lg-none">Book date:</small>
-							<h6 class="text-success mb-0">16 Nov 2022</h6>
-						</div>
+  const today = new Date();
+  const expiry = new Date(user.expiryDate);
 
-						<!-- Data item -->
-						<div class="col"><a href="#" class="btn btn-sm btn-light mb-0">View</a></div>
-					</div>
-					
-					<!-- Table data -->
-					<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-2 g-sm-4 align-items-md-center justify-content-between border-bottom px-2 py-4">
-						<!-- Data item -->
-						<div class="col">
-							<small class="d-block d-lg-none">Room name:</small>
-							<div class="d-flex align-items-center">
-								<!-- Image -->
-								<div class="w-80px flex-shrink-0">
-									<img src="/assets/images/category/hotel/4by3/04.jpg" class="rounded" alt="">
-								</div>
-								<!-- Title -->
-								<h6 class="mb-0 ms-2">Superior Room</h6>
-							</div>
-						</div>	
+  let status = '';
+  let badgeClass = '';
 
-						<!-- Data item -->
-						<div class="col">
-							<small class="d-block d-lg-none">Bed type:</small>
-							<h6 class="mb-0 fw-normal">King Bed</h6>
-						</div>
+  if (today.toDateString() === expiry.toDateString()) {
+    status = 'Due';
+    badgeClass = 'bg-warning';
+  } else if (today > expiry) {
+    status = 'Expired';
+    badgeClass = 'bg-danger';
+  } else {
+    status = 'Valid';
+    badgeClass = 'bg-success';
+  }
+%>
+                                                        <tr class="tb-tnx-item">
+                                                            <!-- <td class="tb-tnx-id">
+                                                                <a href="#"><span></span></a>
+                                                            </td> -->
+                                                            <td class="tb-tnx-info">
+                                                                <div class="tb-tnx-desc">
+                                                                    <span class="title"><%= user.subscription.subscription %></span>
+                                                                </div>
 
-						<!-- Data item -->
-						<div class="col">
-							<small class="d-block d-lg-none">Room Floor:</small>
-							<h6 class="mb-0 fw-normal">First Floor: F5</h6>
-						</div>
+                                                            </td>
+                                                            <td class="tb-tnx-info"> <span
+                                                                    class="date"><%= formatDate(user.subscriptionDate) %></span>
+                                                            </td>
+                                                            <td class="tb-tnx-info"> <span
+                                                                    class="date"><%= formatDate(user.expiryDate) %></span>
+                                                            </td>
+                                                            <td class="tb-tnx-amount">
+                                                                <div class="tb-tnx-total">
+                                                                    <span class="amount">₹ <%= user.subscription.price %></span>
+                                                                </div>
+                                                            </td>
 
-						<!-- Data item -->
-						<div class="col">
-							<small class="d-block d-lg-none">Book date:</small>
-							<h6 class="text-success mb-0">14 Nov 2022</h6>
-						</div>
+                                                            <td class="tb-tnx-amount">
+                                                                <span class="badge badge-dot <%= badgeClass %>"><%= status %></span>
+                                                            </td>
+                                                           
+                                                        </tr>
 
-						<!-- Data item -->
-						<div class="col"><a href="#" class="btn btn-sm btn-light mb-0">View</a></div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- Page main content END -->
-	</div>
-	<!-- Page content END -->
-	
-	</main>
-<!-- **************** MAIN CONTENT END **************** -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <!-- Card body END -->
+                                            <!-- <div class="card-footer">
 
-<%- include('./partials/footer') %>
+                                                <div
+                                                    class="d-sm-flex justify-content-sm-between align-items-sm-center mt-4">
+                                                    <p class="mb-sm-0 text-center text-sm-start">Showing 1 to 8 of 20
+                                                        entries
+                                                    </p>
+                                                    <nav class="mb-sm-0 d-flex justify-content-center"
+                                                        aria-label="navigation">
+                                                        <ul
+                                                            class="pagination pagination-sm pagination-primary-soft mb-0">
+                                                            <li class="page-item disabled">
+                                                                <a class="page-link" href="#" tabindex="-1">Prev</a>
+                                                            </li>
+                                                            <li class="page-item"><a class="page-link" href="#">1</a>
+                                                            </li>
+                                                            <li class="page-item active"><a class="page-link"
+                                                                    href="#">2</a>
+                                                            </li>
+                                                            <li class="page-item disabled"><a class="page-link"
+                                                                    href="#">..</a>
+                                                            </li>
+                                                            <li class="page-item"><a class="page-link" href="#">15</a>
+                                                            </li>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="#">Next</a>
+                                                            </li>
+                                                        </ul>
+                                                    </nav>
+                                                </div>
+                                            </div> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div> 
+                    </div>
+                    <!-- Page main content END -->
+            </div>
+            <!-- Page content END -->
+
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    document.querySelectorAll(".suspend-user").forEach(btn => {
+                        btn.addEventListener("click", async (e) => {
+                            e.preventDefault();
+                            const userId = e.currentTarget.dataset.userId;
+
+                            try {
+                                const response = await fetch(`/admin/user-suspend?id=${userId}`);
+                                const result = await response.json();
+
+                                if (response.ok) {
+                                    alert("User suspended successfully");
+                                    // Optionally update the UI, e.g., disable button or show status
+                                    window.location.reload();
+                                } else {
+                                    alert("Failed to suspend user: " + result.message);
+                                }
+                            } catch (err) {
+                                alert("Error suspending user");
+                                console.error(err);
+                            }
+                        });
+                    });
+                });
+            </script>
+
+<!-- Bootstrap JS and Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    </main>
+    <!-- **************** MAIN CONTENT END **************** -->
+
+    <%- include('./partials/footer') %>
