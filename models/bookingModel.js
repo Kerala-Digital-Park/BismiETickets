@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const Flight = require("./flightModel");
+const Flight = require("./flightModel");          
 const User = require("./userModel");
 const Counter = require("./counterModel");
 

@@ -2703,6 +2703,25 @@ const viewClosedInventory = async (req, res) => {
   }
 }
 
+const viewInventoryDetail = async (req, res) => {
+  const inventoryId = req.query.id;
+  try {
+    const flight = await Flight.findById(inventoryId);
+    if (!flight) {
+      return res.status(404).json({ success: false, message: "Flight not found" });
+    } 
+    const sellerId = flight.sellerId;
+    const seller = await User.findById(sellerId);
+    if (!seller) {
+      return res.status(404).json({ success: false, message: "Seller not found" });
+    }
+    res.render("admin/inventoryDetail", { flight, seller });
+  } catch (error) {
+    console.error("Error fetching flight details:", error);
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+}
+
 const viewProfileUpdates = async (req, res) => {
   const search = req.query.search || "";
   const page = parseInt(req.query.page) || 1;
@@ -3064,6 +3083,7 @@ module.exports = {
   viewActiveInventory,
   viewPastInventory,
   viewClosedInventory,
+  viewInventoryDetail,
   viewProfileUpdates,
   updateProfileDetail,
   getSupports,

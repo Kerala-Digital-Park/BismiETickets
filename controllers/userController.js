@@ -1158,12 +1158,15 @@ const viewBookings = async (req, res) => {
       }
     });
 
+    const success = req.query.success === "true";
+
     // Render bookings page
     res.render("user/bookings", {
       upcomingBookings,
       completedBookings,
       cancelledBookings,
       user: userDetails,
+      success,
     });
   } catch (error) {
     console.error(error);

@@ -39,6 +39,7 @@ adminRouter.get("/api/airports", adminController.getAirportsApi);
 adminRouter.get("/inventory/active", isLogin, adminController.viewActiveInventory);
 adminRouter.get("/inventory/past", isLogin, adminController.viewPastInventory);
 adminRouter.get("/inventory/closed", isLogin, adminController.viewClosedInventory);
+adminRouter.get("/inventory-detail", isLogin, adminController.viewInventoryDetail);
 adminRouter.get('/supports/search', isLogin, adminController.getSupports);
 adminRouter.get('/user-suspend', isLogin, adminController.suspendUser);
 

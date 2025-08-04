@@ -39,7 +39,6 @@ const flightSchema = mongoose.Schema({
       airlineLogo: { type: String, required: false },
     },
   ],
-
   baggage: {
     adult: {
       checkIn: {
@@ -89,7 +88,7 @@ const flightSchema = mongoose.Schema({
     enum: ["pending", "completed"],
     default: "pending",
   },
-  isActive: { type: Boolean, default: true }, // <-- Added field
+  isActive: { type: Boolean, default: true },
 },
 { timestamps: true }
 );
@@ -138,7 +137,6 @@ flightSchema.pre("save", function (next) {
 
     flight.status = depDate > today ? "pending" : "completed";
   }
-
   next();
 });
 

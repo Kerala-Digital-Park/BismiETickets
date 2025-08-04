@@ -275,6 +275,29 @@ function computeLayovers(stops) {
 // In your controller before rendering
 const layovers = computeLayovers(parsedFlight.stops || []);
 
+const invoiceTemplatePath = path.join(__dirname, '../views/user/invoice.ejs');
+
+const invoicePDF = await generatePDF(invoiceTemplatePath, {
+  invoiceNo: newBooking.bookingId,              
+  issuedDate: new Date().toLocaleDateString('en-GB'), // dd-mm-yyyy
+  booking: newBooking,
+  flight: parsedFlight, // includes from, to, airline, etc.
+  transactions: newTransaction,
+  travelers,
+  // requests,
+  // passengerName: travelers.map(t => `${t.title} ${t.first_name} ${t.last_name}`).join(", "),
+  // tripType: stopsCount <= 1 ? "One Way" : "Connecting",
+  // travelDate: parsedFlight.inventoryDates[0].departureDate,
+  // ticketNumbers: travelers.map(t => t.ticketNumber || newBooking.bookingId), // fallback
+  totalAmount: totalFare,
+  baseFare: baseFare.replace(/[^0-9.]/g, ""),
+  tax: otherServices.replace(/[^0-9.]/g, ""),
+  discount: discount.replace(/[^0-9.]/g, ""),
+  email: email,
+  // referenceNo: parsedFlight.inventoryDates[0].pnr || "",
+  // gateway: "CCAvenue",
+});
+
 const templateFileName =
   stopsCount <= 1
     ? 'mail-oneWayBookingConfirmation.ejs'
@@ -306,6 +329,11 @@ const templateFileName =
             content: pdfBuffer,
             contentType: 'application/pdf',
           },
+          {
+            filename: 'Invoice.pdf',
+            content: invoicePDF,
+            contentType: 'application/pdf',
+        },
           ],
         });
       } catch (emailErr) {
@@ -315,7 +343,7 @@ const templateFileName =
     // ✅ Delete temp booking data
     await TempBooking.deleteOne({ token });
 
-    return res.redirect("/bookings");
+    return res.redirect("/bookings?success=true");
   } catch (err) {
     console.error("Booking response error:", err);
     return res.send("Something went wrong");
