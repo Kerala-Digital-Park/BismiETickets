@@ -56,6 +56,10 @@ const transactionSchema = new mongoose.Schema(
       enum: ["Paid", "Unpaid"],
       default: "Unpaid"
     },
+    type: {
+      type: String,
+      required: true
+    }
   },
   { timestamps: true }
 );

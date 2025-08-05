@@ -24,13 +24,43 @@
                         <div class="d-sm-flex justify-content-between align-items-center">
                             <div class="card-body text-dark">
                                 <!-- Title -->
-                                <h1 class="m-0 h3 card-title">Doha ➝ Kochi on Tue, 01 Jul 2025</h1>
+                                <h1 class="m-0 h3 card-title"><%= flight.fromCity %> ➝ <%= flight.toCity %> on <%= new Date(flight.departureDate).toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric'}) %></h1>
                                 <!-- Breadcrumb -->
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb breadcrumb-dots mb-0">
-                                        <li class="breadcrumb-item">User ID</li>
-                                        <li class="breadcrumb-item">Booked At: 30 May, Fri 2025 07:05 am</li>
-                                        <li class="breadcrumb-item active text-success">Confirmed</li>
+                                        <li class="breadcrumb-item">User ID: <%= seller.userId %></li>
+                                        <% 
+  const createdAt = new Date(flight.createdAt);
+  const formattedDate = createdAt.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    weekday: 'short'
+  });
+
+  const formattedTime = createdAt.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  }).toLowerCase(); // to get "am"/"pm" in lowercase
+
+  const parts = formattedDate.split(', ');
+  const date = parts[0]; // e.g., "Fri"
+  const rest = parts[1]; // e.g., "30 May 2025"
+%>
+                                        <li class="breadcrumb-item">Booked At: <%= `${rest}, ${date} ${formattedTime}` %></li>
+                                        <%
+                                            const status = flight.isActive ? 'Confirmed' : 'Cancelled';
+                                            let statusClass = '';
+                                            if (status === 'Confirmed') {
+                                                statusClass = 'text-success';
+                                            } else if (status === 'Cancelled') {
+                                                statusClass = 'text-danger';
+                                            } else {
+                                                statusClass = 'text-warning';
+                                            }
+                                        %>
+                                        <li class="breadcrumb-item active <%=statusClass%>"><%=status%></li>
                                     </ol>
                                 </nav>
 
@@ -39,10 +69,22 @@
                                 title="airline website link"><i class="bi bi-airplane-fill"></i></a>
                             <a href="#" class="btn btn-primary-soft text-nowrap mb-0 me-2" title="Remainder"><i
                                     class="bi bi-bell"></i></a>
-                            <a href="#" class="btn btn-danger-soft text-nowrap mb-0 me-2"
-                                title="Admin block Sales"><i class="bi bi-ban"></i> Ban</a>
-                            <a href="#" class="btn btn-success-soft text-nowrap mb-0 me-2"
-                                title="Admin unblock Sales"><i class="bi bi-check2-circle"></i> Show</a>
+                            <!-- <a href="/admin/block-inventory/<%=flight._id%>" class="btn btn-danger-soft text-nowrap mb-0 me-2"
+                                title="Admin block Sales"><i class="bi bi-ban"></i>Ban</a>
+                            <a href="/admin/unblock-inventory/<%=flight._id%>" class="btn btn-success-soft text-nowrap mb-0 me-2"
+                                title="Admin unblock Sales"><i class="bi bi-check2-circle"></i> Show</a> -->
+                                <!-- Block Button -->
+<button class="btn btn-danger-soft text-nowrap mb-0 me-2 block-inventory-btn"
+        data-id="<%= flight._id %>" title="Admin block Sales">
+    <i class="bi bi-ban"></i> Ban
+</button>
+
+<!-- Unblock Button -->
+<button class="btn btn-success-soft text-nowrap mb-0 me-2 unblock-inventory-btn"
+        data-id="<%= flight._id %>" title="Admin unblock Sales">
+    <i class="bi bi-check2-circle"></i> Show
+</button>
+
                         </div>
                     </div>
                 </div>
@@ -66,11 +108,11 @@
                                         <div class="d-flex mb-2 mb-sm-0">
                                             <img src="assets/images/element/09.svg" class="w-40px me-2"
                                                 alt="">
-                                            <h6 class="fw-normal mb-0">Phillippines Airline (PA - 5620)
+                                            <h6 class="fw-normal mb-0"><%= flight.stops[0].airline %> (<%= flight.stops[0].airlineCode %> - <%= flight.stops[0].flightNumber %>)
                                             </h6>
                                         </div>
                                         <h6 class="fw-normal mb-0"><span class="text-body">Booking
-                                                PNR:</span> TYRRPH</h6>
+                                                PNR:</span> <%= flight.inventoryDates[0].pnr %></h6>
                                     </div>
                                 </div>
 
@@ -81,15 +123,15 @@
                                         <!-- Airport detail -->
                                         <div class="col-sm-4">
                                             <!-- Title -->
-                                            <h4>BOM</h4>
-                                            <h6 class="mb-0">14:50</h6>
-                                            <p class="mb-0">Chhatrapati Shivaji International Airport</p>
+                                            <h4><%= flight.from %></h4>
+                                            <h6 class="mb-0"><%= flight.departureTime %></h6>
+                                            <p class="mb-0"><%= flight.departureName %>, <%= flight.fromCity %>, <%= flight.fromCountry %></p>
                                         </div>
 
                                         <!-- Time -->
                                         <div class="col-sm-4 my-sm-auto text-center">
                                             <!-- Time -->
-                                            <h5>9hr 50min</h5>
+                                            <h5><%= flight.duration %></h5>
 
                                             <div class="position-relative my-4">
                                                 <!-- Line -->
@@ -105,9 +147,9 @@
                                         <!-- Airport detail -->
                                         <div class="col-sm-4">
                                             <!-- Title -->
-                                            <h4>CDG</h4>
-                                            <h6 class="mb-0">11:50</h6>
-                                            <p class="mb-0">Ch. De Gaulle, Paris, France</p>
+                                            <h4><%= flight.to %></h4>
+                                            <h6 class="mb-0"><%= flight.arrivalTime %></h6>
+                                            <p class="mb-0"><%= flight.arrivalName %>, <%= flight.toCity %>, <%= flight.toCountry %></p>
                                         </div>
                                     </div>
                                     <!-- Ticket item END -->
@@ -116,12 +158,11 @@
                                 <!-- Card body END -->
                                 <!-- Card footer -->
                                 <div class="card-footer pt-4">
-                                    <ul
-                                        class="list-inline bg-light rounded-2 d-sm-flex text-center justify-content-sm-between mb-0 px-4 py-2">
+                                    <ul class="list-inline bg-light rounded-2 d-sm-flex text-center justify-content-sm-between mb-0 px-4 py-2">
 
-                                        <li class="list-inline-item text-dark">Checked baggage : 25 kg
+                                        <li class="list-inline-item text-dark">Checked baggage : <%= flight.baggage.adult.checkIn.weightPerPiece %> kg
                                         </li>
-                                        <li class="list-inline-item text-dark">Carry-on baggage : 7 Kg
+                                        <li class="list-inline-item text-dark">Carry-on baggage : <%= flight.baggage.adult.cabin.weightPerPiece %> Kg
                                         </li>
 
                                     </ul>
@@ -135,22 +176,22 @@
                     </div>
                     <div class="col-xxl-3">
                         <div class="form-check form-switch form-check-md d-flex justify-content-between mb-2 me-3">
-                            <label class="form-check-label ps-0 pe-4" for="checkPrivacy1">Inventory Number</label>
-                            INV56125616
+                            <label class="form-check-label ps-0 pe-4" for="inventoryno">Inventory Number</label>
+                            <%= flight.inventoryId %>
                         </div>
 
                         <div class="form-check form-switch form-check-md d-flex justify-content-between mb-3 me-3">
-                            <label class="form-check-label ps-0 pe-4" for="checkPrivacy1">Inventory User</label>
-                            bismietickets
+                            <label class="form-check-label ps-0 pe-4" for="inventoryuser">Inventory User</label>
+                            <%= seller.name %>
                         </div>
                         <div class="form-check form-switch form-check-md d-flex justify-content-between mb-3 me-3">
                             <label class="form-check-label ps-0 pe-4" for="checkPrivacy1">Sales Status</label>
                             <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy1" checked>
                         </div>
                         <div class="form-check form-switch form-check-md d-flex justify-content-between mb-3 me-3">
-                            <label class="form-check-label ps-0 pe-4" for="checkPrivacy1">Enable 12 hrs before
+                            <label class="form-check-label ps-0 pe-4" for="checkPrivacy2">Enable 12 hrs before
                                 departure</label>
-                            <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy1">
+                            <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy2">
                         </div>
                         <!-- Booking info -->
                         <div
@@ -161,15 +202,15 @@
                             <div class="hstack gap-2 gap-md-5 flex-wrap mt-2 ">
                                 <div>
                                     <small>Total Seats</small>
-                                    <h6 class="fw-normal mb-0">12 Seats</h6>
+                                    <h6 class="fw-normal mb-0"><%=flight.inventoryDates[0].seats%> Seats</h6>
                                 </div>
                                 <div>
                                     <small>Sold Seats</small>
-                                    <h6 class="fw-normal mb-0">2 Seats</h6>
+                                    <h6 class="fw-normal mb-0"><%=flight.inventoryDates[0].seatsBooked%> Seats</h6>
                                 </div>
                                 <div>
                                     <small>Hold Seats</small>
-                                    <h6 class="fw-normal mb-0">2 Seats</h6>
+                                    <h6 class="fw-normal mb-0">0 Seats</h6>
                                 </div>
                             </div>
                         </div>
@@ -239,7 +280,6 @@
                                             <div class="table-responsive">
                                                 <table class="datatable-init-export nowrap table"
                                                     data-export-title="Export">
-
                                                     <thead>
 
                                                         <tr>
@@ -257,21 +297,22 @@
                                                     </thead>
 
                                                     <tbody>
-
-
+                                                        <% if(bookings.length > 0) { %>
+                                                            <% bookings.forEach((booking, index) => { %>
                                                         <tr>
-                                                            <td>1</td>
-                                                            <td> BFL00152 </td>
-                                                            <td>MRS</td>
-                                                            <td>HAKKEEM </td>
-                                                            <td>PALLIYAL VALAPPIL</td>
-                                                            <td>bismietickets@gmail.com </td>
-                                                            <td>+919061519743 </td>
+                                                            <td><%= index+1 %></td>
+                                                            <td><%= booking.bookingId %></td>
+                                                            <td><%= booking.travelers[0].title %></td>
+                                                            <td><%= booking.travelers[0].first_name %></td>
+                                                            <td><%= booking.travelers[0].last_name %></td>
+                                                            <td><%= booking.email %></td>
+                                                            <td><%= booking.mobile_number %></td>
 
 
-                                                            <td><button class="btn btn-sm btn-outline-info mb-0 me-2"
+                                                            <td>
+                                                                <a href="/admin/booking-detail/<%= booking._id %>" class="btn btn-sm btn-outline-info mb-0 me-2"
                                                                     title="Booking Details"><i
-                                                                        class="bi bi-eye-fill"></i></button>
+                                                                        class="bi bi-eye-fill"></i></a>
                                                                 <button class="btn btn-sm btn-outline-dark mb-0 me-2"
                                                                     title="Ticket Details"><i
                                                                         class="bi bi-ticket-perforated-fill"></i></button>
@@ -284,8 +325,14 @@
                                                                         class="bi bi-life-preserver"></i></button>
 
                                                             </td>
-
+                                                        
                                                         </tr>
+                                                        <% }) %>
+                                                        <% } else { %>
+                                                            <tr>
+                                                                <td colspan="8" class="text-center">No bookings found.</td>
+                                                            </tr>
+                                                        <% } %>
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -344,15 +391,17 @@
                                         </div>
                                         <!-- Card body START -->
                                         <div class="card-body">
+                                            <div class="table-responsive">
+
                                             <table class="table">
 
                                                 <thead>
-
+                                                    
                                                     <tr>
 
                                                         <th>Booking Id</th>
                                                         <th>Booking date</th>
-                                                        <th>Particulers</th>
+                                                        <th>Particulars</th>
                                                         <th>Booking Amount</th>
                                                         <th>C.Fee</th>
                                                         <th>Paid Amount</th>
@@ -364,29 +413,52 @@
                                                 </thead>
 
                                                 <tbody>
-
+                                                    <%
+                                                    if(!transactions || transactions.length === 0) { %>
+                                                        <tr>
+                                                            <td colspan="8" class="text-center">No transactions found.</td>
+                                                        </tr>
+                                                    <% } else { %>
+                                                        <% transactions.forEach((transaction) => { %>
+                                                            <% const flight = transaction.bookingId.flight %>
                                                     <tr>
 
-                                                        <td scope="1"> GPT3272 </td>
-                                                        <td>18-Jun-2025 </td>
+                                                        <td scope="1"> <%= transaction.bookingId.bookingId %> </td>
+                                                        <td><%= new Date(transaction.bookingId.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-') %></td>
+                                                        <%
+                                                            let stopType;
+                                                            const stops = flight.stops.length;
+                                                            if(stops === 1){
+                                                                stopType = 'Non Stop';
+                                                            }
+                                                            else if(stops === 2) {
+                                                                stopType = 1 + ' Stop';
+                                                            } 
+                                                            else {
+                                                                stopType = stops + ' Stops';
+                                                            }
+                                                        %>
                                                         <td>
-                                                            (PNR): 01 JUL COK DXB EK-533 Non Stop
+                                                            (<%= flight.inventoryDates[0].pnr %>): <%= flight.departureDate.toUpperCase() %> <%= flight.from %> <%= flight.to %> <%= flight.stops[0].airlineCode %>-<%= flight.stops[0].flightNumber %> <%= stopType %>
                                                         </td>
-                                                        <td>₹ 10218</td>
-                                                        <td>₹ 200</td>
-                                                        <td>₹ 10000</td>
-                                                        <td>Under Process </td>
-                                                        <td><button class="btn btn-sm btn-outline-warning mb-0 me-2"
+                                                        <td>₹ <%= transaction.totalAmount %></td>
+                                                        <td>₹ <%= transaction.discount %></td>
+                                                        <td>₹ <%= transaction.totalAmount %></td>
+                                                        <td><%= transaction.paymentStatus %> </td>
+                                                        <td><a href="/admin/booking-detail/<%= transaction.bookingId._id %>" class="btn btn-sm btn-outline-warning mb-0 me-2"
                                                                 title="Booking Details"><i
-                                                                    class="bi bi-eye-fill"></i></button>
-                                                            <button class="btn btn-sm btn-outline-info mb-0 me-2"
+                                                                    class="bi bi-eye-fill"></i></a>
+                                                            <a href="/admin/withdrawal/<%=flight._id%>/<%=seller._id%>" class="btn btn-sm btn-outline-info mb-0 me-2"
                                                                 title="Supplier Transfer"><i
-                                                                    class="bi bi-paypal"></i></button>
+                                                                    class="bi bi-paypal"></i></a>
                                                         </td>
 
                                                     </tr>
+                                                        <% }) %>
+                                                    <% } %>
                                                 </tbody>
                                             </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -403,17 +475,17 @@
                                         </div>
                                         <!-- Card body START -->
                                         <div class="card-body">
+                                        <div class="table-responsive">
+
                                             <table class="table">
-
                                                 <thead>
-
                                                     <tr>
 
-                                                        <th> Id</th>
-                                                        <th> Type</th>
-                                                        <th> Booking ID</th>
+                                                        <!-- <th>ID</th> -->
+                                                        <th>Booking ID</th>
+                                                        <th>Type</th>
                                                         <th>Booking date</th>
-                                                        <th> Amount</th>
+                                                        <th>Amount</th>
                                                         <th>Transactions ID</th>
                                                         <th>Gateway</th>
                                                         <th>Method</th>
@@ -422,31 +494,44 @@
                                                         <th>Actions</th>
 
                                                     </tr>
-
                                                 </thead>
 
                                                 <tbody>
-
+                                                    <% if(transactions.length > 0) { %>
+                                                        <% transactions.forEach((transaction) => { %>
                                                     <tr>
-
-                                                        <td scope="1"> GPT3272 </td>
-                                                        <td>BFL00152 </td>
-                                                        <td>Booking Purpose </td>
-                                                        <td>18-Jun-2025 </td>
-                                                        <td>₹ 10218</td>
-                                                        <td> 161651051dfc66 </td>
+                                                        <!-- <td scope="1"> GPT3272 </td> -->
+                                                        <td><%= transaction.bookingId.bookingId %></td>
+                                                        <td><%= transaction.type %></td>
+                                                        <td>
+                                                          <%= new Date(transaction.createdAt).toLocaleDateString('en-GB', {
+                                                            day: '2-digit',
+                                                            month: 'short',
+                                                            year: 'numeric'
+                                                          }).replace(/ /g, '-') %>
+                                                        </td>
+                                                        <td>₹ <%= transaction.totalAmount %></td>
+                                                        <td><%= transaction.transactionId %> </td>
                                                         <td>HDFC BANK</td>
                                                         <td>UPI</td>
-                                                        <td>0% (0)</td>
-                                                        <td>Under Process </td>
-                                                        <td><button class="btn btn-sm btn-outline-warning mb-0 me-2"
+                                                        <%
+                                                            const totalAmount = transaction.totalAmount;
+                                                            const taxAmount = transaction.tax;
+                                                            const discountAmount = transaction.discount;
+                                                            const taxPercentage = Math.floor(((taxAmount / totalAmount) * 100).toFixed(2));
+
+                                                        %>
+                                                        <td><%= taxPercentage %>% (<%= taxAmount %>)</td>
+                                                        <td><%= transaction.paymentStatus %></td>
+                                                        <td>
+                                                            <a href="/admin/booking-detail/<%= transaction.bookingId._id %>" class="btn btn-sm btn-outline-warning mb-0 me-2"
                                                                 title="Booking Details"><i
-                                                                    class="bi bi-eye-fill"></i></button>
+                                                                    class="bi bi-eye-fill"></i></a>
 
                                                         </td>
 
                                                     </tr>
-                                                    <tr>
+                                                    <!-- <tr>
 
                                                         <td scope="1"> GPT3272 </td>
                                                         <td>BFL00152 </td>
@@ -464,104 +549,86 @@
 
                                                         </td>
 
-                                                    </tr>
+                                                    </tr> -->
+                                                        <% }) %>
+                                                    <% } else { %>
+                                                        <tr>
+                                                            <td colspan="10" class="text-center">No payments found.</td>
+                                                        </tr>
+                                                    <% } %>
                                                 </tbody>
                                             </table>
+                                            
+                                        </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!-- Tab content 3 START -->
-                        <div class="tab-pane show  " id="tab-3">
-                            <div class="row">
-                                <div class="col-12 mx-auto">
-                                    <div class="accordion accordion-icon accordion-bg-light" id="accordionExample2">
-                                        <!-- Item -->
-                                        <div class="accordion-item mb-3">
-                                            <h6 class="accordion-header font-base" id="heading-1">
-                                                <button
-                                                    class="accordion-button fw-bold rounded d-inline-block collapsed"
-                                                    type="button" data-bs-toggle="collapse"
-                                                    data-bs-target="#collapse-1" aria-expanded="false"
-                                                    aria-controls="collapse-1">
-                                                    Support Request Number : ENQ00581
-                                                </button>
-                                            </h6>
-                                            <!-- Body -->
-                                            <div id="collapse-1" class="accordion-collapse collapse show "
-                                                aria-labelledby="heading-1" data-bs-parent="#accordionExample2">
-                                                <div class="accordion-body mt-3">
-                                                    <!-- Card body START -->
-                                                    <div class="card shadow">
-                                                        <!-- Card header START -->
-                                                        <div class="card-header border-bottom p-4">
-                                                            <h6 class="mb-0">Requested For the Wheelchair</h6>
-                                                            <!-- Update and author -->
-                                                            <ul class="nav nav-divider">
-                                                                <li class="nav-item">Last updated: 06-05-2025</li>
-                                                            </ul>
-                                                        </div>
-                                                        <!-- Card header END -->
+                        <div class="tab-pane show " id="tab-3">
+  <div class="row">
+    <div class="col-12 mx-auto">
+      <div class="accordion accordion-icon accordion-bg-light" id="accordionExample2">
 
-                                                        <!-- Card body START -->
-                                                        <div class="card-body p-4">
+        <% if (requests && requests.length > 0) { %>
+          <% requests.forEach((req, index) => { %>
+            <div class="accordion-item mb-3">
+              <h6 class="accordion-header font-base" id="heading-<%= index %>">
+                <button class="accordion-button fw-bold rounded d-inline-block collapsed"
+                  type="button" data-bs-toggle="collapse" data-bs-target="#collapse-<%= index %>"
+                  aria-expanded="false" aria-controls="collapse-<%= index %>">
+                  Support Request Number : <%= req.requestId %>
+                </button>
+              </h6>
+              <div id="collapse-<%= index %>" class="accordion-collapse collapse"
+                aria-labelledby="heading-<%= index %>" data-bs-parent="#accordionExample2">
+                <div class="accordion-body mt-3">
+                  <div class="card shadow">
+                    <div class="card-header border-bottom p-4">
+                      <h6 class="mb-0"><%= req.subject %></h6>
+                      <ul class="nav nav-divider">
+                        <li class="nav-item">Last updated: <%= req.updatedAt.toLocaleDateString("en-GB") %></li>
+                      </ul>
+                    </div>
+                    <div class="card-body p-4">
+                      <div class="alert alert-warning text-right" role="alert">
+                        <%= req.passengerName %> - <%= req.request %>
+                      </div>
+                    </div>
+                    <div class="card-footer border-0 p-4 pt-0">
+                      <div class="border p-3 rounded d-lg-flex align-items-center justify-content-between text-center">
+                        <small class="py-3 py-lg-0 d-block">
+                          We believe the problem has been resolved. Give us the rates for your satisfaction.
+                        </small>
+                        <div class="btn-group" role="group" aria-label="Feedback">
+                          <input type="radio" class="btn-check" name="feedback-<%= index %>" id="btnradio1-<%= index %>">
+                          <label class="btn btn-outline-light btn-sm mb-0" for="btnradio1-<%= index %>">
+                            <i class="fa-solid fa-thumbs-up me-1"></i> Yes
+                          </label>
 
-                                                            <div class="alert alert-warning text-right"
-                                                                role="alert">
-                                                                MUJEEB KALLIDUMBAN MOOSA want to add wheel chair
-                                                                assistance due to senior Citizon. Please update once it
-                                                                done. </div>
-
-                                                        </div>
-                                                        <!-- Card body END -->
-
-                                                        <div class="card-footer border-0 p-4 pt-0">
-                                                            <div
-                                                                class="border p-3 rounded d-lg-flex align-items-center justify-content-between text-center">
-                                                                <!-- Title -->
-                                                                <small class="py-3 py-lg-0 d-block">we believe the
-                                                                    problem
-                                                                    has been resolved. Give us the rates for your
-                                                                    satisfaction</small>
-                                                                <!-- Check buttons -->
-                                                                <div class="btn-group" role="group"
-                                                                    aria-label="Basic radio toggle button group">
-                                                                    <!-- Yes button -->
-                                                                    <input type="radio" class="btn-check"
-                                                                        name="btnradio" id="btnradio1">
-                                                                    <label class="btn btn-outline-light btn-sm mb-0"
-                                                                        for="btnradio1"><i
-                                                                            class="fa-solid fa-thumbs-up me-1"></i>
-                                                                        Yes</label>
-                                                                    <!-- No button -->
-                                                                    <input type="radio" class="btn-check"
-                                                                        name="btnradio" id="btnradio2">
-                                                                    <label class="btn btn-outline-light btn-sm mb-0"
-                                                                        for="btnradio2"> No <i
-                                                                            class="fa-solid fa-thumbs-down ms-1"></i></label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- Payment Options END -->
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- Item -->
-                                    </div>
-                                </div>
-                                <!-- Accordion END -->
-
-                                <div
-                                    class="border p-3 rounded d-lg-flex align-items-center justify-content-between text-center">
-                                    <!-- Title -->
-                                    <small class="py-3 py-lg-0 d-block">No Request Found</small>
-                                    <!-- Check buttons -->
-
-                                </div>
-                            </div>
+                          <input type="radio" class="btn-check" name="feedback-<%= index %>" id="btnradio2-<%= index %>">
+                          <label class="btn btn-outline-light btn-sm mb-0" for="btnradio2-<%= index %>">
+                            No <i class="fa-solid fa-thumbs-down ms-1"></i>
+                          </label>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="border p-3 rounded d-lg-flex align-items-center justify-content-between text-center">
+            <small class="py-3 py-lg-0 d-block">No Request Found</small>
+          </div>
+        <% } %>
+
+      </div>
+    </div>
+  </div>
+</div>
                         <!-- Tab content 4 START -->
                         <div class="tab-pane show  " id="tab-4">
                             <div class="row g-3">
@@ -573,6 +640,7 @@
                                         </div>
                                         <!-- Card body START -->
                                         <div class="card-body">
+                                            <div class="table-responsive">
                                             <table class="table table-ulogs">
 
                                                 <thead class="thead-light">
@@ -618,6 +686,7 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
+                                            </div>
                                         </div>
                                         <!-- Card body END -->
                                     </div>
@@ -677,6 +746,55 @@
     <!-- Wheelchair modal END -->
      
 </main>
+
+<script>
+  // Handle block
+  document.querySelectorAll('.block-inventory-btn').forEach(button => {
+    button.addEventListener('click', async () => {
+      const id = button.getAttribute('data-id');
+      try {
+        const res = await fetch(`/admin/block-inventory/${id}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Inventory blocked');
+          location.reload(); // Refresh page on success
+        } else {
+          alert('Error blocking inventory');
+        }
+      } catch (err) {
+        console.error('Block error:', err);
+        alert('Server error while blocking inventory');
+      }
+    });
+  });
+
+  // Handle unblock
+  document.querySelectorAll('.unblock-inventory-btn').forEach(button => {
+    button.addEventListener('click', async () => {
+      const id = button.getAttribute('data-id');
+      try {
+        const res = await fetch(`/admin/unblock-inventory/${id}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Inventory unblocked');
+          location.reload(); // Refresh page on success
+        } else {
+          alert('Error unblocking inventory');
+        }
+      } catch (err) {
+        console.error('Unblock error:', err);
+        alert('Server error while unblocking inventory');
+      }
+    });
+  });
+</script>
+
 
 <!-- **************** MAIN CONTENT END **************** -->
 

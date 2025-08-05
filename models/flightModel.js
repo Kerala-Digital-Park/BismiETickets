@@ -89,6 +89,7 @@ const flightSchema = mongoose.Schema({
     default: "pending",
   },
   isActive: { type: Boolean, default: true },
+  banned: { type: Boolean, default: false },
 },
 { timestamps: true }
 );
@@ -136,6 +137,7 @@ flightSchema.pre("save", function (next) {
     depDate.setHours(0, 0, 0, 0); // normalize for fair comparison
 
     flight.status = depDate > today ? "pending" : "completed";
+    flight.isActive = flight.status === "pending";
   }
   next();
 });

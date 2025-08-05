@@ -174,117 +174,158 @@
             </div>
             <!-- Tabs and search END -->
 
-            <!-- Tab content START -->
-            <div class="tab-content mt-5" id="myTabContent">
+            <!-- Past Inventory START -->
+						<div class="col-lg-12 col-xxl-12">
+							<div class="card border h-100">
+								<!-- Card body START -->
+								<div class="card-body">
+									<div class="table-responsive">
+										<table class="table">
 
-                <!-- Content item START -->
-                <div class="tab-pane fade show active" id="list-tab-pane">
-                    <div class="card shadow">
-                        <!-- Card body START -->
-                        <div class="card-body">
-                            <!-- Table head -->
-                            <div class="bg-light rounded p-3 d-none d-xxl-block">
-                                <div class="row row-cols-12 g-1">
-                                    <div class="col "><h6 class="mb-0">Inventory ID</h6></div>
-                                    <div class="col "><h6 class="mb-0">Details</h6></div>
-                                    <div class="col"><h6 class="mb-0">Departure Date</h6></div>
-                                    <div class="col"><h6 class="mb-0">Ref & User</h6></div>
-                                    <div class="col"><h6 class="mb-0">Seats</h6></div>
-                                    <div class="col"><h6 class="mb-0">Amount</h6></div>
-                                    <!-- <div class="col"><h6 class="mb-0">Action</h6></div> -->
-                                </div>
-                            </div>
+											<thead>
+												<tr>
+													<th>No</th>
+													<th>Trip Details</th>
+													<th>Seller ID <br> Agency</th>
+													<th>Trip ID <br> Seats</th>
+													<th>Status <br> Booking Date</th>
+													<th></th>
+												</tr>
+											</thead>
+											<tbody>
+												<% if (flights.length===0) { %>
+													<div class="col">
+														<h6 class="mb-0 fw-normal text-center p-4">No flights</h6>
+													</div>
+													<% } else { %>
+														<% flights.forEach((flight,index)=> { %>
+															<!-- flight card row -->
+															<tr>
+																<td>
+																	<%= index+1 %>
+																</td>
+																<td>
 
-                            <!-- Table data -->
-							<% if (flights.length === 0) { %>
-                                <div class="col">
-                                  <h6 class="mb-0 fw-normal text-center p-4">No flights</h6>
-                                </div>
-                              <% } else { %>
-                                <% flights.forEach((flight) => { %>
-                                  <!-- flight card row -->
-                                  <div class="row row-cols-7 g-2 align-items-center border-bottom px-2 py-4">
-                                    <div class="col">
-                                        <small class="d-block d-xxl-none">Inventory ID</small>
-                                        <h6 class="mb-0 fw-normal"><%= flight.inventoryId %></h6>
-                                      </div>
-                                    
-                                    <!-- Trip Details -->
-                                    <div class="col">
-                                      <small class="d-block d-xxl-none">Trip Details</small>
-                                      <h6 class="mb-0 ms-2"><%= flight.fromCity %> ➝ <%= flight.toCity %> on <%= flight.stops[0]?.airline %></h6>
-                                    </div>
-                              
-                                    <!-- Trip Date -->
-                                    <div class="col">
-                                      <small class="d-block d-xxl-none">Trip Date</small>
-                                      <h6 class="mb-0 fw-normal"><%= flight.departureDate %></h6>
-                                    </div>
-                              
-                                    <!-- Ref & User -->
-                                    <div class="col">
-                                        <small class="d-block d-xxl-none">Ref & User</small>
-                                        <h6 class="mb-0 fw-normal"><%= flight.seller.userId %> <br>
-                                            <%= flight.seller?.name || 'N/A' %></h6>
-                                    </div>
+																	<div
+																		class="d-sm-flex align-items-center mb-1 mb-sm-0">
+																		<!-- Avatar -->
+																		<div class="avatar avatar-md flex-shrink-0">
+																			<img class="rounded-circle"
+																				src="<%= flight.stops[0].airlineLogo %>">
+																		</div>
+																		<!-- Info -->
+																		<div class="ms-sm-3 mt-2 mt-sm-0">
+																			<a
+																				href="/admin/inventory-detail?id=<%=flight._id%>">
+																				<h6 class="mb-1">
+																					<%= flight.fromCity %> ➝ <%=
+																							flight.toCity %>
+																							on <%=
+																								flight.stops[0]?.airline
+																								%>
+																				</h6>
+																			</a>
+																			<ul class="nav nav-divider small">
+																				<li class="nav-item">
+																					Trip Date: <%= flight.departureDate
+																						%>
+																				</li>
+																			</ul>
+																		</div>
+																	</div>
+																</td>
+																<td>
+																	<div class="col">
+																		<small>
+																			<%= flight.seller.userId %>
+																		</small>
+																		<h6 class="mb-0 fw-normal">
+																			<%= flight.seller?.name || 'N/A' %>
+																		</h6>
+																	</div>
+																</td>
+																<% const totalSeats=flight.inventoryDates[0].seats;
+																	const
+																	seatsBooked=flight.inventoryDates[0].seatsBooked;
+																	const availableSeats=totalSeats - seatsBooked; %>
+																	<td>
+																		<div class="col">
+																			<small>
+																				<%= flight.inventoryId %>
+																			</small>
+																			<h6 class="mb-0 fw-normal">
+																				<%= availableSeats %> Seats
+																			</h6>
+																		</div>
+																	</td>
+																	<% const status=flight.isActive ? 'Active'
+																		: 'Inactive' ; const statusClass=flight.isActive
+																		? 'text-success' : 'text-danger' ; %>
+																		<td>
+																			<div class="col">
+																				<span class="<%= statusClass %>">
+																					<%= status %>
+																				</span>
+																				<h6 class="mb-0 fw-normal">B:<%= new
+																						Date(flight.createdAt).toLocaleDateString('en-GB',
+																						{ day: '2-digit' ,
+																						month: 'short' , year: 'numeric'
+																						}) %>
+																				</h6>
+																			</div>
+																		</td>
+																		<!-- Button -->
+																		<td>
+																			<a href="/admin/inventory-detail?id=<%=flight._id%>"
+																				class="btn btn-sm btn-light flex-shrink-0 mb-0 ms-3">View
+																			</a>
+																		</td>
 
-                                    <!-- Seats -->
-                                    <div class="col">
-                                      <small class="d-block d-xxl-none">Seats</small>
-                                      <h6 class="mb-0 fw-normal"><%= flight.inventoryDates[0].seatsBooked %>/<%= flight.inventoryDates[0].seats %> </h6>
-                                    </div>
-                              
-                                    <!-- Amount -->
-                                    <div class="col">
-                                      <small class="d-block d-xxl-none">Amount:</small>
-                                      <h6 class="mb-0">₹ <%= flight.inventoryDates[0].fare.adults %></h6>
-                                    </div>
-                              
-                                    <!-- View button -->
-                                    <!-- <div class="col">
-                                      <a href="/admin/flight-detail/<%= flight._id %>" class="btn btn-sm btn-light mb-0">View</a>
-                                    </div> -->
-                                  </div>
-                                <% }); %>
-                              <% } %>
+															</tr>
+															<% }); %>
+																<% } %>
 
+											</tbody>
+										</table>
+									</div>
+								</div>
+								<!-- Card body END -->
+
+								<!-- Card footer START -->
+								<div class="card-footer pt-0">
+									<!-- Pagination and content -->
+									<div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+										<p class="mb-sm-0 text-center text-sm-start">
+											Showing <%= (currentPage - 1) * limit + 1 %> to
+												<%= Math.min(currentPage * limit, totalCount) %> of
+													<%= totalCount %> entries
+										</p>
+										<nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
+											<ul class="pagination pagination-sm pagination-primary-soft mb-0">
+												<li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+													<a class="page-link"
+														href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
+												</li>
+												<% for (let i=1; i <=totalPages; i++) { %>
+													<li class="page-item <%= i === currentPage ? 'active' : '' %>">
+														<a class="page-link" href="?search=<%= search %>&page=<%= i %>">
+															<%= i %>
+														</a>
+													</li>
+													<% } %>
+														<li
+															class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+															<a class="page-link"
+																href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
+														</li>
+											</ul>
+										</nav>
+									</div>
+								</div>
+								<!-- Card footer END -->
 							</div>
-							<!-- Card body END -->
-
-							<!-- Card footer START -->
-							<div class="card-footer pt-0">
-								<!-- Pagination and content -->
-								<div class="d-sm-flex justify-content-sm-between align-items-sm-center">
-									<p class="mb-sm-0 text-center text-sm-start">
-									  Showing <%= (currentPage - 1) * limit + 1 %> to
-									  <%= Math.min(currentPage * limit, totalCount) %> of
-									  <%= totalCount %> entries
-									</p>
-									<nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
-									  <ul class="pagination pagination-sm pagination-primary-soft mb-0">
-										<li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-										  <a class="page-link" href="?search=<%= search %>&page=<%= currentPage - 1 %>">Prev</a>
-										</li>
-								  
-										<% for (let i = 1; i <= totalPages; i++) { %>
-										  <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-											<a class="page-link" href="?search=<%= search %>&page=<%= i %>"><%= i %></a>
-										  </li>
-										<% } %>
-								  
-										<li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-										  <a class="page-link" href="?search=<%= search %>&page=<%= currentPage + 1 %>">Next</a>
-										</li>
-									  </ul>
-									</nav>
-								</div>								  
-							</div>
-							<!-- Card footer END -->
-                    </div>
-                </div>
-                <!-- Content item END -->
-            </div>
-            <!-- Tab content END -->
+						</div>
+						<!-- Past Inventory END -->
         </div>
         <!-- Page main content END -->
     </div>

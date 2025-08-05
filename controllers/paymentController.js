@@ -201,6 +201,7 @@ exports.handleBookingResponse = async (req, res) => {
         tax: otherServices.replace(/[^0-9.]/g, ""),
         discount: discount.replace(/[^0-9.]/g, ""),
         paymentStatus: "Paid",
+        type:"Booking Payment"
       });
 
       await newTransaction.save();

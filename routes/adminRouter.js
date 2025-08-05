@@ -42,6 +42,8 @@ adminRouter.get("/inventory/closed", isLogin, adminController.viewClosedInventor
 adminRouter.get("/inventory-detail", isLogin, adminController.viewInventoryDetail);
 adminRouter.get('/supports/search', isLogin, adminController.getSupports);
 adminRouter.get('/user-suspend', isLogin, adminController.suspendUser);
+adminRouter.post('/block-inventory/:id', isLogin, adminController.blockInventory);
+adminRouter.post('/unblock-inventory/:id', isLogin, adminController.unblockInventory);
 
 
 adminRouter.post('/login', adminController.loginAdmin);

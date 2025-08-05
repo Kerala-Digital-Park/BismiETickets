@@ -1302,6 +1302,7 @@ const flightBooking = async (req, res) => {
       discount,
       paymentStatus: payment_status,
       credit: baseFare,
+      type:"Booking Payment"
     });
 
     await newTransaction.save();

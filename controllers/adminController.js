@@ -17,6 +17,7 @@ const PopularFlight = require("../models/popularFlightModel");
 const ProfileUpdates = require("../models/profileUpdateModel");
 const FilterAirport = require("../models/filterAirportModel");
 const LoginActivity = require("../models/loginActivityModel");
+const Request = require("../models/requestModel");
 
 const viewLogin = async (req, res) => {
   try {
@@ -2715,7 +2716,28 @@ const viewInventoryDetail = async (req, res) => {
     if (!seller) {
       return res.status(404).json({ success: false, message: "Seller not found" });
     }
-    res.render("admin/inventoryDetail", { flight, seller });
+    const bookings = await Booking.find({ flight: inventoryId });
+    const bookingIds = bookings.map(b => b._id);
+    const transactions = await Transaction.find({ bookingId: { $in: bookingIds } })
+    .populate({
+    path: "bookingId",
+    populate: {
+      path: "flight", 
+      model: "Flights"
+    }
+    })
+    .populate("userId");
+    const requests = await Request.find({ bookingId: { $in: bookingIds } })
+    .populate({
+    path: "bookingId",
+    populate: {
+      path: "flight", 
+      model: "Flights"
+    }
+    })
+    .populate("userId");
+
+    res.render("admin/inventoryDetail", { flight, seller, bookings, transactions, requests });
   } catch (error) {
     console.error("Error fetching flight details:", error);
     return res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -3029,6 +3051,40 @@ const updateNotificationSettings = async (req, res) => {
   }
 };
 
+const blockInventory = async (req, res) => {
+  const inventoryId = req.params.id;
+  try {
+    const flight = await Flight.findById(inventoryId);
+    if (!flight) {
+      return res.status(404).json({ success: false, message: "Flight not found" });
+    }
+    flight.isActive = false; // Set isActive to false to block the inventory
+    flight.banned = true; // Set banned to true to block the inventory
+    await flight.save();
+    res.json({ success: true, message: "Inventory blocked successfully" });
+  } catch (error) {
+    console.error("Error blocking inventory:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+const unblockInventory = async (req, res) => {
+  const inventoryId = req.params.id;
+  try { 
+    const flight = await Flight.findById(inventoryId);
+    if (!flight) {
+      return res.status(404).json({ success: false, message: "Flight not found" });
+    }
+    flight.isActive = false; // Set isActive to false to block the inventory
+    flight.banned = false; // Set banned to false to unblock the inventory
+    await flight.save();
+    res.json({ success: true, message: "Inventory unblocked successfully" });
+  } catch (error) {
+    console.error("Error unblocking inventory:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   viewLogin,
   loginAdmin,
@@ -3090,5 +3146,7 @@ module.exports = {
   suspendUser,
   signOutUserSession,
   updateNotificationSettings,
+  blockInventory,
+  unblockInventory,
 
 };
