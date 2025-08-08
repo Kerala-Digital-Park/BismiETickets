@@ -16,6 +16,7 @@ const TempBooking = require("../models/tempBookingModel");
 const Subscriptions = require("../models/subscriptionModel");
 const TempSubscription = require("../models/tempSubscriptionModel");
 const Requests = require("../models/requestModel");
+const UserActivity = require("../models/userActivityModel");
 const puppeteer = require("puppeteer");
 
 async function generatePDF(templatePath, data) {
@@ -205,6 +206,15 @@ exports.handleBookingResponse = async (req, res) => {
       });
 
       await newTransaction.save();
+
+      const newActivity = new UserActivity({
+        user: userId,
+        id: newBooking._id.toString(),
+        type: "booking",
+        content: `Booking made for flight ${parsedFlight.flightNumber} on ${newBooking.createdAt.toLocaleDateString()}`
+      });
+
+      await newActivity.save();
 
       await Users.findByIdAndUpdate(userId, {
         $inc: {

@@ -106,7 +106,7 @@
                                     <div class="d-sm-flex justify-content-sm-between align-items-center">
                                         <!-- Airline Name -->
                                         <div class="d-flex mb-2 mb-sm-0">
-                                            <img src="assets/images/element/09.svg" class="w-40px me-2"
+                                            <img src="<%= flight.stops[0].airlineLogo %>" class="w-40px me-2"
                                                 alt="">
                                             <h6 class="fw-normal mb-0"><%= flight.stops[0].airline %> (<%= flight.stops[0].airlineCode %> - <%= flight.stops[0].flightNumber %>)
                                             </h6>
@@ -660,20 +660,25 @@
                                                 </thead>
 
                                                 <tbody>
+                                                    <%
+                                                    if(userActivities.length === 0) { %>
+                                                        <tr>
+                                                            <td colspan="4" class="text-center">No activities found.</td>
+                                                        </tr>
+                                                    <% } else { %>
+                                                        <% userActivities.forEach((activity) => { %>
+                                                            <tr>
+                                                        <td><%= moment(activity.createdAt).format("DD-MMM-YYYY HH:mm") %></td>
 
-                                                    <tr>
-                                                        <td>18-Jun-2025 11:20 </td>
-                                                        <td> BFL00152</td>
+                                                        <td><%= activity.booking.bookingId %></td>
 
-                                                        <td>Your are Created a Group of 10 seats in Air India </td>
+                                                        <td><%= activity.content %></td>
 
 
-                                                        <td>BISMI ETICKETS </td>
-
-
+                                                        <td><%= seller.name.toUpperCase() %></td>
 
                                                     </tr>
-                                                    <tr>
+                                                    <!-- <tr>
                                                         <td>18-Jun-2025 11:22 </td>
                                                         <td>BFL00152 </td>
 
@@ -682,8 +687,11 @@
 
                                                         <td>BISMI ETICKETS </td>
 
-
-                                                    </tr>
+                                                    </tr> -->
+                                                        <% }) %>
+                                                    <% } %>
+                                                    %>
+                                                    
                                                 </tbody>
                                             </table>
                                             </div>

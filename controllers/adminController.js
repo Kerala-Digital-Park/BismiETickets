@@ -18,6 +18,8 @@ const ProfileUpdates = require("../models/profileUpdateModel");
 const FilterAirport = require("../models/filterAirportModel");
 const LoginActivity = require("../models/loginActivityModel");
 const Request = require("../models/requestModel");
+const UserActivity = require("../models/userActivityModel");
+const moment = require("moment");
 
 const viewLogin = async (req, res) => {
   try {
@@ -657,6 +659,16 @@ const deleteCoupon = async (req, res) => {
   try {
     await Coupon.findByIdAndDelete(req.params.id);
     res.redirect("/admin/coupons");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+};
+
+const viewAddSubscriptions = async (req, res) => {
+  const role = req.query.role;
+  try {
+    res.render("admin/addSubscription", { role });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
@@ -2737,7 +2749,26 @@ const viewInventoryDetail = async (req, res) => {
     })
     .populate("userId");
 
-    res.render("admin/inventoryDetail", { flight, seller, bookings, transactions, requests });
+    const stringBookingIds = bookings.map(b => b._id.toString());
+
+    const userActivities = await UserActivity.find({ id: { $in: stringBookingIds } }).populate("user");
+
+    // Now get booking details from Booking model using the userActivity ids
+const activityBookingIds = userActivities.map(a => a.id); // still string array
+
+const activityBookings = await Booking.find({ _id: { $in: activityBookingIds } }).lean();
+
+// Create a map for easy lookup
+const bookingMap = new Map(activityBookings.map(b => [b._id.toString(), b]));
+
+// Attach booking to each activity
+const enrichedUserActivities = userActivities.map(activity => {
+  return {
+    ...activity.toObject(),
+    booking: bookingMap.get(activity.id),
+  };
+});
+    res.render("admin/inventoryDetail", { flight, seller, bookings, transactions, requests, userActivities: enrichedUserActivities, moment });
   } catch (error) {
     console.error("Error fetching flight details:", error);
     return res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -3101,6 +3132,7 @@ module.exports = {
   viewCoupons,
   viewAddCoupon,
   deleteCoupon,
+  viewAddSubscriptions,
   viewAgentSubscriptions,
   viewUserSubscriptions,
   addSubscription,

@@ -1,0 +1,103 @@
+<%- include('./partials/header') %>
+
+<main>
+  <%- include('./partials/sideBar') %>
+
+  <div class="page-content">
+    <%- include('./partials/topBar') %>
+
+    <div class="container mt-4">
+      <h3 class="mb-4">Add New Subscription Plan</h3>
+
+      <!-- Add Subscription Form -->
+      <form action="/admin/add-subscription" method="POST" class="container mt-4 p-4 border rounded bg-light shadow">
+      
+        <!-- Subscription Category -->
+        <div class="mb-3">
+          <label class="form-label">Subscription For</label>
+          <!-- <select name="category" class="form-select" id="categorySelect">
+            <option value="User">User</option>
+            <option value="Agent">Agent</option>
+          </select> -->
+          <input type="text" class="form-control" name="category" id="categorySelect" value="<%= role %>" disabled>
+        </div>
+      
+        <!-- <div class="mb-3">
+          <label class="form-label">Plan Name</label>
+          <select name="subscription" class="form-select" id="subscriptionSelect">
+            <option value="Free">Free</option>
+            <option value="Pro">Pro</option>
+            <option value="Enterprise">Enterprise</option>
+          </select>
+        </div> -->
+        <div class="mb-3">
+  <label class="form-label">Plan Name</label>
+  <select name="subscription" class="form-select" id="subscriptionSelect">
+    <% subscriptions.forEach(function(plan) { %>
+      <option value="<%= plan.name %>"><%= plan.subscription %></option>
+    <% }); %>
+  </select>
+</div>
+      
+        <div class="mb-3">
+          <label class="form-label">Transaction Limit</label>
+          <input type="number" name="transactionLimit" class="form-control" placeholder="e.g. 100 bookings/month" />
+        </div>
+      
+        <div class="mb-3">
+          <label class="form-label">Max Transaction Amount</label>
+          <input type="number" name="maxTransactionAmount" class="form-control" placeholder="e.g. 2000000" />
+        </div>
+      
+        <div class="mb-3">
+          <label class="form-label">Price ($)</label>
+          <input type="number" name="price" class="form-control" placeholder="e.g. 59" />
+        </div>
+      
+        <div class="mb-3">
+          <label class="form-label">Service Charge</label>
+          <input type="number" name="serviceCharge" class="form-control" placeholder="e.g. 400" />
+        </div>
+      
+        <div class="mb-3">
+          <label class="form-label">Features</label>
+          <input type="text" name="features" class="form-control" placeholder="Separate by comma e.g. Unlimited Bookings, VIP Support" />
+        </div>
+      
+        <button type="submit" class="btn btn-success">Create Plan</button>
+      </form>
+            
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const categorySelect = document.getElementById("categorySelect");
+      const subscriptionSelect = document.getElementById("subscriptionSelect");
+    
+      const plans = {
+        User: ["Free", "Pro", "Enterprise"],
+        Agent: ["Starter", "Enterprise"]
+      };
+    
+      categorySelect.addEventListener("change", function () {
+        const selectedCategory = categorySelect.value;
+        const availablePlans = plans[selectedCategory] || [];
+    
+        // Clear current options
+        subscriptionSelect.innerHTML = "";
+    
+        // Add new options
+        availablePlans.forEach(plan => {
+          const option = document.createElement("option");
+          option.value = plan;
+          option.textContent = plan;
+          subscriptionSelect.appendChild(option);
+        });
+      });
+    });
+    </script>
+    
+</main>
+
+<%- include('./partials/footer') %>
