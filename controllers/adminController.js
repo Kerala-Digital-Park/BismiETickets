@@ -668,7 +668,8 @@ const deleteCoupon = async (req, res) => {
 const viewAddSubscriptions = async (req, res) => {
   const role = req.query.role;
   try {
-    res.render("admin/addSubscription", { role });
+    const subscriptions = await Subscription.find({role});
+    res.render("admin/addSubscription", { subscriptions, role });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });

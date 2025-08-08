@@ -1,0 +1,35 @@
+ <div class="container mt-4">
+      <h3>Manage Subscriptions</h3>
+
+      <!-- Show Subscriptions -->
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Limit</th>
+            <th>Max Amount</th>
+            <th>Price</th>
+            <th>Charge</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% subscriptions.forEach(sub => { %>
+            <tr>
+              <td><%= sub.subscription %></td>
+              <td><%= sub.transactionLimit %></td>
+              <td><%= sub.maxTransactionAmount %></td>
+              <td><%= sub.price %></td>
+              <td><%= sub.serviceCharge %></td>
+              <td>
+                <a href="/admin/edit-subscription/<%= sub._id %>" class="btn btn-warning btn-sm">Edit</a>
+                    <form action="/admin/delete-subscription/<%= sub._id %>" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure to delete this?')">
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
