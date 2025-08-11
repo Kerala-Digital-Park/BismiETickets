@@ -17,6 +17,7 @@ const PopularFlight = require("../models/popularFlightModel");
 const ProfileUpdates = require("../models/profileUpdateModel");
 const FilterAirport = require("../models/filterAirportModel");
 const LoginActivity = require("../models/loginActivityModel");
+const SessionActivity = require("../models/sessionActivityModel");
 const Request = require("../models/requestModel");
 const UserActivity = require("../models/userActivityModel");
 const moment = require("moment");
@@ -56,6 +57,10 @@ const loginAdmin = async (req, res) => {
 
     req.session.admin = token;
     req.session.adminId = admin._id;
+    req.session.ip = req.ip;
+    req.session.browser = req.headers["user-agent"]; // you can parse later with useragent package
+    req.session.platform = process.platform;
+    req.session.loginTime = new Date();
     
     req.session.save((err) => {
       if (err) {
@@ -3013,35 +3018,60 @@ const suspendUser = async (req, res) => {
 //   }
 // };
 
+// const signOutUserSession = async (req, res) => {
+//   const { sessionId } = req.body;
+
+//   try {
+//     const store = req.sessionStore;
+
+//     if (!sessionId) {
+//       return res.status(400).send("Session ID missing");
+//     }
+
+//     // ✅ Avoid destroying current admin session
+//     if (sessionId === req.sessionID) {
+//       return res.status(400).send("You cannot sign out your own session from here.");
+//     }
+
+//     // ✅ Destroy only the provided session from MongoDB
+//     store.destroy(sessionId, (err) => {
+//       if (err) {
+//         console.error("Error destroying session:", err);
+//         return res.status(500).send("Failed to sign out session");
+//       }
+
+//       return res.redirect("back");
+//     });
+//   } catch (err) {
+//     console.error("Server error while signing out session:", err);
+//     return res.status(500).send("Internal Server Error");
+//   }
+// };
 const signOutUserSession = async (req, res) => {
   const { sessionId } = req.body;
 
   try {
-    const store = req.sessionStore;
-
     if (!sessionId) {
       return res.status(400).send("Session ID missing");
     }
 
-    // ✅ Avoid destroying current admin session
     if (sessionId === req.sessionID) {
-      return res.status(400).send("You cannot sign out your own session from here.");
+      return res.status(400).send("You cannot sign out your own session here.");
     }
 
-    // ✅ Destroy only the provided session from MongoDB
-    store.destroy(sessionId, (err) => {
+    req.sessionStore.destroy(sessionId, (err) => {
       if (err) {
         console.error("Error destroying session:", err);
         return res.status(500).send("Failed to sign out session");
       }
-
-      return res.redirect("back");
+      res.redirect("back");
     });
   } catch (err) {
-    console.error("Server error while signing out session:", err);
-    return res.status(500).send("Internal Server Error");
+    console.error("signOutUserSession error:", err);
+    res.status(500).send("Internal Server Error");
   }
 };
+
 
 const updateNotificationSettings = async (req, res) => {
   console.log("Update notification settings called");
@@ -3117,6 +3147,37 @@ const unblockInventory = async (req, res) => {
   }
 };
 
+const viewActiveSessions = async (req, res) => {
+  try {
+    const store = req.sessionStore;
+
+    store.all((err, allSessions) => {
+      if (err) {
+        console.error("Error fetching sessions:", err);
+        return res.status(500).send("Error fetching sessions");
+      }
+
+      const sessions = Object.entries(allSessions).map(([id, sess]) => ({
+        _id: id,
+        ip: sess.ip || "Unknown",
+        browser: sess.browser || "Unknown",
+        platform: sess.platform || "Unknown",
+        loginTime: sess.loginTime
+          ? new Date(sess.loginTime)
+          : new Date()
+      }));
+
+      res.render("admin/sessions", { sessions });
+    });
+  } catch (error) {
+    console.error("viewActiveSessions error:", error);
+    res.status(500).send("Internal server error");
+  }
+};
+
+
+
+
 module.exports = {
   viewLogin,
   loginAdmin,
@@ -3181,5 +3242,5 @@ module.exports = {
   updateNotificationSettings,
   blockInventory,
   unblockInventory,
-
+  viewActiveSessions,
 };

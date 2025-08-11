@@ -18,6 +18,7 @@ const Coupons = require("../models/couponModel");
 const Requests = require("../models/requestModel");
 const FilterAirport = require("../models/filterAirportModel");
 const LoginActivity = require("../models/loginActivityModel");
+const SessionActivity = require("../models/sessionActivityModel");
 const useragent = require("useragent");
 const requestIp = require("request-ip");
 const { countries } = require('countries-list');
@@ -321,19 +322,179 @@ const viewContact = async (req, res) => {
   }
 };
 
+// const viewSignin = async (req, res) => {
+//   try {
+//     res.set(
+//       "Cache-Control",
+//       "no-store, no-cache, must-revalidate, proxy-revalidate"
+//     );
+//     res.set("Pragma", "no-cache");
+//     res.set("Expires", "0");
+
+//     res.render("user/sign-in", { message: "" });
+//   } catch (error) {
+//     console.error(error);
+//     res.render("error", { error });
+//   }
+// };
+const otpStore = {}; // Store OTP in memory
+
+// View Sign-in Page
 const viewSignin = async (req, res) => {
   try {
-    res.set(
-      "Cache-Control",
-      "no-store, no-cache, must-revalidate, proxy-revalidate"
-    );
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
     res.set("Pragma", "no-cache");
     res.set("Expires", "0");
 
-    res.render("user/sign-in", { message: "" });
+    const isTrustedDevice = req.cookies["trusted_device"] === "true";
+
+    res.render("user/sign-in", {
+      message: "",
+      messageType: "",
+      isTrustedDevice
+    });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
+  }
+};
+
+// Send OTP
+const sendOtp = async (req, res) => {
+  const { email } = req.body;
+
+  // Skip OTP if trusted device
+  if (req.cookies?.trusted_device === "true") {
+    return res.json({ success: true, skipOtp: true, message: "Trusted device detected, skipping OTP." });
+  }
+
+  const user = await Users.findOne({ email });
+  if (!user) return res.json({ success: false, message: "Email not found." });
+
+  const otp = Math.floor(100000 + Math.random() * 900000);
+  const expiresAt = Date.now() + 5 * 60 * 1000; // 5 min expiry
+
+  otpStore[email] = { otp, expiresAt };
+
+  await transporter.sendMail({
+    from: `"BismiETickets" <${process.env.EMAIL}>`,
+    to: email,
+    subject: "Your OTP for Login",
+    html: `<p>Your OTP is <strong>${otp}</strong>. It is valid for 5 minutes.</p>`
+  });
+
+  res.json({ success: true, skipOtp: false });
+};
+
+// Verify OTP
+const verifyOtp = async (req, res) => {
+  const { email, otp, trusted } = req.body;
+
+  const otpData = otpStore[email];
+  if (!otpData) return res.json({ success: false, message: "OTP not found or expired." });
+
+  if (Date.now() > otpData.expiresAt) {
+    delete otpStore[email];
+    return res.json({ success: false, message: "OTP expired." });
+  }
+
+  if (otpData.otp.toString() !== otp) {
+    return res.json({ success: false, message: "Invalid OTP." });
+  }
+
+  delete otpStore[email];
+
+  // Mark OTP verified in session
+  req.session.otpVerified = true;
+
+  // Save trusted device cookie
+  if (trusted) {
+    res.cookie("trusted_device", "true", {
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict"
+    });
+  }
+
+  res.json({ success: true });
+};
+
+// Sign in
+const signin = async (req, res) => {
+  try {
+    const { email, password, trustDevice } = req.body;
+
+    const user = await Users.findOne({ email });
+    if (!user) return res.status(401).json({ success: false, message: "Invalid credentials" });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ success: false, message: "Invalid credentials" });
+
+    const isTrustedDevice = req.cookies["trusted_device"] === "true";
+    if (!isTrustedDevice && !req.session.otpVerified) {
+      return res.status(401).json({ success: false, message: "OTP required" });
+    }
+
+    // Device & session info
+    const ip = requestIp.getClientIp(req);
+    const agent = useragent.parse(req.headers["user-agent"]);
+    const uaString = req.headers["user-agent"].toLowerCase();
+    let platform = /mobile|iphone|android|blackberry|phone/i.test(uaString)
+      ? "Mobile"
+      : /tablet|ipad/i.test(uaString)
+      ? "Tablet"
+      : "Computer";
+
+    req.session.userId = user._id.toString();
+    req.session.browser = `${agent.family} on ${agent.os.family}`;
+    req.session.platform = platform;
+    req.session.ip = ip;
+    req.session.loginTime = new Date().toISOString();
+
+    await LoginActivity.create({
+      user: user._id,
+      ip,
+      browser: `${agent.family} on ${agent.os.family}`,
+      platform
+    });
+
+      await SessionActivity.create({
+      user: user._id,
+      ip,
+      browser: `${agent.family} on ${agent.os.family}`,
+      platform,
+      loginTime: new Date()
+    });
+
+    const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: "7d" });
+    req.session.token = token;
+
+    // Load from environment (default to 30 days if not set)
+    const TRUSTED_DEVICE_DAYS = parseInt(process.env.TRUSTED_DEVICE_DAYS || "30", 10);
+
+    if (trustDevice) {
+      res.cookie("trusted_device", "true", {
+        maxAge: TRUSTED_DEVICE_DAYS * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Strict"
+      });
+    }
+
+    delete req.session.otpVerified;
+
+    const redirectUrl = req.session?.originalUrl || "/";
+    if (req.session) delete req.session.originalUrl;
+
+    req.session.save((err) => {
+      if (err) return res.status(500).json({ error: "Session save failed" });
+      res.json({ success: true, message: "Login successful", redirect: redirectUrl });
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -864,82 +1025,83 @@ const signup = async (req, res) => {
   }
 };
 
-const signin = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await Users.findOne({ email });
-        if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid credentials",
-      });
-    }
+// const signin = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+//     const user = await Users.findOne({ email });
+//         if (!user) {
+//       return res.status(401).json({
+//         success: false,
+//         message: "Invalid credentials",
+//       });
+//     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid credentials",
-      });
-    }
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       return res.status(401).json({
+//         success: false,
+//         message: "Invalid credentials",
+//       });
+//     }
 
-    const ip = requestIp.getClientIp(req); // handles proxies
-    const agent = useragent.parse(req.headers["user-agent"]);
-    const uaString = req.headers["user-agent"].toLowerCase();
+//     const ip = requestIp.getClientIp(req); // handles proxies
+//     const agent = useragent.parse(req.headers["user-agent"]);
+//     const uaString = req.headers["user-agent"].toLowerCase();
 
-    // Determine platform (Mobile / Computer / Tablet)
-    let platform = "Computer";
-    if (/mobile|iphone|android|blackberry|phone/i.test(uaString)) {
-      platform = "Mobile";
-    } else if (/tablet|ipad/i.test(uaString)) {
-      platform = "Tablet";
-    }
+//     // Determine platform (Mobile / Computer / Tablet)
+//     let platform = "Computer";
+//     if (/mobile|iphone|android|blackberry|phone/i.test(uaString)) {
+//       platform = "Mobile";
+//     } else if (/tablet|ipad/i.test(uaString)) {
+//       platform = "Tablet";
+//     }
 
-        // ✅ Store session-related info (important!)
-    req.session.userId = user._id.toString();
-    req.session.browser = `${agent.family} on ${agent.os.family}`;
-    req.session.platform = platform;
-    req.session.ip = ip;
-    req.session.loginTime = new Date().toISOString(); // MUST be valid date format
+//         // ✅ Store session-related info (important!)
+//     req.session.userId = user._id.toString();
+//     req.session.browser = `${agent.family} on ${agent.os.family}`;
+//     req.session.platform = platform;
+//     req.session.ip = ip;
+//     req.session.loginTime = new Date().toISOString(); // MUST be valid date format
 
-    await LoginActivity.create({
-      user: user._id,
-      ip,
-      browser: `${agent.family} on ${agent.os.family}`,
-      platform,
-    });
+//     await LoginActivity.create({
+//       user: user._id,
+//       ip,
+//       browser: `${agent.family} on ${agent.os.family}`,
+//       platform,
+//     });
 
-    const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
-      expiresIn: "7d",
-    });
+//     const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
+//       expiresIn: "7d",
+//     });
 
-    req.session.token = token;
-    req.session.userId = user._id;
+//     req.session.token = token;
+//     req.session.userId = user._id;
 
-    const redirectUrl = req.session?.originalUrl || "/";
-    if (req.session) delete req.session.originalUrl;
+//     const redirectUrl = req.session?.originalUrl || "/";
+//     if (req.session) delete req.session.originalUrl;
 
-    // ✅ Save session before sending response
-    req.session.save((err) => {
-      if (err) {
-        console.error("❌ Session save failed:", err);
-        return res.status(500).json({ error: "Session save failed" });
-      }
+//     // ✅ Save session before sending response
+//     req.session.save((err) => {
+//       if (err) {
+//         console.error("❌ Session save failed:", err);
+//         return res.status(500).json({ error: "Session save failed" });
+//       }
 
-      return res.json({
-        success: true,
-        message: "Login successful",
-        redirect: redirectUrl,
-      });
-    });
+//       return res.json({
+//         success: true,
+//         message: "Login successful",
+//         redirect: redirectUrl,
+//       });
+//     });
     
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
 
 const signOut = async (req, res) => {
+  await SessionActivity.deleteOne({ user: req.session.userId });
   try {
     req.session.destroy((err) => {
       if (err) {
@@ -1071,35 +1233,34 @@ const viewResetPassword = async (req, res) => {
   }
 };
 
-const otpStore = {}; // You can store this in session/Redis for production
+// const otpStore = {}; // You can store this in session/Redis for production
+// const sendOtp = async (req, res) => {
+//   const { email } = req.body;
+//   const user = await Users.findOne({ email });
+//   if (!user) return res.json({ success: false, message: "Email not found." });
 
-const sendOtp = async (req, res) => {
-  const { email } = req.body;
-  const user = await Users.findOne({ email });
-  if (!user) return res.json({ success: false, message: "Email not found." });
+//   const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit
+//   otpStore[email] = otp;
 
-  const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit
-  otpStore[email] = otp;
+//   await transporter.sendMail({
+//     from: `"BismiETickets" <${process.env.EMAIL}>`,
+//     to: email,
+//     subject: "Your OTP for Login",
+//     html: `<p>Your OTP is <strong>${otp}</strong>. It is valid for 5 minutes.</p>`,
+//   });
 
-  await transporter.sendMail({
-    from: `"BismiETickets" <${process.env.EMAIL}>`,
-    to: email,
-    subject: "Your OTP for Login",
-    html: `<p>Your OTP is <strong>${otp}</strong>. It is valid for 5 minutes.</p>`,
-  });
+//   res.json({ success: true });
+// }
 
-  res.json({ success: true });
-}
-
-const verifyOtp = async (req, res) => {
-  const { email, otp } = req.body;
-  if (otpStore[email] && otpStore[email].toString() === otp) {
-    delete otpStore[email]; // Optional: clear after verification
-    res.json({ success: true });
-  } else {
-    res.json({ success: false, message: "Invalid or expired OTP." });
-  }
-}
+// const verifyOtp = async (req, res) => {
+//   const { email, otp } = req.body;
+//   if (otpStore[email] && otpStore[email].toString() === otp) {
+//     delete otpStore[email]; // Optional: clear after verification
+//     res.json({ success: true });
+//   } else {
+//     res.json({ success: false, message: "Invalid or expired OTP." });
+//   }
+// }
 
 const viewProfile = async (req, res) => {
   const userId = req.session.userId;

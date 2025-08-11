@@ -1,203 +1,222 @@
 <%- include('./partials/header') %>
 
-<!-- **************** MAIN CONTENT START **************** -->
 <main>
-	
-    <!-- =======================
-    Main Content START -->
-    <section class="vh-xxl-100">
-        <div class="container h-100 d-flex px-0 px-sm-4">
-            <div class="row justify-content-center align-items-center m-auto">
-                <div class="col-12">
-                    <div class="bg-mode shadow rounded-3 overflow-hidden">
-                        <div class="row g-0">
-                            <!-- Information -->
-                            <div class="col-lg-6 order-1">
-                                <div class="p-4 p-sm-7">
-                                    <!-- Logo -->
-                                    <a href="/">
-                                        <img class="h-50px mb-4" src="/assets/images/logo-light.svg" alt="logo">
-                                    </a>
-                                    <!-- Title -->
-                                    <h1 class="mb-2 h3">Welcome back</h1>
-                                    <p class="mb-0">New here?<a href="/sign-up"> Create an account</a></p>
-                                    <% if (message) { %>
-                                        <div class="alert alert-<%= messageType === 'success' ? 'success' : 'danger' %>" role="alert">
-                                          <%= message %>
-                                        </div>
-                                    <% } %>
+  <section class="vh-xxl-100">
+    <div class="container h-100 d-flex px-0 px-sm-4">
+      <div class="row justify-content-center align-items-center m-auto">
+        <div class="col-12">
+          <div class="bg-mode shadow rounded-3 overflow-hidden">
+            <div class="row g-0">
+              
+              <!-- Left Column -->
+              <div class="col-lg-6 order-1">
+                <div class="p-4 p-sm-7">
+                  <!-- Logo -->
+                  <a href="/"><img class="h-50px mb-4" src="/assets/images/logo-light.svg" alt="logo"></a>
+                  
+                  <!-- Title -->
+                  <h1 class="mb-2 h3">Welcome back</h1>
+                  <p class="mb-0">New here?<a href="/sign-up"> Create an account</a></p>
 
-                                    <!-- Form START -->
-                                    <form class="mt-4 text-start" id="login-form" autocomplete="off">
-                                        <!-- Email -->
-                                        <div class="mb-3">
-                                            <label class="form-label">Enter email address <span class="text-danger">*</span></label>
-                                            <input type="email" class="form-control" name="email" id="email" autocomplete="off" required>
-                                        </div>
-                                        <!-- Password -->
-                                        <div class="mb-3 position-relative">
-                                            <label class="form-label">Enter password <span class="text-danger">*</span></label>
-                                            <input class="form-control fakepassword" type="password" id="psw-input" name="password" autocomplete="new-password" required>
-                                            <span class="position-absolute top-50 end-0 translate-middle-y p-0 mt-3">
-                                                <i class="fakepasswordicon fas fa-eye-slash cursor-pointer p-2"></i>
-                                            </span>
-                                        </div>
-                                        <!-- OTP Field -->
-  <div class="mb-3">
-    <label class="form-label">Enter OTP <span class="text-danger">*</span></label>
-    <div class="input-group">
-      <input type="text" class="form-control" id="otp" disabled>
-      <button type="button" class="btn btn-outline-primary" id="otp-button">Send OTP</button>
-    </div>
-    <small id="otp-message" class="text-danger d-block mt-1"></small>
-  </div>
-
-                                        <!-- Remember me -->
-                                        <div class="mb-3 d-sm-flex" style="float: inline-end;">
-                                            <a href="/forgot-password">Forgot password?</a>
-                                        </div>
-                                        <!-- Button -->
-                                        <div><button type="submit" class="btn btn-primary w-100 mb-0" id="login-btn" disabled>Login</button></div>
-            
-                                        <!-- Copyright -->
-                                        <div class="text-primary-hover text-body mt-3 text-center">
-                                            Copyrights ©2025 BismiETickets. Build by <a
-                                                href="https://www.keraladigitalpark.com/"
-                                                class="text-body">Kerala Digital Park</a>.
-                                        </div>
-                                    </form>
-                                    <!-- Form END -->
-                                </div>		
-                            </div>
-
-                            <!-- Vector Image -->
-                            <div class="col-lg-6 d-flex align-items-center order-2 order-lg-1">
-                                <!-- Divider -->
-                                <div class="vr opacity-1 d-none d-lg-block"></div>
-                                <div class="p-3 p-lg-5">
-                                    <img src="/assets/images/element/signin.jpg" alt="">
-                                </div>
-                            </div>
-                        </div>
+                  <% if (message) { %>
+                    <div class="alert alert-<%= messageType === 'success' ? 'success' : 'danger' %>" role="alert">
+                      <%= message %>
                     </div>
+                  <% } %>
+
+                  <!-- Login Form -->
+                  <form class="mt-4 text-start" id="login-form" autocomplete="off">
+                    
+                    <!-- Email -->
+                    <div class="mb-3">
+                      <label class="form-label">Enter email address <span class="text-danger">*</span></label>
+                      <input type="email" class="form-control" name="email" id="email" required>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-3 position-relative">
+                      <label class="form-label">Enter password <span class="text-danger">*</span></label>
+                      <input class="form-control fakepassword" type="password" id="psw-input" name="password" autocomplete="new-password" required>
+                      <span class="position-absolute top-50 end-0 translate-middle-y p-0 mt-3">
+                        <i class="fakepasswordicon fas fa-eye-slash cursor-pointer p-2"></i>
+                      </span>
+                    </div>
+
+                    <!-- OTP Field -->
+                    <div class="mb-3" id="otp-group">
+                      <label class="form-label">Enter OTP <span class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <input type="text" class="form-control" id="otp" disabled>
+                        <button type="button" class="btn btn-outline-primary" id="otp-button">Send OTP</button>
+                      </div>
+                      <small id="otp-message" class="text-danger d-block mt-1"></small>
+                    </div>
+
+                    <!-- Trust Device -->
+                    <div class="mb-3 form-check" id="trust-device-group">
+                      <input type="checkbox" class="form-check-input" id="trust-device">
+                      <label class="form-check-label" for="trust-device">Trust this device</label>
+                    </div>
+
+                    <!-- Forgot Password -->
+                    <div class="mb-3 d-sm-flex" style="float: inline-end;">
+                      <a href="/forgot-password">Forgot password?</a>
+                    </div>
+
+                    <!-- Submit -->
+                    <div><button type="submit" class="btn btn-primary w-100 mb-0" id="login-btn" disabled>Login</button></div>
+
+                    <!-- Footer -->
+                    <div class="text-primary-hover text-body mt-3 text-center">
+                      Copyrights ©2025 BismiETickets. Build by
+                      <a href="https://www.keraladigitalpark.com/" class="text-body">Kerala Digital Park</a>.
+                    </div>
+                  </form>
                 </div>
+              </div>
+
+              <!-- Right Column -->
+              <div class="col-lg-6 d-flex align-items-center order-2 order-lg-1">
+                <div class="vr opacity-1 d-none d-lg-block"></div>
+                <div class="p-3 p-lg-5">
+                  <img src="/assets/images/element/signin.jpg" alt="">
+                </div>
+              </div>
+
             </div>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const passwordInput = document.getElementById("psw-input");
-            const toggleIcon = document.querySelector(".fakepasswordicon");
-        
-            if (toggleIcon) {
-                toggleIcon.addEventListener("click", function () {
-                    if (passwordInput.type === "password") {
-                        passwordInput.type = "text";
-                        toggleIcon.classList.remove("fa-eye-slash");
-                        toggleIcon.classList.add("fa-eye");
-                    } else {
-                        passwordInput.type = "password";
-                        toggleIcon.classList.remove("fa-eye");
-                        toggleIcon.classList.add("fa-eye-slash");
-                    }
-                });
-            }
-        });
-        </script>
-        
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-              const emailInput = document.getElementById("email");
-              const otpInput = document.getElementById("otp");
-              const otpButton = document.getElementById("otp-button");
-              const loginButton = document.getElementById("login-btn");
-              const otpMessage = document.getElementById("otp-message");
-              let otpVerified = false;
-            
-              otpButton.addEventListener("click", async () => {
-  const email = emailInput.value.trim();
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const passwordInput = document.getElementById("psw-input");
+  const toggleIcon = document.querySelector(".fakepasswordicon");
+  const emailInput = document.getElementById("email");
+  const otpInput = document.getElementById("otp");
+  const otpButton = document.getElementById("otp-button");
+  const otpGroup = document.getElementById("otp-group");
+  const trustDeviceCheckbox = document.getElementById("trust-device");
+  const trustDeviceGroup = document.getElementById("trust-device-group");
+  const loginButton = document.getElementById("login-btn");
+  const otpMessage = document.getElementById("otp-message");
+  let otpVerified = false;
 
-  if (!email) {
-    otpMessage.textContent = "Enter your email first.";
-    return;
+  if (toggleIcon) {
+    toggleIcon.addEventListener("click", function () {
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        toggleIcon.classList.remove("fa-eye-slash");
+        toggleIcon.classList.add("fa-eye");
+      } else {
+        passwordInput.type = "password";
+        toggleIcon.classList.remove("fa-eye");
+        toggleIcon.classList.add("fa-eye-slash");
+      }
+    });
   }
 
-  if (otpButton.textContent === "Send OTP") {
-    // Send OTP
-    const res = await fetch("/send-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      otpInput.disabled = false;
-      otpButton.textContent = "Verify OTP";
-      otpMessage.textContent = "OTP sent to your email.";
-      otpMessage.classList.replace("text-danger", "text-success");
-    } else {
-      otpMessage.textContent = data.message;
-      otpMessage.classList.replace("text-success", "text-danger");
-    }
-  } else {
-    // ✅ Only now read OTP value
-    const otp = otpInput.value.trim();
-    const res = await fetch("/verify-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, otp }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      otpVerified = true;
-      loginButton.disabled = false;
-      otpButton.textContent = "Verified ✅";
-      otpButton.disabled = true;
-      otpInput.disabled = true;
-      otpMessage.textContent = "OTP verified successfully.";
-      otpMessage.classList.replace("text-danger", "text-success");
-    } else {
-      otpMessage.textContent = data.message;
-      otpMessage.classList.replace("text-success", "text-danger");
-    }
+  const isTrustedDevice = <%= isTrustedDevice ? 'true' : 'false' %>;
+
+  if (isTrustedDevice) {
+    otpVerified = true;
+    otpGroup.style.display = "none";
+    trustDeviceGroup.style.display = "none";
+    loginButton.disabled = false;
   }
+
+  otpButton.addEventListener("click", async () => {
+    const email = emailInput.value.trim();
+    if (!email) {
+      otpMessage.textContent = "Enter your email first.";
+      return;
+    }
+
+    if (otpButton.textContent === "Send OTP") {
+      const res = await fetch("/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (data.success) {
+        if (data.skipOtp) {
+          otpVerified = true;
+          loginButton.disabled = false;
+          otpGroup.style.display = "none";
+          trustDeviceGroup.style.display = "none";
+        } else {
+          otpInput.disabled = false;
+          otpButton.textContent = "Verify OTP";
+          otpMessage.textContent = "OTP sent to your email.";
+          otpMessage.classList.replace("text-danger", "text-success");
+        }
+      } else {
+        otpMessage.textContent = data.message;
+        otpMessage.classList.replace("text-success", "text-danger");
+      }
+    } else {
+      const otp = otpInput.value.trim();
+      const trusted = trustDeviceCheckbox.checked;
+      const res = await fetch("/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp, trusted })
+      });
+      const data = await res.json();
+      if (data.success) {
+        otpVerified = true;
+        loginButton.disabled = false;
+        otpButton.textContent = "Verified ✅";
+        otpButton.disabled = true;
+        otpInput.disabled = true;
+        otpMessage.textContent = "OTP verified successfully.";
+        otpMessage.classList.replace("text-danger", "text-success");
+      } else {
+        otpMessage.textContent = data.message;
+        otpMessage.classList.replace("text-success", "text-danger");
+      }
+    }
+  });
+
+  document.getElementById("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!otpVerified) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'OTP Not Verified',
+        text: 'Please verify OTP first.',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
+    const email = emailInput.value;
+    const password = passwordInput.value;
+    const trustDevice = trustDeviceCheckbox.checked;
+
+    const res = await fetch("/sign-in", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, trustDevice })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      window.location.href = data.redirect || "/";
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: data.message || 'Invalid credentials',
+        confirmButtonText: 'Try Again'
+      });
+    }
+  });
 });
-            
-              // Handle login submit
-              document.getElementById("login-form").addEventListener("submit", async (e) => {
-                e.preventDefault();
-                if (!otpVerified) {
-Swal.fire({
-      icon: 'warning',
-      title: 'OTP Not Verified',
-      text: 'Please verify OTP first.',
-      confirmButtonText: 'OK'
-    });                  return;
-                }
-                const email = emailInput.value;
-                const password = document.getElementById("psw-input").value;
-                const res = await fetch("/sign-in", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ email, password }),
-                });
-                const data = await res.json();
-                if (data.success) {
-                  window.location.href = data.redirect || "/";
-                } else {
-Swal.fire({
-      icon: 'error',
-      title: 'Login Failed',
-      text: data.message || 'Invalid credentials',
-      confirmButtonText: 'Try Again'
-    });                }
-              });
-            });
-            </script>
-            
-    <!-- =======================
-    Main Content END -->
-    
-    </main>
-    <!-- **************** MAIN CONTENT END **************** -->
+</script>
+
+
+</main>
