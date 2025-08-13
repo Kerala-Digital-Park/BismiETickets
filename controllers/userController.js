@@ -19,6 +19,7 @@ const Requests = require("../models/requestModel");
 const FilterAirport = require("../models/filterAirportModel");
 const LoginActivity = require("../models/loginActivityModel");
 const SessionActivity = require("../models/sessionActivityModel");
+const SigninImage = require("../models/signinImageModel");
 const useragent = require("useragent");
 const requestIp = require("request-ip");
 const { countries } = require('countries-list');
@@ -348,10 +349,14 @@ const viewSignin = async (req, res) => {
 
     const isTrustedDevice = req.cookies["trusted_device"] === "true";
 
+    const signinImgDoc = await SigninImage.findOne();
+    const signinImg = signinImgDoc.image;
+
     res.render("user/sign-in", {
       message: "",
       messageType: "",
-      isTrustedDevice
+      isTrustedDevice,
+      signinImg
     });
   } catch (error) {
     console.error(error);
@@ -409,7 +414,7 @@ const verifyOtp = async (req, res) => {
 
   // Save trusted device cookie
   if (trusted) {
-    res.cookie("trusted_device", "true", {
+    res.cookie("trusted_device", "true", {  
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -500,7 +505,9 @@ const signin = async (req, res) => {
 
 const viewSignup = async (req, res) => {
   try {
-    res.render("user/sign-up", { message: "" });
+    const signinImgDoc = await SigninImage.findOne();
+    const signinImg = signinImgDoc.image;
+    res.render("user/sign-up", { message: "", signinImg });
   } catch (error) {
     console.error(error);
     res.render("error", { error });

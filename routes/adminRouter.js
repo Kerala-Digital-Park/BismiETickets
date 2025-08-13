@@ -46,6 +46,7 @@ adminRouter.get('/user-suspend', isLogin, adminController.suspendUser);
 adminRouter.post('/block-inventory/:id', isLogin, adminController.blockInventory);
 adminRouter.post('/unblock-inventory/:id', isLogin, adminController.unblockInventory);
 adminRouter.get("/sessions", adminController.viewActiveSessions);
+adminRouter.get("/signin-images", isLogin, adminController.viewSigninImages)
 
 adminRouter.post('/login', adminController.loginAdmin);
 adminRouter.post('/add-coupon',isLogin, adminController.viewAddCoupon);
@@ -68,10 +69,12 @@ adminRouter.post('/update-profile-detail/:id', isLogin, adminController.updatePr
 adminRouter.post('/withdrawn-payment-status/:bookingId', isLogin, adminController.markBookingAsWithdrawn);
 adminRouter.post("/sessions/signout-user", isLogin, adminController.signOutUserSession);
 adminRouter.post('/notification-settings', isLogin, adminController.updateNotificationSettings);
+adminRouter.post("/signin-images", upload.single("signinImage"), isLogin, adminController.addSigninImage);
 
 
 
 adminRouter.delete('/delete-user/:id',isLogin, adminController.deleteUser);
 adminRouter.delete('/delete-agent/:id',isLogin, adminController.deleteAgent);
+
 
 module.exports = adminRouter;

@@ -20,11 +20,14 @@ const LoginActivity = require("../models/loginActivityModel");
 const SessionActivity = require("../models/sessionActivityModel");
 const Request = require("../models/requestModel");
 const UserActivity = require("../models/userActivityModel");
+const SigninImage = require("../models/signinImageModel");
 const moment = require("moment");
 
 const viewLogin = async (req, res) => {
   try {
-    res.render("admin/login", { message: "" });
+    const signinImgDoc = await SigninImage.findOne();
+    const signinImg = signinImgDoc.image;
+    res.render("admin/login", { message: "", signinImg });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
@@ -3072,7 +3075,6 @@ const signOutUserSession = async (req, res) => {
   }
 };
 
-
 const updateNotificationSettings = async (req, res) => {
   console.log("Update notification settings called");
     const {
@@ -3175,8 +3177,47 @@ const viewActiveSessions = async (req, res) => {
   }
 };
 
+const viewSigninImages = async (req, res) => {
+  try {
+    const imgDoc = await SigninImage.findOne().sort({ createdAt: -1 });
+    const oldImg = imgDoc ? imgDoc.image : null;
+    res.render("admin/signin-images", {oldImg})
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+}
 
+const addSigninImage = async (req, res) => {
+  try {
+    if (req.file) {
+      const imagePath = `/uploads/${req.file.filename}`;
 
+      // Find existing doc
+      const existing = await SigninImage.findOne();
+
+      // If old image exists, remove it from filesystem
+      if (existing && existing.image) {
+        const oldFilePath = path.join(__dirname, "..", "public", existing.image);
+        if (fs.existsSync(oldFilePath)) {
+          fs.unlinkSync(oldFilePath);
+          console.log("Old image removed:", existing.image);
+        }
+      }
+
+      // Find existing doc, update if found, otherwise create new
+      await SigninImage.findOneAndUpdate(
+        {}, // empty filter means "first document in collection"
+        { image: imagePath },
+        { upsert: true, new: true }
+      );
+    }
+    res.redirect("/admin/signin-images");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error saving image");
+  }
+};
 
 module.exports = {
   viewLogin,
@@ -3243,4 +3284,6 @@ module.exports = {
   blockInventory,
   unblockInventory,
   viewActiveSessions,
+  viewSigninImages,
+  addSigninImage,
 };

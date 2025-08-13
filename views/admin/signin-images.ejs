@@ -1,0 +1,96 @@
+<%- include('./partials/header') %>
+
+    <!-- **************** MAIN CONTENT START **************** -->
+    <main>
+
+        <!-- Sidebar START -->
+        <%- include('./partials/sideBar') %>
+            <!-- Sidebar END -->
+
+            <!-- Page content START -->
+            <div class="page-content">
+
+                <!-- Top bar START -->
+                <%- include('./partials/topBar') %>
+                    <!-- Top bar END -->
+
+                    <!-- Page main content START -->
+                    <div class="page-content-wrapper p-xxl-4">
+
+                        <!-- Title -->
+                        <div class="row">
+                            <div class="col-12 mb-4 mb-sm-5">
+                                <div class="d-sm-flex justify-content-between align-items-center">
+                                    <h1 class="h4 mb-3 mb-sm-0">Sign in Images</h1>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card shadow mt-3">
+  <div class="card-body">
+    <form id="signInImageForm" action="/admin/signin-images" method="POST" enctype="multipart/form-data">
+      
+        <div class="row">
+             <!-- New Image Upload -->
+      <div class="mb-3 col-6">
+        <label class="form-label fw-bold">Upload New Image</label>
+        <input type="file" name="signinImage" class="filepond" accept="image/*" required/>
+      </div>
+
+            <!-- Old Image Preview -->
+      <% if (oldImg) { %>
+        <div class="mb-3 col-6">
+          <label class="form-label fw-bold">Current Image</label>
+          <div>
+            <img src="<%= oldImg %>" alt="Old Sign-in Image" class="img-fluid rounded" style="max-height: 200px;">
+          </div>
+        </div>
+      <% } %>
+
+        </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+  </div>
+</div>
+
+
+                    </div>
+                    <!-- Page main content END -->
+            </div>
+            <!-- Page content END -->
+            
+<!-- ✅ FilePond Styles -->
+<link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet" />
+<link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet" />
+
+<!-- ✅ FilePond Scripts -->
+<script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+
+<script>
+  FilePond.registerPlugin(FilePondPluginImagePreview);
+
+  FilePond.create(document.querySelector('.filepond'), {
+  allowMultiple: false,
+  maxFiles: 1,
+  instantUpload: false,  // 🚨 important
+  storeAsFile: true,     // 🚨 important: sends the file in the main form POST
+  imagePreviewHeight: 170,
+  acceptedFileTypes: ['image/png', 'image/jpeg', 'image/gif'],
+  labelIdle: 'Drag & Drop your images or <span class="filepond--label-action">Browse</span>'
+});
+
+</script>
+
+<style>
+  .filepond--item {
+    width: calc(25% - 0.5em);
+  }
+</style>
+
+    </main>
+    <!-- **************** MAIN CONTENT END **************** -->
+
+    <%- include('./partials/footer') %>
