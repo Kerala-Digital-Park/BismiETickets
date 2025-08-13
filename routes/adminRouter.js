@@ -43,8 +43,6 @@ adminRouter.get("/inventory/closed", isLogin, adminController.viewClosedInventor
 adminRouter.get("/inventory-detail", isLogin, adminController.viewInventoryDetail);
 adminRouter.get('/supports/search', isLogin, adminController.getSupports);
 adminRouter.get('/user-suspend', isLogin, adminController.suspendUser);
-adminRouter.post('/block-inventory/:id', isLogin, adminController.blockInventory);
-adminRouter.post('/unblock-inventory/:id', isLogin, adminController.unblockInventory);
 adminRouter.get("/sessions", adminController.viewActiveSessions);
 adminRouter.get("/signin-images", isLogin, adminController.viewSigninImages)
 
@@ -54,6 +52,8 @@ adminRouter.post('/delete-coupon/:id',isLogin, adminController.deleteCoupon);
 adminRouter.post('/add-subscription',isLogin, adminController.addSubscription);
 adminRouter.post('/edit-subscription/:id',isLogin, adminController.editSubscription);
 adminRouter.post('/delete-subscription/:id',isLogin, adminController.deleteSubscription);
+adminRouter.post('/archive-subscription/:id',isLogin, adminController.archiveSubscription);
+adminRouter.post('/reactivate-subscription/:id',isLogin, adminController.reactivateSubscription);
 adminRouter.post('/update-bank-detail/:id',isLogin, adminController.updateBankDetail);
 adminRouter.post('/update-kyc-detail/:id',isLogin, adminController.updateKycDetail);
 adminRouter.post('/send-response', isLogin, adminController.sendResponse);
@@ -70,6 +70,8 @@ adminRouter.post('/withdrawn-payment-status/:bookingId', isLogin, adminControlle
 adminRouter.post("/sessions/signout-user", isLogin, adminController.signOutUserSession);
 adminRouter.post('/notification-settings', isLogin, adminController.updateNotificationSettings);
 adminRouter.post("/signin-images", upload.single("signinImage"), isLogin, adminController.addSigninImage);
+adminRouter.post('/block-inventory/:id', isLogin, adminController.blockInventory);
+adminRouter.post('/unblock-inventory/:id', isLogin, adminController.unblockInventory);
 
 
 

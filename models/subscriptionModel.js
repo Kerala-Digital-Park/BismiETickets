@@ -25,6 +25,15 @@ const subscriptionSchema = mongoose.Schema({
     enum: ["User", "Agent"],
     default: "User"
   },  
+  status: {
+    type: String,
+    enum: ["Archive", "Reactivate"],
+    default: "Reactivate",
+  },
+  noOfPurchases: {
+    type: Number,
+    default: 0
+  }
 });
 
 module.exports = mongoose.model("Subscriptions", subscriptionSchema);

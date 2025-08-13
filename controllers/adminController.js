@@ -686,7 +686,7 @@ const viewAddSubscriptions = async (req, res) => {
 
 const viewAgentSubscriptions = async (req, res) => {
   try {
-    const subscriptions = await Subscription.find({role:"Agent"});
+    const subscriptions = await Subscription.find({role:"Agent", subscription: { $ne: "Null" }});
     res.render("admin/subscriptions", { subscriptions, role: "Agent" });
   } catch (error) {
     console.log(error);
@@ -696,7 +696,7 @@ const viewAgentSubscriptions = async (req, res) => {
 
 const viewUserSubscriptions = async (req, res) => {
   try {
-    const subscriptions = await Subscription.find({role:"User"});
+    const subscriptions = await Subscription.find({role:"User", subscription: { $ne: "Null" }});
     res.render("admin/subscriptions", { subscriptions, role: "User" });
   } catch (error) {
     console.log(error);
@@ -766,6 +766,50 @@ const deleteSubscription = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+};
+
+const archiveSubscription = async (req, res) => {
+  const { role, status } = req.body;
+  try {
+    await Subscription.findByIdAndUpdate(req.params.id, { status: status });
+
+    res.json({
+      success: true,
+      message: "Subscription archived successfully",
+      redirectUrl:
+        role === "Agent"
+          ? "/admin/agent-subscriptions"
+          : "/admin/user-subscriptions",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+const reactivateSubscription = async (req, res) => {
+  const { role, status } = req.body;
+  try {
+    await Subscription.findByIdAndUpdate(req.params.id, { status: status });
+
+    res.json({
+      success: true,
+      message: "Subscription reactivated successfully",
+      redirectUrl:
+        role === "Agent"
+          ? "/admin/agent-subscriptions"
+          : "/admin/user-subscriptions",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
 };
 
@@ -3242,6 +3286,8 @@ module.exports = {
   viewEditSubscription,
   editSubscription,
   deleteSubscription,
+  archiveSubscription,
+  reactivateSubscription,
   deleteUser,
   deleteAgent,
   viewBankUpdates,

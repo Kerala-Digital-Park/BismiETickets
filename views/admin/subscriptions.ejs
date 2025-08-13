@@ -1,429 +1,185 @@
 <%- include('./partials/header') %>
-
 <main>
   <%- include('./partials/sideBar') %>
-
   <div class="page-content">
     <%- include('./partials/topBar') %>
 
     <div class="page-content-wrapper p-xxl-4">
-                <div class="row">
-                    <div class="col-12 mb-4 mb-sm-5">
-                        <div class="d-sm-flex justify-content-between align-items-center">
-                            <div class="card-body text-dark">
-                                <h1 class="h4 mb-3 mb-sm-0">Manage Subscriptions</h1>
-                            </div>
-                            <div class="d-grid"><a href="/admin/add-subscriptions?role=<%=role%>"
-                                    class="btn btn-primary-soft mb-0  me-2"><i class="bi bi-plus-lg fa-fw"></i>Add
-                                    New Subscriptions</a></div>
-                        </div>
-                    </div>
-                </div>
-
-                <% if(role === "User"){ %>
-                <!-- Title -->
-                <h6 class="text-primary mt-3 text-center">Customer Pricing</h6>
-                <!-- Pricing START -->
-                <div class="row g-4 justify-content-center mt-1">
-                    <!-- Price item START -->
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card border">
-                            <!-- Card header -->
-                            <div
-                                class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
-                                <div>
-                                    <h6 class="mb-0">Starter Plan</h6>
-                                    <div class="hstack gap-2">
-                                        <span class="h3 plan-price mb-0" data-monthly-price="₹0"
-                                            data-annual-price="0">₹0</span>
-                                        <span class="h6 fw-light mb-0">/ per user</span>
-                                    </div>
-                                    <i class="bi bi-person-circle me-2"></i> 152 Accounts Purchased
-                                </div>
-                                <span class="icon-lg rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    title="Most Popular">
-                                    <img src="https://bismietickets.onrender.com/assets/images/element/plan-s1.svg"
-                                        alt="Starter Plan" class="img-fluid" style="max-width: 100px;">
-                                </span>
-                            </div>
-
-                            <!-- Card body -->
-                            <div class="card-body p-4">
-                              
-                                <ul class="list-unstyled mb-0">
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>20
-                                        Bookings/Month</li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i> 2
-                                        Lakh Transactions Limit
-                                    </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Minimum KYC </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Email Support </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Quick Purchase
-                                    </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Exclusive Promo Offers </li>
-                                        
-                                    <li class="nav-item text-danger"><i class="bi bi-patch-check-fill me-2"></i>
-                                        No Hold Fares </li>
-                                    <li class="nav-item text-danger"><i class="bi bi-patch-check-fill me-2"></i> No
-                                        Bulk Fares </li>
-                                    <li class="nav-item text-danger"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Limited Action Tools </li>
-                                    <li class="nav-item text-danger"><i class="bi bi-patch-check-fill me-2"></i>
-                                        No Special Fares </li>
-                                </ul>
-
-                            </div>
-
-                            <!-- Card footer -->
-
-                            <div class="card-footer d-md-flex justify-content-md-between p-4 pt-0">
-                                <button class="btn btn-dark-soft w-100 mb-0 me-2" onclick="enterpriseCheckout()">Get
-                                    Started</button>
-                                <a href="#" class="btn  btn-primary-soft mb-0 w-100 me-2">Edit</a>
-                                 <a href="#" class="btn  btn-danger-soft mb-0 w-100 me-2">Achieve</a>
-                            </div>
-
-
-                        </div>
-                    </div>
-                    <!-- Price item END -->
-
-                    <!-- Price item START -->
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card border">
-
-
-                            <!-- Card header -->
-                            <div
-                                class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
-                                <div>
-                                    <h6 class="mb-0 text-dark">Pro Plan</h6>
-                                    <div class="hstack gap-2">
-                                        <span class="h3 plan-price mb-0" data-monthly-price="₹100"
-                                            data-annual-price="₹1200">
-                                            ₹100
-                                        </span>
-                                        <span class="h6 fw-light mb-0">/ per user</span>
-                                    </div>
-                                    <i class="bi bi-person-circle me-2"></i> 0 Accounts Purchased
-                                </div>
-                                <span class="icon-lg bg-opacity-10 rounded-circle text-primary"
-                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Recommended">
-                                    <img src="https://bismietickets.onrender.com/assets/images/element/plan-s2.svg"
-                                        alt="Starter Plan" class="img-fluid" style="max-width: 100px;">
-                                </span>
-                            </div>
-
-                            <!-- Card body -->
-                            <div class="card-body p-4">
-
-                                <ul class="list-unstyled mb-0">
-
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>100
-                                        Bookings/Month</li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i> 20
-                                        Lakh Transactions Limit
-                                    </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Full KYC Badge </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Enhanced Support </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        All Free Plan Features
-                                    </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Access Special Fares </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Access Utility Service </li>
-                                    <li class="nav-item text-danger"><i class="bi bi-patch-check-fill me-2"></i>
-                                        No Hold Fares & Bulk Fares </li>
-                                    <li class="nav-item text-danger"><i class="bi bi-patch-check-fill me-2"></i> No
-                                        Rewards </li>
-                                    <li class="nav-item text-danger"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Limited Action Tools </li>
-
-                                </ul>
-
-                            </div>
-
-                            <!-- Card footer -->
-
-                            <div class="card-footer d-md-flex justify-content-md-between p-4 pt-0">
-                                 <button class="btn btn-dark-soft w-100 mb-0 me-2" onclick="enterpriseCheckout()">Get
-                                    Started</button>
-                                <a href="#" class="btn  btn-primary-soft mb-0 w-100 me-2">Edit</a>
-                                 <a href="#" class="btn  btn-danger-soft mb-0 w-100 me-2">Achieve</a>
-                            </div>
-
-
-                        </div>
-                    </div>
-                    <!-- Price item END -->
-
-                    <!-- Price item START -->
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card border">
-
-                            <!-- Card header -->
-                            <div
-                                class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
-                                <div>
-                                    <h6 class="mb-0">Enterprise Plan</h6>
-                                    <div class="hstack gap-2">
-                                        <span class="h3 plan-price mb-0" data-monthly-price="₹200"
-                                            data-annual-price="₹2400">
-                                            ₹200
-                                        </span>
-                                        <span class="h6 fw-light mb-0">/ per user</span>
-                                    </div>
-                                    <i class="bi bi-person-circle me-2"></i> 12 Accounts Purchased
-                                </div>
-                                <span class="icon-lg rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    title="Best Value">
-                                    <img src="https://bismietickets.onrender.com/assets/images/element/plan-s3.svg"
-                                        alt="Starter Plan" class="img-fluid" style="max-width: 100px;">
-                                </span>
-                            </div>
-
-                            <!-- Card body -->
-                            <div class="card-body p-4">
-                                <ul class="list-unstyled mb-0">
-                                    <li class="nav-item text-success"><i
-                                            class="bi bi-patch-check-fill me-2"></i>Unlimited
-                                        Bookings/Month</li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Unlimited
-                                        Lakh Transactions Limit
-                                    </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Full KYC Badge </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Enhanced Support </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        All Pro Plan Features
-                                    </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Access Special Fares </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Access Utility Service </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Hold Fares & Bulk Fares </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Sales Promotional
-                                        Rewards </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Reduced Booking Fees </li>
-
-                                </ul>
-                            </div>
-
-                            <!-- Card footer -->
-
-                            <div class="card-footer d-md-flex justify-content-md-between p-4 pt-0">
-                                <button class="btn btn-dark-soft w-100 mb-0 me-2" onclick="enterpriseCheckout()">Get
-                                    Started</button>
-                                <a href="#" class="btn  btn-primary-soft mb-0 w-100 me-2">Edit</a>
-                                 <a href="#" class="btn  btn-danger-soft mb-0 w-100 me-2">Achieve</a>
-                            </div>
-
-
-                        </div>
-                    </div>
-                    <!-- Price item END -->
-                </div>
-                <!-- Pricing END -->
-                <% } else { %>
-                <!-- Title -->
-                <h6 class="text-primary mt-3 text-center">Seller Pricing</h6>
-                <!-- Pricing START -->
-                <div class="row g-4 justify-content-center mt-1">
-                    <!-- Price item START -->
-
-                    <!-- Price item START -->
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card border">
-
-
-                            <!-- Card header -->
-                            <div
-                                class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
-                                <div>
-                                    <h6 class="mb-0 text-dark">Pro Plan</h6>
-                                    <div class="hstack gap-2">
-                                        <span class="h3 plan-price mb-0" data-monthly-price="₹100"
-                                            data-annual-price="₹1200">
-                                            ₹100
-                                        </span>
-                                        <span class="h6 fw-light mb-0">/ per user</span>
-                                    </div>
-                                    <i class="bi bi-person-circle me-2"></i> 0 Accounts Purchased
-                                </div>
-                                <span class="icon-lg bg-opacity-10 rounded-circle text-primary"
-                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Recommended">
-                                    <img src="https://bismietickets.onrender.com/assets/images/element/plan-s2.svg"
-                                        alt="Starter Plan" class="img-fluid" style="max-width: 100px;">
-                                </span>
-                            </div>
-
-                            <!-- Card body -->
-                            <div class="card-body p-4">
-
-                                <ul class="list-unstyled mb-0">
-
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>100
-                                        Bookings/Month</li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i> 20
-                                        Lakh Transactions Limit
-                                    </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        20 Flight Listing
-                                    </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Full KYC Badge </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Enhanced Support </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        All Free Plan Features
-                                    </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Access Special Fares </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Access Utility Service </li>
-                                    <li class="nav-item text-danger"><i class="bi bi-patch-check-fill me-2"></i>
-                                        No Hold Fares & Bulk Fares Listing </li>
-                                    <li class="nav-item text-danger"><i class="bi bi-patch-check-fill me-2"></i> No
-                                        Rewards </li>
-                                    <li class="nav-item text-danger"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Limited Action Tools </li>
-
-                                </ul>
-
-                            </div>
-
-                            <!-- Card footer -->
-
-                            <div class="card-footer d-md-flex justify-content-md-between p-4 pt-0">
-                                 <button class="btn btn-dark-soft w-100 mb-0 me-2" onclick="enterpriseCheckout()">Get
-                                    Started</button>
-                                <a href="#" class="btn  btn-primary-soft mb-0 w-100 me-2">Edit</a>
-                                 <a href="#" class="btn  btn-danger-soft mb-0 w-100 me-2">Achieve</a>
-                            </div>
-
-
-                        </div>
-                    </div>
-                    <!-- Price item END -->
-
-                    <!-- Price item START -->
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card border">
-
-                            <!-- Card header -->
-                            <div
-                                class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
-                                <div>
-                                    <h6 class="mb-0">Enterprise Plan</h6>
-                                    <div class="hstack gap-2">
-                                        <span class="h3 plan-price mb-0" data-monthly-price="₹200"
-                                            data-annual-price="₹2400">
-                                            ₹200
-                                        </span>
-                                        <span class="h6 fw-light mb-0">/ per user</span>
-                                    </div>
-                                    <i class="bi bi-person-circle me-2"></i> 12 Accounts Purchased
-                                </div>
-                                <span class="icon-lg rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    title="Best Value">
-                                    <img src="https://bismietickets.onrender.com/assets/images/element/plan-s3.svg"
-                                        alt="Starter Plan" class="img-fluid" style="max-width: 100px;">
-                                </span>
-                            </div>
-
-                            <!-- Card body -->
-                            <div class="card-body p-4">
-                                <ul class="list-unstyled mb-0">
-                                    <li class="nav-item text-success"><i
-                                            class="bi bi-patch-check-fill me-2"></i>Unlimited
-                                        Bookings/Month</li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Unlimited
-                                        Lakh Transactions Limit
-                                    </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Unlimited Flight Listing
-                                    </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Full KYC Badge </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Enhanced Support </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        All Pro Plan Features
-                                    </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Access Special Fares </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Access Utility Service </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Hold Fares & Bulk Fares </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Sales Promotional
-                                        Rewards </li>
-                                    <li class="nav-item text-success"><i class="bi bi-patch-check-fill me-2"></i>
-                                        Reduced Booking Fees </li>
-
-                                </ul>
-                            </div>
-
-                            <!-- Card footer -->
-
-                            <div class="card-footer d-md-flex justify-content-md-between p-4 pt-0">
-                              <button class="btn btn-dark-soft w-100 mb-0 me-2" onclick="enterpriseCheckout()">Get
-                                    Started</button>
-                                <a href="#" class="btn  btn-primary-soft mb-0 w-100 me-2">Edit</a>
-                                 <a href="#" class="btn  btn-info-soft mb-0 w-100 me-2">Reactive</a>
-                            </div>
-
-
-                        </div>
-                    </div>
-                    <!-- Price item END -->
-                </div>
-                <!-- Pricing END -->
-                <% } %>
+      <div class="row">
+        <div class="col-12 mb-4 mb-sm-5">
+          <div class="d-sm-flex justify-content-between align-items-center">
+            <div class="card-body text-dark">
+              <h1 class="h4 mb-3 mb-sm-0">Manage Subscriptions</h1>
             </div>
+            <div class="d-grid">
+              <a href="/admin/add-subscriptions?role=<%= role %>"
+                 class="btn btn-primary-soft mb-0 me-2">
+                <i class="bi bi-plus-lg fa-fw"></i>Add New Subscription
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h6 class="text-primary mt-3 text-center">
+        <%= role === "User" ? "Customer Pricing" : "Seller Pricing" %>
+      </h6>
+
+      <%
+// Map plan names to icon file names
+const iconMap = {
+  "Starter": "/assets/images/element/plan-s1.svg",
+  "Base": "/assets/images/element/plan-s2.svg",
+  "Pro": "/assets/images/element/plan-s2.svg",
+  "Enterprise": "/assets/images/element/plan-s3.svg",
+};
+%>
+
+      <div class="row g-4 justify-content-center mt-1">
+        <% subscriptions.forEach(plan => { %>
+          <div class="col-md-6 col-lg-4">
+            <div class="card border">
+
+              <!-- Card header -->
+              <div class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
+                <div>
+                  <h6 class="mb-0"><%= plan.subscription %> Plan</h6>
+                  <div class="hstack gap-2">
+                    <span class="h3 plan-price mb-0">₹<%= plan.price %></span>
+                    <span class="h6 fw-light mb-0">/ per user</span>
+                  </div>
+                  <i class="bi bi-person-circle me-2"></i> <%= plan.noOfPurchases %> Accounts Purchased
+                </div>
+                <span class="icon-lg rounded-circle">
+                  <img src="<%= iconMap[plan.subscription] || '/assets/images/element/plan-s1.svg' %>"
+                       alt="<%= plan.subscription %> Plan"
+                       class="img-fluid" style="max-width: 100px;">
+                </span>
+              </div>
+
+              <% 
+  let featureList = [];
+  if (Array.isArray(plan.features)) {
+    // If it's ["f1, f2, f3"] → split the first string
+    if (plan.features.length === 1) {
+      featureList = plan.features[0].split(",");
+    } else {
+      featureList = plan.features; // already split properly
+    }
+  }
+%>
+
+              <!-- Card body -->
+              <div class="card-body p-4">
+                <ul class="list-unstyled mb-0">
+                      <% featureList.forEach(f => { 
+         const featureText = (f || '').trim(); 
+         const lowerText = featureText.toLowerCase(); 
+    %>
+      <li class="nav-item <%= (lowerText.startsWith('no ') || lowerText.startsWith('limited')) ? 'text-danger' : 'text-success' %>">
+        <i class="bi bi-patch-check-fill me-2"></i>
+        <%= featureText %>
+      </li>
+    <% }) %>
+                </ul>
+              </div>
+
+              <!-- Card footer -->
+              <div class="card-footer d-md-flex justify-content-md-between p-4 pt-0">
+                <a href="/admin/edit-subscription/<%= plan._id %>"
+                   class="btn btn-primary-soft mb-0 w-100 me-2">Edit</a>
+                <% if (plan.status === "Archive") { %>
+                  <button onclick="reactivatePlan('<%= plan._id %>', '<%=role%>')"
+                     class="btn btn-info-soft mb-0 w-100 me-2">Reactivate</button>
+                <% } else { %>
+                    <button onclick= "archivePlan('<%= plan._id %>', '<%=role%>')"
+                     class="btn btn-danger-soft mb-0 w-100 me-2">Archive</a>
+                <% } %>
+              </div>
+
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const categorySelect = document.getElementById("categorySelect");
-      const subscriptionSelect = document.getElementById("subscriptionSelect");
-    
-      const plans = {
-        User: ["Free", "Pro", "Enterprise"],
-        Agent: ["Starter", "Enterprise"]
-      };
-    
-      categorySelect.addEventListener("change", function () {
-        const selectedCategory = categorySelect.value;
-        const availablePlans = plans[selectedCategory] || [];
-    
-        // Clear current options
-        subscriptionSelect.innerHTML = "";
-    
-        // Add new options
-        availablePlans.forEach(plan => {
-          const option = document.createElement("option");
-          option.value = plan;
-          option.textContent = plan;
-          subscriptionSelect.appendChild(option);
-        });
+  async function reactivatePlan(planId, role) {
+    const status = "Reactivate";
+    try {
+      const res = await fetch(`/admin/reactivate-subscription/${planId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role, status })
       });
-    });
-    </script>
-    
-</main>
 
+              const data = await res.json();
+
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: data.message,
+                timer: 3000,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = data.redirectUrl;
+            });
+      } else {
+        Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: data.message || 'Something went wrong!'
+            });
+      }
+    } catch (err) {
+      Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'Request failed!'
+        });
+    }
+  }
+
+  async function archivePlan(planId, role) {
+    const status = "Archive";
+    try {
+      const res = await fetch(`/admin/archive-subscription/${planId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role, status })
+      });
+
+        const data = await res.json();
+
+        if (data.success) {
+         Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: data.message,
+                timer: 3000,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = data.redirectUrl;
+            });
+        location.reload();
+      } else {
+        Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: data.message || 'Something went wrong!'
+            });
+      }
+    } catch (err) {
+      Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'Request failed!'
+        });
+    }
+  }
+</script>
+
+</main>
 <%- include('./partials/footer') %>

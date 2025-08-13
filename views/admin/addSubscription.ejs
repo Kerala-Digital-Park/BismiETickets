@@ -7,7 +7,7 @@
     <%- include('./partials/topBar') %>
 
     <div class="container mt-4">
-      <h3 class="mb-4">Add New Subscription Plan</h3>
+      <h1 class="h4 mb-3 mb-sm-0">Add New Subscription Plan</h1>
 
       <!-- Add Subscription Form -->
       <form action="/admin/add-subscription" method="POST" class="container mt-4 p-4 border rounded bg-light shadow">
@@ -76,8 +76,8 @@
       const subscriptionSelect = document.getElementById("subscriptionSelect");
     
       const plans = {
-        User: ["Free", "Pro", "Enterprise"],
-        Agent: ["Starter", "Enterprise"]
+        User: ["Starter", "Pro", "Enterprise"],
+        Agent: ["Base", "Enterprise"]
       };
     
       categorySelect.addEventListener("change", function () {

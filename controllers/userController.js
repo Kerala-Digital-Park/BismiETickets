@@ -1351,9 +1351,9 @@ const viewTravelers = async (req, res) => {
   }
 };
 
-const viewPaymentDetails = async (req, res) => {
+const viewWalletDetails = async (req, res) => {
   try {
-    res.render("user/payment-details", {});
+    res.render("user/wallet-details", {});
   } catch (error) {
     console.error(error);
     res.render("error", { error });
@@ -1854,7 +1854,6 @@ const subscription = async (req, res) => {
     }
 
     if (subscription === "Starter") {
-      console.log("HI")
       if (user.subscription.subscription === "Starter") {
         return res.json({
           redirectUrl: "/subscription",
@@ -1968,6 +1967,10 @@ const subscriptionPayment = async (req, res) => {
 
     await user.save();
 
+    // Increment purchase count for free plan
+    subscriptionPlan.noOfPurchases += 1;
+    await subscriptionPlan.save();
+
     res.json({
         success: true,
         message: "Subscription updated successfully.",
@@ -1983,7 +1986,8 @@ const freeSubscription = async (req, res) => {
   const { subscription } = req.body;
   try {
     if (!userId) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
+       // Increment purchase count for free plan
+   return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
     const user = await Users.findById(userId);
@@ -2021,6 +2025,10 @@ const freeSubscription = async (req, res) => {
     user.transactionAmount = 0;
 
     await user.save();
+
+    // Increment purchase count for free plan
+    freePlan.noOfPurchases += 1;
+    await freePlan.save();
 
     res.json({
       success: true,
@@ -3396,7 +3404,7 @@ module.exports = {
   viewProfile,
   viewBookings,
   viewTravelers,
-  viewPaymentDetails,
+  viewWalletDetails,
   viewWishlist,
   viewSettings,
   viewDeleteProfile,

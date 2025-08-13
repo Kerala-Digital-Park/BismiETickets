@@ -5,6 +5,7 @@ const session = require('express-session')
 const {isLogin,isLogout} = require("../middleware/userAuth");
 const upload = require("../multer/multer");
 const Users = require("../models/userModel");
+
 // Only apply preventCache to routes, NOT static files
 userRouter.use((req, res, next) => {
   const isStaticAsset = req.url.startsWith('/assets') || req.url.startsWith('/uploads');
@@ -81,7 +82,7 @@ userRouter.get("/disclaimer", userController.viewDisclaimer);
 userRouter.get("/profile",isLogin, userController.viewProfile);
 userRouter.get("/bookings",isLogin, userController.viewBookings);
 userRouter.get("/travelers",isLogin, userController.viewTravelers);
-userRouter.get("/payment-details",isLogin, userController.viewPaymentDetails);
+userRouter.get("/wallet-details",isLogin, userController.viewWalletDetails);
 userRouter.get("/wishlist",isLogin, userController.viewWishlist);
 userRouter.get("/settings",isLogin, userController.viewSettings);
 userRouter.get("/delete-profile",isLogin, userController.viewDeleteProfile);
