@@ -2044,7 +2044,7 @@ const freeSubscription = async (req, res) => {
 
 const viewPricing = async (req, res) => {
   try {
-    const subscriptions = await Subscriptions.find({role:"User"})
+    const subscriptions = await Subscriptions.find({role:"User", subscription: { $ne: "Null" }})
     res.render("user/pricing", {subscriptions});
   } catch (error) {
     console.error(error);
@@ -2450,7 +2450,7 @@ const searchAirlines = async (req, res) => {
 
 const viewJoinUs = async (req, res) => {
   try {
-    const subscriptions = await Subscriptions.find({role:"Agent"})
+    const subscriptions = await Subscriptions.find({role:"Agent", subscription: { $ne: "Null" }})
     res.render("user/join-us", {subscriptions});
   } catch (error) {
     console.log(error);

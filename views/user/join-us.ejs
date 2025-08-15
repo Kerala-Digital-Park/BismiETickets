@@ -195,168 +195,81 @@
                 </div>
             </div> 
             <h6 class="text-primary text-center mt-5">Agent Pricing</h6>
-                    <!-- Pricing START -->
-                    <div class="row g-4 justify-content-center mt-1">
-                        <!-- Price item START -->
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card shadow">
-                                <% const proPlan=subscriptions.find(plan=> plan.subscription === "Base");
-                                    const proFeatureList = proPlan?.features[0]?.split(',') || [];
-                                    const proPrice = proPlan?.price || 0;
-                                    const proAnnualPrice = proPrice * 12 ;
-                                    %>
-                                <!-- Card header -->
-                                <div
-                                    class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
-                                    <div>
-                                        <h6 class="mb-0">Base Plan</h6>
-                                        <div class="hstack gap-2">
-                                            <span class="h3 plan-price mb-0" data-monthly-price="₹<%= proPrice %>"
-                                                data-annual-price="₹<%= proAnnualPrice.toFixed(0) %>">₹<%= proPrice %></span>
-                                            <span class="h6 fw-light mb-0">/ per user</span>
-                                        </div>
-                                    </div>
-                                    <span class="icon-lg bg-opacity-10 rounded-circle text-primary"
-                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Recommended">
-                                        <img src="/assets/images/element/plan-s2.svg" alt="Starter Plan"
-                                            class="img-fluid" style="max-width: 100px;">
-                                    </span>
-                                </div>
-
-                                <!-- Card body -->
-                                <div class="card-body p-4">
-                                    <!-- List -->
-                                    <ul class="list-unstyled mb-0">
-                                        <% proFeatureList.forEach(feature=> { %>
-                                                <li class="mb-2">
-                                                    <i class="bi bi-check-circle text-success me-2"></i>
-                                                    <%= feature.trim() %>
-                                                </li>
-                                                <% }) %>
-                                        <!-- <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>100
-                                            Bookings/Month</li>
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>20 Lakh
-                                            Transactions</li>
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>All Free
-                                            Plan Features</li>
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Exclusive
-                                            Offers</li>
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Access
-                                            Special Fares</li>
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Enhanced
-                                            Support</li>
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Special
-                                            Bids Opportunity</li>
-                                        <li class="mb-2"><i class="fas fa-shield-alt text-success me-2"></i>Full KYC
-                                            Badge</li>
-                                        <li><i class="fas fa-tools text-success me-2"></i>Limited Action Tools</li> -->
-                                    </ul>
-                                </div>
-
-                                <!-- Card footer -->
-                                <% if(user) { %>
-                                    <% if(user.subscription && user.subscription.subscription==="Base" ) { %>
-                                        <div class="card-footer p-4 pt-0">
-                                            <button class="btn btn-success w-100 mb-0" disabled>Current Plan</button>
-                                        </div>
-                                    <% } else { %>
-                                            <div class="card-footer p-4 pt-0">
-                                                <button class="btn btn-dark w-100 mb-0" onclick="starterCheckout()">Get
-                                                    Started</a>
-                                            </div>
-                                    <% } %>
-                                <% } else { %>
-                                                    <div class="card-footer p-4 pt-0">
-                                                        <button class="btn btn-dark w-100 mb-0"
-                                                            onclick="starterCheckout()">Get Started</a>
-                                                    </div>
-                                <% } %>
-
-                            </div>
-                        </div>
-                        <!-- Price item END -->
-
-                        <!-- Price item START -->
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card shadow">
-                                <% const enterprisePlan=subscriptions.find(plan=> plan.subscription === "Enterprise");
-                                    const enterpriseFeatureList = enterprisePlan?.features[0]?.split(',') || [];
-                                    const enterprisePrice = enterprisePlan?.price || 0;
-                                    const enterpriseAnnualPrice = enterprisePrice * 12 ;
-                                    %>
-                                <!-- Card header -->
-                                <div
-                                    class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
-                                    <div>
-                                        <h6 class="mb-0">Enterprise Plan</h6>
-                                        <div class="hstack gap-2">
-                                            <span class="h3 plan-price mb-0" data-monthly-price="₹<%= enterprisePrice %>"
-                                                data-annual-price="₹<%= enterpriseAnnualPrice.toFixed(0) %>">₹<%= enterprisePrice %></span>
-                                            <span class="h6 fw-light mb-0">/ per user</span>
-                                        </div>
-                                    </div>
-                                    <span class="icon-lg rounded-circle" data-bs-toggle="tooltip"
-                                        data-bs-placement="top" title="Best Value">
-                                        <img src="/assets/images/element/plan-s3.svg" alt="Starter Plan"
-                                            class="img-fluid" style="max-width: 100px;">
-                                    </span>
-                                </div>
-
-                                <!-- Card body -->
-                                <div class="card-body p-4">
-                                    <!-- List -->
-                                    <ul class="list-unstyled mb-0">
-                                        <!-- <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Unlimited
-                                            Bookings</li>
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Unlimited
-                                            Transactions</li>
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>All Pro
-                                            Plan Features</li>
-                                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Special
-                                            Fares</li>
-                                        <li class="mb-2"><i class="fas fa-gift text-success me-2"></i>Milestone Rewards
-                                        </li>
-                                        <li class="mb-2"><i class="fas fa-user-shield text-success me-2"></i>VIP Support
-                                        </li>
-                                        <li class="mb-2"><i class="fas fa-percent text-success me-2"></i> Reduced
-                                            Charges</li>
-                                        <li class="mb-2"><i class="fas fa-shield-alt text-success me-2"></i>Full KYC
-                                            Badge</li>
-                                        <li><i class="fas fa-money-bill-alt text-success me-2"></i>Reduced Booking Fees
-                                        </li> -->
-                                        <% enterpriseFeatureList.forEach(feature=> { %>
-                                                <li class="mb-2">
-                                                    <i class="bi bi-check-circle text-success me-2"></i>
-                                                    <%= feature.trim() %>
-                                                </li>
-                                                <% }) %>
-                                    </ul>
-                                </div>
-
-                                <!-- Card footer -->
-                                <% if(user) { %>
-                                    <% if(user.subscription.subscription==="Enterprise" ) { %>
-                                        <div class="card-footer p-4 pt-0">
-                                            <button class="btn btn-success w-100 mb-0" disabled>Current Plan</button>
-                                        </div>
-                                    <% } else { %>
-                                            <div class="card-footer p-4 pt-0">
-                                                <button class="btn btn-dark w-100 mb-0"
-                                                    onclick="enterpriseCheckout()">Get Started</button>
-                                            </div>
-                                    <% } %>
-                                <% } else { %>
-                                                    <div class="card-footer p-4 pt-0">
-                                                        <button class="btn btn-dark w-100 mb-0"
-                                                            onclick="enterpriseCheckout()">Get Started</button>
-                                                    </div>
-                                <% } %>
-
-                            </div>
-                        </div>
-                        <!-- Price item END -->
+<div class="row g-4 justify-content-center mt-1">
+    <% subscriptions.forEach(plan => { 
+        <!-- if (plan.type !== 'Agent') return; // If you separate agent plans by type in DB -->
+        let featureList = [];
+        if (Array.isArray(plan.features)) {
+            if (plan.features.length === 1) {
+                featureList = plan.features[0].split(",");
+            } else {
+                featureList = plan.features;
+            }
+        }
+        const annualPrice = plan.price * 12;
+        const isCurrent = user?.subscription?.subscription === plan.subscription;
+        const currentPrice = user?.subscription?.price || 0;
+    %>
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow">
+            <!-- Card header -->
+            <div class="card-header d-flex justify-content-between align-items-center border-bottom p-4">
+                <div>
+                    <h6 class="mb-0"><%= plan.subscription %> Plan</h6>
+                    <div class="hstack gap-2">
+                        <span class="h3 plan-price mb-0"
+                              data-monthly-price="₹<%= plan.price %>"
+                              data-annual-price="₹<%= annualPrice.toFixed(0) %>">
+                              ₹<%= plan.price %>
+                        </span>
+                        <span class="h6 fw-light mb-0">/ per user</span>
                     </div>
-                    <!-- Pricing END -->
+                </div>
+                <span class="icon-lg rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="<%= plan.badge || '' %>">
+                    <img src="<%= plan.icon || '/assets/images/element/plan-s1.svg' %>" alt="<%= plan.subscription %> Icon" class="img-fluid" style="max-width: 100px;">
+                </span>
+            </div>
+
+            <!-- Card body -->
+            <div class="card-body p-4">
+                <ul class="list-unstyled mb-0">
+                    <% featureList.forEach(f => {
+                        const featureText = (f || '').trim();
+                        const lowerText = featureText.toLowerCase();
+                        const isNegative = lowerText.startsWith('no ') || lowerText.startsWith('limited');
+                    %>
+                        <li class="mb-2">
+                            <i class="bi <%= isNegative ? 'bi-x-circle text-danger' : 'bi-check-circle text-success' %> me-2"></i>
+                            <%= featureText %>
+                        </li>
+                    <% }) %>
+                </ul>
+            </div>
+
+            <!-- Card footer -->
+            <div class="card-footer p-4 pt-0">
+                <% if (user) { %>
+                    <% if (isCurrent) { %>
+                        <button class="btn btn-success w-100 mb-0" disabled>Current Plan</button>
+                    <% } else if (plan.price < currentPrice) { %>
+                        <% if (plan.price === 0) { %>
+                            <button class="btn btn-dark w-100 mb-0" onclick="agentDowngrade('<%= plan.subscription %>')">Downgrade</button>
+                            
+                        <% } else { %>
+                            <button class="btn btn-dark w-100 mb-0" onclick="agentDowngrade('<%= plan.subscription %>')">Downgrade</button>
+                        <% } %>
+                    <% } else { %>
+                        <button class="btn btn-dark w-100 mb-0" onclick="agentCheckout('<%= plan.subscription %>')">Get Started</button>
+                    <% } %>
+                <% } else { %>
+                    <button class="btn btn-dark w-100 mb-0" onclick="agentCheckout('<%= plan.subscription %>')">Get Started</button>
+                <% } %>
+            </div>
+        </div>
+    </div>
+    <% }) %>
+</div>
+
         </div>
     </section>
     <!-- =======================
@@ -417,119 +330,84 @@
         }
     </script>
       
-
-    <script>
-        async function starterCheckout() {
-            const subscription = "Base";
-            try {
-                const response = await fetch("/agent-subscription",
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ subscription })
-                    });
-
-                if (!response.ok) {
-        await Swal.fire({
-          icon: 'error',
-          title: 'Failed',
-          text: 'Failed to fetch subscription details'
+   <script>
+async function agentCheckout(subscription) {
+    try {
+        const response = await fetch("/agent-subscription", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ subscription })
         });
-        return;
-                }
 
-                const data = await response.json();
-                if (data.message) {
-        await Swal.fire({
-          icon: 'info',
-          title: 'Notice',
-          text: data.message
-        });
-                }
-                window.location.href = data.redirectUrl;
-            } catch (error) {
-                window.location.href = "/sign-in";
-                console.error("Error:", error);
-            }
+        if (!response.ok) {
+            await Swal.fire({
+                icon: 'error',
+                title: 'Failed',
+                text: 'Failed to fetch subscription details'
+            });
+            return;
         }
 
-        async function enterpriseCheckout() {
-            const subscription = "Enterprise";
-            try {
-                const response = await fetch("/agent-subscription",
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ subscription })
-                    });
-
-                if (!response.ok) {
-                    await Swal.fire({
-          icon: 'error',
-          title: 'Failed',
-          text: 'Failed to fetch subscription details'
-        });
-                    return;
-                }
-
-                const data = await response.json();
-                if (data.message) {
-                    await Swal.fire({
-          icon: 'info',
-          title: 'Message',
-          text: data.message
-        });
-                }
-                window.location.href = data.redirectUrl;
-
-            } catch (error) {
-                console.error("Error:", error);
-                window.location.href = "/sign-in";
-            }
+        const data = await response.json();
+        if (data.message) {
+            await Swal.fire({
+                icon: 'info',
+                title: 'Notice',
+                text: data.message
+            });
         }
+        window.location.href = data.redirectUrl;
+    } catch (error) {
+        console.error("Error:", error);
+        window.location.href = "/sign-in";
+    }
+}
 
-        async function starterDowngrade() {
-            const subscription = "Base";
-                const confirm = await Swal.fire({
-      icon: 'warning',
-      title: 'Are you sure?',
-      text: 'Do you want to downgrade to the Free plan?',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, downgrade',
-      cancelButtonText: 'Cancel'
+async function agentDowngrade(subscription) {
+    const confirm = await Swal.fire({
+        icon: 'warning',
+        title: 'Are you sure?',
+        text: `Do you want to downgrade to the ${subscription} plan?`,
+        showCancelButton: true,
+        confirmButtonText: 'Yes, downgrade',
+        cancelButtonText: 'Cancel'
     });
 
     if (!confirm.isConfirmed) return;
-            try {
-                const response = await fetch("/subscription-free",
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ subscription })
-                    });
 
-                if (!response.ok) {
-await Swal.fire({
-          icon: 'error',
-          title: 'Failed',
-          text: 'Failed to fetch subscription details'
-        });                    return;
-                }
+    try {
+        const response = await fetch("/agent-subscription", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ subscription })
+        });
 
-                const data = await response.json();
-                if (data.message) {
-await Swal.fire({
-          icon: 'info',
-          title: 'Info',
-          text: data.message
-        });                }
-                window.location.href = data.redirectUrl;
-            } catch (error) {
-                window.location.href = "/sign-in";
-                console.error("Error:", error);
-            }
+        if (!response.ok) {
+            await Swal.fire({
+                icon: 'error',
+                title: 'Failed',
+                text: 'Failed to fetch subscription details'
+            });
+            return;
         }
-    </script>
+
+        const data = await response.json();
+        if (data.message) {
+            await Swal.fire({
+                icon: 'info',
+                title: 'Notice',
+                text: data.message
+            });
+        }
+        window.location.href = data.redirectUrl;
+    } catch (error) {
+        console.error("Error:", error);
+        window.location.href = "/sign-in";
+    }
+}
+</script>
+
+
     </main>
     <!-- **************** MAIN CONTENT END **************** -->
 

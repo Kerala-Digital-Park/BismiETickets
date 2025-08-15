@@ -569,6 +569,9 @@ exports.handleSubscriptionResponse = async (req, res) => {
 
       await user.save();
 
+    plan.noOfPurchases += 1;
+    await plan.save();
+
       return res.redirect("/manage-subscription");
     } else {
       return res.send(`<h3>Subscription failed or pending. Status: ${orderStatusResp.status}</h3>`);
