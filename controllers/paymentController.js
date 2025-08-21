@@ -17,6 +17,8 @@ const Subscriptions = require("../models/subscriptionModel");
 const TempSubscription = require("../models/tempSubscriptionModel");
 const Requests = require("../models/requestModel");
 const UserActivity = require("../models/userActivityModel");
+const WalletTransactions = require("../models/walletTransactionModel");
+const TempWallet = require("../models/tempWalletModel");
 const puppeteer = require("puppeteer");
 
 async function generatePDF(templatePath, data) {
@@ -579,5 +581,110 @@ exports.handleSubscriptionResponse = async (req, res) => {
   } catch (err) {
     console.error("Subscription response error:", err);
     return res.send("Something went wrong");
+  }
+};
+
+// 1️⃣ Initiate Wallet Load Payment
+exports.initiateLoadWalletPayment = async (req, res) => {
+  console.log("Load wallet payment initiated ")
+  const { amount, method } = req.body;
+  const userId = req.session.userId;
+
+  if (!amount || !method) {
+    return res.status(400).json({ success: false, message: "Amount and payment method required" });
+  }
+
+  const orderId = `wallet_${Date.now()}`;
+  const returnUrl = `${req.protocol}://${req.get("host")}/payment/load-wallet-response`;
+
+  const paymentHandler = PaymentHandler.getInstance();
+
+  try {
+    // Save to temp wallet collection (like TempSubscription)
+    await TempWallet.create({
+      orderId,
+      userId,
+      amount,
+      method,
+      purpose: "Loaded cash",
+    });
+
+    // Initiate HDFC payment
+    const orderSessionResp = await paymentHandler.orderSession({
+      order_id: orderId,
+      amount: parseFloat(amount),
+      currency: "INR",
+      return_url: returnUrl,
+      customer_id: `wallet-user-${userId}`,
+    });
+
+    return res.redirect(orderSessionResp.payment_links.web);
+  } catch (err) {
+    console.error("❌ Failed to initiate wallet load:", err);
+    res.status(500).send("Something went wrong while initiating wallet load.");
+  }
+};
+
+// 2️⃣ Handle Wallet Payment Response
+exports.handleLoadWalletResponse = async (req, res) => {
+  const orderId = req.body.order_id;
+  const paymentHandler = PaymentHandler.getInstance();
+
+  if (!orderId) {
+    return res.send("Missing order ID");
+  }
+
+  try {
+    const orderStatusResp = await paymentHandler.orderStatus(orderId);
+
+    // Verify signature
+    const isValid = validateHMAC_SHA256(req.body, paymentHandler.getResponseKey());
+    if (!isValid) {
+      return res.send("❌ Signature verification failed");
+    }
+
+    // Payment successful
+    if (orderStatusResp.status === "CHARGED") {
+      // Fetch and delete temp record
+      const tempData = await TempWallet.findOneAndDelete({ orderId });
+      if (!tempData) {
+        return res.send("❌ Wallet temp data not found or expired.");
+      }
+
+      const { userId, amount, purpose, method } = tempData;
+      const user = await Users.findById(userId);
+
+      if (!user) {
+        return res.send("❌ User not found.");
+      }
+
+      // Create wallet transaction
+      const walletTxn = new WalletTransactions({
+        userId,
+        amount,
+        status: "Loaded",
+        purpose: purpose || "Loaded cash",
+      });
+      await walletTxn.save();
+
+      // Update user wallet balance
+      user.walletBalance += parseFloat(amount);
+      await user.save();
+
+      return res.redirect("/wallet-details"); // redirect user to wallet details page
+    } else {
+      // Payment failed or pending → save txn as failed
+      await WalletTransactions.create({
+        userId: req.session.userId,
+        amount: req.body.amount || 0,
+        status: "Cancelled",
+        purpose: "Wallet load failed",
+      });
+
+      return res.send(`<h3>Wallet load failed or pending. Status: ${orderStatusResp.status}</h3>`);
+    }
+  } catch (err) {
+    console.error("Wallet load response error:", err);
+    return res.send("Something went wrong processing wallet response.");
   }
 };

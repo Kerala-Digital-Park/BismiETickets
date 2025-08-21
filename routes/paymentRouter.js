@@ -11,5 +11,7 @@ router.post("/initiate-booking", paymentController.initiateBookingPayment);
 router.post("/booking-response", paymentController.handleBookingResponse);
 router.post("/initiate-subscription", paymentController.initiateSubscriptionPayment);
 router.post("/subscription-response", paymentController.handleSubscriptionResponse);
+router.post("/initiate-load-wallet", paymentController.initiateLoadWalletPayment);
+router.post("/load-wallet-response", paymentController.handleLoadWalletResponse);
 
 module.exports = router;

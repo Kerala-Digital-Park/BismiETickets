@@ -26,8 +26,8 @@ const moment = require("moment");
 const viewLogin = async (req, res) => {
   try {
     const signinImgDoc = await SigninImage.findOne();
-    const signinImg = signinImgDoc.image;
-    res.render("admin/login", { message: "", signinImg });
+    const signinImg = signinImgDoc.image || null;
+    res.render("admin/login", { message: "", messageType:"", signinImg });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
@@ -37,22 +37,16 @@ const viewLogin = async (req, res) => {
 const loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
+    
+    const signinImgDoc = await SigninImage.findOne();
+    const signinImg = signinImgDoc ? signinImgDoc.image : null;
+
     console.log(email, password)
     const admin = await User.findOne({ email, userRole: "Admin" });
-    if (!admin) {
-      return res.render("admin/login", {
-        message: "Invalid email or not an admin",
-        messageType: "danger",
-      });
-    }
+    if (!admin) return res.status(401).json({ success: false, message: "Invalid email or not an admin", messageType: "danger", });
 
     const isMatch = await bcrypt.compare(password, admin.password);
-    if (!isMatch) {
-      return res.render("admin/login", {
-        message: "Invalid password",
-        messageType: "danger",
-      });
-    }
+    if (!isMatch) return res.status(401).json({ success: false, message: "Invalid password", messageType: "danger", });
 
     const token = jwt.sign({ id: admin._id }, process.env.SECRET_KEY, {
       expiresIn: "7d",
@@ -70,7 +64,7 @@ const loginAdmin = async (req, res) => {
         console.error("❌ Error saving session:", err);
         return res.status(500).send("Internal Server Error");
       }
-      res.redirect("/admin/");
+  res.json({ success: true });
     });
 
   } catch (error) {

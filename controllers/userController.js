@@ -20,6 +20,7 @@ const FilterAirport = require("../models/filterAirportModel");
 const LoginActivity = require("../models/loginActivityModel");
 const SessionActivity = require("../models/sessionActivityModel");
 const SigninImage = require("../models/signinImageModel");
+const WalletTransactions = require("../models/walletTransactionModel")
 const useragent = require("useragent");
 const requestIp = require("request-ip");
 const { countries } = require('countries-list');
@@ -1352,8 +1353,25 @@ const viewTravelers = async (req, res) => {
 };
 
 const viewWalletDetails = async (req, res) => {
+  const userId = req.session.userId;
   try {
-    res.render("user/wallet-details", {});
+    const walletHistory = await WalletTransactions.find({userId: userId});
+
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const walletBalance = user.walletBalance;
+
+    const subscription = await Subscriptions.findById(user.subscription);
+    if (!subscription) {
+      return res.status(404).json({ success: false, message: "Subscription not found" });
+    }
+
+    const walletLimit = subscription.walletLimit;
+
+    res.render("user/wallet-details", { walletHistory, walletBalance, walletLimit });
   } catch (error) {
     console.error(error);
     res.render("error", { error });

@@ -71,7 +71,8 @@ const userSchema = mongoose.Schema(
       bookingDummyPrint: { type: Boolean, default: true },
       onlinePaymentConfirmation: { type: Boolean, default: true },
       deviceAccess: { type: Boolean, default: true },
-    }
+    },
+    walletBalance: { type: Number, default: 0 },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

@@ -33,6 +33,10 @@ const subscriptionSchema = mongoose.Schema({
   noOfPurchases: {
     type: Number,
     default: 0
+  },
+  walletLimit: {
+    type: Number,
+    default: 10000,
   }
 });
 

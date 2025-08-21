@@ -36,11 +36,11 @@
                                       <% } %>
 
                                     <!-- Form START -->
-                                    <form class="mt-4 text-start" action="/admin/login" method="POST">
+                                    <form class="mt-4 text-start" id="login-form">
                                         <!-- Email -->
                                         <div class="mb-3">
                                             <label class="form-label">Enter email address</label>
-                                            <input type="email" class="form-control" name="email">
+                                            <input type="email" class="form-control" name="email" id="email">
                                         </div>
                                         <!-- Password -->
                                         <div class="mb-3 position-relative">
@@ -55,7 +55,7 @@
                                             <!-- <a href="/forgot-password">Forgot password?</a> -->
                                         </div>
                                         <!-- Button -->
-                                        <div><button type="submit" class="btn btn-primary w-100 mb-0">Login</button></div>
+                                        <div><button type="submit" class="btn btn-primary w-100 mb-0" id="login-btn">Login</button></div>
             
                                         <!-- Copyright -->
                                         <div class="text-primary-hover text-body mt-3 text-center">
@@ -93,6 +93,33 @@
                 });
             }
         });
+        </script>
+
+        <script>
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("psw-input").value;
+
+    const res = await fetch("/admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      window.location.href = "/admin/";
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: data.message || 'Invalid credentials',
+        confirmButtonText: 'Try Again'
+      });
+    }
+  });
         </script>
         
     <!-- =======================
