@@ -18,9 +18,16 @@
           </select>
         </div>
 
-        <div class="mb-3">
-          <label>Transaction Limit</label>
-          <input type="number" name="transactionLimit" class="form-control" value="<%= subscription.transactionLimit %>">
+        <div class="mb-3 row">
+          <div class="col-6">
+          <label class="form-label">Transaction Limit</label>
+          <input type="number" name="transactionLimit" class="form-control" value="<%= subscription.transactionLimit %>" />
+          </div>
+
+          <div class="col-6">
+          <label class="form-label">Wallet Limit (₹)</label>
+          <input type="number" name="walletLimit" class="form-control" value="<%= subscription.walletLimit %>" />
+          </div>          
         </div>
 
         <div class="mb-3">

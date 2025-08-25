@@ -54,7 +54,7 @@
                                                     aria-valuemin="0" aria-valuemax="<%=walletLimit%>">
                                                 </div>
                                             </div>
-                                            <span><span class="text-primary"><%=walletLimit%></span> Your Limit</span>
+                                            <span><span class="text-primary">₹ <%=walletLimit%></span> Your Limit</span>
                                         </div>
                                     </div>
                                     <div class="col-md-6 ">
@@ -74,11 +74,11 @@
                                             <!-- Progress bar -->
                                             <div class="progress progress-xs bg-orange bg-opacity-10 mb-2">
                                                 <div class="progress-bar bg-orange" role="progressbar"
-                                                    title="Used on this month" style="width: 60%" aria-valuenow="60"
+                                                    title="Used on this month" style="width: 100%" aria-valuenow="60"
                                                     aria-valuemin="0" aria-valuemax="100">
                                                 </div>
                                             </div>
-                                            <span><span class="text-orange">330</span> Expire on 30 June 2025</span>
+                                            <span><%=rewardExpiryStatus%></span>
                                         </div>
                                     </div>
                                 </div>

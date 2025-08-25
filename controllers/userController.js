@@ -29,6 +29,8 @@ const nodemailer = require("nodemailer");
 const path = require("path");
 const fs = require("fs");
 const ejs = require('ejs');
+const Rewards = require("../models/rewardModel");
+const puppeteer = require("puppeteer");
 const Razorpay = require("razorpay");
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
 
@@ -36,6 +38,26 @@ const razorpay = new Razorpay({
   key_id: RAZORPAY_ID_KEY,
   key_secret: RAZORPAY_SECRET_KEY,
 });
+
+async function generatePDF(templatePath, data) {
+  const html = await ejs.renderFile(templatePath, data);
+
+  const browser = await puppeteer.launch({
+    headless: "new", // or true if puppeteer > 20
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
+
+  const page = await browser.newPage();
+  await page.setContent(html, { waitUntil: 'networkidle0' });
+
+  const pdfBuffer = await page.pdf({
+    format: 'A4',
+    printBackground: true,
+  });
+
+  await browser.close();
+  return pdfBuffer;
+}
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -1480,7 +1502,29 @@ const viewWalletDetails = async (req, res) => {
 
     const walletLimit = subscription.walletLimit;
 
-    res.render("user/wallet-details", { walletHistory, walletBalance, walletLimit, rewardBalance });
+        // ✅ Get latest reward expiry
+    const latestReward = await Rewards.findOne({ userId })
+      .sort({ createdAt: -1 }); // latest by creation time
+
+    let rewardExpiryStatus = null;
+    if (latestReward && latestReward.expiryDate) {
+      const expiryDate = new Date(latestReward.expiryDate);
+      const today = new Date();
+
+      const formattedDate = expiryDate.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      });
+
+      if (expiryDate < today) {
+        rewardExpiryStatus = `Expired on ${formattedDate}`;
+      } else {
+        rewardExpiryStatus = `Expires at ${formattedDate}`;
+      }
+    }
+
+    res.render("user/wallet-details", { walletHistory, walletBalance, walletLimit, rewardBalance, rewardExpiryStatus });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
@@ -3501,6 +3545,13 @@ const bookWithWallet = async (req, res) => {
     const parsedBooking = JSON.parse(bookingData);
     const parsedFlight = JSON.parse(flightDetails);
 
+    if(!parsedBooking || !parsedFlight){
+      return res.status(400).send("Invalid booking or flight data.");
+    }
+
+    console.log(parsedBooking, 'Parsed Booking');
+    console.log(parsedFlight, 'Parsed Flight');
+
     const userId = req.session.userId;
     const walletAmount = parseFloat(req.body.walletAmount || 0);
     const totalFare = parseFloat(parsedBooking.totalFare.replace(/[^0-9.]/g, ""));
@@ -3529,6 +3580,59 @@ const bookWithWallet = async (req, res) => {
     });
 
     await newBooking.save();
+    console.log(newBooking,'New booking');
+
+    await handleReward(userId, parsedBooking.baseFare, newBooking.bookingId);
+
+    async function handleReward(userId, baseFare, bookingId) {
+      try {
+        const user = await Users.findById(userId).populate("subscription");
+    
+        if (!user || user.userRole !== "User") return; // only normal users eligible
+        if (!user.subscription) return;
+    
+        const validSubs = ["Pro", "Enterprise"];
+        if (!validSubs.includes(user.subscription.subscription)) return;
+    
+        const cleanBaseFare = parseFloat(baseFare.replace(/[^0-9.]/g, "")) || 0;
+        if (cleanBaseFare <= 0) return;
+    
+        const rewardPoints = (cleanBaseFare * 0.25) / 100; // 0.25%
+    
+        const reward = new Rewards({
+          userId: user._id,
+          title: "Flight Booking Reward",
+          description: `Reward for booking #${bookingId}`,
+          points: rewardPoints,
+          status: "active",
+          expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 days
+        });
+    
+        await reward.save();
+    
+        // Optionally update user reward balance
+        await Users.findByIdAndUpdate(user._id, {
+          $inc: { rewardBalance: rewardPoints }
+        });
+      } catch (err) {
+        console.error("Reward handling error:", err);
+      }
+    }
+
+      // transaction entry (only for gateway part, not wallet)
+      const newTransaction = new Transactions({
+        bookingId: newBooking._id,
+        userId: parsedFlight.sellerId,
+        totalAmount: totalFare, // paid through gateway
+        baseFare: parsedBooking.baseFare.replace(/[^0-9.]/g, ""),
+        tax: parsedBooking.otherServices.replace(/[^0-9.]/g, ""),
+        discount: parsedBooking.discount.replace(/[^0-9.]/g, ""),
+        paymentStatus: "Paid",
+        type: "Booking Payment"
+      });
+      await newTransaction.save();
+
+      console.log(newTransaction, "Gateway transaction");
 
     // Create Wallet Transaction
     const walletTxn = new WalletTransactions({
@@ -3539,6 +3643,7 @@ const bookWithWallet = async (req, res) => {
     });
 
     await walletTxn.save();
+    console.log(walletTxn, "Wallet transaction");
 
     // Update seat booking in flight inventory
     const pnr = parsedFlight.inventoryDates[0].pnr;
@@ -3560,9 +3665,100 @@ const bookWithWallet = async (req, res) => {
 
     await newActivity.save();
 
-    // TODO: Send invoice/email (reuse your invoice generation logic here if needed)
+    // ✅ Requests
+    const requests = await Requests.find({
+      bookingId: newBooking._id,
+      category: "service"
+    }).sort({ createdAt: -1 });
 
-    return res.redirect("/bookings?success=true&clearWallet=1");
+    // ✅ Layovers calculation
+    function computeLayovers(stops) {
+      const layovers = [];
+      for (let i = 0; i < stops.length - 1; i++) {
+        const currentStop = stops[i];
+        const nextStop = stops[i + 1];
+
+        const parseTime = (timeStr) => {
+          const [hours, minutes] = timeStr.replace(' hrs', '').trim().split(':').map(Number);
+          return { hours: hours || 0, minutes: minutes || 0 };
+        };
+
+        const arrDate = new Date(currentStop.arrivalDay);
+        const depDate = new Date(nextStop.departureDay);
+
+        const arrTime = parseTime(currentStop.arrivalTime);
+        const depTime = parseTime(nextStop.departureTime);
+
+        arrDate.setHours(arrTime.hours, arrTime.minutes, 0, 0);
+        depDate.setHours(depTime.hours, depTime.minutes, 0, 0);
+
+        const layoverMs = depDate - arrDate;
+        const mins = Math.floor(layoverMs / 60000);
+        const hrs = Math.floor(mins / 60);
+        const rem = mins % 60;
+
+        layovers.push({
+          index: i,
+          city: currentStop.arrivalCity,
+          duration: `${hrs.toString().padStart(2, '0')}h ${rem.toString().padStart(2, '0')}m`,
+        });
+      }
+      return layovers;
+    }
+    const layovers = computeLayovers(parsedFlight.stops || []);
+
+    // ✅ Generate Invoice PDF
+    const invoiceTemplatePath = path.join(__dirname, '../views/user/invoice.ejs');
+    const invoicePDF = await generatePDF(invoiceTemplatePath, {
+      invoiceNo: newBooking.bookingId,
+      issuedDate: new Date().toLocaleDateString('en-GB'),
+      booking: newBooking,
+      flight: parsedFlight,
+      transactions: walletTxn, // here walletTxn instead of gateway txn
+      travelers: parsedBooking.travelers,
+      totalAmount: totalFare,
+      baseFare: parsedBooking.baseFare.replace(/[^0-9.]/g, ""),
+      tax: parsedBooking.otherServices.replace(/[^0-9.]/g, ""),
+      discount: parsedBooking.discount.replace(/[^0-9.]/g, ""),
+      email: parsedBooking.email,
+    });
+
+    // ✅ Generate Booking Confirmation PDF
+    const stopsCount = parsedFlight.stops?.length || 0;
+    const templateFileName =
+      stopsCount <= 1
+        ? 'mail-oneWayBookingConfirmation.ejs'
+        : 'mail-connectingBookingConfirmation.ejs';
+
+    try {
+      const templatePath = path.join(__dirname, '../views/user/', templateFileName);
+      const pdfBuffer = await generatePDF(templatePath, {
+        travelers: parsedBooking.travelers,
+        flightDetails: parsedFlight,
+        totalFare,
+        baseFare: parsedBooking.baseFare.replace(/[^0-9.]/g, ""),
+        otherServices: parsedBooking.otherServices.replace(/[^0-9.]/g, ""),
+        discount: parsedBooking.discount.replace(/[^0-9.]/g, ""),
+        bookingId: newBooking.bookingId,
+        requests,
+        layovers,
+      });
+
+      await transporter.sendMail({
+        from: process.env.EMAIL,
+        to: parsedBooking.email,
+        subject: 'Your Flight Booking Confirmation',
+        text: 'Please find your flight confirmation attached as a PDF.',
+        attachments: [
+          { filename: 'BookingConfirmation.pdf', content: pdfBuffer, contentType: 'application/pdf' },
+          { filename: 'Invoice.pdf', content: invoicePDF, contentType: 'application/pdf' },
+        ],
+      });
+    } catch (emailErr) {
+      console.error('Error sending confirmation email:', emailErr);
+    }
+
+    return res.json({ success: true, redirectUrl: "/bookings?success=true&clearWallet=1" });
 
   } catch (err) {
     console.error("Wallet Booking Error:", err);
