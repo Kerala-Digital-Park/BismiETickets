@@ -70,8 +70,11 @@ adminRouter.post('/withdrawn-payment-status/:bookingId', isLogin, adminControlle
 adminRouter.post("/sessions/signout-user", isLogin, adminController.signOutUserSession);
 adminRouter.post('/notification-settings', isLogin, adminController.updateNotificationSettings);
 adminRouter.post("/signin-images", upload.single("signinImage"), isLogin, adminController.addSigninImage);
-adminRouter.post('/block-inventory/:id', isLogin, adminController.blockInventory);
-adminRouter.post('/unblock-inventory/:id', isLogin, adminController.unblockInventory);
+// adminRouter.post('/block-inventory/:id', isLogin, adminController.blockInventory);
+// adminRouter.post('/unblock-inventory/:id', isLogin, adminController.unblockInventory);
+// ... existing routes ...
+adminRouter.post('/toggle-inventory/:id', isLogin, adminController.toggleInventory);
+// ... other existing routes ...
 
 
 

@@ -74,15 +74,12 @@
                             <a href="/admin/unblock-inventory/<%=flight._id%>" class="btn btn-success-soft text-nowrap mb-0 me-2"
                                 title="Admin unblock Sales"><i class="bi bi-check2-circle"></i> Show</a> -->
                                 <!-- Block Button -->
-<button class="btn btn-danger-soft text-nowrap mb-0 me-2 block-inventory-btn"
-        data-id="<%= flight._id %>" title="Admin block Sales">
-    <i class="bi bi-ban"></i> Ban
-</button>
-
-<!-- Unblock Button -->
-<button class="btn btn-success-soft text-nowrap mb-0 me-2 unblock-inventory-btn"
-        data-id="<%= flight._id %>" title="Admin unblock Sales">
-    <i class="bi bi-check2-circle"></i> Show
+<!-- Toggle Button -->
+<button class="btn <%= flight.banned ? 'btn-success-soft' : 'btn-danger-soft' %> text-nowrap mb-0 me-2 toggle-inventory-btn"
+        data-id="<%= flight._id %>" 
+        data-banned="<%= flight.banned %>"
+        title="Admin <%= flight.banned ? 'unblock' : 'block' %> Sales">
+    <i class="bi <%= flight.banned ? 'bi-check2-circle' : 'bi-ban' %>"></i> <%= flight.banned ? 'Show' : 'Ban' %>
 </button>
 
                         </div>
@@ -756,51 +753,73 @@
 </main>
 
 <script>
-  // Handle block
-  document.querySelectorAll('.block-inventory-btn').forEach(button => {
+document.addEventListener('DOMContentLoaded', () => {
+  const toggleButtons = document.querySelectorAll('.toggle-inventory-btn');
+  
+  toggleButtons.forEach(button => {
     button.addEventListener('click', async () => {
       const id = button.getAttribute('data-id');
-      try {
-        const res = await fetch(`/admin/block-inventory/${id}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        const data = await res.json();
-        if (data.success) {
-          alert('Inventory blocked');
-          location.reload(); // Refresh page on success
-        } else {
-          alert('Error blocking inventory');
-        }
-      } catch (err) {
-        console.error('Block error:', err);
-        alert('Server error while blocking inventory');
-      }
-    });
-  });
+      const isBanned = button.getAttribute('data-banned') === 'true';
+      const action = isBanned ? 'unblock' : 'block';
 
-  // Handle unblock
-  document.querySelectorAll('.unblock-inventory-btn').forEach(button => {
-    button.addEventListener('click', async () => {
-      const id = button.getAttribute('data-id');
-      try {
-        const res = await fetch(`/admin/unblock-inventory/${id}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        const data = await res.json();
-        if (data.success) {
-          alert('Inventory unblocked');
-          location.reload(); // Refresh page on success
-        } else {
-          alert('Error unblocking inventory');
+      // Show confirmation dialog using SweetAlert2
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you want to ${action} this inventory?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: `Yes, ${action} it!`,
+        cancelButtonText: 'No, cancel'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const response = await fetch(`/admin/toggle-inventory/${id}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+                // Remove CSRF token line if not configured, or add it if configured (see previous response)
+              }
+            });
+
+            const data = await response.json();
+            if (data.success) {
+              // Update button state locally
+              const newBanned = !isBanned;
+              button.setAttribute('data-banned', newBanned);
+              button.className = `btn ${newBanned ? 'btn-success-soft' : 'btn-danger-soft'} text-nowrap mb-0 me-2 toggle-inventory-btn`;
+              button.innerHTML = `<i class="bi ${newBanned ? 'bi-check2-circle' : 'bi-ban'}"></i> ${newBanned ? 'Show' : 'Ban'}`;
+              button.title = `Admin ${newBanned ? 'unblock' : 'block'} Sales`;
+
+              // Show success message with SweetAlert2
+              Swal.fire({
+                icon: 'success',
+                title: `Inventory ${newBanned ? 'blocked' : 'unblocked'} successfully!`,
+                timer: 1500,
+                showConfirmButton: false
+              });
+            } else {
+              // Show error message with SweetAlert2
+              Swal.fire({
+                icon: 'error',
+                title: 'Failed to toggle inventory status.',
+                text: data.message || 'Please try again.'
+              });
+            }
+          } catch (error) {
+            console.error('Error toggling inventory:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'An error occurred.',
+              text: 'Please try again later.'
+            });
+          }
         }
-      } catch (err) {
-        console.error('Unblock error:', err);
-        alert('Server error while unblocking inventory');
-      }
+      });
     });
   });
+});
 </script>
 
 
