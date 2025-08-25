@@ -54,56 +54,6 @@ const renderTemplate = (templatePath, data) => {
   });
 };
 
-const viewSettings = async (req, res) => {
-  const userId = req.session.userId;
-  try {
-    const user = await Users.findById(userId);
-    const message = req.session.message || null;
-    req.session.message = null; // Clear after displaying
-    res.render("user/settings", { user, message });
-  } catch (error) {
-    console.error(error);
-    res.render("error", { error });
-  }
-};
-
-const updateNotificationSettings = async (req, res) => {
-  const userId = req.session.userId;
-  if (!userId) return res.status(401).send('Unauthorized');
-
-  try {
-    const {
-      newsletter,
-      loginEmailNotifications,
-      bookingEmailNotifications,
-      hotelBooking,
-      SaudiMuqeemPrint,
-      bookingDummyPrint,
-      onlinePaymentConfirmation,
-      deviceAccess
-    } = req.body;
-
-    const updates = {
-      "notificationSettings.newsletter": newsletter,
-      "notificationSettings.loginEmailNotifications": !!loginEmailNotifications,
-      "notificationSettings.bookingEmailNotifications": !!bookingEmailNotifications,
-      "notificationSettings.hotelBooking": !!hotelBooking,
-      "notificationSettings.SaudiMuqeemPrint": !!SaudiMuqeemPrint,
-      "notificationSettings.bookingDummyPrint": !!bookingDummyPrint,
-      "notificationSettings.onlinePaymentConfirmation": !!onlinePaymentConfirmation,
-      "notificationSettings.deviceAccess": !!deviceAccess
-    };
-
-    await Users.findByIdAndUpdate(userId, updates);
-    req.session.message = { type: 'success', text: 'Notification settings updated successfully!' };
-    res.redirect('/settings');
-  } catch (error) {
-    console.error('Error updating notification settings:', error);
-    req.session.message = { type: 'error', text: 'Failed to update settings. Please try again.' };
-    res.redirect('/settings');
-  }
-};
-
 const viewHomepage = async (req, res) => {
   const userId = req.session.userId;
   let message = null;
@@ -1496,14 +1446,14 @@ const viewWishlist = async (req, res) => {
   }
 };
 
-// const viewSettings = async (req, res) => {
-//   try {
-//     res.render("user/settings", {});
-//   } catch (error) {
-//     console.error(error);
-//     res.render("error", { error });
-//   }
-// };
+const viewSettings = async (req, res) => {
+  try {
+    res.render("user/settings", {});
+  } catch (error) {
+    console.error(error);
+    res.render("error", { error });
+  }
+};
 
 const viewDeleteProfile = async (req, res) => {
   try {
@@ -3572,8 +3522,6 @@ const bookWithWallet = async (req, res) => {
 
 module.exports = {
   viewHomepage,
-  viewSettings,
-  updateNotificationSettings,
   viewDashboard,
   viewFlightList,
   viewFlightDetail,
