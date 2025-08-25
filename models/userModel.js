@@ -73,6 +73,7 @@ const userSchema = mongoose.Schema(
       deviceAccess: { type: Boolean, default: true },
     },
     walletBalance: { type: Number, default: 0 },
+    rewardBalance: { type: Number, default: 0 },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

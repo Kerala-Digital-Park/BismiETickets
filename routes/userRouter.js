@@ -157,6 +157,8 @@ userRouter.post('/remove-account',isLogin, userController.removeBank);
 userRouter.post("/service-request/:bookingId", isLogin, upload.array("file", 4), userController.addServiceRequest);
 userRouter.post("/support-request/:bookingId", isLogin, upload.array("file", 4), userController.addSupportRequest);
 userRouter.post("/addon-request/:bookingId", isLogin, userController.addAddonRequest);
+userRouter.post("/book-with-wallet", isLogin, userController.bookWithWallet);
+
 
 userRouter.put("/update-listing", isLogin, userController.updateListingById);
 userRouter.put("/update-seats", isLogin, userController.updateSeatById);

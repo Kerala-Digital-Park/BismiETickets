@@ -76,6 +76,11 @@ const flightSchema = mongoose.Schema({
     pnr: { type: String, required: true },
     seats: { type: Number, required: true },
     seatsBooked: { type: Number, required: true, default: 0 },
+    seatsHold: [{ 
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: "Users", required: true }, 
+      seats: { type: Number, required: true, default: 0 },
+      time: { type: Date, required: true, default: Date.now },
+    }],
     fare: {
       adults: { type: Number, required: true },
       infants: { type: Number, required: true },

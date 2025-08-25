@@ -63,7 +63,7 @@
                                                 <!-- Number -->
                                                 <div class="me-2">
                                                     <span>Rewards</span>
-                                                    <h3 class="mb-0 mt-2">₹ 550</h3>
+                                                    <h3 class="mb-0 mt-2">₹ <%=rewardBalance%></h3>
                                                 </div>
                                                 <!-- Icon -->
                                                 <div
@@ -128,7 +128,12 @@
                                             <!-- Table item -->
                                             <tr>
                                                 <td> <%=trs.transactionId%> </td>
-                                                <td> <%=trs.createdAt%> </td>
+                                                <td>
+  <%= new Date(trs.createdAt).toLocaleDateString("en-GB", {
+       day: "2-digit", month: "short", year: "numeric"
+     }) %>
+</td>
+
                                                 <td> <%=trs.amount%> </td>
                                                 <td>
                                                     <div class="badge <%=statusClass%>"> <%=trs.status%> </div>
@@ -253,7 +258,7 @@
     </div>
     <!-- load cash modal END -->
 
-<script>
+<!-- <script>
 document.getElementById("submitLoadCash").addEventListener("click", async () => {
     const amount = document.getElementById("loadAmount").value.trim();
     const method = document.getElementById("paymentMethod").value;
@@ -290,8 +295,40 @@ document.getElementById("submitLoadCash").addEventListener("click", async () => 
         alert("Failed to initiate load wallet request.");
     }
 });
-</script>
+</script> -->
 
+<script>
+  document.getElementById("submitLoadCash").addEventListener("click", () => {
+  const amount = document.getElementById("loadAmount").value.trim();
+  const method = document.getElementById("paymentMethod").value;
+
+  if (!amount || !method) {
+    alert("Please enter an amount and select a payment method.");
+    return;
+  }
+
+  // Create a hidden form and submit it
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = "/payment/initiate-load-wallet";
+
+  const amtInput = document.createElement("input");
+  amtInput.type = "hidden";
+  amtInput.name = "amount";
+  amtInput.value = amount;
+  form.appendChild(amtInput);
+
+  const methodInput = document.createElement("input");
+  methodInput.type = "hidden";
+  methodInput.name = "method";
+  methodInput.value = method;
+  form.appendChild(methodInput);
+
+  document.body.appendChild(form);
+  form.submit(); // browser follows the 302 and goes to HDFC
+});
+
+</script>
     </main>
     <!-- **************** MAIN CONTENT END **************** -->    
 

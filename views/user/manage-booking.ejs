@@ -55,19 +55,26 @@ Page banner START -->
 					</div>
 				</section>
 			<% } %>
-						<!-- =======================
-Page banner END -->
+						<!-- ======================= Page banner END -->
 						<!-- ======================= Title and notice board START -->
 
 <% if (success) { %>
   <div class="d-flex justify-content-center mt-3">
-    <div class="alert alert-success text-center" style="width: 80%;"><%= success %></div>
+    <div class="alert alert-success text-center alert-dismissible fade show" style="width: 80%;" role="alert">
+      <%= success %>
+      <!-- Close button -->
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
   </div>
 <% } %>
 
 <% if (error) { %>
   <div class="d-flex justify-content-center mt-3">
-    <div class="alert alert-danger text-center" style="width: 80%;"><%= error %></div>
+    <div class="alert alert-danger text-center alert-dismissible fade show" style="width: 80%;" role="alert">
+      <%= error %>
+      <!-- Close button -->
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
   </div>
 <% } %>
 
@@ -555,7 +562,7 @@ Page banner END -->
                                                 <ul class="list-group list-group-borderless">
                                                     <li
                                                         class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <span class="h6 fw-light mb-0">By Card</span>
+                                                        <span class="h6 fw-light mb-0">By <%= bookings.payment_method%></span>
                                                         <span class="fs-5">₹ <%= bookings.amount %></span>
                                                     </li>
 
@@ -693,7 +700,7 @@ Page banner END -->
                                                     products</p>
                                                 <div class="card card-body border align-items-center mt-4">
                                                     <!-- Form START -->
-                                                     <form class="row g-3" id="changeNameForm" enctype="multipart/form-data" action="/support-request/<%= bookings._id%>" method="post">
+                                                     <form class="row g-3" id="medicalEmergencyForm" enctype="multipart/form-data" action="/support-request/<%= bookings._id%>" method="post">
                                                             <div class="col-md-6 form-group"><label class="form-label" for="passengerName">Passenger Name</label>
 							<select class="form-control passenger-select" name="passengerName" required>
   								<option value="">--Select Passenger--</option>
@@ -742,7 +749,7 @@ Page banner END -->
                                                     products</p>
                                                 <div class="card card-body border align-items-center  mt-4">
                                                     <!-- Form START -->
-                                                    <form class="row g-3" id="changeNameForm" enctype="multipart/form-data" action="/support-request/<%= bookings._id%>" method="post">
+                                                    <form class="row g-3" id="flightReschedulingForm" enctype="multipart/form-data" action="/support-request/<%= bookings._id%>" method="post">
                                                             <div class="col-md-6 form-group"><label class="form-label" for="passengerName">Passenger Name</label>
 							<select class="form-control passenger-select" name="passengerName" required>
   								<option value="">--Select Passenger--</option>
@@ -769,7 +776,7 @@ Page banner END -->
                                     </div>
                                     <!--  END -->
 
-                                    <!-- not mentiond START -->
+                                    <!-- not mentioned START -->
                                     <div class="accordion-item mb-3">
                                         <h6 class="accordion-header" id="heading-5">
                                             <button class="accordion-button collapsed rounded" type="button"
@@ -788,7 +795,7 @@ Page banner END -->
                                                     update as soon as possible. </p>
                                                 <div class="card card-body border align-items-center mt-4">
                                                     <!-- Form START -->
-                                                    <form class="row g-3" id="changeNameForm" enctype="multipart/form-data" action="/support-request/<%= bookings._id%>" method="post">
+                                                    <form class="row g-3" id="splRequestForm" enctype="multipart/form-data" action="/support-request/<%= bookings._id%>" method="post">
                                                             <div class="col-md-6 form-group"><label class="form-label" for="passengerName">Passenger Name</label>
 							<select class="form-control passenger-select" name="passengerName" required>
   								<option value="">--Select Passenger--</option>
@@ -910,7 +917,7 @@ Page banner END -->
                         <ul>
 
                             <li>Please mention your <strong>Booking reference number is
-                                    <%= bookings.bookingId %></strong> .Please use this number for any future
+                                    <%= bookings.bookingId %></strong>. Please use this number for any future
                                 communication with us. We recommend you print this page for your
                                 personal
                                 records..</li>
@@ -1521,12 +1528,36 @@ Page banner END -->
   maxDate: "today" // prevents picking future dates
 });
 
-        flatpickr("#returnDate", {
-  dateFormat: "d M Y",
-  minDate: "today" // prevents picking future dates
-});
+//         flatpickr("#returnDate", {
+//   dateFormat: "d M Y",
+//   minDate: "today" // prevents picking future dates
+// });
         });
     </script>
+
+    <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Get departure date from EJS (string format from DB)
+    const departureDateStr = "<%= bookings.flight.departureDate %>";
+
+    if (departureDateStr) {
+      // Convert string to Date object
+      const departureDate = new Date(departureDateStr);
+      departureDate.setHours(0, 0, 0, 0); // normalize
+
+      flatpickr("#returnDate", {
+        dateFormat: "d M Y",
+        minDate: departureDate, // ✅ return date must be AFTER departure
+      });
+    } else {
+      // fallback (if no departure date found)
+      flatpickr("#returnDate", {
+        dateFormat: "d M Y",
+        minDate: "today",
+      });
+    }
+  });
+</script>
     
     <!-- name correct modal START -->
     <div class="modal fade" id="namecorrect" aria-hidden="true">
@@ -1562,9 +1593,9 @@ Page banner END -->
                             </div>
                         </div>
 
-
                     </div>
                     <input type="hidden" name="subject" value="Request For Name Correction"/>
+                    <input type="hidden" name="reqContent" id="subjectInput" />
 
                     <button type="submit" class="btn btn-sm btn-outline-primary mb-0">Submit
                                                             request</button>
@@ -1582,12 +1613,34 @@ Page banner END -->
                             confirm it. after make payment to update Names.</li>
 
                     </ul>
-                </div>
-
             </div>
         </div>
     </div>
     <!-- name correction modal END -->
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("changeNameForm");
+  const subjectInput = document.getElementById("subjectInput");
+
+  form.addEventListener("submit", (e) => {
+    const passengerSelect = form.querySelector("select[name='passengerName']");
+    const firstName = form.querySelector("input[name='firstName']").value.trim();
+    const lastName = form.querySelector("input[name='lastName']").value.trim();
+
+    const currentName = passengerSelect.value.toUpperCase();
+    const newName = (firstName + " " + lastName).trim().toUpperCase();
+
+    if (!currentName || !newName) {
+      e.preventDefault();
+      alert("Please select a passenger and enter the new name.");
+      return;
+    }
+
+    subjectInput.value = `I want to change my name from ${currentName} to ${newName}. Please share the possibility and charges.`;
+  });
+});
+</script>
 
 						<!-- Flight detail modal START -->
 						<div class="modal fade" id="flightdetail" aria-hidden="true">

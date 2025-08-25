@@ -1646,7 +1646,7 @@ function previewConnecting() {
 						infantCabinWeight: document.getElementById('infantCabinWeight').value,
 						inventoryDates: [{
 							// date: getValue('.oneWayInventoryDate'),
-							pnr: getValue('.oneWayPnr'),
+							pnr: getValue('.oneWayPnr').toUpperCase(),
 							seats: getValue('.oneWaySeats'),
 							fare: {
 								adults: getValue('.oneWayAdultFare'),
@@ -1790,7 +1790,7 @@ Swal.fire({
 			infantCabinWeight: document.getElementById('infantConnectCabinWeight').value,
 			inventoryDates: [{
 				// date: getValue('.connectingInventoryDate'),
-				pnr: getValue('.connectingPnr'),
+				pnr: getValue('.connectingPnr').toUpperCase(),
 				seats: getValue('.connectingSeats'),
 				fare: {
 					adults: getValue('.connectingAdultFare'),

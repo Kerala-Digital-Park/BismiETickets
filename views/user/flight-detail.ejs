@@ -256,24 +256,77 @@
                           <!-- Dynamic sections will be added here -->
                         </div>
 
-                        <!-- Number and email START -->
-                        <!-- Title -->
-                        <h5 class="mt-4">Contact Information</h5>
-                        <p>Enter the email address and phone number to which your confirmation and flight updates will
-                          be sent.
-                          Please make sure they are correct.</p>
-                        <div class="row g-3 g-md-4">
-                          <!-- Input item -->
-                          <div class="col-6">
-                            <input type="email" class="form-control" placeholder="Email address" />
-                          </div>
+<!-- Number and email START -->
+<h5 class="mt-4">Contact Information</h5>
+<p>Select your registered contact details or enter new ones to receive your booking confirmation and flight updates.</p>
 
-                          <!-- Input item -->
-                          <div class="col-6">
-                            <input id="phone" type="tel" class="form-control" placeholder="Enter your mobile number" />
-                          </div>
-                        </div>
-                        <!-- Number and email END -->
+<div class="row g-3 g-md-4">
+  <!-- Email options -->
+  <div class="col-6">
+    <label class="form-label">Email</label>
+    <div>
+      <!-- Registered Email -->
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="radio" name="emailOption" id="registeredEmail" 
+               value="<%= userDetails.email %>" checked>
+        <label class="form-check-label" for="registeredEmail">
+          <%= userDetails.email %> (Registered)
+        </label>
+      </div>
+      <!-- Custom Email -->
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="emailOption" id="customEmail" value="custom">
+        <label class="form-check-label" for="customEmail">Use another email</label>
+      </div>
+      <input type="email" class="form-control mt-2 d-none" id="customEmailInput" placeholder="Enter new email">
+    </div>
+  </div>
+
+  <!-- Phone options -->
+  <div class="col-6">
+    <label class="form-label">Phone Number</label>
+    <div>
+      
+      <% if (userDetails.whatsapp) { %>
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="radio" name="phoneOption" id="registeredWhatsapp" 
+               value="<%= userDetails.whatsapp %>" checked>
+        <label class="form-check-label" for="registeredWhatsapp">
+          <%= userDetails.whatsapp %> (WhatsApp)
+        </label>
+      </div>
+      <% } %>
+      <!-- Custom Phone -->
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="phoneOption" id="customPhone" value="custom">
+        <label class="form-check-label" for="customPhone">Use another number</label>
+      </div>
+      <input type="tel" class="form-control mt-2 d-none" id="customPhoneInput" placeholder="Enter new number">
+    </div>
+  </div>
+</div>
+<!-- Number and email END -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const customEmailRadio = document.getElementById("customEmail");
+    const customEmailInput = document.getElementById("customEmailInput");
+    const customPhoneRadio = document.getElementById("customPhone");
+    const customPhoneInput = document.getElementById("customPhoneInput");
+
+    document.querySelectorAll("input[name='emailOption']").forEach(radio => {
+      radio.addEventListener("change", function () {
+        customEmailInput.classList.toggle("d-none", this.value !== "custom");
+      });
+    });
+
+    document.querySelectorAll("input[name='phoneOption']").forEach(radio => {
+      radio.addEventListener("change", function () {
+        customPhoneInput.classList.toggle("d-none", this.value !== "custom");
+      });
+    });
+  });
+</script>
 
                         <style>
                           .iti {
@@ -334,9 +387,9 @@
             <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/intlTelInput.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"></script>
 
-            <script>
+            <!-- <script>
               document.addEventListener("DOMContentLoaded", function () {
-                const input = document.querySelector("#phone");
+                const input = document.querySelector("#customPhoneInput");
                 window.intlTelInput(input, {
                   separateDialCode: true,      // Show code outside
                   initialCountry: "auto",      // Auto-select based on IP
@@ -350,7 +403,40 @@
                 });
               });
 
-            </script>
+            </script> -->
+            <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let iti; // will hold intlTelInput instance
+    const customPhoneRadio = document.getElementById("customPhone");
+    const customPhoneInput = document.getElementById("customPhoneInput");
+
+    document.querySelectorAll("input[name='phoneOption']").forEach(radio => {
+      radio.addEventListener("change", function () {
+        if (this.value === "custom") {
+          customPhoneInput.classList.remove("d-none");
+
+          // Initialize intlTelInput only once
+          if (!iti) {
+            iti = window.intlTelInput(customPhoneInput, {
+              separateDialCode: true,
+              initialCountry: "auto",
+              geoIpLookup: callback => {
+                fetch("https://ipapi.co/json")
+                  .then(res => res.json())
+                  .then(data => callback(data.country_code.toLowerCase()))
+                  .catch(() => callback("us"));
+              },
+              utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js",
+            });
+          }
+        } else {
+          customPhoneInput.classList.add("d-none");
+        }
+      });
+    });
+  });
+</script>
+
             <!-- Right content START -->
             <aside class="col-xl-3">
               <div data-sticky data-margin-top="80" data-sticky-for="1199">
@@ -362,7 +448,7 @@
                     <div class="d-flex align-items-center gap-2">
                       <img src="/assets/images/element/timer.png" alt="Timer" width="24" height="24">
                       <div>
-                        <div class="fw-semibold">Cabin and fare confirmed.</div>
+                        <div class="fw-semibold">Seat and fare confirmed.</div>
                         <div class="small">Book now!</div>
                       </div>
                     </div>
@@ -837,17 +923,6 @@ Swal.fire({
 
           // Initialize Flatpickr with min and max date restrictions
           setTimeout(() => {
-            // document.querySelectorAll(".dob-adult, .dob-child, .dob-infant").forEach((input) => {
-            //     flatpickr(input, {
-            //         dateFormat: "Y-m-d",  // Internal format (hidden)
-            //         altInput: true,       // Show user-friendly format
-            //         altFormat: "F j, Y",  // e.g., February 23, 2025
-            //         allowInput: true,
-            //         minDate: input.getAttribute("data-min"),
-            //         maxDate: input.getAttribute("data-max"),
-            //     });
-            // });
-
             document.querySelectorAll(".dob-adult, .dob-child, .dob-infant").forEach((input) => {
               const maxDateStr = input.getAttribute("data-max");
 
@@ -956,12 +1031,24 @@ Swal.fire({
   icon: 'warning',
   title: 'Incomplete Details',
   text: 'Please fill in all traveler details before proceeding.'
-});            return;
+});            
+return;
           }
 
           // Collect other form data
-          const mobile_number = document.querySelector("input[placeholder='Enter your mobile number']").value;
-          const email = document.querySelector("input[placeholder='Email address']").value;
+          // const mobile_number = document.querySelector("input[placeholder='Enter your mobile number']").value;
+          // const email = document.querySelector("input[placeholder='Email address']").value;
+
+          const emailOption = document.querySelector("input[name='emailOption']:checked").value;
+const phoneOption = document.querySelector("input[name='phoneOption']:checked")?.value || "";
+
+const email = (emailOption === "custom") 
+  ? document.getElementById("customEmailInput").value 
+  : emailOption;
+
+const mobile_number = (phoneOption === "custom") 
+  ? document.getElementById("customPhoneInput").value 
+  : phoneOption;
 
           if (!mobile_number || !email) {
 Swal.fire({
@@ -996,58 +1083,6 @@ Swal.fire({
         });
 
       </script>
-
-      <!-- <script>
-        document.addEventListener("DOMContentLoaded", function () {
-          const adults = Number(<%= requestDetails.adults %>);
-          const children = Number(<%= requestDetails.children %>);
-          const infants = Number(<%= requestDetails.infants %>);
-          const pax = adults + children + infants;
-
-          const paxTime = pax > 4 ? 20 * 60 : 15 * 60; // in seconds
-          const timerEl = document.getElementById("timer");
-
-          const flightId = "<%= flightDetails._id %>" || "default";
-          const timerKey = `flight_timer_${flightId}`;
-
-          let expireAt = localStorage.getItem(timerKey);
-
-          if (!expireAt) {
-            const expireTimestamp = Date.now() + paxTime * 1000;
-            localStorage.setItem(timerKey, expireTimestamp);
-            expireAt = expireTimestamp;
-          } else {
-            expireAt = parseInt(expireAt, 10);
-          }
-
-          const interval = setInterval(() => {
-            const now = Date.now();
-            const remaining = Math.max(0, Math.floor((expireAt - now) / 1000));
-
-            const minutes = String(Math.floor(remaining / 60)).padStart(2, '0');
-            const seconds = String(remaining % 60).padStart(2, '0');
-            timerEl.textContent = `${minutes}:${seconds}`;
-
-            if (remaining <= 0) {
-              clearInterval(interval);
-              localStorage.removeItem(timerKey);
-Swal.fire({
-  icon: 'warning',
-  title: 'Session Expired',
-  text: 'Your session has expired. Please start again.'
-}).then(() => {
-  window.location.href = "/";
-});
-            }
-          }, 1000);
-
-          // Stop timer if already at /bookings
-          if (window.location.pathname === "/bookings") {
-            localStorage.removeItem(timerKey);
-            clearInterval(interval);
-          }
-        });
-      </script> -->
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {

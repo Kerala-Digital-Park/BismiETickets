@@ -19,6 +19,7 @@ const Requests = require("../models/requestModel");
 const UserActivity = require("../models/userActivityModel");
 const WalletTransactions = require("../models/walletTransactionModel");
 const TempWallet = require("../models/tempWalletModel");
+const Rewards = require("../models/rewardModel");
 const puppeteer = require("puppeteer");
 
 async function generatePDF(templatePath, data) {
@@ -105,9 +106,23 @@ exports.initiateBookingPayment = async (req, res) => {
   const token = crypto.randomUUID();
   const orderId = `order_${Date.now()}`;
 
-  const amount = parseFloat(
-    JSON.parse(req.body.bookingData).totalFare.replace(/[^0-9.]/g, "")
-  );
+  const parsedBooking = JSON.parse(req.body.bookingData);
+  const totalFare = parseFloat(parsedBooking.totalFare.replace(/[^0-9.]/g, ""));
+  const walletAmount = parseFloat(req.body.walletAmount || 0);
+  const paymentOption = req.body.paymentOption;  // WALLET / RUPAY / UPI / CARD / NETBANKING
+
+  const payableAmount = totalFare - walletAmount;  // ✅ subtract wallet
+
+  // ✅ calculate extra charge based on method
+  let extraCharge = 0;
+  if (paymentOption === "CARD") {
+    extraCharge = (totalFare * 0.025).toFixed(2);  // 2.5%
+  } else if (paymentOption === "NETBANKING") {
+    extraCharge = (totalFare * 0.015).toFixed(2);  // 1.5%
+  }
+
+  // ✅ final payable to HDFC
+  const finalPayable = (parseFloat(payableAmount) + parseFloat(extraCharge)).toFixed(2);
 
   const returnUrl = `${req.protocol}://${req.get("host")}/payment/booking-response?token=${token}`;
   const paymentHandler = PaymentHandler.getInstance();
@@ -122,15 +137,21 @@ exports.initiateBookingPayment = async (req, res) => {
         email: req.body.email,
         mobile_number: req.body.mobile_number,
         userId: req.session.userId,
+        walletAmount,
+        paymentOption,
+        extraCharge,        // ✅ save extraCharge for handleBookingResponse
+        finalPayable        // ✅ save what was sent to HDFC
       },
     });
 
     const orderSessionResp = await paymentHandler.orderSession({
       order_id: orderId,
-      amount,
+      amount:finalPayable,
       currency: "INR",
       return_url: returnUrl,
-      customer_id: "flight-user-" + req.session.userId
+      customer_id: "flight-user-" + req.session.userId,
+      payment_option: paymentOption,  // pass to HDFC so correct tab opens
+      allowDefaultOptions: false
     });
 
     return res.redirect(orderSessionResp.payment_links.web);
@@ -166,48 +187,89 @@ exports.handleBookingResponse = async (req, res) => {
     const temp = await TempBooking.findOne({ token });
     if (!temp) return res.send("Invalid or expired token");
 
-    const { bookingData, flightDetails, email, mobile_number, userId } = temp.data;
+    const { bookingData, flightDetails, email, mobile_number, userId, walletAmount, paymentOption, extraCharge } = temp.data;
 
     const parsedBooking = JSON.parse(bookingData);
     const parsedFlight = JSON.parse(flightDetails);
 
+      const totalFareGateway = parseFloat(orderStatusResp.amount); // what HDFC collected (already includes extra charge)
+      const finalFare = totalFareGateway + (walletAmount || 0);     // full booking cost
+
     const { travelers, baseFare, otherServices, discount } = parsedBooking;
-    const totalFare = orderStatusResp.amount;
 
           if (
         !travelers || !travelers.length ||
-        !mobile_number || !email || !totalFare || !baseFare || !otherServices || !discount
+        !mobile_number || !email || !totalFareGateway || !baseFare || !otherServices || !discount
       ) {
         return res.send("Missing booking data");
       }
 
-      const newBooking = new Bookings({
-        userId: userId,
-        flight: parsedFlight._id,
-        travelers,
-        mobile_number,
-        email,
-        amount: totalFare,
-        baseFare: baseFare.replace(/[^0-9.]/g, ""),
-        tax: otherServices.replace(/[^0-9.]/g, ""),
-        discount: discount.replace(/[^0-9.]/g, ""),
-        payment_status: true
-      });
+  const newBooking = new Bookings({
+    userId,
+    flight: parsedFlight._id,
+    travelers: parsedBooking.travelers,
+    mobile_number,
+    email,
+    amount: finalFare,            // full fare (wallet + gateway)
+    baseFare: parsedBooking.baseFare.replace(/[^0-9.]/g, ""),
+    tax: parsedBooking.otherServices.replace(/[^0-9.]/g, ""),
+    discount: parsedBooking.discount.replace(/[^0-9.]/g, ""),
+    payment_status: true,
+    payment_method: paymentOption // ✅ store method
+  });
 
-      await newBooking.save();
+  await newBooking.save();
 
-      const newTransaction = new Transactions({
-        bookingId: newBooking._id,
-        userId: parsedFlight.sellerId,
-        totalAmount: totalFare,
-        baseFare: baseFare.replace(/[^0-9.]/g, ""),
-        tax: otherServices.replace(/[^0-9.]/g, ""),
-        discount: discount.replace(/[^0-9.]/g, ""),
-        paymentStatus: "Paid",
-        type:"Booking Payment"
-      });
+  // ✅ Handle rewards for eligible users
+await handleReward(userId, parsedBooking.baseFare, newBooking.bookingId);
 
-      await newTransaction.save();
+async function handleReward(userId, baseFare, bookingId) {
+  try {
+    const user = await Users.findById(userId).populate("subscription");
+
+    if (!user || user.userRole !== "User") return; // only normal users eligible
+    if (!user.subscription) return;
+
+    const validSubs = ["Pro", "Enterprise"];
+    if (!validSubs.includes(user.subscription.subscription)) return;
+
+    const cleanBaseFare = parseFloat(baseFare.replace(/[^0-9.]/g, "")) || 0;
+    if (cleanBaseFare <= 0) return;
+
+    const rewardPoints = (cleanBaseFare * 0.25) / 100; // 0.25%
+
+    const reward = new Rewards({
+      userId: user._id,
+      title: "Flight Booking Reward",
+      description: `Reward for booking #${bookingId}`,
+      points: rewardPoints,
+      status: "active",
+      expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 days
+    });
+
+    await reward.save();
+
+    // Optionally update user reward balance
+    await Users.findByIdAndUpdate(user._id, {
+      $inc: { rewardBalance: rewardPoints }
+    });
+  } catch (err) {
+    console.error("Reward handling error:", err);
+  }
+}
+
+  // transaction entry (only for gateway part, not wallet)
+  const newTransaction = new Transactions({
+    bookingId: newBooking._id,
+    userId: parsedFlight.sellerId,
+    totalAmount: totalFareGateway, // paid through gateway
+    baseFare: parsedBooking.baseFare.replace(/[^0-9.]/g, ""),
+    tax: parsedBooking.otherServices.replace(/[^0-9.]/g, ""),
+    discount: parsedBooking.discount.replace(/[^0-9.]/g, ""),
+    paymentStatus: "Paid",
+    type: "Booking Payment"
+  });
+  await newTransaction.save();
 
       const newActivity = new UserActivity({
         user: userId,
@@ -218,22 +280,39 @@ exports.handleBookingResponse = async (req, res) => {
 
       await newActivity.save();
 
+        if (walletAmount && walletAmount > 0) {
+    await Users.findByIdAndUpdate(userId, { $inc: { walletBalance: -walletAmount } });
+
+      // Create Wallet Transaction entry
+  const walletTxn = new WalletTransactions({
+    userId,
+    amount: walletAmount,     // only the amount actually taken from wallet
+    status: "Paid",
+    purpose: `Flight Booking - ${parsedFlight.flightNumber}` // optional detail
+  });
+
+  await walletTxn.save();
+
+  }
+
       await Users.findByIdAndUpdate(userId, {
         $inc: {
           "transactions": 1,
-          "transactionAmount": totalFare,
+          "transactionAmount": totalFareGateway,
         },
       });
 
       const flightId = parsedFlight._id;
-      const pnr = parsedFlight.inventoryDates[0].pnr;
-
+      const pnr = parsedFlight.inventoryDates[0].pnr;      
       const updatedFlight = await Flights.findOneAndUpdate(
         { _id: flightId, "inventoryDates.pnr": pnr },
         {
           $inc: {
             "inventoryDates.$.seatsBooked": travelers.length,
           },
+          $pull: {
+            "inventoryDates.$.seatsHold": { userId: userId } // ✅ remove only this user’s hold
+          }
         },
         { new: true }
       );
@@ -297,18 +376,11 @@ const invoicePDF = await generatePDF(invoiceTemplatePath, {
   flight: parsedFlight, // includes from, to, airline, etc.
   transactions: newTransaction,
   travelers,
-  // requests,
-  // passengerName: travelers.map(t => `${t.title} ${t.first_name} ${t.last_name}`).join(", "),
-  // tripType: stopsCount <= 1 ? "One Way" : "Connecting",
-  // travelDate: parsedFlight.inventoryDates[0].departureDate,
-  // ticketNumbers: travelers.map(t => t.ticketNumber || newBooking.bookingId), // fallback
-  totalAmount: totalFare,
+  totalAmount: totalFareGateway,
   baseFare: baseFare.replace(/[^0-9.]/g, ""),
-  tax: otherServices.replace(/[^0-9.]/g, ""),
+  tax: (parseFloat(otherServices.replace(/[^0-9.]/g, "")) || 0) + (parseFloat(extraCharge) || 0),
   discount: discount.replace(/[^0-9.]/g, ""),
   email: email,
-  // referenceNo: parsedFlight.inventoryDates[0].pnr || "",
-  // gateway: "CCAvenue",
 });
 
 const templateFileName =
@@ -322,7 +394,7 @@ const templateFileName =
       const pdfBuffer = await generatePDF(templatePath, {
           travelers,
           flightDetails: parsedFlight,
-          totalFare,
+          totalFare: totalFareGateway,
           baseFare: baseFare.replace(/[^0-9.]/g, ""),
           otherServices: otherServices.replace(/[^0-9.]/g, ""),
           discount: discount.replace(/[^0-9.]/g, ""),
@@ -356,7 +428,7 @@ const templateFileName =
     // ✅ Delete temp booking data
     await TempBooking.deleteOne({ token });
 
-    return res.redirect("/bookings?success=true");
+    return res.redirect("/bookings?success=true&clearWallet=1");
   } catch (err) {
     console.error("Booking response error:", err);
     return res.send("Something went wrong");
@@ -586,18 +658,18 @@ exports.handleSubscriptionResponse = async (req, res) => {
 
 // 1️⃣ Initiate Wallet Load Payment
 exports.initiateLoadWalletPayment = async (req, res) => {
-  console.log("Load wallet payment initiated ")
   const { amount, method } = req.body;
   const userId = req.session.userId;
-
+  
   if (!amount || !method) {
     return res.status(400).json({ success: false, message: "Amount and payment method required" });
   }
 
   const orderId = `wallet_${Date.now()}`;
   const returnUrl = `${req.protocol}://${req.get("host")}/payment/load-wallet-response`;
-
+  
   const paymentHandler = PaymentHandler.getInstance();
+  console.log("Load wallet payment instance created ")
 
   try {
     // Save to temp wallet collection (like TempSubscription)
@@ -608,7 +680,6 @@ exports.initiateLoadWalletPayment = async (req, res) => {
       method,
       purpose: "Loaded cash",
     });
-
     // Initiate HDFC payment
     const orderSessionResp = await paymentHandler.orderSession({
       order_id: orderId,
@@ -617,7 +688,7 @@ exports.initiateLoadWalletPayment = async (req, res) => {
       return_url: returnUrl,
       customer_id: `wallet-user-${userId}`,
     });
-
+    
     return res.redirect(orderSessionResp.payment_links.web);
   } catch (err) {
     console.error("❌ Failed to initiate wallet load:", err);
@@ -627,6 +698,8 @@ exports.initiateLoadWalletPayment = async (req, res) => {
 
 // 2️⃣ Handle Wallet Payment Response
 exports.handleLoadWalletResponse = async (req, res) => {
+    console.log("Load wallet payment instance created ")
+
   const orderId = req.body.order_id;
   const paymentHandler = PaymentHandler.getInstance();
 

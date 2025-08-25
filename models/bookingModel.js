@@ -92,6 +92,10 @@ const bookingSchema = mongoose.Schema(
       type: Boolean,
       required: true,
     },
+    payment_method: {
+      type: String,
+      required: true,
+    },
     status: {
       type: String,
       enum: ["active", "cancelled"],

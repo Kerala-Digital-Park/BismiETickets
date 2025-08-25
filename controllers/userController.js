@@ -20,7 +20,8 @@ const FilterAirport = require("../models/filterAirportModel");
 const LoginActivity = require("../models/loginActivityModel");
 const SessionActivity = require("../models/sessionActivityModel");
 const SigninImage = require("../models/signinImageModel");
-const WalletTransactions = require("../models/walletTransactionModel")
+const WalletTransactions = require("../models/walletTransactionModel");
+const UserActivity = require("../models/userActivityModel");
 const useragent = require("useragent");
 const requestIp = require("request-ip");
 const { countries } = require('countries-list');
@@ -298,8 +299,27 @@ const availableLayovers = Array.from(layoverSet);
 };
 
 const viewFlightBooking = async (req, res) => {
+  const userId = req.session.userId;
   try {
-    res.render("user/flight-booking", {});
+    const user = await Users.findById(userId).populate("subscription");
+
+    // ✅ Get payment method counts
+    const paymentStats = await Bookings.aggregate([
+      {
+        $group: {
+          _id: "$payment_method",   // group by payment_method
+          count: { $sum: 1 }        // count how many
+        }
+      }
+    ]);
+
+    // Convert into nicer object: { CARD: 5, UPI: 3, WALLET: 2 }
+    const paymentCounts = paymentStats.reduce((acc, stat) => {
+      acc[stat._id] = stat.count;
+      return acc;
+    }, {});
+
+    res.render("user/flight-booking", {user, paymentCounts });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
@@ -849,7 +869,6 @@ const getSellerList = async (req, res) => {
   }
 };
 
-// Handle GET request to retrieve data after redirect
 const viewFlightDetail = async (req, res) => {
   const { fId, aId } = req.query;
   const userId = req.session.userId;
@@ -872,6 +891,37 @@ const viewFlightDetail = async (req, res) => {
     const requestDetails = flightRequests;
     console.log("requestDetails",requestDetails);
 
+    // ✅ calculate total seats requested
+    const totalPassengers =
+      parseInt(requestDetails.adults) +
+      parseInt(requestDetails.children) +
+      parseInt(requestDetails.infants);
+
+    // ✅ Clean expired holds before proceeding
+    flightDetails.inventoryDates.forEach(inv => {
+      inv.seatsHold = inv.seatsHold.filter(hold => {
+        const diff = (Date.now() - new Date(hold.time).getTime()) / 1000 / 60; // minutes
+        if (diff > 15) {
+          // free expired seats
+          inv.seatsBooked = Math.max(0, inv.seatsBooked - hold.seats);
+          return false; // remove this hold
+        }
+        return true;
+      });
+    });
+
+    // ✅ Add new hold entry
+    const inventory = flightDetails.inventoryDates[0];
+    if (inventory) {
+      inventory.seatsHold.push({
+        userId,
+        seats: totalPassengers,
+        time: new Date(),
+      });
+    }
+
+    await flightDetails.save();
+    
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -884,6 +934,7 @@ const viewFlightDetail = async (req, res) => {
       requestDetails,
       subscription,
       coupons, 
+      userDetails,
     });
   } catch (error) {
     console.error("Error fetching flight details:", error);
@@ -915,6 +966,7 @@ const getFlights = async (req, res) => {
       "stops.0.airline": flight.stops[0].airline,
       "stops.0.flightNumber": flight.stops[0].flightNumber,
       departureDate: flight.departureDate,
+      isActive: true,
     });
 
     matchingFlights = matchingFlights.filter(f => f.inventoryDates[0].seats >= totalPassengers);
@@ -1327,6 +1379,12 @@ const viewBookings = async (req, res) => {
       }
     });
 
+    const sortByCreatedAt = (a, b) => new Date(b.createdAt) - new Date(a.createdAt);
+
+    upcomingBookings.sort(sortByCreatedAt);
+    completedBookings.sort(sortByCreatedAt);
+    cancelledBookings.sort(sortByCreatedAt);
+    
     const success = req.query.success === "true";
 
     // Render bookings page
@@ -1363,6 +1421,7 @@ const viewWalletDetails = async (req, res) => {
     }
 
     const walletBalance = user.walletBalance;
+    const rewardBalance = user.rewardBalance;
 
     const subscription = await Subscriptions.findById(user.subscription);
     if (!subscription) {
@@ -1371,7 +1430,7 @@ const viewWalletDetails = async (req, res) => {
 
     const walletLimit = subscription.walletLimit;
 
-    res.render("user/wallet-details", { walletHistory, walletBalance, walletLimit });
+    res.render("user/wallet-details", { walletHistory, walletBalance, walletLimit, rewardBalance });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
@@ -1594,7 +1653,7 @@ const updateProfile = async (req, res) => {
       userId,
       name,
       email,
-      mobile,
+      whatsapp: mobile,
       nationality,
       proprietorship,
       address,
@@ -3386,6 +3445,81 @@ const addAddonRequest = async (req, res) => {
   }
 };
 
+const bookWithWallet = async (req, res) => {
+  try {
+    const { bookingData, flightDetails } = req.body;
+    const parsedBooking = JSON.parse(bookingData);
+    const parsedFlight = JSON.parse(flightDetails);
+
+    const userId = req.session.userId;
+    const walletAmount = parseFloat(req.body.walletAmount || 0);
+    const totalFare = parseFloat(parsedBooking.totalFare.replace(/[^0-9.]/g, ""));
+
+    // ✅ Ensure wallet covers full fare
+    if (walletAmount < totalFare) {
+      return res.status(400).send("Insufficient wallet balance for full booking.");
+    }
+
+    // Subtract from user wallet
+    await Users.findByIdAndUpdate(userId, { $inc: { walletBalance: -totalFare } });
+
+    // Create booking
+    const newBooking = new Bookings({
+      userId,
+      flight: parsedFlight._id,
+      travelers: parsedBooking.travelers,
+      mobile_number: parsedBooking.mobile_number,
+      email: parsedBooking.email,
+      amount: totalFare,
+      baseFare: parsedBooking.baseFare.replace(/[^0-9.]/g, ""),
+      tax: parsedBooking.otherServices.replace(/[^0-9.]/g, ""),
+      discount: parsedBooking.discount.replace(/[^0-9.]/g, ""),
+      payment_status: true,
+      payment_method: "WALLET",
+    });
+
+    await newBooking.save();
+
+    // Create Wallet Transaction
+    const walletTxn = new WalletTransactions({
+      userId,
+      amount: totalFare,
+      status: "Paid",
+      purpose: "Flight Booking",
+    });
+
+    await walletTxn.save();
+
+    // Update seat booking in flight inventory
+    const pnr = parsedFlight.inventoryDates[0].pnr;
+    await Flights.findOneAndUpdate(
+      { _id: parsedFlight._id, "inventoryDates.pnr": pnr },
+      {
+        $inc: { "inventoryDates.$.seatsBooked": parsedBooking.travelers.length },
+        $pull: { "inventoryDates.$.seatsHold": { userId } },
+      }
+    );
+
+    // User Activity
+    const newActivity = new UserActivity({
+      user: userId,
+      id: newBooking._id.toString(),
+      type: "booking",
+      content: `Booking made for flight ${parsedFlight.flightNumber} (via Wallet) on ${newBooking.createdAt.toLocaleDateString()}`
+    });
+
+    await newActivity.save();
+
+    // TODO: Send invoice/email (reuse your invoice generation logic here if needed)
+
+    return res.redirect("/bookings?success=true&clearWallet=1");
+
+  } catch (err) {
+    console.error("Wallet Booking Error:", err);
+    return res.status(500).send("Something went wrong with wallet booking.");
+  }
+};
+
 module.exports = {
   viewHomepage,
   viewDashboard,
@@ -3476,4 +3610,5 @@ module.exports = {
   addServiceRequest,
   addSupportRequest,
   addAddonRequest,
+  bookWithWallet,
 };

@@ -1,346 +1,593 @@
 <%- include('./partials/header') %>
-<%- include('./partials/userHeader') %>
+	<%- include('./partials/userHeader') %>
 
-<!-- **************** MAIN CONTENT START **************** -->
-<main>
+		<!-- **************** MAIN CONTENT START **************** -->
+		<main>
 
-	<!-- =======================
+			<!-- =======================
 Main Content START -->
-<section class="pt-4 pt-lg-5">
-	<div class="container">
+			<section class="pt-4 pt-lg-5">
+				<div class="container">
 
-		<div class="row g-4 g-xl-5">
-			<!-- Left Content START -->
-			<div class="col-xl-8">
-				<div class="card bg-transparent p-0">
-					<!-- Card header START -->
-					<div class="card-header bg-transparent p-0">
-      <h3 class="card-title fs-3 fw-bold mb-0">
-        Make Your Payment via HDFC
-      </h3>					</div>
-					<!-- Card header END -->
+					<div class="row g-4 g-xl-5">
+						<!-- Left Content START -->
+						<div class="col-xl-8">
+							<div class="card bg-transparent p-0">
+								<!-- Card header START -->
+								<div class="card-header bg-transparent p-0">
+									<h3 class="card-title fs-2 mb-0">Enter Your Payment Details</h3>
+								</div>
+								<!-- Card header END -->
 
-					<!-- Card body START -->
-					  <div class="card-body px-4 py-5">
+								<!-- Card body START -->
+								<div class="card-body px-4 py-5">
+									<p class="text-dark"><strong>Convenience Fees (Non-Refundable) :</strong> <br>
+										This is a Payment Processing charge and is not a part of Airline Fare Component,
+										This fee includes the charges paid by us to the concerned Bank (varies from one
+										Bank to another) for availing of such facilities. This is a completely non
+										refundable amount and won't be refunded in case of Flight Cancellation (Canceled
+										by you or by the airline) and is over and above Airline Cancel Fee, BudgetTicket
+										Service Fee.
+									</p>
+									<!-- Alert box -->
+									<div class="alert alert-success" role="alert" id="discountMessage"></div>
 
-						<!-- Alert box -->
-						<div class="alert alert-success" role="alert" id="discountMessage"></div>
-						 		
-						      <!-- Instruction text -->
-      <div class="text-dark mb-4">
-        Secure your booking with a quick and easy payment through HDFC gateway. Click the button below to proceed.
-      </div>
+									<!-- Payment Tabs -->
+									<ul class="nav nav-tabs" id="paymentTabs">
+										<li class="nav-item"><a class="nav-link active" data-bs-toggle="tab"
+												href="#wallet">BTrips Wallet</a></li>
+										<li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
+												href="#rupay">RuPay Debit Card</a></li>
+										<li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
+												href="#upi">UPI</a></li>
+										<li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#card">Other
+												Credit/Debit</a></li>
+										<li class="nav-item"><a class="nav-link" data-bs-toggle="tab"
+												href="#netbanking">NetBanking</a></li>
+									</ul>
 
-						<!-- Pay Now Button -->
-						<div class="col-12 mt-3">
-							<button class="btn btn-primary w-100" id="payNowBtn">Pay Now</button>
+									<!-- Tab Content -->
+									<div class="tab-content mt-3">
+										<!-- Wallet Payment -->
+										<div class="tab-pane fade show active" id="wallet">
+											<div class="bg-light rounded-3 p-4">
+												<p>Your Wallet Balance: ₹<span id="walletBalance">
+														<%=user.walletBalance%>
+													</span></p>
+												<div class="mb-3">
+													<label class="form-label">Amount to use from Wallet</label>
+													<input type="number" id="walletUseAmount" class="form-control"
+														placeholder="Enter amount" min="0">
+												</div>
+												<button type="button" class="btn btn-success mt-2"
+													id="confirmWalletBtn">Confirm Wallet Usage</button>
+												<p id="walletMessage" class="text-danger mt-2"></p>
+											</div>
+										</div>
+
+										<!-- Rupay Payment -->
+										<div class="tab-pane fade" id="rupay">
+											<form class="bg-light rounded-3 p-4" id="rupayForm">
+
+												<table class="table table-bordered">
+													<tbody>
+														<tr>
+															<th>Provider</th>
+															<td>HDFC</td>
+														</tr>
+														<tr>
+															<th>Type</th>
+															<td>RuPay</td>
+														</tr>
+														<tr>
+															<th>Status</th>
+															<td class="text-success">Active</td>
+														</tr>
+														<tr>
+															<th>Percentage</th>
+															<td>0%</td>
+														</tr>
+														<tr>
+															<th>Usage</th>
+															<td>
+																<%= paymentCounts.RUPAY || 0 %>
+															</td>
+														</tr>
+														<tr>
+															<th>Total Fare</th>
+															<td>₹<span id="rupayTotal">0</span></td>
+														</tr>
+														<tr>
+															<th>Wallet Amount</th>
+															<td>₹<span id="rupayWallet">0</span></td>
+														</tr>
+														<tr>
+															<th>Balance to Pay</th>
+															<td>₹<span id="rupayBalance">0</span></td>
+														</tr>
+														<tr>
+															<td colspan="2" class="text-success">*No service charge on
+																RuPay Debit Card</td>
+														</tr>
+													</tbody>
+												</table>
+											</form>
+										</div>
+
+										<!-- Card Payment -->
+										<div class="tab-pane fade" id="card">
+											<form class="bg-light rounded-3 p-4" id="cardForm">
+
+												<table class="table table-bordered">
+													<tbody>
+														<tr>
+															<th>Provider</th>
+															<td>HDFC</td>
+														</tr>
+														<tr>
+															<th>Type</th>
+															<td>Credit / Debit Card</td>
+														</tr>
+														<tr>
+															<th>Status</th>
+															<td class="text-success">Active</td>
+														</tr>
+														<tr>
+															<th>Percentage</th>
+															<td>2.5%</td>
+														</tr>
+														<tr>
+															<th>Usage</th>
+															<td>
+																<%= paymentCounts.CARD || 0 %>
+															</td>
+														</tr>
+														<tr>
+															<th>Total Fare</th>
+															<td>₹<span id="cardTotal">0</span></td>
+														</tr>
+														</tr>
+														<tr>
+															<th>Wallet Amount</th>
+															<td>₹<span id="cardWallet">0</span></td>
+														</tr>
+														<tr>
+															<th>Other Charges</th>
+															<td>₹<span id="cardCharge">0</span></td>
+														</tr>
+														<tr>
+															<th>Balance to Pay</th>
+															<td>₹<span id="cardBalance">0</span></td>
+														</tr>
+														<tr>
+															<td colspan="2" class="text-danger">*This will carry a
+																transaction fee</td>
+														</tr>
+													</tbody>
+												</table>
+											</form>
+										</div>
+
+										<!-- UPI Payment -->
+										<div class="tab-pane fade" id="upi">
+											<form class="bg-light rounded-3 p-4" id="upiForm">
+
+												<table class="table table-bordered">
+													<tbody>
+														<tr>
+															<th>Provider</th>
+															<td>HDFC</td>
+														</tr>
+														<tr>
+															<th>Type</th>
+															<td>UPI</td>
+														</tr>
+														<tr>
+															<th>Status</th>
+															<td class="text-success">Active</td>
+														</tr>
+														<tr>
+															<th>Percentage</th>
+															<td>0%</td>
+														</tr>
+														<tr>
+															<th>Usage</th>
+															<td>
+																<%= paymentCounts.UPI || 0 %>
+															</td>
+														</tr>
+														<tr>
+															<th>Total Fare</th>
+															<td>₹<span id="upiTotal">0</span></td>
+														</tr>
+														<tr>
+															<th>Wallet Amount</th>
+															<td>₹<span id="upiWallet">0</span></td>
+														</tr>
+														<tr>
+															<th>Balance to Pay</th>
+															<td>₹<span id="upiBalance">0</span></td>
+														</tr>
+														<tr>
+															<td colspan="2" class="text-success">*No service charge on
+																UPI</td>
+														</tr>
+													</tbody>
+												</table>
+											</form>
+										</div>
+
+										<!-- Net Banking -->
+										<div class="tab-pane fade" id="netbanking">
+											<form class="bg-light rounded-3 p-4" id="netbankingForm">
+												<table class="table table-bordered">
+													<tbody>
+														<tr>
+															<th>Provider</th>
+															<td>HDFC</td>
+														</tr>
+														<tr>
+															<th>Type</th>
+															<td>Net Banking</td>
+														</tr>
+														<tr>
+															<th>Status</th>
+															<td class="text-success">Active</td>
+														</tr>
+														<tr>
+															<th>Percentage</th>
+															<td>1.5%</td>
+														</tr>
+														<tr>
+															<th>Usage</th>
+															<td>
+																<%= paymentCounts.NETBANKING || 0 %>
+															</td>
+														</tr>
+														<tr>
+															<th>Total Fare</th>
+															<td>₹<span id="netTotal">0</span></td>
+														</tr>
+														<tr>
+															<th>Wallet Amount</th>
+															<td>₹<span id="netWallet">0</span></td>
+														</tr>
+														<tr>
+															<th>Other Charges</th>
+															<td>₹<span id="netCharge">0</span></td>
+														</tr>
+														<tr>
+															<th>Balance to Pay</th>
+															<td>₹<span id="netBalance">0</span></td>
+														</tr>
+														<tr>
+															<td colspan="2" class="text-danger">*This will carry a
+																transaction fee</td>
+														</tr>
+													</tbody>
+												</table>
+
+											</form>
+										</div>
+
+									</div>
+
+									<!-- Pay Now Button -->
+									<div class="col-12 mt-3">
+										<button class="btn btn-primary w-100" id="payNowBtn">Pay Now</button>
+									</div>
+
+								</div>
+								<!-- Card body END -->
+							</div>
 						</div>
+						<!-- Left Content END -->
 
-					</div>
-					<!-- Card body END -->
-				</div>
-			</div>
-			<!-- Left Content END -->
+						<script>
+							document.getElementById("payNowBtn").addEventListener("click", function () {
+								const activeTab = document.querySelector("#paymentTabs .nav-link.active").getAttribute("href");
+								let paymentOption = "";
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const paymentTabs = document.querySelectorAll('#paymentTabs a');
-    
-    paymentTabs.forEach(tab => {
-        tab.addEventListener("click", function () {
-            paymentTabs.forEach(t => t.classList.remove("active"));
-            this.classList.add("active");
-        });
+								if (activeTab === "#wallet") paymentOption = "WALLET";
+								else if (activeTab === "#rupay") paymentOption = "RUPAY";
+								else if (activeTab === "#upi") paymentOption = "UPI";
+								else if (activeTab === "#card") paymentOption = "CARD";
+								else if (activeTab === "#netbanking") paymentOption = "NETBANKING";
+
+								document.getElementById("paymentOptionField").value = paymentOption;
+
+								// TODO: validate form fields per method
+								// If valid -> submit
+								// document.getElementById("hdfcPaymentForm").submit();
+							});
+
+						</script>
+
+						<script>
+							document.getElementById("confirmWalletBtn").addEventListener("click", function () {
+								const walletBalance = parseFloat(document.getElementById("walletBalance").innerText) || 0;
+								let useAmount = parseFloat(document.getElementById("walletUseAmount").value) || 0;
+
+								if (useAmount > walletBalance) {
+									document.getElementById("walletMessage").innerText = "Amount cannot exceed wallet balance";
+									return;
+								}
+
+								if (useAmount <= 0) {
+									document.getElementById("walletMessage").innerText = "Amount cannot be negative or zero";
+									return;
+								}
+
+								// Save in sessionStorage so other tabs can use it
+								sessionStorage.setItem("walletConfirmedAmount", useAmount);
+
+								document.getElementById("walletMessage").innerText = `Confirmed ₹${useAmount} from wallet`;
+								updateBalances();
+							});
+
+						</script>
+
+						<script>
+							function updateBalances() {
+								const bookingData = JSON.parse(sessionStorage.getItem("bookingData"));
+								if (!bookingData) return;
+
+								const total = parseFloat(bookingData.totalFare.replace(/[^0-9.]/g, "")) || 0;
+								const walletConfirmed = parseFloat(sessionStorage.getItem("walletConfirmedAmount")) || 0;
+
+								// if no wallet confirmation, just set wallet=0 but still show full total
+								const appliedWallet = walletConfirmed > 0 ? walletConfirmed : 0;
+								const balance = total - appliedWallet;
+
+								// RuPay
+								document.getElementById("rupayTotal").innerText = total;
+								document.getElementById("rupayWallet").innerText = appliedWallet;
+								document.getElementById("rupayBalance").innerText = balance;
+
+								// UPI
+								document.getElementById("upiTotal").innerText = total;
+								document.getElementById("upiWallet").innerText = appliedWallet;
+								document.getElementById("upiBalance").innerText = balance;
+
+								// Other Credit/Debit
+								const cardCharge = (total * 0.025).toFixed(2); // 2.5%
+								document.getElementById("cardTotal").innerText = total;
+								document.getElementById("cardWallet").innerText = appliedWallet;
+								document.getElementById("cardCharge").innerText = cardCharge;
+								document.getElementById("cardBalance").innerText = (balance + parseFloat(cardCharge)).toFixed(2);
+
+								// NetBanking
+								const netCharge = (total * 0.015).toFixed(2); // 1.5%
+								document.getElementById("netTotal").innerText = total;
+								document.getElementById("netWallet").innerText = appliedWallet;
+								document.getElementById("netCharge").innerText = netCharge;
+								document.getElementById("netBalance").innerText = (balance + parseFloat(netCharge)).toFixed(2);
+							}
+
+						</script>
+
+						<script>
+							document.addEventListener("DOMContentLoaded", function () {
+								updateBalances(); // show totals immediately on load
+							});
+
+						</script>
+
+						<form id="hdfcPaymentForm" action="/payment/initiate-booking" method="POST"
+							style="display: none;">
+							<input type="hidden" name="email" id="emailField" />
+							<input type="hidden" name="mobile_number" id="mobileNumberField" />
+							<input type="hidden" name="bookingData" id="bookingDataField" />
+							<input type="hidden" name="flightDetails" id="flightDetailsField" />
+							<input type="hidden" name="paymentOption" id="paymentOptionField" />
+							<input type="hidden" name="walletAmount" id="walletAmountField" />
+							<input type="hidden" name="finalPayable" id="finalPayableField" /> <!-- ✅ new -->
+							<input type="hidden" name="extraCharge" id="extraChargeField" /> <!-- ✅ new -->
+						</form>
+
+						<script>
+							document.getElementById("payNowBtn").addEventListener("click", function () {
+								const bookingData = JSON.parse(sessionStorage.getItem("bookingData"));
+								const flightDetails = JSON.parse(sessionStorage.getItem("flightDetails"));
+								const walletConfirmed = parseFloat(sessionStorage.getItem("walletConfirmedAmount")) || 0;
+
+								const totalFare = parseFloat(bookingData.totalFare.replace(/[^0-9.]/g, ""));
+
+								if (!bookingData || !flightDetails) {
+									alert("Missing booking data.");
+									return;
+								}
+
+								// ✅ If wallet covers full fare → direct wallet booking
+								if (walletConfirmed >= totalFare) {
+									fetch("/book-with-wallet", {
+										method: "POST",
+										headers: { "Content-Type": "application/json" },
+										body: JSON.stringify({
+											bookingData: JSON.stringify(bookingData),
+											flightDetails: JSON.stringify(flightDetails),
+											walletAmount: walletConfirmed,
+										}),
+									}).then(res => {
+										if (res.ok) window.location.href = "/bookings?success=true&walletOnly=1";
+										else alert("Wallet booking failed.");
+									}).catch(err => {
+      alert("Error: " + err.message);
     });
-});
-</script>
+									return;
+								}
 
-<form id="hdfcPaymentForm" action="/payment/initiate-booking" method="POST" style="display: none;">
-  <input type="hidden" name="email" id="emailField" />
-  <input type="hidden" name="mobile_number" id="mobileNumberField" />
-  <input type="hidden" name="bookingData" id="bookingDataField" />
-  <input type="hidden" name="flightDetails" id="flightDetailsField" />
-</form>
+								// detect active tab
+								const activeTab = document.querySelector("#paymentTabs .nav-link.active").getAttribute("href");
+								let paymentOption = "";
+								if (activeTab === "#wallet") paymentOption = "WALLET";
+								else if (activeTab === "#rupay") paymentOption = "RUPAY";
+								else if (activeTab === "#upi") paymentOption = "UPI";
+								else if (activeTab === "#card") paymentOption = "CARD";
+								else if (activeTab === "#netbanking") paymentOption = "NETBANKING";
 
-<script>
-	document.getElementById("payNowBtn").addEventListener("click", function () {
-  const bookingData = JSON.parse(sessionStorage.getItem("bookingData"));
-  const flightDetails = JSON.parse(sessionStorage.getItem("flightDetails"));
+								// calculate amounts
+								let total = parseFloat(bookingData.totalFare.replace(/[^0-9.]/g, "")) || 0;
+								let extraCharge = 0;
 
-  console.log("Booking Data:", bookingData);
-  console.log("Flight Details:", flightDetails);
+								if (paymentOption === "CARD") {
+									extraCharge = total * 0.025;  // 2.5%
+								} else if (paymentOption === "NETBANKING") {
+									extraCharge = total * 0.015;  // 1.5%
+								}
 
-  if (!bookingData || !flightDetails) {
-    alert("Missing booking data.");
-    return;
-  }
+								const finalPayable = (total - walletConfirmed + extraCharge).toFixed(2);
 
-  // Fill form values
-  document.getElementById("emailField").value = bookingData.email;
-  document.getElementById("mobileNumberField").value = bookingData.mobile_number;
-  document.getElementById("bookingDataField").value = JSON.stringify(bookingData);
-  document.getElementById("flightDetailsField").value = JSON.stringify(flightDetails);
+								// Fill form values
+								document.getElementById("emailField").value = bookingData.email;
+								document.getElementById("mobileNumberField").value = bookingData.mobile_number;
+								document.getElementById("bookingDataField").value = JSON.stringify(bookingData);
+								document.getElementById("flightDetailsField").value = JSON.stringify(flightDetails);
+								document.getElementById("paymentOptionField").value = paymentOption;
+								document.getElementById("walletAmountField").value = walletConfirmed;
+								document.getElementById("finalPayableField").value = finalPayable;    // ✅ send to backend
+								document.getElementById("extraChargeField").value = extraCharge.toFixed(2);  // ✅ send to backend
 
-  // Submit form
-  document.getElementById("hdfcPaymentForm").submit();
-});
-</script>
+								// Submit form
+								document.getElementById("hdfcPaymentForm").submit();
+							});
+						</script>
 
-<!-- <script>
-	// Before opening Razorpay, submit form to backend
-const bookingData = JSON.parse(sessionStorage.getItem("bookingData"));
-const flightDetails = JSON.parse(sessionStorage.getItem("flightDetails"));
+						<!-- Right content START -->
+						<aside class="col-xl-4">
+							<div class="row g-4">
+								<!-- Fare summary START -->
+								<div class="col-md-6 col-xl-12">
+									<div class="card bg-light rounded-2">
+										<!-- card header -->
+										<div class="card-header border-bottom bg-light">
+											<h5 class="card-title mb-0">Fare Summary</h5>
+										</div>
 
-fetch("/payment/render-form", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    email: bookingData.email,
-    mobile_number: bookingData.mobile_number,
-    bookingData,
-    flightDetails
-  })
-})
-.then(res => res.text())
-.then(html => {
-  // Replace body content with the payment form
-  document.body.innerHTML = html;
-})
-.catch(error => {
-  console.error("Render form error:", error);
-});
+										<!-- Card body -->
+										<div class="card-body">
+											<ul class="list-group list-group-borderless">
+												<li
+													class="list-group-item d-flex justify-content-between align-items-center">
+													<span class="h6 fw-normal mb-0">Base Fare
+														<a tabindex="0" data-bs-toggle="popover" data-bs-trigger="focus"
+															data-bs-placement="bottom"
+															data-bs-content="COVID-19 test required Vaccinated travelers can visit">
+															<i class="bi bi-info-circle"></i>
+														</a>
+													</span>
+													<span class="fs-5" id="base-fare">₹0</span>
+												</li>
+												<li
+													class="list-group-item d-flex justify-content-between align-items-center">
+													<span class="h6 fw-normal mb-0">Discount</span>
+													<span class="fs-5 text-success" id="discount">+₹0</span>
+												</li>
+												<li
+													class="list-group-item d-flex justify-content-between align-items-center">
+													<span class="h6 fw-normal mb-0">Taxes & Services</span>
+													<span class="fs-5" id="other-services">₹0</span>
+												</li>
+											</ul>
+										</div>
 
-</script> -->
-<!-- <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-<script>
-	document.getElementById("payNowBtn").addEventListener("click", function () {
-		const upiId = document.getElementById("upiId").value;
-		const mobileNumber = document.getElementById("mobileNumber").value;
-	
-		const bookingData = JSON.parse(sessionStorage.getItem("bookingData"));
-		const flightDetails = JSON.parse(sessionStorage.getItem("flightDetails"));
-
-    if (!bookingData) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Missing Data',
-            text: 'Booking data not found!'
-        });
-        return;
-    }
-
-    const { travelers, email, mobile_number, totalFare, baseFare, discount, otherServices } = bookingData;
-
-    if (!upiId || !mobileNumber) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Incomplete Details',
-            text: 'Please fill in all details.'
-        });
-        return;
-    }
-
-    // Convert totalFare to paise (Razorpay uses INR in paise)
-    const amountInPaise = parseFloat(totalFare.replace(/[^0-9.]/g, "")) * 100;
-    console.log(amountInPaise);
-
-		// Razorpay Options
-		var options = {
-			"key": "rzp_test_1ziG9HjgAv6f6j",  // Replace with your Razorpay API Key
-			"amount": amountInPaise,  // Amount in paise (₹1000 = 100000 paise)
-			"currency": "INR",
-			"name": "Bismi",
-			"description": "UPI Payment",
-			"image": "https://your-logo-url.com/logo.png",  
-			"prefill": {
-				"email": "email",
-				"contact": mobile_number
-			},
-			"handler": function (response) {
-
-			const paymentDetails = {
-                razorpay_payment_id: response.razorpay_payment_id,
-                travelers: travelers,
-                mobile_number: mobile_number,
-                email: email,
-                totalFare: amountInPaise / 100,
-				flightDetails: flightDetails,
-				baseFare: bookingData.baseFare.replace(/[^0-9.]/g, ""),
-				discount: bookingData.discount.replace(/[^0-9.]/g, ""),	
-				otherServices: bookingData.otherServices.replace(/[^0-9.]/g, ""),
-            };
-
-            // Send data to backend via POST request
-            fetch("/flight-booking", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(paymentDetails)
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log("Server Response:", data);
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Booking Confirmed!',
-                    text: 'Redirecting to your bookings...',
-                    timer: 2000,
-                    showConfirmButton: false
-                }).then(() => {
-                    window.location.href = "/bookings";
-                });
-            })
-            .catch(error =>  {
-                console.error("Error:", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Payment Failed',
-                    text: 'Something went wrong. Please try again later.'
-                });
-            });
-        },
-			"theme": {
-				"color": "#3399cc"
-			}
-		};
-	
-		var razorpayInstance = new Razorpay(options);
-		razorpayInstance.open();
-	});
-</script> -->
-
-			<!-- Right content START -->
-			<aside class="col-xl-4">
-				<div class="row g-4">
-					<!-- Fare summary START -->
-					<div class="col-md-6 col-xl-12">
-						<div class="card bg-light rounded-2">
-							<!-- card header -->
-							<div class="card-header border-bottom bg-light">
-								<h5 class="card-title mb-0">Fare Summary</h5>
-							</div>
-
-							<!-- Card body -->
-							<div class="card-body">
-								<ul class="list-group list-group-borderless">
-									<li class="list-group-item d-flex justify-content-between align-items-center">
-										<span class="h6 fw-normal mb-0">Base Fare
-											<a tabindex="0" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="bottom" data-bs-content="COVID-19 test required Vaccinated travelers can visit">
-												<i class="bi bi-info-circle"></i>
-											</a>
-										</span>
-										<span class="fs-5" id="base-fare">₹0</span>
-									</li>
-									<li class="list-group-item d-flex justify-content-between align-items-center">
-										<span class="h6 fw-normal mb-0">Discount</span>
-										<span class="fs-5 text-success" id="discount">+₹0</span>
-									</li>
-									<li class="list-group-item d-flex justify-content-between align-items-center">
-										<span class="h6 fw-normal mb-0">Taxes & Services</span>
-										<span class="fs-5" id="other-services">₹0</span>
-									</li>
-								</ul>
-							</div>
-
-							<!-- Card footer -->
-							<div class="card-footer border-top bg-light">
-								<div class="d-flex justify-content-between align-items-center">
-									<span class="h5 fw-normal mb-0">Total Fare</span>
-									<span class="h5 fw-normal mb-0" id="total-fare">₹0</span>
+										<!-- Card footer -->
+										<div class="card-footer border-top bg-light">
+											<div class="d-flex justify-content-between align-items-center">
+												<span class="h5 fw-normal mb-0">Total Fare</span>
+												<span class="h5 fw-normal mb-0" id="total-fare">₹0</span>
+											</div>
+										</div>
+									</div>
 								</div>
-							</div>
-						</div>
-					</div>
-					<!-- Fare summary END -->
+								<!-- Fare summary END -->
 
-					<!-- Booking START -->
-					<div class="col-md-6 col-xl-12">
-						<div class="card border">
-							<!-- Card header -->
-							<div class="card-header border-bottom">
-								<h5 class="mb-0 cardt-title">Your Booking</h5>
-							</div>
+								<!-- Booking START -->
+								<div class="col-md-6 col-xl-12">
+									<div class="card border">
+										<!-- Card header -->
+										<div class="card-header border-bottom">
+											<h5 class="mb-0 cardt-title">Your Booking</h5>
+										</div>
 
-							<!-- Card body -->
-							<div class="card-body">
-								<!-- Flight detail -->
-								<small><i class="bi bi-ticket me-2"></i>Flight Ticket</small>
-								<div class="d-flex mt-2">
-									<img src="/assets/images/element/09.svg" class="w-40px me-2" alt="">
-									<!-- <h6 class="fw-normal mb-0" id="flight-route">Mumbai <i class="bi bi-arrow-right"></i> New York</h6> -->
-									<h6 id="flight-route" class="fw-normal mb-0"></h6>
-								</div>
-								<ul class="nav nav-divider small text-body mt-1 mb-0">
-									<li class="nav-item" id="flight-date"></li>
-                <li class="nav-item" id="flight-stops"></li>
-                <li class="nav-item" id="flight-duration"></li>
-								</ul>
+										<!-- Card body -->
+										<div class="card-body">
+											<!-- Flight detail -->
+											<small><i class="bi bi-ticket me-2"></i>Flight Ticket</small>
+											<div class="d-flex mt-2">
+												<img src="/assets/images/element/09.svg" class="w-40px me-2" alt="">
+												<!-- <h6 class="fw-normal mb-0" id="flight-route">Mumbai <i class="bi bi-arrow-right"></i> New York</h6> -->
+												<h6 id="flight-route" class="fw-normal mb-0"></h6>
+											</div>
+											<ul class="nav nav-divider small text-body mt-1 mb-0">
+												<li class="nav-item" id="flight-date"></li>
+												<li class="nav-item" id="flight-stops"></li>
+												<li class="nav-item" id="flight-duration"></li>
+											</ul>
 
-								<hr> <!-- Divider -->
+											<hr> <!-- Divider -->
 
-								<!-- Traveler detail -->
-								<small><i class="bi bi-person me-1"></i>Traveler detail</small>
-								<div id="traveler-list"></div>
-							</div>
+											<!-- Traveler detail -->
+											<small><i class="bi bi-person me-1"></i>Traveler detail</small>
+											<div id="traveler-list"></div>
+										</div>
 
-							<!-- Card footer -->
-							<!-- <div class="card-footer border-top text-center p-3">
+										<!-- Card footer -->
+										<!-- <div class="card-footer border-top text-center p-3">
 								<a href="#" class="btn btn-link mb-0 p-0">Review booking</a>
 							</div> -->
-						</div>
+									</div>
+								</div>
+								<!-- Booking END -->
+							</div>
+						</aside>
+						<!-- Right content END -->
 					</div>
-					<!-- Booking END -->
-				</div>	
-			</aside>
-			<!-- Right content END -->
-		</div>
-	</div>
-</section>
+				</div>
+			</section>
 
-<script>
-	document.addEventListener("DOMContentLoaded", function () {
-    // Retrieve stored booking data from sessionStorage
-    const bookingData = JSON.parse(sessionStorage.getItem("bookingData"));
+			<script>
+				document.addEventListener("DOMContentLoaded", function () {
+					// Retrieve stored booking data from sessionStorage
+					const bookingData = JSON.parse(sessionStorage.getItem("bookingData"));
 
-    if (bookingData) {
-        console.log("Loaded Booking Data:", bookingData);
+					if (bookingData) {
+						console.log("Loaded Booking Data:", bookingData);
 
-        // Extract values (use a fallback if values are missing)
-        document.getElementById("total-fare").innerText = bookingData.totalFare || "$0";
-        document.getElementById("base-fare").innerText = bookingData.baseFare || "$0";
-        document.getElementById("discount").innerText = bookingData.discount || "$0";
-        document.getElementById("other-services").innerText = bookingData.otherServices || "$0";
-    } else {
-        console.log("No fare data found in session storage.");
-    }
-});
+						// Extract values (use a fallback if values are missing)
+						document.getElementById("total-fare").innerText = bookingData.totalFare || "$0";
+						document.getElementById("base-fare").innerText = bookingData.baseFare || "$0";
+						document.getElementById("discount").innerText = bookingData.discount || "$0";
+						document.getElementById("other-services").innerText = bookingData.otherServices || "$0";
+					} else {
+						console.log("No fare data found in session storage.");
+					}
+				});
 
-</script>
+			</script>
 
-<script>
-	document.addEventListener("DOMContentLoaded", function () {
-		// Get flight details from sessionStorage
-		const flightDetails = JSON.parse(sessionStorage.getItem("flightDetails"));
-		const bookingData = JSON.parse(sessionStorage.getItem("bookingData"));
-	
-		if (flightDetails) {
-			document.getElementById("flight-route").textContent = 
-				`${flightDetails.from} -> ${flightDetails.to}`;
-			document.getElementById("flight-date").textContent = 
-				flightDetails.departureDate || "N/A";
-			document.getElementById("flight-stops").textContent = 
-				flightDetails.stops.length-1 === 0 ? "Non-stop" : `${flightDetails.stops.length - 1} Stop(s)`;
-			document.getElementById("flight-duration").textContent = 
-				flightDetails.duration || "Unknown Duration";
-		}
-	
-		if (bookingData && bookingData.travelers.length > 0) {
-			const travelerList = document.getElementById("traveler-list");
-			bookingData.travelers.forEach(traveler => {
-				const gender = (traveler.title === "Mr" || traveler.title === "Master") ? "Male" : "Female";
-				const travelerHTML = `
+			<script>
+				document.addEventListener("DOMContentLoaded", function () {
+					// Get flight details from sessionStorage
+					const flightDetails = JSON.parse(sessionStorage.getItem("flightDetails"));
+					const bookingData = JSON.parse(sessionStorage.getItem("bookingData"));
+
+					if (flightDetails) {
+						document.getElementById("flight-route").textContent =
+							`${flightDetails.from} -> ${flightDetails.to}`;
+						document.getElementById("flight-date").textContent =
+							flightDetails.departureDate || "N/A";
+						document.getElementById("flight-stops").textContent =
+							flightDetails.stops.length - 1 === 0 ? "Non-stop" : `${flightDetails.stops.length - 1} Stop(s)`;
+						document.getElementById("flight-duration").textContent =
+							flightDetails.duration || "Unknown Duration";
+					}
+
+					if (bookingData && bookingData.travelers.length > 0) {
+						const travelerList = document.getElementById("traveler-list");
+						bookingData.travelers.forEach(traveler => {
+							const gender = (traveler.title === "Mr" || traveler.title === "Master") ? "Male" : "Female";
+							const travelerHTML = `
 					<h6 class="mb-0 fw-normal mt-2">${traveler.first_name} ${traveler.last_name}</h6>
 					<ul class="nav nav-divider small text-body mt-1 mb-0">
 						<li class="nav-item">${traveler.type}</li>
@@ -348,23 +595,23 @@ fetch("/payment/render-form", {
 						<li class="nav-item">${traveler.dob}</li>
 					</ul>
 				`;
-				travelerList.innerHTML += travelerHTML;
-			});
-		}
+							travelerList.innerHTML += travelerHTML;
+						});
+					}
 
-		const discountMessage = document.getElementById("discountMessage");
-		if (bookingData && bookingData.discount) {
-			discountMessage.textContent = `You are saving ${bookingData.discount} using coupon code`;
-		} else {
-			discountMessage.textContent = "No discount applied.";
-		}
-	});
-	</script>
-<!-- =======================
+					const discountMessage = document.getElementById("discountMessage");
+					if (bookingData && bookingData.discount) {
+						discountMessage.textContent = `You are saving ${bookingData.discount} using coupon code`;
+					} else {
+						discountMessage.textContent = "No discount applied.";
+					}
+				});
+			</script>
+			<!-- =======================
 Main Content END -->
 
-</main>
-<!-- **************** MAIN CONTENT END **************** -->
+		</main>
+		<!-- **************** MAIN CONTENT END **************** -->
 
 
-<%- include('./partials/footer') %>
+		<%- include('./partials/footer') %>

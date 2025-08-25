@@ -2915,7 +2915,6 @@ const updateProfileDetail = async (req, res) => {
       const updatedData = {
         name: update.name,
         email: update.email,
-        mobile: update.mobile,
         whatsapp: update.whatsapp,
         nationality: update.nationality,
         proprietorship: update.proprietorship,
