@@ -707,6 +707,7 @@ const addSubscription = async (req, res) => {
       price,
       serviceCharge,
       features,
+      walletLimit,
     } = req.body;
 
     const featureArray = features.split(",").map((item) => item.trim());
@@ -718,6 +719,7 @@ const addSubscription = async (req, res) => {
       price,
       serviceCharge,
       features: featureArray,
+      walletLimit,
     });
 
     await newPlan.save();

@@ -288,7 +288,7 @@ async function handleReward(userId, baseFare, bookingId) {
     userId,
     amount: walletAmount,     // only the amount actually taken from wallet
     status: "Paid",
-    purpose: `Flight Booking - ${parsedFlight.flightNumber}` // optional detail
+    purpose: purpose: "Flight Booking" // optional detail
   });
 
   await walletTxn.save();

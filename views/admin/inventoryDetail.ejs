@@ -154,7 +154,11 @@
                                 <!-- Card footer -->
                                 <div class="card-footer pt-4">
                                     <ul class="list-inline bg-light rounded-2 d-sm-flex text-center justify-content-sm-between mb-0 px-4 py-2">
-
+                                        <%
+                                            refundableClass = flight.refundable ? 'text-success' : 'text-danger';
+                                            refundableText = flight.refundable ? 'Refundable' : 'Non-Refundable';
+                                        %>
+                                        <li class="list-inline-item <%= refundableClass %>"><%= refundableText %></li>
                                         <li class="list-inline-item text-dark">Checked baggage : <%= flight.baggage.adult.checkIn.weightPerPiece %> kg
                                         </li>
                                         <li class="list-inline-item text-dark">Carry-on baggage : <%= flight.baggage.adult.cabin.weightPerPiece %> Kg
@@ -280,9 +284,9 @@
                                                         <tr>
                                                             <th>No</th>
                                                             <th>Booking ID </th>
-                                                            <th>TITLE</th>
-                                                            <th>FIRST NAME</th>
-                                                            <th>LAST NAME</th>
+                                                            <th>Title</th>
+                                                            <th>First Name</th>
+                                                            <th>Last Name</th>
                                                             <th>Email </th>
                                                             <th>Mobile </th>
                                                             <th>Actions</th>
@@ -308,7 +312,7 @@
                                                                 <a href="/admin/booking-detail/<%= booking._id %>" class="btn btn-sm btn-outline-info mb-0 me-2"
                                                                     title="Booking Details"><i
                                                                         class="bi bi-eye-fill"></i></a>
-                                                                <button class="btn btn-sm btn-outline-dark mb-0 me-2"
+                                                                <!-- <button class="btn btn-sm btn-outline-dark mb-0 me-2"
                                                                     title="Ticket Details"><i
                                                                         class="bi bi-ticket-perforated-fill"></i></button>
                                                                 <button
@@ -317,7 +321,7 @@
                                                                         class="bi bi-credit-card"></i></button>
                                                                 <button class="btn btn-sm btn-outline-danger mb-0 me-2"
                                                                     title="Help & Support"><i
-                                                                        class="bi bi-life-preserver"></i></button>
+                                                                        class="bi bi-life-preserver"></i></button> -->
 
                                                             </td>
                                                         
@@ -420,7 +424,7 @@
 
                                                         <td scope="1"> <%= transaction.bookingId.bookingId %> </td>
                                                         <td><%= new Date(transaction.bookingId.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-') %></td>
-                                                        <%
+                                                        <!-- <%
                                                             let stopType;
                                                             const stops = flight.stops.length;
                                                             if(stops === 1){
@@ -432,9 +436,9 @@
                                                             else {
                                                                 stopType = stops + ' Stops';
                                                             }
-                                                        %>
+                                                        %> -->
                                                         <td>
-                                                            (<%= flight.inventoryDates[0].pnr %>): <%= flight.departureDate.toUpperCase() %> <%= flight.from %> <%= flight.to %> <%= flight.stops[0].airlineCode %>-<%= flight.stops[0].flightNumber %> <%= stopType %>
+                                                            (<%= flight.inventoryDates[0].pnr %>): <%= flight.departureDate.toUpperCase() %> <%= flight.from %> <%= flight.to %> <%= flight.stops[0].airlineCode %>-<%= flight.stops[0].flightNumber %>
                                                         </td>
                                                         <td>₹ <%= transaction.totalAmount %></td>
                                                         <td>₹ <%= transaction.discount %></td>
