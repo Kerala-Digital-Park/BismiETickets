@@ -422,8 +422,21 @@
 
                                                         <td scope="1"> <%= transaction.bookingId.bookingId %> </td>
                                                         <td><%= new Date(transaction.bookingId.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-') %></td>
+                                                        <%
+                                                            let stopType;
+                                                            const stops = flight.stops.length;
+                                                            if(stops === 1){
+                                                                stopType = 'Non Stop';
+                                                            }
+                                                            else if(stops === 2) {
+                                                                stopType = 1 + ' Stop';
+                                                            } 
+                                                            else {
+                                                                stopType = stops + ' Stops';
+                                                            }
+                                                        %>
                                                         <td>
-                                                            (<%= flight.inventoryDates[0].pnr %>): <%= flight.departureDate.toUpperCase() %> <%= flight.from %> <%= flight.to %> <%= flight.stops[0].airlineCode %>-<%= flight.stops[0].flightNumber %>
+                                                            (<%= flight.inventoryDates[0].pnr %>): <%= flight.departureDate.toUpperCase() %> <%= flight.from %> <%= flight.to %> <%= flight.stops[0].airlineCode %>-<%= flight.stops[0].flightNumber %> <%= stopType %>
                                                         </td>
                                                         <td>₹ <%= transaction.totalAmount %></td>
                                                         <td>₹ <%= transaction.discount %></td>

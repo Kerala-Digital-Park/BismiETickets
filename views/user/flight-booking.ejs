@@ -408,19 +408,15 @@ Main Content START -->
 											flightDetails: JSON.stringify(flightDetails),
 											walletAmount: walletConfirmed,
 										}),
-									})  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      window.location.href = data.redirectUrl; // ✅ use URL from backend
-    } else {
-      alert(data.message || "Wallet booking failed.");
-    }
-  })
-  .catch(err => {
-    alert("Error: " + err.message);
-  });
-  return;
-}
+									}).then(res => {
+										if (res.ok) window.location.href = "/bookings?success=true&walletOnly=1";
+										else alert("Wallet booking failed.");
+									}).catch(err => {
+      alert("Error: " + err.message);
+    });
+									return;
+								}
+
 								// detect active tab
 								const activeTab = document.querySelector("#paymentTabs .nav-link.active").getAttribute("href");
 								let paymentOption = "";
