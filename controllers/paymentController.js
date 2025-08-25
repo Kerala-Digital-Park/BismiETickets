@@ -188,7 +188,7 @@ exports.handleBookingResponse = async (req, res) => {
     if (!temp) return res.send("Invalid or expired token");
 
     const { bookingData, flightDetails, email, mobile_number, userId, walletAmount, paymentOption, extraCharge } = temp.data;
-
+    console.log(userId)
     const parsedBooking = JSON.parse(bookingData);
     const parsedFlight = JSON.parse(flightDetails);
 
@@ -288,7 +288,7 @@ async function handleReward(userId, baseFare, bookingId) {
     userId,
     amount: walletAmount,     // only the amount actually taken from wallet
     status: "Paid",
-    purpose: purpose: "Flight Booking" // optional detail
+    purpose: "Flight Booking" // optional detail
   });
 
   await walletTxn.save();
