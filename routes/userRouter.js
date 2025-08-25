@@ -158,6 +158,7 @@ userRouter.post("/service-request/:bookingId", isLogin, upload.array("file", 4),
 userRouter.post("/support-request/:bookingId", isLogin, upload.array("file", 4), userController.addSupportRequest);
 userRouter.post("/addon-request/:bookingId", isLogin, userController.addAddonRequest);
 userRouter.post("/book-with-wallet", isLogin, userController.bookWithWallet);
+userRouter.post('/update-notifications', isLogin, userController.updateNotificationSettings);
 
 
 userRouter.put("/update-listing", isLogin, userController.updateListingById);

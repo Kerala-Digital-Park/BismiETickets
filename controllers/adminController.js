@@ -3164,36 +3164,54 @@ const updateNotificationSettings = async (req, res) => {
   }
 };
 
-const blockInventory = async (req, res) => {
+// const blockInventory = async (req, res) => {
+//   const inventoryId = req.params.id;
+//   try {
+//     const flight = await Flight.findById(inventoryId);
+//     if (!flight) {
+//       return res.status(404).json({ success: false, message: "Flight not found" });
+//     }
+//     flight.isActive = false; // Set isActive to false to block the inventory
+//     flight.banned = true; // Set banned to true to block the inventory
+//     await flight.save();
+//     res.json({ success: true, message: "Inventory blocked successfully" });
+//   } catch (error) {
+//     console.error("Error blocking inventory:", error);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
+// const unblockInventory = async (req, res) => {
+//   const inventoryId = req.params.id;
+//   try { 
+//     const flight = await Flight.findById(inventoryId);
+//     if (!flight) {
+//       return res.status(404).json({ success: false, message: "Flight not found" });
+//     }
+//     flight.isActive = false; // Set isActive to false to block the inventory
+//     flight.banned = false; // Set banned to false to unblock the inventory
+//     await flight.save();
+//     res.json({ success: true, message: "Inventory unblocked successfully" });
+//   } catch (error) {
+//     console.error("Error unblocking inventory:", error);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
+const toggleInventory = async (req, res) => {
   const inventoryId = req.params.id;
   try {
     const flight = await Flight.findById(inventoryId);
     if (!flight) {
       return res.status(404).json({ success: false, message: "Flight not found" });
     }
-    flight.isActive = false; // Set isActive to false to block the inventory
-    flight.banned = true; // Set banned to true to block the inventory
+    // Toggle banned status and set isActive inversely
+    flight.banned = !flight.banned;
+    flight.isActive = !flight.banned; // Ensure isActive reflects the opposite of banned
     await flight.save();
-    res.json({ success: true, message: "Inventory blocked successfully" });
+    res.json({ success: true, message: `Inventory ${flight.banned ? 'blocked' : 'unblocked'} successfully` });
   } catch (error) {
-    console.error("Error blocking inventory:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
-  }
-};
-
-const unblockInventory = async (req, res) => {
-  const inventoryId = req.params.id;
-  try { 
-    const flight = await Flight.findById(inventoryId);
-    if (!flight) {
-      return res.status(404).json({ success: false, message: "Flight not found" });
-    }
-    flight.isActive = false; // Set isActive to false to block the inventory
-    flight.banned = false; // Set banned to false to unblock the inventory
-    await flight.save();
-    res.json({ success: true, message: "Inventory unblocked successfully" });
-  } catch (error) {
-    console.error("Error unblocking inventory:", error);
+    console.error("Error toggling inventory:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
@@ -3332,8 +3350,9 @@ module.exports = {
   suspendUser,
   signOutUserSession,
   updateNotificationSettings,
-  blockInventory,
-  unblockInventory,
+  // blockInventory,
+  // unblockInventory,
+  toggleInventory,
   viewActiveSessions,
   viewSigninImages,
   addSigninImage,
