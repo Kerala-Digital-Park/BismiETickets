@@ -800,6 +800,7 @@ const addSubscription = async (req, res) => {
       serviceCharge,
       features,
       walletLimit,
+      walletLimit,
     } = req.body;
 
     const featureArray = features.split(",").map((item) => item.trim());
@@ -811,7 +812,7 @@ const addSubscription = async (req, res) => {
       price,
       serviceCharge,
       features: featureArray,
-      walletLimit,
+      walletLimit
     });
 
     await newPlan.save();
@@ -2671,8 +2672,14 @@ const viewActiveInventory = async (req, res) => {
       : {};
 
     const filter = {
+    const filter = {
       ...searchQuery,
       isActive: true,
+      status: "pending", // applied everywhere consistently
+    };
+
+    // Step 1: Get paginated active flights
+    const activeFlights = await Flight.find(filter)
       status: "pending", // applied everywhere consistently
     };
 
@@ -2684,17 +2691,22 @@ const viewActiveInventory = async (req, res) => {
 
     // Step 2: Extract sellerIds
     const sellerIds = [...new Set(activeFlights.map(f => f.sellerId))];
+    const sellerIds = [...new Set(activeFlights.map(f => f.sellerId))];
 
     // Step 3: Get user details
     const sellers = await User.find({ _id: { $in: sellerIds } })
+      .select("userId name")
       .select("userId name")
       .lean();
 
     const sellerMap = sellers.reduce((acc, s) => {
       acc[s._id.toString()] = s;
+    const sellerMap = sellers.reduce((acc, s) => {
+      acc[s._id.toString()] = s;
       return acc;
     }, {});
 
+    // Step 4: Attach seller info
     // Step 4: Attach seller info
     activeFlights.forEach(flight => {
       flight.seller = sellerMap[flight.sellerId] || null;
@@ -2709,7 +2721,17 @@ const viewActiveInventory = async (req, res) => {
         Flight.countDocuments({ status: "completed" }),
         Flight.countDocuments(filter), // 👈 count matches paginated query
       ]);
+    // Step 5: Get counts properly
+    const [allFlights, activeCount, closedCount, pastCount, filteredCount] =
+      await Promise.all([
+        Flight.countDocuments(),
+        Flight.countDocuments({ isActive: true }),
+        Flight.countDocuments({ isActive: false }),
+        Flight.countDocuments({ status: "completed" }),
+        Flight.countDocuments(filter), // 👈 count matches paginated query
+      ]);
 
+    const totalPages = Math.ceil(filteredCount / limit);
     const totalPages = Math.ceil(filteredCount / limit);
 
     res.render("admin/active-inventory", {
@@ -2722,6 +2744,7 @@ const viewActiveInventory = async (req, res) => {
       totalPages,
       search,
       limit,
+      totalCount: filteredCount, // 👈 matches dataset
       totalCount: filteredCount, // 👈 matches dataset
     });
   } catch (error) {
@@ -2742,7 +2765,13 @@ const viewPastInventory = async (req, res) => {
       : {};
 
     const filter = {
+    const filter = {
       ...searchQuery,
+      status: "completed", // consistent filter for past inventory
+    };
+
+    // Step 1: Get paginated past flights
+    const pastFlightsList = await Flight.find(filter)
       status: "completed", // consistent filter for past inventory
     };
 
@@ -2754,9 +2783,11 @@ const viewPastInventory = async (req, res) => {
 
     // Step 2: Extract sellerIds
     const sellerIds = [...new Set(pastFlightsList.map(flight => flight.sellerId))];
+    const sellerIds = [...new Set(pastFlightsList.map(flight => flight.sellerId))];
 
     // Step 3: Get user details
     const sellers = await User.find({ _id: { $in: sellerIds } })
+      .select("userId name")
       .select("userId name")
       .lean();
 
@@ -2765,6 +2796,8 @@ const viewPastInventory = async (req, res) => {
       return acc;
     }, {});
 
+    // Step 4: Attach seller info
+    pastFlightsList.forEach(flight => {
     // Step 4: Attach seller info
     pastFlightsList.forEach(flight => {
       flight.seller = sellerMap[flight.sellerId] || null;
@@ -2779,10 +2812,20 @@ const viewPastInventory = async (req, res) => {
         Flight.countDocuments({ status: "completed" }),
         Flight.countDocuments(filter), // 👈 matches the paginated query
       ]);
+    const [allFlights, activeCount, closedCount, pastCount, filteredCount] =
+      await Promise.all([
+        Flight.countDocuments(),
+        Flight.countDocuments({ isActive: true }),
+        Flight.countDocuments({ isActive: false }),
+        Flight.countDocuments({ status: "completed" }),
+        Flight.countDocuments(filter), // 👈 matches the paginated query
+      ]);
 
+    const totalPages = Math.ceil(filteredCount / limit);
     const totalPages = Math.ceil(filteredCount / limit);
 
     res.render("admin/past-inventory", {
+      flights: pastFlightsList,
       flights: pastFlightsList,
       totalFlights: allFlights,
       activeFlights: activeCount,
@@ -2793,11 +2836,13 @@ const viewPastInventory = async (req, res) => {
       search,
       limit,
       totalCount: filteredCount, // 👈 matches dataset
+      totalCount: filteredCount, // 👈 matches dataset
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
+};
 };
 
 const viewClosedInventory = async (req, res) => {
@@ -2812,7 +2857,13 @@ const viewClosedInventory = async (req, res) => {
       : {};
 
     const filter = {
+    const filter = {
       ...searchQuery,
+      isActive: false, // closed flights
+    };
+
+    // Step 1: Get paginated closed flights
+    const closedFlightsList = await Flight.find(filter)
       isActive: false, // closed flights
     };
 
@@ -2824,9 +2875,11 @@ const viewClosedInventory = async (req, res) => {
 
     // Step 2: Extract sellerIds
     const sellerIds = [...new Set(closedFlightsList.map(flight => flight.sellerId))];
+    const sellerIds = [...new Set(closedFlightsList.map(flight => flight.sellerId))];
 
     // Step 3: Get user details
     const sellers = await User.find({ _id: { $in: sellerIds } })
+      .select("userId name")
       .select("userId name")
       .lean();
 
@@ -2835,6 +2888,8 @@ const viewClosedInventory = async (req, res) => {
       return acc;
     }, {});
 
+    // Step 4: Attach seller info
+    closedFlightsList.forEach(flight => {
     // Step 4: Attach seller info
     closedFlightsList.forEach(flight => {
       flight.seller = sellerMap[flight.sellerId] || null;
@@ -2849,10 +2904,20 @@ const viewClosedInventory = async (req, res) => {
         Flight.countDocuments({ status: "completed" }),
         Flight.countDocuments(filter), // 👈 matches the paginated query
       ]);
+    const [allFlights, activeCount, closedCount, pastCount, filteredCount] =
+      await Promise.all([
+        Flight.countDocuments(),
+        Flight.countDocuments({ isActive: true }),
+        Flight.countDocuments({ isActive: false }),
+        Flight.countDocuments({ status: "completed" }),
+        Flight.countDocuments(filter), // 👈 matches the paginated query
+      ]);
 
+    const totalPages = Math.ceil(filteredCount / limit);
     const totalPages = Math.ceil(filteredCount / limit);
 
     res.render("admin/closed-inventory", {
+      flights: closedFlightsList,
       flights: closedFlightsList,
       totalFlights: allFlights,
       activeFlights: activeCount,
@@ -2863,71 +2928,13 @@ const viewClosedInventory = async (req, res) => {
       search,
       limit,
       totalCount: filteredCount, // 👈 matches dataset
+      totalCount: filteredCount, // 👈 matches dataset
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
-// const viewInventoryDetail = async (req, res) => {
-//   const inventoryId = req.query.id;
-//   try {
-//     const flight = await Flight.findById(inventoryId);
-//     if (!flight) {
-//       return res.status(404).json({ success: false, message: "Flight not found" });
-//     } 
-//     const sellerId = flight.sellerId;
-//     const seller = await User.findById(sellerId);
-//     if (!seller) {
-//       return res.status(404).json({ success: false, message: "Seller not found" });
-//     }
-//     const bookings = await Booking.find({ flight: inventoryId });
-//     const bookingIds = bookings.map(b => b._id);
-//     const transactions = await Transaction.find({ bookingId: { $in: bookingIds } })
-//     .populate({
-//     path: "bookingId",
-//     populate: {
-//       path: "flight", 
-//       model: "Flights"
-//     }
-//     })
-//     .populate("userId");
-//     const requests = await Request.find({ bookingId: { $in: bookingIds } })
-//     .populate({
-//     path: "bookingId",
-//     populate: {
-//       path: "flight", 
-//       model: "Flights"
-//     }
-//     })
-//     .populate("userId");
-
-//     const stringBookingIds = bookings.map(b => b._id.toString());
-
-//     const userActivities = await UserActivity.find({ id: { $in: stringBookingIds } }).populate("user");
-
-//     // Now get booking details from Booking model using the userActivity ids
-// const activityBookingIds = userActivities.map(a => a.id); // still string array
-
-// const activityBookings = await Booking.find({ _id: { $in: activityBookingIds } }).lean();
-
-// // Create a map for easy lookup
-// const bookingMap = new Map(activityBookings.map(b => [b._id.toString(), b]));
-
-// // Attach booking to each activity
-// const enrichedUserActivities = userActivities.map(activity => {
-//   return {
-//     ...activity.toObject(),
-//     booking: bookingMap.get(activity.id),
-//   };
-// });
-//     res.render("admin/inventoryDetail", { flight, seller, bookings, transactions, requests, userActivities: enrichedUserActivities, moment });
-//   } catch (error) {
-//     console.error("Error fetching flight details:", error);
-//     return res.status(500).json({ success: false, message: "Internal Server Error" });
-//   }
-// }
 
 const viewInventoryDetail = async (req, res) => {
   const inventoryId = req.query.id;

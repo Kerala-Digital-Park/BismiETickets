@@ -31,6 +31,8 @@ const fs = require("fs");
 const ejs = require('ejs');
 const Rewards = require("../models/rewardModel");
 const puppeteer = require("puppeteer");
+const Rewards = require("../models/rewardModel");
+const puppeteer = require("puppeteer");
 const Razorpay = require("razorpay");
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
 
@@ -38,6 +40,26 @@ const razorpay = new Razorpay({
   key_id: RAZORPAY_ID_KEY,
   key_secret: RAZORPAY_SECRET_KEY,
 });
+
+async function generatePDF(templatePath, data) {
+  const html = await ejs.renderFile(templatePath, data);
+
+  const browser = await puppeteer.launch({
+    headless: "new", // or true if puppeteer > 20
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
+
+  const page = await browser.newPage();
+  await page.setContent(html, { waitUntil: 'networkidle0' });
+
+  const pdfBuffer = await page.pdf({
+    format: 'A4',
+    printBackground: true,
+  });
+
+  await browser.close();
+  return pdfBuffer;
+}
 
 async function generatePDF(templatePath, data) {
   const html = await ejs.renderFile(templatePath, data);
@@ -1543,7 +1565,7 @@ const viewWalletDetails = async (req, res) => {
 
     const walletLimit = subscription.walletLimit;
 
-            // ✅ Get latest reward expiry
+        // ✅ Get latest reward expiry
     const latestReward = await Rewards.findOne({ userId })
       .sort({ createdAt: -1 }); // latest by creation time
 
@@ -3597,6 +3619,13 @@ const bookWithWallet = async (req, res) => {
     console.log(parsedBooking, 'Parsed Booking');
     console.log(parsedFlight, 'Parsed Flight');
 
+    if(!parsedBooking || !parsedFlight){
+      return res.status(400).send("Invalid booking or flight data.");
+    }
+
+    console.log(parsedBooking, 'Parsed Booking');
+    console.log(parsedFlight, 'Parsed Flight');
+
     const userId = req.session.userId;
     const walletAmount = parseFloat(req.body.walletAmount || 0);
     const totalFare = parseFloat(parsedBooking.totalFare.replace(/[^0-9.]/g, ""));
@@ -3625,7 +3654,6 @@ const bookWithWallet = async (req, res) => {
     });
 
     await newBooking.save();
-
     console.log(newBooking,'New booking');
 
     await handleReward(userId, parsedBooking.baseFare, newBooking.bookingId);
@@ -3690,6 +3718,7 @@ const bookWithWallet = async (req, res) => {
 
     await walletTxn.save();
     console.log(walletTxn, "Wallet transaction");
+    console.log(walletTxn, "Wallet transaction");
 
     // Update seat booking in flight inventory
     const pnr = parsedFlight.inventoryDates[0].pnr;
@@ -3711,6 +3740,100 @@ const bookWithWallet = async (req, res) => {
 
     await newActivity.save();
 
+    // ✅ Requests
+    const requests = await Requests.find({
+      bookingId: newBooking._id,
+      category: "service"
+    }).sort({ createdAt: -1 });
+
+    // ✅ Layovers calculation
+    function computeLayovers(stops) {
+      const layovers = [];
+      for (let i = 0; i < stops.length - 1; i++) {
+        const currentStop = stops[i];
+        const nextStop = stops[i + 1];
+
+        const parseTime = (timeStr) => {
+          const [hours, minutes] = timeStr.replace(' hrs', '').trim().split(':').map(Number);
+          return { hours: hours || 0, minutes: minutes || 0 };
+        };
+
+        const arrDate = new Date(currentStop.arrivalDay);
+        const depDate = new Date(nextStop.departureDay);
+
+        const arrTime = parseTime(currentStop.arrivalTime);
+        const depTime = parseTime(nextStop.departureTime);
+
+        arrDate.setHours(arrTime.hours, arrTime.minutes, 0, 0);
+        depDate.setHours(depTime.hours, depTime.minutes, 0, 0);
+
+        const layoverMs = depDate - arrDate;
+        const mins = Math.floor(layoverMs / 60000);
+        const hrs = Math.floor(mins / 60);
+        const rem = mins % 60;
+
+        layovers.push({
+          index: i,
+          city: currentStop.arrivalCity,
+          duration: `${hrs.toString().padStart(2, '0')}h ${rem.toString().padStart(2, '0')}m`,
+        });
+      }
+      return layovers;
+    }
+    const layovers = computeLayovers(parsedFlight.stops || []);
+
+    // ✅ Generate Invoice PDF
+    const invoiceTemplatePath = path.join(__dirname, '../views/user/invoice.ejs');
+    const invoicePDF = await generatePDF(invoiceTemplatePath, {
+      invoiceNo: newBooking.bookingId,
+      issuedDate: new Date().toLocaleDateString('en-GB'),
+      booking: newBooking,
+      flight: parsedFlight,
+      transactions: walletTxn, // here walletTxn instead of gateway txn
+      travelers: parsedBooking.travelers,
+      totalAmount: totalFare,
+      baseFare: parsedBooking.baseFare.replace(/[^0-9.]/g, ""),
+      tax: parsedBooking.otherServices.replace(/[^0-9.]/g, ""),
+      discount: parsedBooking.discount.replace(/[^0-9.]/g, ""),
+      email: parsedBooking.email,
+    });
+
+    // ✅ Generate Booking Confirmation PDF
+    const stopsCount = parsedFlight.stops?.length || 0;
+    const templateFileName =
+      stopsCount <= 1
+        ? 'mail-oneWayBookingConfirmation.ejs'
+        : 'mail-connectingBookingConfirmation.ejs';
+
+    try {
+      const templatePath = path.join(__dirname, '../views/user/', templateFileName);
+      const pdfBuffer = await generatePDF(templatePath, {
+        travelers: parsedBooking.travelers,
+        flightDetails: parsedFlight,
+        totalFare,
+        baseFare: parsedBooking.baseFare.replace(/[^0-9.]/g, ""),
+        otherServices: parsedBooking.otherServices.replace(/[^0-9.]/g, ""),
+        discount: parsedBooking.discount.replace(/[^0-9.]/g, ""),
+        bookingId: newBooking.bookingId,
+        requests,
+        layovers,
+      });
+
+      await transporter.sendMail({
+        from: process.env.EMAIL,
+        to: parsedBooking.email,
+        subject: 'Your Flight Booking Confirmation',
+        text: 'Please find your flight confirmation attached as a PDF.',
+        attachments: [
+          { filename: 'BookingConfirmation.pdf', content: pdfBuffer, contentType: 'application/pdf' },
+          { filename: 'Invoice.pdf', content: invoicePDF, contentType: 'application/pdf' },
+        ],
+      });
+    } catch (emailErr) {
+      console.error('Error sending confirmation email:', emailErr);
+    }
+
+    return res.json({ success: true, redirectUrl: "/bookings?success=true&clearWallet=1" });
     // ✅ Requests
     const requests = await Requests.find({
       bookingId: newBooking._id,

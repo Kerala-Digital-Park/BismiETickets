@@ -417,11 +417,10 @@ Main Content START -->
     }
   })
   .catch(err => {
-      alert("Error: " + err.message);
-    });
-									return;
-								}
-
+    alert("Error: " + err.message);
+  });
+  return;
+}
 								// detect active tab
 								const activeTab = document.querySelector("#paymentTabs .nav-link.active").getAttribute("href");
 								let paymentOption = "";
