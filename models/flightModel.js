@@ -95,33 +95,11 @@ const flightSchema = mongoose.Schema({
   },
   isActive: { type: Boolean, default: true },
   banned: { type: Boolean, default: false },
+  saleStatus: { type: Boolean, default: true },
+  halfDaySale: { type: Boolean, default: false },
 },
 { timestamps: true }
 );
-
-// Add pre-save hook
-// flightSchema.pre("save", async function (next) {
-//   const flight = this;
-
-//   if (!flight.inventoryId) {
-//     try {
-//       const counter = await Counter.findOneAndUpdate(
-//         { name: "inventoryId" },
-//         { $inc: { seq: 1 } },
-//         { new: true, upsert: true }
-//       );
-
-//       const paddedSeq = String(counter.seq).padStart(5, "0");
-//       flight.inventoryId = `INV${paddedSeq}`;
-
-//       next();
-//     } catch (err) {
-//       return next(err);
-//     }
-//   } else {
-//     next();
-//   }
-// });
 
 // Pre-save hook to compute isActive
 flightSchema.pre("save", function (next) {

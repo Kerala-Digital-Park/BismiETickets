@@ -64,7 +64,7 @@
                                     <div class="d-flex justify-content-between align-items-center">
                                         <!-- Digit -->
                                         <div>
-                                            <h3 class="mb-0 fw-bold">₹ 2500</h3>
+                                            <h3 class="mb-0 fw-bold">₹ <%= user.walletBalance ? user.walletBalance.toLocaleString('en-IN') : 0 %></h3>
                                             <span class="mb-0 h6 fw-light">Wallet Balance</span>
                                         </div>
                                         <!-- Icon -->
@@ -192,9 +192,9 @@
                                     <div class="card-header border-bottom">
                                         <div class="d-sm-flex justify-content-between align-items-center">
                                             <h5 class="mb-0">Personal Information</h5>
-                                            <button class="btn btn-outline-info waves-effect waves-light "
+                                            <!-- <button class="btn btn-outline-info waves-effect waves-light "
                                                 title="KYC Details" data-bs-toggle="modal"
-                                                data-bs-target="#paxupdate"><i class="bi bi-pencil-square"></i></button>
+                                                data-bs-target="#paxupdate"><i class="bi bi-pencil-square"></i></button> -->
                                         </div>
                                     </div>
                                     <!-- Card body -->
@@ -1755,9 +1755,6 @@ switch (selectedRadio) {
                     });
                 });
             </script>
-
-<!-- Bootstrap JS and Popper.js -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     </main>
     <!-- **************** MAIN CONTENT END **************** -->

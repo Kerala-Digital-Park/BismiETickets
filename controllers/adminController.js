@@ -280,8 +280,38 @@ const viewUsers = async (req, res) => {
         bookingsMap[b._id.toString()] = b.totalBookings;
       });
 
+            // Last Login from SessionActivity
+      const lastLogins = await SessionActivity.aggregate([
+        { $match: { user: { $in: userIds } } },
+        { $sort: { loginTime: -1 } }, // sort newest first
+        {
+          $group: {
+            _id: "$user",
+            lastLogin: { $first: "$loginTime" },
+            lastIp: { $first: "$ip" },
+            lastBrowser: { $first: "$browser" },
+            lastPlatform: { $first: "$platform" },
+          }
+        }
+      ]);
+
+      const lastLoginMap = {};
+      lastLogins.forEach(l => {
+        lastLoginMap[l._id.toString()] = l;
+      });
+
       users.forEach(user => {
         user.totalBookings = bookingsMap[user._id.toString()] || 0;
+
+         const loginData = lastLoginMap[user._id.toString()];
+        if (loginData) {
+          user.lastLogin = loginData.lastLogin;
+          user.lastIp = loginData.lastIp;
+          user.lastBrowser = loginData.lastBrowser;
+          user.lastPlatform = loginData.lastPlatform;
+        } else {
+          user.lastLogin = null;
+        }
       });
 
       return {
@@ -322,47 +352,47 @@ const viewUsers = async (req, res) => {
   }
 };
 
-const viewUserDetail = async (req, res) => {
-  const userId = req.query.id;
-  try {
-    const user = await User.findById(userId).populate("subscription");
-    const bookings = await Booking.find({ userId })
-      .populate("flight")
-      .sort({ createdAt: -1 }); 
-    const transactions = await Transaction.find({ userId: userId}).populate({
-    path: "bookingId",
-    populate: {
-      path: "flight", 
-      model: "Flights",
-    },
-    }).populate("userId");
-    const profileUpdates = await ProfileUpdates.find({ userId: userId }).sort({ createdAt: -1 });
-    const kycUpdates = await KycUpdates.find({ userId: userId }).sort({ createdAt: -1 });
-    const approvals = [
-  ...profileUpdates.map(u => ({ ...u.toObject(), type: 'Profile Update' })),
-  ...kycUpdates.map(u => ({ ...u.toObject(), type: 'KYC Request' }))
-];
-    const loginActivities = await LoginActivity.find({ user: userId }).sort({ loginTime: -1 });
+// const viewUserDetail = async (req, res) => {
+//   const userId = req.query.id;
+//   try {
+//     const user = await User.findById(userId).populate("subscription");
+//     const bookings = await Booking.find({ userId })
+//       .populate("flight")
+//       .sort({ createdAt: -1 }); 
+//     const transactions = await Transaction.find({ userId: userId}).populate({
+//     path: "bookingId",
+//     populate: {
+//       path: "flight", 
+//       model: "Flights",
+//     },
+//     }).populate("userId");
+//     const profileUpdates = await ProfileUpdates.find({ userId: userId }).sort({ createdAt: -1 });
+//     const kycUpdates = await KycUpdates.find({ userId: userId }).sort({ createdAt: -1 });
+//     const approvals = [
+//   ...profileUpdates.map(u => ({ ...u.toObject(), type: 'Profile Update' })),
+//   ...kycUpdates.map(u => ({ ...u.toObject(), type: 'KYC Request' }))
+// ];
+//     const loginActivities = await LoginActivity.find({ user: userId }).sort({ loginTime: -1 });
        
-  const db = mongoose.connection.db;
-  const rawSessions = await db.collection('sessions').find({}).toArray();
+//   const db = mongoose.connection.db;
+//   const rawSessions = await db.collection('sessions').find({}).toArray();
 
-const userSessions = rawSessions.map(s => ({
-  _id: s._id,
-  expires: s.expires,
-  sessionData: JSON.parse(s.session),
-}))    
-.filter(s => {
-      const data = s.sessionData;
-      return data.userId === userId && !data.adminId; // only user-only sessions
-    });
+// const userSessions = rawSessions.map(s => ({
+//   _id: s._id,
+//   expires: s.expires,
+//   sessionData: JSON.parse(s.session),
+// }))    
+// .filter(s => {
+//       const data = s.sessionData;
+//       return data.userId === userId && !data.adminId; // only user-only sessions
+//     });
 
-    res.render("admin/userDetail", { user, bookings, loginActivities, sessions: userSessions, transactions, approvals });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal Server error" });
-  }
-};
+//     res.render("admin/userDetail", { user, bookings, loginActivities, sessions: userSessions, transactions, approvals });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ success: false, message: "Internal Server error" });
+//   }
+// };
 
 // const viewAgents = async (req, res) => {
 //   const search = req.query.search || "";
@@ -418,6 +448,57 @@ const userSessions = rawSessions.map(s => ({
 //     res.status(500).json({ success: false, message: "Internal Server error" });
 //   }
 // };
+const viewUserDetail = async (req, res) => {
+  const userId = req.query.id;
+  try {
+    const user = await User.findById(userId).populate("subscription");
+
+    const bookings = await Booking.find({ userId })
+      .populate("flight")
+      .sort({ createdAt: -1 });
+
+    const transactions = await Transaction.find({ userId })
+      .populate({
+        path: "bookingId",
+        populate: { path: "flight", model: "Flights" },
+      })
+      .populate("userId");
+
+    const profileUpdates = await ProfileUpdates.find({ userId }).sort({ createdAt: -1 });
+    const kycUpdates = await KycUpdates.find({ userId }).sort({ createdAt: -1 });
+
+    const approvals = [
+      ...profileUpdates.map(u => ({ ...u.toObject(), type: "Profile Update" })),
+      ...kycUpdates.map(u => ({ ...u.toObject(), type: "KYC Request" })),
+    ];
+
+    // Fetch login history
+    const loginActivities = await LoginActivity.find({ user: userId }).sort({ loginTime: -1 });
+
+    // Fetch active sessions for this user
+    const sessionActivities = await SessionActivity.find({ user: userId });
+
+    // Mark login activity as active/inactive
+    const loginActivitiesWithStatus = loginActivities.map(activity => {
+    const active = sessionActivities.some(
+      s => s.loginId && s.loginId.toString() === activity._id.toString()
+    );
+      return { ...activity.toObject(), active };
+    });
+
+    res.render("admin/userDetail", {
+      user,
+      bookings,
+      loginActivities: loginActivitiesWithStatus,
+      sessions: sessionActivities, // optional, if you want raw active sessions
+      transactions,
+      approvals,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
 
 const viewAgents = async (req, res) => {
   const search = req.query.search || "";
@@ -576,20 +657,31 @@ const viewAgentDetail = async (req, res) => {
 ];
     const loginActivities = await LoginActivity.find({ user: agentId }).sort({ loginTime: -1 });
        
-  const db = mongoose.connection.db;
-  const rawSessions = await db.collection('sessions').find({}).toArray();
+//   const db = mongoose.connection.db;
+//   const rawSessions = await db.collection('sessions').find({}).toArray();
 
-const userSessions = rawSessions.map(s => ({
-  _id: s._id,
-  expires: s.expires,
-  sessionData: JSON.parse(s.session),
-}))    
-.filter(s => {
-      const data = s.sessionData;
-      return data.userId === agentId && !data.adminId; // only user-only sessions
+// const userSessions = rawSessions.map(s => ({
+//   _id: s._id,
+//   expires: s.expires,
+//   sessionData: JSON.parse(s.session),
+// }))    
+// .filter(s => {
+//       const data = s.sessionData;
+//       return data.userId === agentId && !data.adminId; // only user-only sessions
+//     });
+
+// Fetch active sessions for this user
+    const sessionActivities = await SessionActivity.find({ user: agentId });
+
+    // Mark login activity as active/inactive
+    const loginActivitiesWithStatus = loginActivities.map(activity => {
+    const active = sessionActivities.some(
+      s => s.loginId && s.loginId.toString() === activity._id.toString()
+    );
+      return { ...activity.toObject(), active };
     });
 
-    res.render("admin/agentDetail", { agent, flights, bookings, loginActivities, sessions: userSessions, transactions, approvals, listingTransactions });
+    res.render("admin/agentDetail", { agent, flights, bookings, loginActivities: loginActivitiesWithStatus, sessions: sessionActivities, transactions, approvals, listingTransactions });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
@@ -1501,6 +1593,7 @@ const viewMessages = async (req, res) => {
 
     if (search) {
       matchQuery.$or = [
+        { enquiryId: { $regex: search, $options: "i" } }, 
         { "user.name": { $regex: search, $options: "i" } },
         { "user.userId": { $regex: search, $options: "i" } },
         { enquiryType: { $regex: search, $options: "i" } },
@@ -2777,64 +2870,132 @@ const viewClosedInventory = async (req, res) => {
   }
 };
 
+// const viewInventoryDetail = async (req, res) => {
+//   const inventoryId = req.query.id;
+//   try {
+//     const flight = await Flight.findById(inventoryId);
+//     if (!flight) {
+//       return res.status(404).json({ success: false, message: "Flight not found" });
+//     } 
+//     const sellerId = flight.sellerId;
+//     const seller = await User.findById(sellerId);
+//     if (!seller) {
+//       return res.status(404).json({ success: false, message: "Seller not found" });
+//     }
+//     const bookings = await Booking.find({ flight: inventoryId });
+//     const bookingIds = bookings.map(b => b._id);
+//     const transactions = await Transaction.find({ bookingId: { $in: bookingIds } })
+//     .populate({
+//     path: "bookingId",
+//     populate: {
+//       path: "flight", 
+//       model: "Flights"
+//     }
+//     })
+//     .populate("userId");
+//     const requests = await Request.find({ bookingId: { $in: bookingIds } })
+//     .populate({
+//     path: "bookingId",
+//     populate: {
+//       path: "flight", 
+//       model: "Flights"
+//     }
+//     })
+//     .populate("userId");
+
+//     const stringBookingIds = bookings.map(b => b._id.toString());
+
+//     const userActivities = await UserActivity.find({ id: { $in: stringBookingIds } }).populate("user");
+
+//     // Now get booking details from Booking model using the userActivity ids
+// const activityBookingIds = userActivities.map(a => a.id); // still string array
+
+// const activityBookings = await Booking.find({ _id: { $in: activityBookingIds } }).lean();
+
+// // Create a map for easy lookup
+// const bookingMap = new Map(activityBookings.map(b => [b._id.toString(), b]));
+
+// // Attach booking to each activity
+// const enrichedUserActivities = userActivities.map(activity => {
+//   return {
+//     ...activity.toObject(),
+//     booking: bookingMap.get(activity.id),
+//   };
+// });
+//     res.render("admin/inventoryDetail", { flight, seller, bookings, transactions, requests, userActivities: enrichedUserActivities, moment });
+//   } catch (error) {
+//     console.error("Error fetching flight details:", error);
+//     return res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// }
+
 const viewInventoryDetail = async (req, res) => {
   const inventoryId = req.query.id;
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+
   try {
     const flight = await Flight.findById(inventoryId);
-    if (!flight) {
-      return res.status(404).json({ success: false, message: "Flight not found" });
-    } 
-    const sellerId = flight.sellerId;
-    const seller = await User.findById(sellerId);
-    if (!seller) {
-      return res.status(404).json({ success: false, message: "Seller not found" });
-    }
-    const bookings = await Booking.find({ flight: inventoryId });
+    if (!flight) return res.status(404).json({ success: false, message: "Flight not found" });
+
+    const seller = await User.findById(flight.sellerId);
+    if (!seller) return res.status(404).json({ success: false, message: "Seller not found" });
+
+    // --- Bookings ---
+    const bookingCount = await Booking.countDocuments({ flight: inventoryId });
+    const bookings = await Booking.find({ flight: inventoryId })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
     const bookingIds = bookings.map(b => b._id);
+
+    // --- Transactions ---
+    const transactionCount = await Transaction.countDocuments({ bookingId: { $in: bookingIds } });
     const transactions = await Transaction.find({ bookingId: { $in: bookingIds } })
-    .populate({
-    path: "bookingId",
-    populate: {
-      path: "flight", 
-      model: "Flights"
-    }
-    })
-    .populate("userId");
+      .populate({ path: "bookingId", populate: { path: "flight", model: "Flights" } })
+      .populate("userId")
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    // --- Requests (Help Desk, not paginated for now) ---
     const requests = await Request.find({ bookingId: { $in: bookingIds } })
-    .populate({
-    path: "bookingId",
-    populate: {
-      path: "flight", 
-      model: "Flights"
-    }
-    })
-    .populate("userId");
+      .populate({ path: "bookingId", populate: { path: "flight", model: "Flights" } })
+      .populate("userId");
 
+    // --- Activities ---
     const stringBookingIds = bookings.map(b => b._id.toString());
+    const activityCount = await UserActivity.countDocuments({ id: { $in: stringBookingIds } });
+    const userActivities = await UserActivity.find({ id: { $in: stringBookingIds } })
+      .populate("user")
+      .skip((page - 1) * limit)
+      .limit(limit);
 
-    const userActivities = await UserActivity.find({ id: { $in: stringBookingIds } }).populate("user");
+    // attach booking
+    const activityBookingIds = userActivities.map(a => a.id);
+    const activityBookings = await Booking.find({ _id: { $in: activityBookingIds } }).lean();
+    const bookingMap = new Map(activityBookings.map(b => [b._id.toString(), b]));
+    const enrichedUserActivities = userActivities.map(activity => ({
+      ...activity.toObject(),
+      booking: bookingMap.get(activity.id),
+    }));
 
-    // Now get booking details from Booking model using the userActivity ids
-const activityBookingIds = userActivities.map(a => a.id); // still string array
-
-const activityBookings = await Booking.find({ _id: { $in: activityBookingIds } }).lean();
-
-// Create a map for easy lookup
-const bookingMap = new Map(activityBookings.map(b => [b._id.toString(), b]));
-
-// Attach booking to each activity
-const enrichedUserActivities = userActivities.map(activity => {
-  return {
-    ...activity.toObject(),
-    booking: bookingMap.get(activity.id),
-  };
-});
-    res.render("admin/inventoryDetail", { flight, seller, bookings, transactions, requests, userActivities: enrichedUserActivities, moment });
+    res.render("admin/inventoryDetail", {
+      flight,
+      seller,
+      bookings,
+      transactions,
+      requests,
+      userActivities: enrichedUserActivities,
+      bookingPagination: { total: bookingCount, page, limit },
+      transactionPagination: { total: transactionCount, page, limit },
+      activityPagination: { total: activityCount, page, limit },
+      moment
+    });
   } catch (error) {
     console.error("Error fetching flight details:", error);
     return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
-}
+};
 
 const viewProfileUpdates = async (req, res) => {
   const search = req.query.search || "";
@@ -3218,6 +3379,46 @@ const toggleInventory = async (req, res) => {
   }
 };
 
+const toggleSalesStatus = async (req, res) => {
+  const inventoryId = req.params.id;
+  console.log("Toggle sales status called", inventoryId);
+  const { saleStatus } = req.body;
+  try {
+    const flight = await Flight.findByIdAndUpdate(
+      inventoryId, 
+      { saleStatus: saleStatus },
+      { new: true }
+    );
+    if (!flight) {
+      return res.status(404).json({ success: false, message: "Flight not found" });
+    }
+    res.json({ success: true, saleStatus: flight.saleStatus });
+  } catch (error) {
+    console.error("Error updating Sales Status:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+const toggleHalfdaySale = async (req, res) => {
+  const inventoryId = req.params.id;
+  const { halfDaySale } = req.body;
+  try {
+    const flight = await Flight.findByIdAndUpdate(
+      inventoryId, 
+      { halfDaySale: halfDaySale },
+      { new: true }
+    );
+    if (!flight) {
+      return res.status(404).json({ success: false, message: "Flight not found" });
+    }
+
+    res.json({ success: true, halfDaySale: flight.halfDaySale });
+  } catch (error) {
+    console.error("Error updating Half-Day Sale:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
 const viewActiveSessions = async (req, res) => {
   try {
     const store = req.sessionStore;
@@ -3355,6 +3556,8 @@ module.exports = {
   // blockInventory,
   // unblockInventory,
   toggleInventory,
+  toggleSalesStatus,
+  toggleHalfdaySale,
   viewActiveSessions,
   viewSigninImages,
   addSigninImage,

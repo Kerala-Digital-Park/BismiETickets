@@ -275,7 +275,7 @@ async function handleReward(userId, baseFare, bookingId) {
         user: userId,
         id: newBooking._id.toString(),
         type: "booking",
-        content: `Booking made for flight ${parsedFlight.flightNumber} on ${newBooking.createdAt.toLocaleDateString()}`
+        content: `Booking made for flight ${parsedFlight.inventoryId} on ${newBooking.createdAt.toLocaleDateString()}`
       });
 
       await newActivity.save();

@@ -195,6 +195,14 @@
                 </div>
             </div> 
             <h6 class="text-primary text-center mt-5">Agent Pricing</h6>
+<%
+const iconMap = {
+  "Starter": "/assets/images/element/plan-s1.svg",
+  "Base": "/assets/images/element/plan-s2.svg",
+  "Pro": "/assets/images/element/plan-s2.svg",
+  "Enterprise": "/assets/images/element/plan-s3.svg",
+};
+%>
 <div class="row g-4 justify-content-center mt-1">
     <% subscriptions.forEach(plan => { 
         <!-- if (plan.type !== 'Agent') return; // If you separate agent plans by type in DB -->
@@ -226,7 +234,9 @@
                     </div>
                 </div>
                 <span class="icon-lg rounded-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="<%= plan.badge || '' %>">
-                    <img src="<%= plan.icon || '/assets/images/element/plan-s1.svg' %>" alt="<%= plan.subscription %> Icon" class="img-fluid" style="max-width: 100px;">
+                    <img src="<%= iconMap[plan.subscription] || '/assets/images/element/plan-s1.svg' %>"
+     alt="<%= plan.subscription %> Icon"
+     class="img-fluid" style="max-width: 100px;">
                 </span>
             </div>
 

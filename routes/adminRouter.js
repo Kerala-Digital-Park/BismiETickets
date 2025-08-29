@@ -73,6 +73,8 @@ adminRouter.post("/signin-images", upload.single("signinImage"), isLogin, adminC
 // adminRouter.post('/block-inventory/:id', isLogin, adminController.blockInventory);
 // adminRouter.post('/unblock-inventory/:id', isLogin, adminController.unblockInventory);
 adminRouter.post('/toggle-inventory/:id', isLogin, adminController.toggleInventory);
+adminRouter.post('/toggle-sales-status/:id', isLogin, adminController.toggleSalesStatus);
+adminRouter.post('/toggle-halfday-sale/:id', isLogin, adminController.toggleHalfdaySale);
 
 
 

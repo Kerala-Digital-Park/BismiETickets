@@ -425,11 +425,49 @@ const sendOtp = async (req, res) => {
   otpStore[email] = { otp, expiresAt };
 
   await transporter.sendMail({
-    from: `"BismiETickets" <${process.env.EMAIL}>`,
-    to: email,
-    subject: "Your OTP for Login",
-    html: `<p>Your OTP is <strong>${otp}</strong>. It is valid for 5 minutes.</p>`
-  });
+  from: `"BismiETickets" <${process.env.EMAIL}>`,
+  to: email,
+  subject: "🔐 Your One-Time Password (OTP) for Secure Login",
+  html: `
+  <div style="font-family: Arial, sans-serif; background:#f9f9f9; padding:20px;">
+    <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+      
+      <div style="background:#004aad; color:#ffffff; padding:16px; text-align:center;">
+        <h2 style="margin:0;">BismiETickets</h2>
+      </div>
+      
+      <div style="padding:24px; color:#333333;">
+        <p style="font-size:16px;">Hi <strong>${email}</strong>,</p>
+        
+        <p style="font-size:15px; line-height:1.6;">
+          We received a request to log in to your BismiETickets account.  
+          Please use the following <strong>One-Time Password (OTP)</strong> to complete your login:
+        </p>
+        
+        <div style="text-align:center; margin:30px 0;">
+          <span style="display:inline-block; font-size:24px; letter-spacing:4px; font-weight:bold; background:#f0f4ff; padding:12px 24px; border-radius:6px; color:#004aad; border:1px solid #d3d9ff;">
+            ${otp}
+          </span>
+        </div>
+        
+        <p style="font-size:14px; color:#555;">
+          ⚠️ This OTP will expire in <strong>5 minutes</strong>.  
+          If you did not request this, please ignore this email or secure your account.
+        </p>
+        
+        <p style="margin-top:32px; font-size:14px; color:#777;">
+          Thanks,<br>
+          <strong>The BismiETickets Team</strong>
+        </p>
+      </div>
+      
+      <div style="background:#f1f1f1; text-align:center; padding:12px; font-size:12px; color:#666;">
+        © ${new Date().getFullYear()} BismiETickets. All rights reserved.
+      </div>
+    </div>
+  </div>
+  `
+});
 
   res.json({ success: true, skipOtp: false });
 };
@@ -500,7 +538,7 @@ const signin = async (req, res) => {
     req.session.ip = ip;
     req.session.loginTime = new Date().toISOString();
 
-    await LoginActivity.create({
+    const loginRecord = await LoginActivity.create({
       user: user._id,
       ip,
       browser: `${agent.family} on ${agent.os.family}`,
@@ -509,11 +547,14 @@ const signin = async (req, res) => {
 
       await SessionActivity.create({
       user: user._id,
+      loginId: loginRecord._id,
       ip,
       browser: `${agent.family} on ${agent.os.family}`,
       platform,
       loginTime: new Date()
     });
+
+    req.session.loginId = loginRecord._id.toString();
 
     const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: "7d" });
     req.session.token = token;
@@ -1183,7 +1224,8 @@ const signup = async (req, res) => {
 // };
 
 const signOut = async (req, res) => {
-  await SessionActivity.deleteOne({ user: req.session.userId });
+  await SessionActivity.deleteOne({ loginId: req.session.loginId });
+
   try {
     req.session.destroy((err) => {
       if (err) {
@@ -1220,28 +1262,70 @@ const forgotPassword = async (req, res) => {
 
     const resetLink = `${process.env.BASE_URL}/reset-password?token=${token}`;
 
-    const mailOptions = {
-      from: `"Support Team" <${process.env.EMAIL}>`,
-      to: email,
-      subject: "Password Reset Request",
-      html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-          <h2 style="color: #333;">Password Reset Request</h2>
-          <p>Hello <strong>${user.email}</strong>,</p>
-          <p>We received a request to reset your password. Click the button below to set a new password:</p>
-          <p style="text-align: center;">
-            <a href="${resetLink}" 
-               style="background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">
-              Reset Your Password
-            </a>
-          </p>
-          <p>If you did not request a password reset, please ignore this email. This link will expire in <strong>10 minutes</strong>.</p>
-          <p>For security reasons, do not share this email or the reset link with anyone.</p>
-          <p>Best Regards,</p>
-          <p><strong>Bismi ETickets</strong></p>
+const mailOptions = {
+  from: `"BismiETickets Support" <${process.env.EMAIL}>`,
+  to: email,
+  subject: "🔑 Reset Your Password - BismiETickets",
+  html: `
+  <div style="font-family: Arial, sans-serif; background:#f9f9f9; padding:20px;">
+    <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+      
+      <!-- Header -->
+      <div style="background:#004aad; color:#ffffff; padding:16px; text-align:center;">
+        <h2 style="margin:0;">BismiETickets</h2>
+      </div>
+      
+      <!-- Body -->
+      <div style="padding:24px; color:#333333;">
+        <p style="font-size:16px;">Hi <strong>${user.email}</strong>,</p>
+        
+        <p style="font-size:15px; line-height:1.6;">
+          We received a request to reset your password.  
+          Please click the button below to securely set a new password:
+        </p>
+        
+        <!-- Button -->
+        <div style="text-align:center; margin:30px 0;">
+          <a href="${resetLink}" 
+             style="display:inline-block; font-size:16px; font-weight:bold; background:#004aad; color:#ffffff; padding:12px 24px; border-radius:6px; text-decoration:none; border:1px solid #003580;">
+            🔑 Reset Your Password
+          </a>
         </div>
-      `,
-    };
+        
+        <!-- Extra Info Section -->
+        <div style="background:#f9fbff; padding:16px; border-left:4px solid #004aad; margin-bottom:20px;">
+          <h3 style="margin-top:0; color:#004aad;">Important Information</h3>
+          <ul style="padding-left:20px; font-size:14px; color:#555; line-height:1.6;">
+            <li>This link will expire in <strong>10 minutes</strong>.</li>
+            <li>If you did not request this reset, your account is still safe — simply ignore this email.</li>
+           </ul>
+        </div>
+
+        <!-- Contact Support -->
+        <p style="font-size:14px; color:#555;">
+          Need help? You can reach our support team anytime:
+        </p>
+        <ul style="padding-left:20px; font-size:14px; color:#555;">
+          <li>Email: <a href="mailto:support@bismietickets.com">support@bismietickets.com</a></li>
+         
+        </ul>
+        
+        <!-- Closing -->
+        <p style="margin-top:32px; font-size:14px; color:#777;">
+          Thanks for using <strong>BismiETickets</strong>.<br>
+          Stay safe and secure! 🚀
+        </p>
+      </div>
+      
+      <!-- Footer -->
+      <div style="background:#f1f1f1; text-align:center; padding:12px; font-size:12px; color:#666;">
+        © ${new Date().getFullYear()} BismiETickets. All rights reserved. 
+       
+      </div>
+    </div>
+  </div>
+  `,
+};
 
     transporter.sendMail(mailOptions, (err, info) => {
       if (err)
@@ -1293,10 +1377,17 @@ const resetPassword = async (req, res) => {
     user.resetTokenExpiry = null;
     await user.save();
 
-    res.render("user/sign-in", {
-      message: "Password reset successful. Login here",
-      messageType: "success",
-    });
+    // const isTrustedDevice = req.cookies["trusted_device"] === "true";
+    // const signinImgDoc = await SigninImage.findOne();
+    // const signinImg = signinImgDoc ? signinImgDoc.image : null;
+
+    // res.render("user/sign-in", {
+    //   message: "Password reset successful. Login here",
+    //   messageType: "success",
+    //   isTrustedDevice,
+    //   signinImg,
+    // });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -2587,7 +2678,7 @@ const viewUserBookings = async (req, res) => {
   const userId = req.session.userId; // seller's user ID
   const search = req.query.search || '';
   const page = parseInt(req.query.page) || 1;
-  const limit = 4;
+  const limit = 10;
   const skip = (page - 1) * limit;
   const flightId = req.query.flightId; 
 
@@ -3615,7 +3706,7 @@ const bookWithWallet = async (req, res) => {
       user: userId,
       id: newBooking._id.toString(),
       type: "booking",
-      content: `Booking made for flight ${parsedFlight.flightNumber} (via Wallet) on ${newBooking.createdAt.toLocaleDateString()}`
+      content: `Booking made for flight ${parsedFlight.inventoryId} (via Wallet) on ${newBooking.createdAt.toLocaleDateString()}`
     });
 
     await newActivity.save();

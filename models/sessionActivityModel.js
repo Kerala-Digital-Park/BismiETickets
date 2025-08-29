@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const sessionActivitySchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "Users", required: true },
+  loginId: { type: mongoose.Schema.Types.ObjectId, ref: "LoginActivity", required: true },
   ip: { type: String },
   browser: { type: String },
   platform: { type: String },

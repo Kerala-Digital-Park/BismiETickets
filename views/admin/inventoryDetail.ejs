@@ -65,8 +65,13 @@
                                 </nav>
 
                             </div>
-                            <a href="#" class="btn btn-info-soft text-nowrap mb-0 me-2"
-                                title="airline website link"><i class="bi bi-airplane-fill"></i></a>
+<a href="https://www.google.com/search?q=<%= flight.stops[0].airlineCode %> airline" 
+   target="_blank" 
+   class="btn btn-info-soft text-nowrap mb-0 me-2" 
+   title="Search Airline">
+    <i class="bi bi-airplane-fill"></i>
+</a>
+
                             <a href="#" class="btn btn-primary-soft text-nowrap mb-0 me-2" title="Remainder"><i
                                     class="bi bi-bell"></i></a>
                             <!-- <a href="/admin/block-inventory/<%=flight._id%>" class="btn btn-danger-soft text-nowrap mb-0 me-2"
@@ -184,17 +189,17 @@
                             <%= seller.name %>
                         </div>
                         <div class="form-check form-switch form-check-md d-flex justify-content-between mb-3 me-3">
-                            <label class="form-check-label ps-0 pe-4" for="checkPrivacy1">Sales Status</label>
-                            <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy1" checked>
+                            <label class="form-check-label ps-0 pe-4" for="saleStatus">Sales Status</label>
+                            <input class="form-check-input flex-shrink-0" type="checkbox" id="saleStatus" data-id="<%= flight._id %>" <%= flight.saleStatus ? "checked" : "" %>>
                         </div>
                         <div class="form-check form-switch form-check-md d-flex justify-content-between mb-3 me-3">
-                            <label class="form-check-label ps-0 pe-4" for="checkPrivacy2">Enable 12 hrs before
+                            <label class="form-check-label ps-0 pe-4" for="halfDaySale" >Enable 12 hrs before
                                 departure</label>
-                            <input class="form-check-input flex-shrink-0" type="checkbox" id="checkPrivacy2">
+                            <input class="form-check-input flex-shrink-0" type="checkbox" id="halfDaySale" data-id="<%= flight._id %>" <%= flight.halfDaySale ? "checked" : "" %>>
                         </div>
                         <!-- Booking info -->
                         <div
-                            class="bg-light border border-secondary border-opacity-25 p-3 rounded d-inline-block mt-4">
+                            class="bg-light border border-secondary border-opacity-25 p-3 rounded d-inline-block">
                             <h6 class="small">Real Time Seats Information:</h6>
                             <!-- Avatar -->
                             <!-- Info -->
@@ -341,39 +346,23 @@
 
                                         <!-- Card footer START -->
                                         <div class="card-footer pt-1">
-                                            <!-- Pagination and content -->
-                                            <div class="d-sm-flex justify-content-sm-between align-items-sm-center">
-                                                <!-- Content -->
-                                                <p class="mb-sm-0 text-center text-sm-start">Showing 1 to 8 of 20
-                                                    entries
-                                                </p>
-                                                <!-- Pagination -->
-                                                <nav class="mb-sm-0 d-flex justify-content-center"
-                                                    aria-label="navigation">
-                                                    <ul class="pagination pagination-sm pagination-primary-soft mb-0">
-                                                        <li class="page-item disabled">
-                                                            <a class="page-link" href="#"
-                                                                tabindex="-1">Prev</a>
-                                                        </li>
-                                                        <li class="page-item"><a class="page-link"
-                                                                href="#">1</a>
-                                                        </li>
-                                                        <li class="page-item active"><a class="page-link"
-                                                                href="#">2</a>
-                                                        </li>
-                                                        <li class="page-item disabled"><a class="page-link"
-                                                                href="#">..</a>
-                                                        </li>
-                                                        <li class="page-item"><a class="page-link"
-                                                                href="#">15</a>
-                                                        </li>
-                                                        <li class="page-item">
-                                                            <a class="page-link" href="#">Next</a>
-                                                        </li>
-                                                    </ul>
-                                                </nav>
-                                            </div>
-                                        </div>
+  <div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+    <p class="mb-sm-0 text-center text-sm-start">
+      Showing <%= (bookingPagination.page - 1) * bookingPagination.limit + 1 %>
+      to <%= Math.min(bookingPagination.page * bookingPagination.limit, bookingPagination.total) %>
+      of <%= bookingPagination.total %> entries
+    </p>
+    <nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
+      <ul class="pagination pagination-sm pagination-primary-soft mb-0">
+        <% for(let i=1; i<=Math.ceil(bookingPagination.total / bookingPagination.limit); i++) { %>
+          <li class="page-item <%= bookingPagination.page === i ? 'active' : '' %>">
+            <a class="page-link" href="?id=<%= flight._id %>&page=<%= i %>#tab-2"><%= i %></a>
+          </li>
+        <% } %>
+      </ul>
+    </nav>
+  </div>
+</div>
                                         <!-- Card footer END -->
                                     </div>
                                 </div>
@@ -459,6 +448,28 @@
                                             </table>
                                             </div>
                                         </div>
+                                        <!-- Card body END -->
+
+                                        <!-- Card footer START -->
+                                        <div class="card-footer pt-1">
+  <div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+    <p class="mb-sm-0 text-center text-sm-start">
+      Showing <%= (transactionPagination.page - 1) * transactionPagination.limit + 1 %>
+      to <%= Math.min(transactionPagination.page * transactionPagination.limit, transactionPagination.total) %>
+      of <%= transactionPagination.total %> entries
+    </p>
+    <nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
+      <ul class="pagination pagination-sm pagination-primary-soft mb-0">
+        <% for(let i=1; i<=Math.ceil(transactionPagination.total / transactionPagination.limit); i++) { %>
+          <li class="page-item <%= transactionPagination.page === i ? 'active' : '' %>">
+            <a class="page-link" href="?id=<%= flight._id %>&page=<%= i %>#tab-2"><%= i %></a>
+          </li>
+        <% } %>
+      </ul>
+    </nav>
+  </div>
+</div>
+                                        <!-- Card footer END -->
                                     </div>
                                 </div>
                             </div>
@@ -520,7 +531,7 @@
                                                             const taxPercentage = Math.floor(((taxAmount / totalAmount) * 100).toFixed(2));
 
                                                         %>
-                                                        <td><%= taxPercentage %>% (<%= taxAmount %>)</td>
+                                                        <td><%= taxPercentage %>% (₹<%= taxAmount %>)</td>
                                                         <td><%= transaction.paymentStatus %></td>
                                                         <td>
                                                             <a href="/admin/booking-detail/<%= transaction.bookingId._id %>" class="btn btn-sm btn-outline-warning mb-0 me-2"
@@ -560,6 +571,28 @@
                                             
                                         </div>
                                         </div>
+                                        <!-- Card body END -->
+
+                                        <!-- Card footer START -->
+                                        <div class="card-footer pt-1">
+  <div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+    <p class="mb-sm-0 text-center text-sm-start">
+      Showing <%= (bookingPagination.page - 1) * bookingPagination.limit + 1 %>
+      to <%= Math.min(bookingPagination.page * bookingPagination.limit, bookingPagination.total) %>
+      of <%= bookingPagination.total %> entries
+    </p>
+    <nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
+      <ul class="pagination pagination-sm pagination-primary-soft mb-0">
+        <% for(let i=1; i<=Math.ceil(bookingPagination.total / bookingPagination.limit); i++) { %>
+          <li class="page-item <%= bookingPagination.page === i ? 'active' : '' %>">
+            <a class="page-link" href="?id=<%= flight._id %>&page=<%= i %>#tab-2"><%= i %></a>
+          </li>
+        <% } %>
+      </ul>
+    </nav>
+  </div>
+</div>
+                                        <!-- Card footer END -->
                                     </div>
                                 </div>
                             </div>
@@ -696,6 +729,27 @@
                                             </div>
                                         </div>
                                         <!-- Card body END -->
+
+                                        <!-- Card footer START -->
+                                        <div class="card-footer pt-1">
+  <div class="d-sm-flex justify-content-sm-between align-items-sm-center">
+    <p class="mb-sm-0 text-center text-sm-start">
+      Showing <%= (activityPagination.page - 1) * activityPagination.limit + 1 %>
+      to <%= Math.min
+    <nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
+(activityPagination.page * activityPagination.limit, activityPagination.total) %>
+      of <%= activityPagination.total %> entries
+    </p>      <ul class="pagination pagination-sm pagination-primary-soft mb-0">
+        <% for(let i=1; i<=Math.ceil(activityPagination.total / activityPagination.limit); i++) { %>
+          <li class="page-item <%= activityPagination.page === i ? 'active' : '' %>">
+            <a class="page-link" href="?id=<%= flight._id %>&page=<%= i %>#tab-2"><%= i %></a>
+          </li>
+        <% } %>
+      </ul>
+    </nav>
+  </div>
+</div>
+                                        <!-- Card footer END -->
                                     </div>
                                 </div>
                             </div>
@@ -821,6 +875,94 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   });
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const saleStatusToggle = document.getElementById("saleStatus");
+    const halfDaySaleToggle = document.getElementById("halfDaySale");
+    const id = saleStatusToggle.getAttribute('data-id');
+
+    // Toggle Sales Status
+    saleStatusToggle.addEventListener("change", async function () {
+        const isChecked = this.checked;
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `You are about to ${isChecked ? "enable" : "disable"} Sales Status.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, confirm',
+            cancelButtonText: 'Cancel'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/admin/toggle-sales-status/${id}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ saleStatus: isChecked })
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        Swal.fire("Updated!", "Sales Status updated successfully.", "success");
+                    } else {
+                        Swal.fire("Failed!", "Could not update Sales Status.", "error");
+                        this.checked = !isChecked; // rollback
+                    }
+                } catch (err) {
+                    console.error("Error:", err);
+                    Swal.fire("Error!", "Something went wrong!", "error");
+                    this.checked = !isChecked; // rollback
+                }
+            } else {
+                this.checked = !isChecked; // rollback if cancelled
+            }
+        });
+    });
+
+    // Toggle Half-Day Sale
+    halfDaySaleToggle.addEventListener("change", async function () {
+        const isChecked = this.checked;
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `You are about to ${isChecked ? "enable" : "disable"} Half-Day Sale.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, confirm',
+            cancelButtonText: 'Cancel'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/admin/toggle-halfday-sale/${id}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ halfDaySale: isChecked })
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        Swal.fire("Updated!", "Half-Day Sale updated successfully.", "success");
+                    } else {
+                        Swal.fire("Failed!", "Could not update Half-Day Sale.", "error");
+                        this.checked = !isChecked; // rollback
+                    }
+                } catch (err) {
+                    console.error("Error:", err);
+                    Swal.fire("Error!", "Something went wrong!", "error");
+                    this.checked = !isChecked; // rollback
+                }
+            } else {
+                this.checked = !isChecked; // rollback if cancelled
+            }
+        });
+    });
 });
 </script>
 
