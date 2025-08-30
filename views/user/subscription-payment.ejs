@@ -23,227 +23,82 @@
                                 </div>
                                 <!-- Offcanvas menu button END -->
 
-                                <div class="card shadow p-4">
-                                    <% if( subscription==="Pro" && role==="User" ) { %>
-                                        <div class="text-center mb-4">
-                                            <h2 class="fw-bold">Pro Plan</h2>
-                                            <p class="text-muted">Unlock Enhanced Features for Your Business</p>
-                                            <a href="/subscription" style="float: inline-end;"><i class="fa-solid fa-arrow-left me-2"></i>Change Plan</a>
-                                        </div>
-                                        <div class="row justify-content-center">
-                                            <div class="col-md-8">
-                                                <ul class="list-unstyled text-start mt-4">
-                                                    <li><i class="fas fa-check text-success me-2"></i> <strong>100 Bookings/Month</strong></li>
-                                                    <li><i class="fas fa-check text-success me-2"></i> <strong>20 Lakh Transactions</strong></li>
-                                                    <li><i class="fas fa-check text-success me-2"></i> All Free Plan Features</li>
-                                                    <li><i class="fas fa-check text-success me-2"></i> Exclusive Offers</li>
-                                                    <li><i class="fas fa-check text-success me-2"></i> Access Special Fares</li>
-                                                    <li><i class="fas fa-check text-success me-2"></i> Enhanced Support</li>
-                                                    <li><i class="fas fa-check text-success me-2"></i> Special Bids Opportunity</li>
-                                                    <li><i class="fas fa-shield-alt text-success me-2"></i> Full KYC Badge</li>
-                                                    <li><i class="fas fa-tools text-success me-2"></i> Booking Action Tools</li>
-                                                </ul>
-                                                <div class="text-center mt-4">
-                                                    <p class="mb-1"><strong class="fs-3 text-dark" id="amountPro">₹ 100</strong> / Month</p>
-                                                    <button class="btn btn-primary btn-lg w-50 mt-3" id="payNowBtn">Pay Now</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <% } else if( subscription==="Base" && role==="Agent" ) { %>
-                                        <div class="text-center mb-4">
-                                            <h2 class="fw-bold">Starter Plan</h2>
-                                            <p class="text-muted">Unlock Enhanced Features for Your Business</p>
-                                            <a href="/join-us" style="float: inline-end;"><i class="fa-solid fa-arrow-left me-2"></i>Change Plan</a>
-                                        </div>
-                                        <div class="row justify-content-center">
-                                            <div class="col-md-8">
-                                                <ul class="list-unstyled text-start mt-4">
-                                                    <li><i class="fas fa-check text-success me-2"></i> <strong>100 Bookings/Month</strong></li>
-                                                    <li><i class="fas fa-check text-success me-2"></i> <strong>20 Lakh Transactions</strong></li>
-                                                    <li><i class="fas fa-check text-success me-2"></i> All Free Plan Features</li>
-                                                    <li><i class="fas fa-check text-success me-2"></i> Exclusive Offers</li>
-                                                    <li><i class="fas fa-check text-success me-2"></i> Access Special Fares</li>
-                                                    <li><i class="fas fa-check text-success me-2"></i> Enhanced Support</li>
-                                                    <li><i class="fas fa-check text-success me-2"></i> Special Bids Opportunity</li>
-                                                    <li><i class="fas fa-shield-alt text-success me-2"></i> Full KYC Badge</li>
-                                                    <li><i class="fas fa-tools text-success me-2"></i> Booking Action Tools</li>
-                                                </ul>
-                                                <div class="text-center mt-4">
-                                                    <p class="mb-1"><strong class="fs-3 text-dark" id="amountStarter">₹ 100</strong> / Month</p>
-                                                    <button class="btn btn-primary btn-lg w-50 mt-3" id="payNowBtn">Pay Now</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <% } else if( subscription==="Enterprise" && role==="User" ) { %>
-                                        <div class="text-center mb-4">
-                                            <h2 class="fw-bold">Enterprise Plan</h2>
-                                            <p class="text-muted">Experience Unlimited Power for Your Business Growth</p>
-                                            <a href="/subscription" style="float: inline-end;"><i class="fa-solid fa-arrow-left me-2"></i>Change Plan</a>
-                                        </div>
-                                        <div class="row justify-content-center">
-                                            <div class="col-md-8">
-                                                <ul class="list-unstyled text-start mt-4">
-                                                    <li><i class="fas fa-check text-success me-2"></i> <strong>Unlimited Bookings</strong></li>
-                                                    <li><i class="fas fa-check text-success me-2"></i> <strong>Unlimited Transactions</strong></li>
-                                                    <li><i class="fas fa-check text-success me-2"></i> All Pro Plan Features</li>
-                                                    <li><i class="fas fa-check text-success me-2"></i> Special Fares</li>
-                                                    <li><i class="fas fa-check text-success me-2"></i> Milestone Rewards</li>
-                                                    <li><i class="fas fa-user-shield text-success me-2"></i> VIP Support</li>
-                                                    <li><i class="fas fa-percent text-success me-2"></i> Reduced Charges</li>
-                                                    <li><i class="fas fa-shield-alt text-success me-2"></i> Full KYC Badge</li>
-                                                    <li><i class="fas fa-money-bill-alt text-success me-2"></i> Reduced Booking Fees</li>
-                                                </ul>
-                                                <div class="text-center mt-4">
-                                                    <p class="mb-1"><strong class="fs-3 text-dark" id="amountEnterprise">₹ 1000</strong> / Month</p>
-                                                    <button class="btn btn-primary btn-lg w-50 mt-3" id="payNowBtn">Pay Now</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <% } else if( subscription==="Enterprise" && role==="Agent" ) { %>
-                                            <div class="text-center mb-4">
-                                                <h2 class="fw-bold">Enterprise Plan (Agent)</h2>
-                                                <p class="text-muted">Experience Unlimited Power for Your Business Growth</p>
-                                                <a href="/join-us" style="float: inline-end;"><i class="fa-solid fa-arrow-left me-2"></i>Change Plan</a>
-                                            </div>
-                                            <div class="row justify-content-center">
-                                                <div class="col-md-8">
-                                                    <ul class="list-unstyled text-start mt-4">
-                                                        <li><i class="fas fa-check text-success me-2"></i> <strong>Unlimited Bookings</strong></li>
-                                                        <li><i class="fas fa-check text-success me-2"></i> <strong>Unlimited Transactions</strong></li>
-                                                        <li><i class="fas fa-check text-success me-2"></i> All Pro Plan Features</li>
-                                                        <li><i class="fas fa-check text-success me-2"></i> Special Fares</li>
-                                                        <li><i class="fas fa-check text-success me-2"></i> Milestone Rewards</li>
-                                                        <li><i class="fas fa-user-shield text-success me-2"></i> VIP Support</li>
-                                                        <li><i class="fas fa-percent text-success me-2"></i> Reduced Charges</li>
-                                                        <li><i class="fas fa-shield-alt text-success me-2"></i> Full KYC Badge</li>
-                                                        <li><i class="fas fa-money-bill-alt text-success me-2"></i> Reduced Booking Fees</li>
-                                                    </ul>
-                                                    <div class="text-center mt-4">
-                                                        <p class="mb-1"><strong class="fs-3 text-dark" id="amountAgentEnterprise">₹ 1000</strong> / Month</p>
-                                                        <button class="btn btn-primary btn-lg w-50 mt-3" id="payNowBtn">Pay Now</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        <% } else { %>
-                                            <h2>Invalid Plan</h2>
-                                        <% } %>
-                                        
-                                </div>
+                                          <div class="card shadow p-4">
+            <div class="text-center mb-4">
+              <h4 class="fw-bold"><%= subscriptionDetails.subscription %> Plan (<%= subscriptionDetails.role %>)</h4>
+              <p class="text-muted">Unlock premium features tailored for your business</p>
+              <a href="<%= subscriptionDetails.role === 'User' ? '/subscription' : '/join-us' %>" 
+                 style="float: inline-end;">
+                <i class="fa-solid fa-arrow-left me-2"></i>Change Plan
+              </a>
+            </div>
 
-                            </div>
-                    </div>
-                    <!-- Main content END -->
+            <% 
+  let featureList = [];
+  if (Array.isArray(subscriptionDetails.features)) {
+    if (subscriptionDetails.features.length === 1) {
+      // If features is a single string with commas → split into array
+      featureList = subscriptionDetails.features[0].split(",");
+    } else {
+      featureList = subscriptionDetails.features;
+    }
+  }
+%>
 
+            <div class="row justify-content-center">
+              <div class="col-md-8">
+                <ul class="list-unstyled mb-0">
+    <% featureList.forEach(f => { 
+      const featureText = (f || '').trim(); 
+      const lowerText = featureText.toLowerCase(); 
+      const isNegative = lowerText.startsWith('no ') || lowerText.startsWith('limited');
+    %>
+      <li class="mb-2">
+        <i class="bi <%= isNegative ? 'bi-x-circle text-danger' : 'bi-check-circle text-success' %> me-2"></i>
+        <%= featureText %>
+      </li>
+    <% }) %>
+  </ul>
+
+                <div class="text-center mt-4">
+                  <p class="mb-1">
+                    <strong class="fs-3 text-dark">₹ <%= subscriptionDetails.price %></strong> / Month
+                  </p>
+                  <button class="btn btn-primary btn-lg w-50 mt-3" id="payNowBtn">Pay Now</button>
                 </div>
-                </div>
-            </section>
-            <!-- ======================= Content END -->
-        
-          <form id="hdfcSubscriptionForm" method="POST" action="/payment/initiate-subscription" style="display: none;">
-  <input type="hidden" name="email" />
-  <input type="hidden" name="price" />
-  <input type="hidden" name="subscription" />
-  <input type="hidden" name="role" />
-</form>
+              </div>
+            </div>
+          </div>
+        </div>
 
-<script>
-  document.getElementById("payNowBtn").addEventListener("click", function () {
-    const email = "<%= userDetails.email %>";
-    const subscription = "<%= subscription %>";
-    const role = "<%= role %>";
-    let amount = "100"; // Get from DOM like before
+      </div>
+    </div>
+  </section>
 
-    const form = document.getElementById("hdfcSubscriptionForm");
-    form.email.value = email;
-    form.price.value = amount.replace(/[^0-9.]/g, "");
-    form.subscription.value = subscription;
-    form.role.value = role;
-    form.submit();
-  });
-</script>
+  <!-- Hidden HDFC Payment Form -->
+  <form id="hdfcSubscriptionForm" method="POST" action="/payment/initiate-subscription" style="display: none;">
+    <input type="hidden" name="email" />
+    <input type="hidden" name="price" />
+    <input type="hidden" name="subscription" />
+    <input type="hidden" name="role" />
+  </form>
 
+  <script>
+    document.getElementById("payNowBtn").addEventListener("click", function () {
+      const email = "<%= userDetails.email %>";
+      const subscription = "<%= subscriptionDetails.subscription %>";
+      const role = "<%= subscriptionDetails.role %>";
+      const amount = "<%= subscriptionDetails.price %>";
 
-
-<!-- <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-<script>
-        document.addEventListener("DOMContentLoaded", function () {
-	document.getElementById("payNowBtn").addEventListener("click", function () {
-        const userEmail = "<%= userDetails.email %>";
-        const userSubscription = "<%= subscription %>";
-        const role = "<%= role %>";
-
-        let amount; // Declare amount outside if/else
-
-            if (userSubscription === "Pro" && role === "User") {    
-                amount = document.getElementById("amountPro").innerText;
-            } else if(userSubscription === "Enterprise" && role === "User") {
-                amount = document.getElementById("amountEnterprise").innerText;
-            } else if(userSubscription === "Starter" && role === "Agent") {
-                amount = document.getElementById("amountStarter").innerText;
-            } else if(userSubscription === "Enterprise" && role === "Agent") {
-                amount = document.getElementById("amountAgentEnterprise").innerText;
-            } else {
-                console.error("Invalid subscription type");
-                return; 
-            }
-   
-    // Convert totalFare to paise (Razorpay uses INR in paise)
-    const amountInPaise = parseFloat(amount.replace(/[^0-9.]/g, "")) * 100;
-    console.log(amountInPaise);
-
-		// Razorpay Options
-		var options = {
-			"key": "rzp_test_1ziG9HjgAv6f6j",  // Replace with your Razorpay API Key
-			"amount": amountInPaise,  // Amount in paise (₹1000 = 100000 paise)
-			"currency": "INR",
-			"name": "Bismi",
-			"description": "UPI Payment",
-			"image": "https://your-logo-url.com/logo.png",  
-			"prefill": {
-				"email": userEmail,
-			},
-			"handler": function (response) {
-                    const paymentDetails = {
-                        razorpay_payment_id: response.razorpay_payment_id,
-                        email: userEmail,
-                        price: amountInPaise / 100,
-                        subscription: userSubscription,
-                        role: role,
-                    };
-
-                    // Send data to backend via POST request
-                    fetch("/subscription-payment", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(paymentDetails)
-                    })
-                        .then(res => res.json())
-                        .then(data => {
-                            console.log("Server Response:", data);
-                            Swal.fire({
-        icon: 'success',
-        title: 'Purchase Confirmed!',
-        text: 'Redirecting to your profile...',
-        confirmButtonText: 'OK'
-    }).then(() => {
-        window.location.href = "/profile";
+      const form = document.getElementById("hdfcSubscriptionForm");
+      form.email.value = email;
+      form.price.value = amount;
+      form.subscription.value = subscription;
+      form.role.value = role;
+      form.submit();
     });
-                        })
-                        .catch(error => console.error("Error:", error));
-        },
-			"theme": {
-				"color": "#3399cc"
-			}
-		};
-	
-		var razorpayInstance = new Razorpay(options);
-		razorpayInstance.open();
-	});
-
-});
-</script> -->
-        </main>
+  </script>
+</main>
         <!-- **************** MAIN CONTENT END **************** -->
 
         <%- include('./partials/footer') %>

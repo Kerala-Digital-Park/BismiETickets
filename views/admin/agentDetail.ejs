@@ -1071,7 +1071,9 @@
           }) %>
         </p>
         <p class="mb-2">Selecting "Sign out" will sign out this session. This can take up to 10 minutes.</p>
-        <button class="btn btn-sm btn-danger mb-0">Sign Out</button>
+        <button class="btn btn-sm btn-danger signout-user-session" data-session-id="<%= session._id %>">
+    <i class="fas fa-sign-out-alt me-1"></i> Sign Out
+</button>
       </form>
     <% }) %>
   <% } else { %>
@@ -2195,6 +2197,80 @@ switch (selectedRadio) {
       });
     });
   });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Select all sign-out buttons
+        const signOutButtons = document.querySelectorAll(".signout-user-session");
+
+        signOutButtons.forEach(btn => {
+            btn.addEventListener("click", async (e) => {
+                e.preventDefault();
+                const sessionId = e.currentTarget.dataset.sessionId;
+
+                if (!sessionId) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "Session ID not found.",
+                        confirmButtonText: "OK"
+                    });
+                    return;
+                }
+
+                // Show SweetAlert confirmation
+                const result = await Swal.fire({
+                    title: "Are you sure?",
+                    text: "This will sign out the user from this session!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, sign them out!"
+                });
+
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch("/admin/sessions/signout-user", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ sessionId: sessionId }),
+                        });
+
+                        const responseData = await response.json();
+
+                        if (responseData.success) {
+                            await Swal.fire({
+                                icon: "success",
+                                title: "Signed Out!",
+                                text: responseData.message,
+                                confirmButtonText: "OK"
+                            });
+                            window.location.reload(); // Reload the page to update the UI
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Failed!",
+                                text: responseData.message || "Failed to sign out user.",
+                                confirmButtonText: "OK"
+                            });
+                        }
+                    } catch (error) {
+                        console.error("Error signing out session:", error);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: "An error occurred while signing out the user session.",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                }
+            });
+        });
+    });
 </script>
 
     </main>

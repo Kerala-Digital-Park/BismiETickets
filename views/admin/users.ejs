@@ -35,8 +35,8 @@
 											<i class="fas fa-search fs-6"></i>
 										</button>
 									</form>
-									<a href="#" class="btn btn-dark-soft text-nowrap mb-0 me-2" title="Reminder"><i
-											class="bi bi-bell"></i></a>
+									<!-- <a href="#" class="btn btn-dark-soft text-nowrap mb-0 me-2" title="Reminder"><i
+											class="bi bi-bell"></i></a> -->
 								</div>
 							</div>
 						</div>
@@ -351,7 +351,7 @@
 																		</div>
 																	</td>
 																	<td>
-																		<h5 class="mb-0 fw-3">₹ 26000</h5>
+																		<h5 class="mb-0 fw-3">₹ <%=user.walletBalance ? user.walletBalance.toLocaleString('en-IN') : 0%></h5>
 																	</td>
 																	<% let kycClass; if(user.kyc==="Completed" ){
 																		kycClass="text-success" ; } else
@@ -396,8 +396,16 @@
 																						<%= user.totalBookings %>
 																							<%= booking%>
 																					</h6>
-																					<h6 class="mb-0 fw-normal">Last
-																						Login: 12 Jun 2025</h6>
+																					<h6 class="mb-0 fw-normal">
+  Last Login: 
+  <% if (user.lastLogin) { %>
+    <%= new Date(user.lastLogin).toLocaleDateString("en-US", {
+         day: "2-digit", month: "short", year: "numeric"
+       }) %>
+  <% } else { %>
+    Never Logged In
+  <% } %>
+</h6>
 																				</div>
 																			</td>
 																			<td> <span class="text-warning">
@@ -405,13 +413,12 @@
 																					</span>
 																				</td>
 																				<!-- Button -->
-																				<td> <a href="#"
-																						class="btn btn-sm btn-info flex-shrink-0 mb-0 ms-3 view-user-btn"
-																						data-user='<%= JSON.stringify(user) %>'
-																						data-bs-toggle="tooltip"
-																						data-bs-placement="top"><i
-																							class="bi bi-eye"></i>
-																						View</a>
+																				<td> 
+																					<a href="/admin/user-detail?id=<%= user._id %>"
+																						class="btn btn-sm btn-info flex-shrink-0 mb-0 ms-3">
+																						<i class="bi bi-eye"></i> View
+																						
+																					</a>
 
 																					<a href="#"
 																						class="btn btn-sm btn-primary  small mb-0"
@@ -430,10 +437,11 @@
 																						    <i class="bi bi-ban text-danger fa-fw me-2"></i>Suspend
  																						 </a>
 																						</li>
-																						<li><a class="dropdown-item"
-																								href="#"><i
-																									class="bi bi-file-zip-fill text-success fa-fw me-2"></i>
-																								Kyc Details</a></li>
+																						<li>
+																							<a href="#" class="dropdown-item view-user-btn" data-user='<%= JSON.stringify(user) %>'>
+																								<i class="bi bi-file-zip-fill text-success fa-fw me-2"></i> KYC Details
+																							</a>
+																						</li>
 																					</ul>
 
 																				</td>
@@ -560,7 +568,7 @@
 																		</div>
 																	</td>
 																	<td>
-																		<h5 class="mb-0 fw-3">₹ 26000</h5>
+																		<h5 class="mb-0 fw-3">₹ <%=user.walletBalance ? user.walletBalance.toLocaleString('en-IN') : 0%></h5>
 																	</td>
 																	<% let kycClass; if(user.kyc==="Completed" ){
 																		kycClass="text-success" ; } else
@@ -605,8 +613,16 @@
 																						<%= user.totalBookings %>
 																							<%= booking%>
 																					</h6>
-																					<h6 class="mb-0 fw-normal">Last
-																						Login: 12 Jun 2025</h6>
+																					<h6 class="mb-0 fw-normal">
+  Last Login: 
+  <% if (user.lastLogin) { %>
+    <%= new Date(user.lastLogin).toLocaleDateString("en-US", {
+         day: "2-digit", month: "short", year: "numeric"
+       }) %>
+  <% } else { %>
+    Never Logged In
+  <% } %>
+</h6>
 																				</div>
 																			</td>
 																			<td> <span class="text-danger">
@@ -614,13 +630,12 @@
 																					</span>
 																				</td>
 																				<!-- Button -->
-																				<td> <a href="#"
-																						class="btn btn-sm btn-info flex-shrink-0 mb-0 ms-3 view-user-btn"
-																						data-user='<%= JSON.stringify(user) %>'
-																						data-bs-toggle="tooltip"
-																						data-bs-placement="top"><i
-																							class="bi bi-eye"></i>
-																						View</a>
+																				<td> 
+																					<a href="/admin/user-detail?id=<%= user._id %>"
+																						class="btn btn-sm btn-info flex-shrink-0 mb-0 ms-3">
+																						<i class="bi bi-eye"></i> View
+																						
+																					</a>
 
 																					<a href="#"
 																						class="btn btn-sm btn-primary  small mb-0"
@@ -639,10 +654,11 @@
 																						    <i class="bi bi-ban text-danger fa-fw me-2"></i>Suspend
  																						 </a>
 																						</li>
-																						<li><a class="dropdown-item"
-																								href="#"><i
-																									class="bi bi-file-zip-fill text-success fa-fw me-2"></i>
-																								Kyc Details</a></li>
+																						<li>
+																							<a href="#" class="dropdown-item view-user-btn" data-user='<%= JSON.stringify(user) %>'>
+																								<i class="bi bi-file-zip-fill text-success fa-fw me-2"></i> KYC Details
+																							</a>
+																						</li>
 																					</ul>
 
 																				</td>

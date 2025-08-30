@@ -170,110 +170,6 @@ const iconMap = {
 </script>
 
         <script>
-//             async function freeCheckout() {
-//                 const subscription = "Starter";
-//                 try {
-//                     const response = await fetch("/subscription",
-//                         {
-//                             method: "POST",
-//                             headers: { "Content-Type": "application/json" },
-//                             body: JSON.stringify({ subscription })
-//                         });
-
-//                     if (!response.ok) {
-//       await Swal.fire({
-//         icon: 'error',
-//         title: 'Failed',
-//         text: 'Failed to fetch subscription details'
-//       });         
-//                      return;
-//                     }
-
-//                     const data = await response.json();
-//                     if (data.message) {
-// await Swal.fire({
-//         icon: 'info',
-//         title: 'Notice',
-//         text: data.message
-//       });
-//                         }
-//                     window.location.href = data.redirectUrl;
-//                 } catch (error) {
-//                     window.location.href = "/sign-in";
-//                     console.error("Error:", error);
-//                 }
-//             }
-
-//             async function proCheckout() {
-//                 const subscription = "Pro";
-//                 try {
-//                     const response = await fetch("/subscription",
-//                         {
-//                             method: "POST",
-//                             headers: { "Content-Type": "application/json" },
-//                             body: JSON.stringify({ subscription })
-//                         });
-
-//                     if (!response.ok) {
-//       await Swal.fire({
-//         icon: 'error',
-//         title: 'Failed',
-//         text: 'Failed to fetch subscription details'
-//       });
-//                               return;
-//                     }
-
-//                     const data = await response.json();
-//                     if (data.message) {
-// await Swal.fire({
-//         icon: 'info',
-//         title: 'Notice',
-//         text: data.message
-//       });
-//                         }
-//                     window.location.href = data.redirectUrl;
-
-//                 } catch (error) {
-//                     console.error("Error:", error);
-//                     window.location.href = "/sign-in";
-//                 }
-//             }
-
-//             async function enterpriseCheckout() {
-//                 const subscription = "Enterprise";
-//                 try {
-//                     const response = await fetch("/subscription",
-//                         {
-//                             method: "POST",
-//                             headers: { "Content-Type": "application/json" },
-//                             body: JSON.stringify({ subscription })
-//                         });
-
-//                     if (!response.ok) {
-//       await Swal.fire({
-//         icon: 'error',
-//         title: 'Failed',
-//         text: 'Failed to fetch subscription details'
-//       });
-//                               return;
-//                     }
-
-//                     const data = await response.json();
-//                     if (data.message) {
-// await Swal.fire({
-//         icon: 'info',
-//         title: 'Notice',
-//         text: data.message
-//       });
-//                         }
-//                     window.location.href = data.redirectUrl;
-
-//                 } catch (error) {
-//                     console.error("Error:", error);
-//                     window.location.href = "/sign-in";
-//                 }
-//             }
-
             async function freeDowngrade() {
                 const subscription = "Starter";
   const confirm = await Swal.fire({
@@ -306,8 +202,8 @@ await Swal.fire({
                     const data = await response.json();
                     if (data.message) {
       await Swal.fire({
-        icon: 'info',
-        title: 'Notice',
+        icon: 'success',
+        title: 'Success',
         text: data.message
       });                    }
                     window.location.href = data.redirectUrl;

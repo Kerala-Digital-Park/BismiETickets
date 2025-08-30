@@ -31,8 +31,6 @@ const fs = require("fs");
 const ejs = require('ejs');
 const Rewards = require("../models/rewardModel");
 const puppeteer = require("puppeteer");
-const Rewards = require("../models/rewardModel");
-const puppeteer = require("puppeteer");
 const Razorpay = require("razorpay");
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
 
@@ -417,11 +415,14 @@ const viewSignin = async (req, res) => {
     const signinImgDoc = await SigninImage.findOne();
     const signinImg = signinImgDoc.image;
 
+    const reset = req.query.reset || "";
+
     res.render("user/sign-in", {
       message: "",
       messageType: "",
       isTrustedDevice,
-      signinImg
+      signinImg,
+      reset
     });
   } catch (error) {
     console.error(error);
@@ -1077,7 +1078,14 @@ const viewManageBooking = async (req, res) => {
   try {
     const bookings = await Bookings.findById(bookingId).populate("userId").populate("flight");
     const requests = await Requests.find({ bookingId: bookingId });
-    res.render("user/manage-booking", { requestDetails: "" , bookings, requests, success: req.query.success, error: req.query.error });
+    res.render("user/manage-booking", { 
+      requestDetails: "" , 
+      bookings, 
+      requests, 
+      success: req.query.success || null, 
+      error: req.query.error || null,
+      payment: req.query.payment || null,
+   });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -1399,16 +1407,7 @@ const resetPassword = async (req, res) => {
     user.resetTokenExpiry = null;
     await user.save();
 
-    // const isTrustedDevice = req.cookies["trusted_device"] === "true";
-    // const signinImgDoc = await SigninImage.findOne();
-    // const signinImg = signinImgDoc ? signinImgDoc.image : null;
-
-    // res.render("user/sign-in", {
-    //   message: "Password reset successful. Login here",
-    //   messageType: "success",
-    //   isTrustedDevice,
-    //   signinImg,
-    // });
+    res.redirect("/sign-in?reset=success");
 
   } catch (error) {
     console.error(error);
@@ -2153,7 +2152,20 @@ const viewSubscriptionPayment = async (req, res) => {
   const userId = req.session.userId;
   try {
     const userDetails = await Users.findById(userId);
-    res.render("user/subscription-payment", { userDetails, subscription, role });
+    const subscriptionDetails = await Subscriptions.findOne({
+      subscription: subscription,
+      role: role,
+      status: "Reactivate" 
+    });
+
+    if (!subscriptionDetails) {
+      return res.render("error", { error: "Subscription not found or inactive" });
+    }
+
+    res.render("user/subscription-payment", { 
+      userDetails, 
+      subscriptionDetails
+    });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
@@ -2282,7 +2294,7 @@ const freeSubscription = async (req, res) => {
 
 const viewPricing = async (req, res) => {
   try {
-    const subscriptions = await Subscriptions.find({role:"User", subscription: { $ne: "Null" }})
+    const subscriptions = await Subscriptions.find({role:"User", subscription: { $ne: "Null" }, status: "Reactivate" })
     res.render("user/pricing", {subscriptions});
   } catch (error) {
     console.error(error);
@@ -2362,26 +2374,29 @@ const freeRenewal = async (req, res) => {
   const userId = req.session.userId;
   const { subscription } = req.body;
   try {
-    const user = await Users.findById(userId);
-    const today = new Date();
-    let transactions = 0;
-    let transactionAmount = 0;
-    const startDate = new Date(today);
-    startDate.setDate(startDate.getDate() + 30);
-    const newExpiryDate = startDate.toISOString().split("T")[0];
-    const balanceTransactions =
-      user.subscription.transactionLimit - user.subscription.transactions;
-    transactions = -balanceTransactions;
-    const balanceTransactionAmount =
-      user.subscription.maxTransactionAmount -
-      user.subscription.transactionAmount;
-    transactionAmount = -balanceTransactionAmount;
+    const user = await Users.findById(userId).populate("subscription");
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
 
-    user.subscription.subscription = subscription;
-    user.subscription.expiryDate = newExpiryDate;
-    user.subscription.transactionAmount = 0;
-    user.subscription.transactions = transactions;
-    user.subscription.transactionAmount = transactionAmount;
+    // Fetch the new subscription plan by name
+    const newPlan = await Subscriptions.findOne({ subscription });
+    if (!newPlan) {
+      return res.status(404).json({ success: false, message: "Subscription plan not found" });
+    }
+
+    const today = new Date();
+    const newExpiryDate = new Date(today);
+    newExpiryDate.setDate(newExpiryDate.getDate() + 30);
+
+    // Reset transactions
+    user.transactions = 0;
+    user.transactionAmount = 0;
+
+    user.subscription = newPlan._id;
+    user.expiryDate = newExpiryDate;
+    user.subscriptionDate = today;
+
     await user.save();
 
     res.json({ success: true, message: "Subscription renewed successfully.", redirectUrl: "/manage-subscription", });
@@ -2688,7 +2703,7 @@ const searchAirlines = async (req, res) => {
 
 const viewJoinUs = async (req, res) => {
   try {
-    const subscriptions = await Subscriptions.find({role:"Agent", subscription: { $ne: "Null" }})
+    const subscriptions = await Subscriptions.find({role:"Agent", subscription: { $ne: "Null" }, status: "Reactivate" })
     res.render("user/join-us", {subscriptions});
   } catch (error) {
     console.log(error);
@@ -3619,13 +3634,6 @@ const bookWithWallet = async (req, res) => {
     console.log(parsedBooking, 'Parsed Booking');
     console.log(parsedFlight, 'Parsed Flight');
 
-    if(!parsedBooking || !parsedFlight){
-      return res.status(400).send("Invalid booking or flight data.");
-    }
-
-    console.log(parsedBooking, 'Parsed Booking');
-    console.log(parsedFlight, 'Parsed Flight');
-
     const userId = req.session.userId;
     const walletAmount = parseFloat(req.body.walletAmount || 0);
     const totalFare = parseFloat(parsedBooking.totalFare.replace(/[^0-9.]/g, ""));
@@ -3654,6 +3662,7 @@ const bookWithWallet = async (req, res) => {
     });
 
     await newBooking.save();
+
     console.log(newBooking,'New booking');
 
     await handleReward(userId, parsedBooking.baseFare, newBooking.bookingId);
@@ -3718,7 +3727,6 @@ const bookWithWallet = async (req, res) => {
 
     await walletTxn.save();
     console.log(walletTxn, "Wallet transaction");
-    console.log(walletTxn, "Wallet transaction");
 
     // Update seat booking in flight inventory
     const pnr = parsedFlight.inventoryDates[0].pnr;
@@ -3740,100 +3748,6 @@ const bookWithWallet = async (req, res) => {
 
     await newActivity.save();
 
-    // ✅ Requests
-    const requests = await Requests.find({
-      bookingId: newBooking._id,
-      category: "service"
-    }).sort({ createdAt: -1 });
-
-    // ✅ Layovers calculation
-    function computeLayovers(stops) {
-      const layovers = [];
-      for (let i = 0; i < stops.length - 1; i++) {
-        const currentStop = stops[i];
-        const nextStop = stops[i + 1];
-
-        const parseTime = (timeStr) => {
-          const [hours, minutes] = timeStr.replace(' hrs', '').trim().split(':').map(Number);
-          return { hours: hours || 0, minutes: minutes || 0 };
-        };
-
-        const arrDate = new Date(currentStop.arrivalDay);
-        const depDate = new Date(nextStop.departureDay);
-
-        const arrTime = parseTime(currentStop.arrivalTime);
-        const depTime = parseTime(nextStop.departureTime);
-
-        arrDate.setHours(arrTime.hours, arrTime.minutes, 0, 0);
-        depDate.setHours(depTime.hours, depTime.minutes, 0, 0);
-
-        const layoverMs = depDate - arrDate;
-        const mins = Math.floor(layoverMs / 60000);
-        const hrs = Math.floor(mins / 60);
-        const rem = mins % 60;
-
-        layovers.push({
-          index: i,
-          city: currentStop.arrivalCity,
-          duration: `${hrs.toString().padStart(2, '0')}h ${rem.toString().padStart(2, '0')}m`,
-        });
-      }
-      return layovers;
-    }
-    const layovers = computeLayovers(parsedFlight.stops || []);
-
-    // ✅ Generate Invoice PDF
-    const invoiceTemplatePath = path.join(__dirname, '../views/user/invoice.ejs');
-    const invoicePDF = await generatePDF(invoiceTemplatePath, {
-      invoiceNo: newBooking.bookingId,
-      issuedDate: new Date().toLocaleDateString('en-GB'),
-      booking: newBooking,
-      flight: parsedFlight,
-      transactions: walletTxn, // here walletTxn instead of gateway txn
-      travelers: parsedBooking.travelers,
-      totalAmount: totalFare,
-      baseFare: parsedBooking.baseFare.replace(/[^0-9.]/g, ""),
-      tax: parsedBooking.otherServices.replace(/[^0-9.]/g, ""),
-      discount: parsedBooking.discount.replace(/[^0-9.]/g, ""),
-      email: parsedBooking.email,
-    });
-
-    // ✅ Generate Booking Confirmation PDF
-    const stopsCount = parsedFlight.stops?.length || 0;
-    const templateFileName =
-      stopsCount <= 1
-        ? 'mail-oneWayBookingConfirmation.ejs'
-        : 'mail-connectingBookingConfirmation.ejs';
-
-    try {
-      const templatePath = path.join(__dirname, '../views/user/', templateFileName);
-      const pdfBuffer = await generatePDF(templatePath, {
-        travelers: parsedBooking.travelers,
-        flightDetails: parsedFlight,
-        totalFare,
-        baseFare: parsedBooking.baseFare.replace(/[^0-9.]/g, ""),
-        otherServices: parsedBooking.otherServices.replace(/[^0-9.]/g, ""),
-        discount: parsedBooking.discount.replace(/[^0-9.]/g, ""),
-        bookingId: newBooking.bookingId,
-        requests,
-        layovers,
-      });
-
-      await transporter.sendMail({
-        from: process.env.EMAIL,
-        to: parsedBooking.email,
-        subject: 'Your Flight Booking Confirmation',
-        text: 'Please find your flight confirmation attached as a PDF.',
-        attachments: [
-          { filename: 'BookingConfirmation.pdf', content: pdfBuffer, contentType: 'application/pdf' },
-          { filename: 'Invoice.pdf', content: invoicePDF, contentType: 'application/pdf' },
-        ],
-      });
-    } catch (emailErr) {
-      console.error('Error sending confirmation email:', emailErr);
-    }
-
-    return res.json({ success: true, redirectUrl: "/bookings?success=true&clearWallet=1" });
     // ✅ Requests
     const requests = await Requests.find({
       bookingId: newBooking._id,

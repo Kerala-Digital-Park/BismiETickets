@@ -78,6 +78,32 @@ Page banner START -->
   </div>
 <% } %>
 
+<% if (payment) { %>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const payment = "<%= payment %>"; // inject EJS into JS
+
+      if (payment === "success") {
+        Swal.fire({
+          icon: "success",
+          title: "Payment Successful",
+          text: "Your payment has been completed successfully!",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "OK"
+        });
+      } else if (payment === "error") {
+        Swal.fire({
+          icon: "error",
+          title: "Payment Failed",
+          text: "Unfortunately, your payment could not be processed. Please try again.",
+          confirmButtonColor: "#d33",
+          confirmButtonText: "Retry"
+        });
+      }
+    });
+  </script>
+<% } %>
+
 		<section class="pt-3">
 			<div class="container">
 			<!-- Tabs START -->
@@ -873,24 +899,36 @@ Page banner START -->
                       <div class="alert alert-warning text-right" role="alert">
                         <%= req.passengerName %> - <%= req.request %>
                       </div>
-                    </div>
-                    <div class="card-footer border-0 p-4 pt-0">
-                      <div class="border p-3 rounded d-lg-flex align-items-center justify-content-between text-center">
-                        <small class="py-3 py-lg-0 d-block">
-                          We believe the problem has been resolved. Give us the rates for your satisfaction.
-                        </small>
-                        <div class="btn-group" role="group" aria-label="Feedback">
-                          <input type="radio" class="btn-check" name="feedback-<%= index %>" id="btnradio1-<%= index %>">
-                          <label class="btn btn-outline-light btn-sm mb-0" for="btnradio1-<%= index %>">
-                            <i class="fa-solid fa-thumbs-up me-1"></i> Yes
-                          </label>
+                    
+<% if (req.reply && req.reply.length > 0) { %>
+  <div class="replies mt-3">
+    <% req.reply.forEach(r => { %>
+      <div class="border rounded p-3 mb-2">
+        <p><strong><%= r.sender %>:</strong> <%= r.message %></p>
 
-                          <input type="radio" class="btn-check" name="feedback-<%= index %>" id="btnradio2-<%= index %>">
-                          <label class="btn btn-outline-light btn-sm mb-0" for="btnradio2-<%= index %>">
-                            No <i class="fa-solid fa-thumbs-down ms-1"></i>
-                          </label>
-                        </div>
-                      </div>
+        <% if (r.amount) { %>
+          <div class="d-flex align-items-center gap-3 mt-2">
+            <span class="badge bg-info">Amount: ₹<%= r.amount %></span>
+            
+            <% if (r.paymentStatus === "Paid") { %>
+              <button class="btn btn-success btn-sm" disabled>Paid</button>
+            <% } else { %>
+              <button class="btn btn-warning btn-sm pay-btn"
+                      data-id="<%= req._id %>"
+                      data-amount="<%= r.amount %>">
+                Pay
+              </button>
+            <% } %>
+          </div>
+        <% } %>
+
+        <small class="text-muted d-block mt-1">
+          <%= r.date.toLocaleString("en-GB") %>
+        </small>
+      </div>
+    <% }) %>
+  </div>
+<% } %>
                     </div>
                   </div>
                 </div>
@@ -907,6 +945,37 @@ Page banner START -->
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".pay-btn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const requestId = btn.dataset.id;
+      const amount = btn.dataset.amount;
+      const bookingId = "<%= bookings._id %>";
+
+      try {
+        const res = await fetch("/payment/initiate-request-payment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ requestId, amount, bookingId })
+        });
+
+        const data = await res.json();
+
+        if (data.success && data.paymentUrl) {
+          // ✅ Redirect to HDFC payment gateway
+          window.location.href = data.paymentUrl;
+        } else {
+          Swal.fire("Error", data.message || "Something went wrong!", "error");
+        }
+      } catch (err) {
+        Swal.fire("Error", "Server error occurred!", "error");
+      }
+    });
+  });
+});
+</script>
 
                     <!-- Tab content 3 END -->
 

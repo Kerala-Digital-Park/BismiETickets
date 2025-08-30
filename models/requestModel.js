@@ -57,6 +57,21 @@ const requestSchema = mongoose.Schema(
           type: String,
           required: true,
         },
+        amount: {
+          type: Number, 
+          required: false,
+        },
+        paymentStatus: {
+          type: String,
+          enum: ["Paid", "Unpaid"],
+          default: "Unpaid",  
+          required: false,
+        },
+        sender: {
+          type: String,
+          enum: ["admin", "user"],
+          default: "admin",
+        },
         date: {
           type: Date,
           default: Date.now,

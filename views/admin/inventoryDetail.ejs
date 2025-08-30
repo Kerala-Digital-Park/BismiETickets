@@ -269,13 +269,13 @@
                                         <div class="card-header border-bottom d-md-flex justify-content-md-between">
                                             <h5 class="card-header-title"><i class="bi bi-passport"></i> Passengers
                                             </h5>
-                                            <form class="rounded position-relative">
+                                            <!-- <form class="rounded position-relative">
                                                 <input class="form-control pe-5" type="search" placeholder="Search"
                                                     aria-label="Search">
                                                 <button
                                                     class="btn border-0 px-3 py-0 position-absolute top-50 end-0 translate-middle-y"
                                                     type="submit"><i class="fas fa-search fs-6"></i></button>
-                                            </form>
+                                            </form> -->
                                         </div>
                                         <!-- Card header END -->
                                         <!-- Card body START -->
@@ -356,7 +356,8 @@
       <ul class="pagination pagination-sm pagination-primary-soft mb-0">
         <% for(let i=1; i<=Math.ceil(bookingPagination.total / bookingPagination.limit); i++) { %>
           <li class="page-item <%= bookingPagination.page === i ? 'active' : '' %>">
-            <a class="page-link" href="?id=<%= flight._id %>&page=<%= i %>#tab-2"><%= i %></a>
+            <!-- <a class="page-link" href="?id=<%= flight._id %>&page=<%= i %>#tab-2"><%= i %></a> -->
+             <a class="page-link" href="?id=<%= flight._id %>&bookingPage=<%= i %>#tab-1"><%= i %></a>
           </li>
         <% } %>
       </ul>
@@ -462,7 +463,9 @@
       <ul class="pagination pagination-sm pagination-primary-soft mb-0">
         <% for(let i=1; i<=Math.ceil(transactionPagination.total / transactionPagination.limit); i++) { %>
           <li class="page-item <%= transactionPagination.page === i ? 'active' : '' %>">
-            <a class="page-link" href="?id=<%= flight._id %>&page=<%= i %>#tab-2"><%= i %></a>
+            <!-- <a class="page-link" href="?id=<%= flight._id %>&page=<%= i %>#tab-2"><%= i %></a> -->
+             <a class="page-link" href="?id=<%= flight._id %>&transactionPage=<%= i %>#tab-2"><%= i %></a>
+
           </li>
         <% } %>
       </ul>
@@ -585,7 +588,9 @@
       <ul class="pagination pagination-sm pagination-primary-soft mb-0">
         <% for(let i=1; i<=Math.ceil(bookingPagination.total / bookingPagination.limit); i++) { %>
           <li class="page-item <%= bookingPagination.page === i ? 'active' : '' %>">
-            <a class="page-link" href="?id=<%= flight._id %>&page=<%= i %>#tab-2"><%= i %></a>
+            <!-- <a class="page-link" href="?id=<%= flight._id %>&page=<%= i %>#tab-2"><%= i %></a> -->
+             <a class="page-link" href="?id=<%= flight._id %>&transactionPage=<%= i %>#tab-5"><%= i %></a>
+
           </li>
         <% } %>
       </ul>
@@ -628,24 +633,34 @@
                         <%= req.passengerName %> - <%= req.request %>
                       </div>
                     </div>
-                    <div class="card-footer border-0 p-4 pt-0">
-                      <div class="border p-3 rounded d-lg-flex align-items-center justify-content-between text-center">
-                        <small class="py-3 py-lg-0 d-block">
-                          We believe the problem has been resolved. Give us the rates for your satisfaction.
-                        </small>
-                        <div class="btn-group" role="group" aria-label="Feedback">
-                          <input type="radio" class="btn-check" name="feedback-<%= index %>" id="btnradio1-<%= index %>">
-                          <label class="btn btn-outline-light btn-sm mb-0" for="btnradio1-<%= index %>">
-                            <i class="fa-solid fa-thumbs-up me-1"></i> Yes
-                          </label>
+                    <div class="replies mb-3">
+  <% if (req.reply && req.reply.length > 0) { %>
+    <% req.reply.forEach(r => { %>
+      <div class="border rounded p-2 mb-2">
+        <p><strong><%= r.sender %>:</strong> <%= r.message %></p>
+        <% if (r.amount) { %>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-info">Amount: ₹<%= r.amount %></span>
+            <span class="badge <%= r.paymentStatus === 'Paid' ? 'bg-success' : 'bg-warning' %>">
+              <%= r.paymentStatus || "Unpaid" %>
+            </span>
+          </div>
+        <% } %>
+        <small class="text-muted"><%= r.date.toLocaleString("en-GB") %></small>
+      </div>
+    <% }) %>
+  <% } %>
+</div>
 
-                          <input type="radio" class="btn-check" name="feedback-<%= index %>" id="btnradio2-<%= index %>">
-                          <label class="btn btn-outline-light btn-sm mb-0" for="btnradio2-<%= index %>">
-                            No <i class="fa-solid fa-thumbs-down ms-1"></i>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
+<form class="send-reply-form" data-id="<%= req._id %>">
+  <div class="mb-2">
+    <textarea name="message" class="form-control" placeholder="Enter message" required></textarea>
+  </div>
+  <div class="mb-2">
+    <input type="number" name="amount" class="form-control" placeholder="Enter amount (optional)">
+  </div>
+  <button type="submit" class="btn btn-sm btn-primary">Send</button>
+</form>
                   </div>
                 </div>
               </div>
@@ -661,6 +676,55 @@
     </div>
   </div>
 </div>
+
+<script>
+document.querySelectorAll(".send-reply-form").forEach(form => {
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const requestId = form.dataset.id;
+    const message = form.querySelector("[name='message']").value.trim();
+    const amount = form.querySelector("[name='amount']").value;
+
+    try {
+      const res = await fetch(`/admin/send-reply/${requestId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, amount })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        Swal.fire("Success", data.message, "success");
+
+        // append new reply above form
+        const repliesDiv = form.closest(".accordion-body").querySelector(".replies");
+        const newReply = document.createElement("div");
+        newReply.className = "border rounded p-2 mb-2";
+        newReply.innerHTML = `
+          <p><strong>admin:</strong> ${data.reply.message}</p>
+          ${data.reply.amount ? `
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-info">Amount: ₹${data.reply.amount}</span>
+              <span class="badge ${data.reply.paymentStatus === "Paid" ? "bg-success" : "bg-warning"}">
+                ${data.reply.paymentStatus}
+              </span>
+            </div>` : ""}
+          <small class="text-muted">${new Date(data.reply.date).toLocaleString("en-GB")}</small>
+        `;
+        repliesDiv.appendChild(newReply);
+
+        // reset form
+        form.reset();
+      } else {
+        Swal.fire("Error", data.message, "error");
+      }
+    } catch (err) {
+      Swal.fire("Error", "Something went wrong!", "error");
+    }
+  });
+});
+</script>
+
                         <!-- Tab content 4 START -->
                         <div class="tab-pane show  " id="tab-4">
                             <div class="row g-3">
@@ -731,18 +795,20 @@
                                         <!-- Card body END -->
 
                                         <!-- Card footer START -->
-                                        <div class="card-footer pt-1">
+<div class="card-footer pt-1">
   <div class="d-sm-flex justify-content-sm-between align-items-sm-center">
     <p class="mb-sm-0 text-center text-sm-start">
       Showing <%= (activityPagination.page - 1) * activityPagination.limit + 1 %>
-      to <%= Math.min
-    <nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
-(activityPagination.page * activityPagination.limit, activityPagination.total) %>
+      to <%= Math.min(activityPagination.page * activityPagination.limit, activityPagination.total) %>
       of <%= activityPagination.total %> entries
-    </p>      <ul class="pagination pagination-sm pagination-primary-soft mb-0">
+    </p>
+    <nav class="mb-sm-0 d-flex justify-content-center" aria-label="navigation">
+      <ul class="pagination pagination-sm pagination-primary-soft mb-0">
         <% for(let i=1; i<=Math.ceil(activityPagination.total / activityPagination.limit); i++) { %>
           <li class="page-item <%= activityPagination.page === i ? 'active' : '' %>">
-            <a class="page-link" href="?id=<%= flight._id %>&page=<%= i %>#tab-2"><%= i %></a>
+            <!-- <a class="page-link" href="?id=<%= flight._id %>&page=<%= i %>#tab-4"><%= i %></a> -->
+             <a class="page-link" href="?id=<%= flight._id %>&activityPage=<%= i %>#tab-4"><%= i %></a>
+
           </li>
         <% } %>
       </ul>
@@ -963,6 +1029,26 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const hash = window.location.hash;
+  if (hash) {
+    const tabTrigger = document.querySelector(`a[href="${hash}"]`);
+    if (tabTrigger) {
+      const tab = new bootstrap.Tab(tabTrigger);
+      tab.show();
+    }
+  }
+
+  // update hash when tab changes
+  document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(link => {
+    link.addEventListener("shown.bs.tab", e => {
+      history.replaceState(null, null, e.target.getAttribute("href"));
+    });
+  });
 });
 </script>
 

@@ -3,7 +3,7 @@ const crypto = require("crypto");
 const {
   PaymentHandler,
   APIException,
-  validateHMAC_SHA256
+  validateHMAC_SHA256,
 } = require("../utils/PaymentHandler");
 const nodemailer = require("nodemailer");
 const ejs = require("ejs");
@@ -20,6 +20,8 @@ const UserActivity = require("../models/userActivityModel");
 const WalletTransactions = require("../models/walletTransactionModel");
 const TempWallet = require("../models/tempWalletModel");
 const Rewards = require("../models/rewardModel");
+const TempRequestPayment = require("../models/tempRequestModel");
+const RequestTransactions = require("../models/requestTransactionModel");
 const puppeteer = require("puppeteer");
 
 async function generatePDF(templatePath, data) {
@@ -27,14 +29,14 @@ async function generatePDF(templatePath, data) {
 
   const browser = await puppeteer.launch({
     headless: "new", // or true if puppeteer > 20
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
   const page = await browser.newPage();
-  await page.setContent(html, { waitUntil: 'networkidle0' });
+  await page.setContent(html, { waitUntil: "load", timeout: 0 });
 
   const pdfBuffer = await page.pdf({
-    format: 'A4',
+    format: "A4",
     printBackground: true,
   });
 
@@ -60,7 +62,9 @@ const renderTemplate = (templatePath, data) => {
 };
 
 exports.renderForm = (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/hdfc/initiatePaymentDataForm.html"));
+  res.sendFile(
+    path.join(__dirname, "../public/hdfc/initiatePaymentDataForm.html")
+  );
 };
 
 exports.renderDynamicForm = (req, res) => {
@@ -90,14 +94,14 @@ exports.initiatePayment = async (req, res) => {
       amount,
       currency: "INR",
       return_url: returnUrl,
-      customer_id: "sample-customer-id"
+      customer_id: "sample-customer-id",
     });
 
     res.redirect(orderSessionResp.payment_links.web);
   } catch (error) {
-        if (error instanceof APIException) {
-            return res.send("PaymentHandler threw some error");
-        }   
+    if (error instanceof APIException) {
+      return res.send("PaymentHandler threw some error");
+    }
     return res.send("Something went wrong");
   }
 };
@@ -109,22 +113,26 @@ exports.initiateBookingPayment = async (req, res) => {
   const parsedBooking = JSON.parse(req.body.bookingData);
   const totalFare = parseFloat(parsedBooking.totalFare.replace(/[^0-9.]/g, ""));
   const walletAmount = parseFloat(req.body.walletAmount || 0);
-  const paymentOption = req.body.paymentOption;  // WALLET / RUPAY / UPI / CARD / NETBANKING
+  const paymentOption = req.body.paymentOption; // WALLET / RUPAY / UPI / CARD / NETBANKING
 
-  const payableAmount = totalFare - walletAmount;  // ✅ subtract wallet
+  const payableAmount = totalFare - walletAmount; // ✅ subtract wallet
 
   // ✅ calculate extra charge based on method
   let extraCharge = 0;
   if (paymentOption === "CARD") {
-    extraCharge = (totalFare * 0.025).toFixed(2);  // 2.5%
+    extraCharge = (totalFare * 0.025).toFixed(2); // 2.5%
   } else if (paymentOption === "NETBANKING") {
-    extraCharge = (totalFare * 0.015).toFixed(2);  // 1.5%
+    extraCharge = (totalFare * 0.015).toFixed(2); // 1.5%
   }
 
   // ✅ final payable to HDFC
-  const finalPayable = (parseFloat(payableAmount) + parseFloat(extraCharge)).toFixed(2);
+  const finalPayable = (
+    parseFloat(payableAmount) + parseFloat(extraCharge)
+  ).toFixed(2);
 
-  const returnUrl = `${req.protocol}://${req.get("host")}/payment/booking-response?token=${token}`;
+  const returnUrl = `${req.protocol}://${req.get(
+    "host"
+  )}/payment/booking-response?token=${token}`;
   const paymentHandler = PaymentHandler.getInstance();
 
   try {
@@ -139,19 +147,19 @@ exports.initiateBookingPayment = async (req, res) => {
         userId: req.session.userId,
         walletAmount,
         paymentOption,
-        extraCharge,        // ✅ save extraCharge for handleBookingResponse
-        finalPayable        // ✅ save what was sent to HDFC
+        extraCharge, // ✅ save extraCharge for handleBookingResponse
+        finalPayable, // ✅ save what was sent to HDFC
       },
     });
 
     const orderSessionResp = await paymentHandler.orderSession({
       order_id: orderId,
-      amount:finalPayable,
+      amount: finalPayable,
       currency: "INR",
       return_url: returnUrl,
       customer_id: "flight-user-" + req.session.userId,
-      payment_option: paymentOption,  // pass to HDFC so correct tab opens
-      allowDefaultOptions: false
+      payment_option: paymentOption, // pass to HDFC so correct tab opens
+      allowDefaultOptions: false,
     });
 
     return res.redirect(orderSessionResp.payment_links.web);
@@ -187,243 +195,276 @@ exports.handleBookingResponse = async (req, res) => {
     const temp = await TempBooking.findOne({ token });
     if (!temp) return res.send("Invalid or expired token");
 
-    const { bookingData, flightDetails, email, mobile_number, userId, walletAmount, paymentOption, extraCharge } = temp.data;
-    console.log(userId)
+    const {
+      bookingData,
+      flightDetails,
+      email,
+      mobile_number,
+      userId,
+      walletAmount,
+      paymentOption,
+      extraCharge,
+    } = temp.data;
+    console.log(userId);
     const parsedBooking = JSON.parse(bookingData);
     const parsedFlight = JSON.parse(flightDetails);
 
-      const totalFareGateway = parseFloat(orderStatusResp.amount); // what HDFC collected (already includes extra charge)
-      const finalFare = totalFareGateway + (walletAmount || 0);     // full booking cost
+    const totalFareGateway = parseFloat(orderStatusResp.amount); // what HDFC collected (already includes extra charge)
+    const finalFare = totalFareGateway + (walletAmount || 0); // full booking cost
 
     const { travelers, baseFare, otherServices, discount } = parsedBooking;
 
-          if (
-        !travelers || !travelers.length ||
-        !mobile_number || !email || !totalFareGateway || !baseFare || !otherServices || !discount
-      ) {
-        return res.send("Missing booking data");
+    if (
+      !travelers ||
+      !travelers.length ||
+      !mobile_number ||
+      !email ||
+      !totalFareGateway ||
+      !baseFare ||
+      !otherServices ||
+      !discount
+    ) {
+      return res.send("Missing booking data");
+    }
+
+    const newBooking = new Bookings({
+      userId,
+      flight: parsedFlight._id,
+      travelers: parsedBooking.travelers,
+      mobile_number,
+      email,
+      amount: finalFare, // full fare (wallet + gateway)
+      baseFare: parsedBooking.baseFare.replace(/[^0-9.]/g, ""),
+      tax: parsedBooking.otherServices.replace(/[^0-9.]/g, ""),
+      discount: parsedBooking.discount.replace(/[^0-9.]/g, ""),
+      payment_status: true,
+      payment_method: paymentOption, // ✅ store method
+    });
+
+    await newBooking.save();
+
+    // ✅ Handle rewards for eligible users
+    await handleReward(userId, parsedBooking.baseFare, newBooking.bookingId);
+
+    async function handleReward(userId, baseFare, bookingId) {
+      try {
+        const user = await Users.findById(userId).populate("subscription");
+
+        if (!user || user.userRole !== "User") return; // only normal users eligible
+        if (!user.subscription) return;
+
+        const validSubs = ["Pro", "Enterprise"];
+        if (!validSubs.includes(user.subscription.subscription)) return;
+
+        const cleanBaseFare = parseFloat(baseFare.replace(/[^0-9.]/g, "")) || 0;
+        if (cleanBaseFare <= 0) return;
+
+        const rewardPoints = (cleanBaseFare * 0.25) / 100; // 0.25%
+
+        const reward = new Rewards({
+          userId: user._id,
+          title: "Flight Booking Reward",
+          description: `Reward for booking #${bookingId}`,
+          points: rewardPoints,
+          status: "active",
+          expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 days
+        });
+
+        await reward.save();
+
+        // Optionally update user reward balance
+        await Users.findByIdAndUpdate(user._id, {
+          $inc: { rewardBalance: rewardPoints },
+        });
+      } catch (err) {
+        console.error("Reward handling error:", err);
       }
+    }
 
-  const newBooking = new Bookings({
-    userId,
-    flight: parsedFlight._id,
-    travelers: parsedBooking.travelers,
-    mobile_number,
-    email,
-    amount: finalFare,            // full fare (wallet + gateway)
-    baseFare: parsedBooking.baseFare.replace(/[^0-9.]/g, ""),
-    tax: parsedBooking.otherServices.replace(/[^0-9.]/g, ""),
-    discount: parsedBooking.discount.replace(/[^0-9.]/g, ""),
-    payment_status: true,
-    payment_method: paymentOption // ✅ store method
-  });
+    // transaction entry (only for gateway part, not wallet)
+    const newTransaction = new Transactions({
+      bookingId: newBooking._id,
+      userId: parsedFlight.sellerId,
+      totalAmount: totalFareGateway, // paid through gateway
+      baseFare: parsedBooking.baseFare.replace(/[^0-9.]/g, ""),
+      tax: parsedBooking.otherServices.replace(/[^0-9.]/g, ""),
+      discount: parsedBooking.discount.replace(/[^0-9.]/g, ""),
+      paymentStatus: "Paid",
+      type: "Booking Payment",
+    });
+    await newTransaction.save();
 
-  await newBooking.save();
-
-  // ✅ Handle rewards for eligible users
-await handleReward(userId, parsedBooking.baseFare, newBooking.bookingId);
-
-async function handleReward(userId, baseFare, bookingId) {
-  try {
-    const user = await Users.findById(userId).populate("subscription");
-
-    if (!user || user.userRole !== "User") return; // only normal users eligible
-    if (!user.subscription) return;
-
-    const validSubs = ["Pro", "Enterprise"];
-    if (!validSubs.includes(user.subscription.subscription)) return;
-
-    const cleanBaseFare = parseFloat(baseFare.replace(/[^0-9.]/g, "")) || 0;
-    if (cleanBaseFare <= 0) return;
-
-    const rewardPoints = (cleanBaseFare * 0.25) / 100; // 0.25%
-
-    const reward = new Rewards({
-      userId: user._id,
-      title: "Flight Booking Reward",
-      description: `Reward for booking #${bookingId}`,
-      points: rewardPoints,
-      status: "active",
-      expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 days
+    const newActivity = new UserActivity({
+      user: userId,
+      id: newBooking._id.toString(),
+      type: "booking",
+      content: `Booking made for flight ${
+        parsedFlight.inventoryId
+      } on ${newBooking.createdAt.toLocaleDateString()}`,
     });
 
-    await reward.save();
+    await newActivity.save();
 
-    // Optionally update user reward balance
-    await Users.findByIdAndUpdate(user._id, {
-      $inc: { rewardBalance: rewardPoints }
-    });
-  } catch (err) {
-    console.error("Reward handling error:", err);
-  }
-}
-
-  // transaction entry (only for gateway part, not wallet)
-  const newTransaction = new Transactions({
-    bookingId: newBooking._id,
-    userId: parsedFlight.sellerId,
-    totalAmount: totalFareGateway, // paid through gateway
-    baseFare: parsedBooking.baseFare.replace(/[^0-9.]/g, ""),
-    tax: parsedBooking.otherServices.replace(/[^0-9.]/g, ""),
-    discount: parsedBooking.discount.replace(/[^0-9.]/g, ""),
-    paymentStatus: "Paid",
-    type: "Booking Payment"
-  });
-  await newTransaction.save();
-
-      const newActivity = new UserActivity({
-        user: userId,
-        id: newBooking._id.toString(),
-        type: "booking",
-        content: `Booking made for flight ${parsedFlight.inventoryId} on ${newBooking.createdAt.toLocaleDateString()}`
+    if (walletAmount && walletAmount > 0) {
+      await Users.findByIdAndUpdate(userId, {
+        $inc: { walletBalance: -walletAmount },
       });
-
-      await newActivity.save();
-
-        if (walletAmount && walletAmount > 0) {
-    await Users.findByIdAndUpdate(userId, { $inc: { walletBalance: -walletAmount } });
 
       // Create Wallet Transaction entry
-  const walletTxn = new WalletTransactions({
-    userId,
-    amount: walletAmount,     // only the amount actually taken from wallet
-    status: "Paid",
-    purpose: "Flight Booking" // optional detail
-  });
-
-  await walletTxn.save();
-
-  }
-
-      await Users.findByIdAndUpdate(userId, {
-        $inc: {
-          "transactions": 1,
-          "transactionAmount": totalFareGateway,
-        },
+      const walletTxn = new WalletTransactions({
+        userId,
+        amount: walletAmount, // only the amount actually taken from wallet
+        status: "Paid",
+        purpose: "Flight Booking", // optional detail
       });
 
-      const flightId = parsedFlight._id;
-      const pnr = parsedFlight.inventoryDates[0].pnr;      
-      const updatedFlight = await Flights.findOneAndUpdate(
-        { _id: flightId, "inventoryDates.pnr": pnr },
-        {
-          $inc: {
-            "inventoryDates.$.seatsBooked": travelers.length,
-          },
-          $pull: {
-            "inventoryDates.$.seatsHold": { userId: userId } // ✅ remove only this user’s hold
-          }
-        },
-        { new: true }
-      );
+      await walletTxn.save();
+    }
 
-      if (!updatedFlight) {
-        return res.status(404).send("Flight or inventory date not found");
+    await Users.findByIdAndUpdate(userId, {
+      $inc: {
+        transactions: 1,
+        transactionAmount: totalFareGateway,
+      },
+    });
+
+    const flightId = parsedFlight._id;
+    const pnr = parsedFlight.inventoryDates[0].pnr;
+    const updatedFlight = await Flights.findOneAndUpdate(
+      { _id: flightId, "inventoryDates.pnr": pnr },
+      {
+        $inc: {
+          "inventoryDates.$.seatsBooked": travelers.length,
+        },
+        $pull: {
+          "inventoryDates.$.seatsHold": { userId: userId }, // ✅ remove only this user’s hold
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedFlight) {
+      return res.status(404).send("Flight or inventory date not found");
+    }
+
+    const stopsCount = parsedFlight.stops?.length || 0;
+
+    const requests = await Requests.find({
+      bookingId: newBooking._id,
+      category: "service",
+    }).sort({ createdAt: -1 });
+
+    function computeLayovers(stops) {
+      const layovers = [];
+
+      for (let i = 0; i < stops.length - 1; i++) {
+        const currentStop = stops[i];
+        const nextStop = stops[i + 1];
+
+        const parseTime = (timeStr) => {
+          const [hours, minutes] = timeStr
+            .replace(" hrs", "")
+            .trim()
+            .split(":")
+            .map(Number);
+          return { hours: hours || 0, minutes: minutes || 0 };
+        };
+
+        const arrDate = new Date(currentStop.arrivalDay);
+        const depDate = new Date(nextStop.departureDay);
+
+        const arrTime = parseTime(currentStop.arrivalTime);
+        const depTime = parseTime(nextStop.departureTime);
+
+        arrDate.setHours(arrTime.hours, arrTime.minutes, 0, 0);
+        depDate.setHours(depTime.hours, depTime.minutes, 0, 0);
+
+        const layoverMs = depDate - arrDate;
+        const mins = Math.floor(layoverMs / 60000);
+        const hrs = Math.floor(mins / 60);
+        const rem = mins % 60;
+
+        layovers.push({
+          index: i,
+          city: currentStop.arrivalCity,
+          duration: `${hrs.toString().padStart(2, "0")}h ${rem
+            .toString()
+            .padStart(2, "0")}m`,
+        });
       }
 
-const stopsCount = parsedFlight.stops?.length || 0;
+      return layovers;
+    }
 
-const requests = await Requests.find({
-  bookingId: newBooking._id,
-  category: "service"
-}).sort({ createdAt: -1 });
+    // In your controller before rendering
+    const layovers = computeLayovers(parsedFlight.stops || []);
 
-function computeLayovers(stops) {
-  const layovers = [];
+    const invoiceTemplatePath = path.join(
+      __dirname,
+      "../views/user/invoice.ejs"
+    );
 
-  for (let i = 0; i < stops.length - 1; i++) {
-    const currentStop = stops[i];
-    const nextStop = stops[i + 1];
-
-    const parseTime = (timeStr) => {
-      const [hours, minutes] = timeStr.replace(' hrs', '').trim().split(':').map(Number);
-      return { hours: hours || 0, minutes: minutes || 0 };
-    };
-
-    const arrDate = new Date(currentStop.arrivalDay);
-    const depDate = new Date(nextStop.departureDay);
-
-    const arrTime = parseTime(currentStop.arrivalTime);
-    const depTime = parseTime(nextStop.departureTime);
-
-    arrDate.setHours(arrTime.hours, arrTime.minutes, 0, 0);
-    depDate.setHours(depTime.hours, depTime.minutes, 0, 0);
-
-    const layoverMs = depDate - arrDate;
-    const mins = Math.floor(layoverMs / 60000);
-    const hrs = Math.floor(mins / 60);
-    const rem = mins % 60;
-
-    layovers.push({
-      index: i,
-      city: currentStop.arrivalCity,
-      duration: `${hrs.toString().padStart(2, '0')}h ${rem.toString().padStart(2, '0')}m`,
+    const invoicePDF = await generatePDF(invoiceTemplatePath, {
+      invoiceNo: newBooking.bookingId,
+      issuedDate: new Date().toLocaleDateString("en-GB"), // dd-mm-yyyy
+      booking: newBooking,
+      flight: parsedFlight, // includes from, to, airline, etc.
+      transactions: newTransaction,
+      travelers,
+      totalAmount: totalFareGateway,
+      baseFare: baseFare.replace(/[^0-9.]/g, ""),
+      tax:
+        (parseFloat(otherServices.replace(/[^0-9.]/g, "")) || 0) +
+        (parseFloat(extraCharge) || 0),
+      discount: discount.replace(/[^0-9.]/g, ""),
+      email: email,
     });
-  }
 
-  return layovers;
-}
-
-// In your controller before rendering
-const layovers = computeLayovers(parsedFlight.stops || []);
-
-const invoiceTemplatePath = path.join(__dirname, '../views/user/invoice.ejs');
-
-const invoicePDF = await generatePDF(invoiceTemplatePath, {
-  invoiceNo: newBooking.bookingId,              
-  issuedDate: new Date().toLocaleDateString('en-GB'), // dd-mm-yyyy
-  booking: newBooking,
-  flight: parsedFlight, // includes from, to, airline, etc.
-  transactions: newTransaction,
-  travelers,
-  totalAmount: totalFareGateway,
-  baseFare: baseFare.replace(/[^0-9.]/g, ""),
-  tax: (parseFloat(otherServices.replace(/[^0-9.]/g, "")) || 0) + (parseFloat(extraCharge) || 0),
-  discount: discount.replace(/[^0-9.]/g, ""),
-  email: email,
-});
-
-const templateFileName =
-  stopsCount <= 1
-    ? 'mail-oneWayBookingConfirmation.ejs'
-    : 'mail-connectingBookingConfirmation.ejs';
+    const templateFileName =
+      stopsCount <= 1
+        ? "mail-oneWayBookingConfirmation.ejs"
+        : "mail-connectingBookingConfirmation.ejs";
 
     console.log("templateFileName", templateFileName);
     try {
-      const templatePath = path.join(__dirname, '../views/user/', templateFileName);
+      const templatePath = path.join(
+        __dirname,
+        "../views/user/",
+        templateFileName
+      );
       const pdfBuffer = await generatePDF(templatePath, {
-          travelers,
-          flightDetails: parsedFlight,
-          totalFare: totalFareGateway,
-          baseFare: baseFare.replace(/[^0-9.]/g, ""),
-          otherServices: otherServices.replace(/[^0-9.]/g, ""),
-          discount: discount.replace(/[^0-9.]/g, ""),
-          bookingId: newBooking.bookingId,
-          requests,
-          layovers,
-        });
+        travelers,
+        flightDetails: parsedFlight,
+        totalFare: totalFareGateway,
+        baseFare: baseFare.replace(/[^0-9.]/g, ""),
+        otherServices: otherServices.replace(/[^0-9.]/g, ""),
+        discount: discount.replace(/[^0-9.]/g, ""),
+        bookingId: newBooking.bookingId,
+        requests,
+        layovers,
+      });
 
-        await transporter.sendMail({
-          from: process.env.EMAIL,
-          to: email,
-          subject: 'Your Flight Booking Confirmation',
-          text: 'Please find your flight confirmation attached as a PDF.',
-          attachments: [
+      await transporter.sendMail({
+        from: process.env.EMAIL,
+        to: email,
+        subject: "Your Flight Booking Confirmation",
+        text: "Please find your flight confirmation attached as a PDF.",
+        attachments: [
           {
-            filename: 'BookingConfirmation.pdf',
+            filename: "BookingConfirmation.pdf",
             content: pdfBuffer,
-            contentType: 'application/pdf',
+            contentType: "application/pdf",
           },
           {
-            filename: 'Invoice.pdf',
+            filename: "Invoice.pdf",
             content: invoicePDF,
-            contentType: 'application/pdf',
-        },
-          ],
-        });
-      } catch (emailErr) {
-        console.error('Error sending confirmation email:', emailErr);
-      }
+            contentType: "application/pdf",
+          },
+        ],
+      });
+    } catch (emailErr) {
+      console.error("Error sending confirmation email:", emailErr);
+    }
 
     // ✅ Delete temp booking data
     await TempBooking.deleteOne({ token });
@@ -444,7 +485,10 @@ exports.handleResponse = async (req, res) => {
   }
 
   console.log("Received body:", req.body);
-console.log("Expected HMAC:", validateHMAC_SHA256(req.body, paymentHandler.getResponseKey()));
+  console.log(
+    "Expected HMAC:",
+    validateHMAC_SHA256(req.body, paymentHandler.getResponseKey())
+  );
 
   try {
     const orderStatusResp = await paymentHandler.orderStatus(orderId);
@@ -484,7 +528,7 @@ console.log("Expected HMAC:", validateHMAC_SHA256(req.body, paymentHandler.getRe
     return res.send(html);
   } catch (error) {
     console.error(error);
-     if (error instanceof APIException) {
+    if (error instanceof APIException) {
       return res.send("PaymentHandler threw some error");
     }
     res.send("Something went wrong");
@@ -517,7 +561,7 @@ exports.initiateRefund = async (req, res) => {
     // [MERCHANT_TODO]:- please handle errors
     return res.send("Something went wrong");
   }
-}
+};
 
 // [MERCHAT_TODO]:- Please modify this as per your requirements
 const makeOrderStatusResponse = (title, message, req, response) => {
@@ -564,7 +608,9 @@ exports.initiateSubscriptionPayment = async (req, res) => {
   const userId = req.session.userId;
   const orderId = `order_${Date.now()}`;
 
-  const returnUrl = `${req.protocol}://${req.get("host")}/payment/subscription-response`;
+  const returnUrl = `${req.protocol}://${req.get(
+    "host"
+  )}/payment/subscription-response`;
   const paymentHandler = PaymentHandler.getInstance();
 
   try {
@@ -584,7 +630,7 @@ exports.initiateSubscriptionPayment = async (req, res) => {
       amount: parseFloat(price),
       currency: "INR",
       return_url: returnUrl,
-      customer_id: `sub-user-${userId}`
+      customer_id: `sub-user-${userId}`,
     });
 
     return res.redirect(orderSessionResp.payment_links.web);
@@ -604,7 +650,10 @@ exports.handleSubscriptionResponse = async (req, res) => {
 
   try {
     const orderStatusResp = await paymentHandler.orderStatus(orderId);
-    const isValid = validateHMAC_SHA256(req.body, paymentHandler.getResponseKey());
+    const isValid = validateHMAC_SHA256(
+      req.body,
+      paymentHandler.getResponseKey()
+    );
 
     if (!isValid) {
       return res.send("Signature verification failed");
@@ -643,12 +692,14 @@ exports.handleSubscriptionResponse = async (req, res) => {
 
       await user.save();
 
-    plan.noOfPurchases += 1;
-    await plan.save();
+      plan.noOfPurchases += 1;
+      await plan.save();
 
       return res.redirect("/manage-subscription");
     } else {
-      return res.send(`<h3>Subscription failed or pending. Status: ${orderStatusResp.status}</h3>`);
+      return res.send(
+        `<h3>Subscription failed or pending. Status: ${orderStatusResp.status}</h3>`
+      );
     }
   } catch (err) {
     console.error("Subscription response error:", err);
@@ -656,20 +707,23 @@ exports.handleSubscriptionResponse = async (req, res) => {
   }
 };
 
-// 1️⃣ Initiate Wallet Load Payment
 exports.initiateLoadWalletPayment = async (req, res) => {
   const { amount, method } = req.body;
   const userId = req.session.userId;
-  
+
   if (!amount || !method) {
-    return res.status(400).json({ success: false, message: "Amount and payment method required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Amount and payment method required" });
   }
 
   const orderId = `wallet_${Date.now()}`;
-  const returnUrl = `${req.protocol}://${req.get("host")}/payment/load-wallet-response`;
-  
+  const returnUrl = `${req.protocol}://${req.get(
+    "host"
+  )}/payment/load-wallet-response`;
+
   const paymentHandler = PaymentHandler.getInstance();
-  console.log("Load wallet payment instance created ")
+  console.log("Load wallet payment instance created ");
 
   try {
     // Save to temp wallet collection (like TempSubscription)
@@ -688,7 +742,7 @@ exports.initiateLoadWalletPayment = async (req, res) => {
       return_url: returnUrl,
       customer_id: `wallet-user-${userId}`,
     });
-    
+
     return res.redirect(orderSessionResp.payment_links.web);
   } catch (err) {
     console.error("❌ Failed to initiate wallet load:", err);
@@ -696,9 +750,8 @@ exports.initiateLoadWalletPayment = async (req, res) => {
   }
 };
 
-// 2️⃣ Handle Wallet Payment Response
 exports.handleLoadWalletResponse = async (req, res) => {
-    console.log("Load wallet payment instance created ")
+  console.log("Load wallet payment instance created ");
 
   const orderId = req.body.order_id;
   const paymentHandler = PaymentHandler.getInstance();
@@ -711,7 +764,10 @@ exports.handleLoadWalletResponse = async (req, res) => {
     const orderStatusResp = await paymentHandler.orderStatus(orderId);
 
     // Verify signature
-    const isValid = validateHMAC_SHA256(req.body, paymentHandler.getResponseKey());
+    const isValid = validateHMAC_SHA256(
+      req.body,
+      paymentHandler.getResponseKey()
+    );
     if (!isValid) {
       return res.send("❌ Signature verification failed");
     }
@@ -754,10 +810,238 @@ exports.handleLoadWalletResponse = async (req, res) => {
         purpose: "Wallet load failed",
       });
 
-      return res.send(`<h3>Wallet load failed or pending. Status: ${orderStatusResp.status}</h3>`);
+      return res.send(
+        `<h3>Wallet load failed or pending. Status: ${orderStatusResp.status}</h3>`
+      );
     }
   } catch (err) {
     console.error("Wallet load response error:", err);
     return res.send("Something went wrong processing wallet response.");
+  }
+};
+
+exports.initiateRequestPayment = async (req, res) => {
+  const { requestId, amount, bookingId } = req.body;
+  const userId = req.session.userId;
+
+  if (!amount || !requestId) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Amount and request ID required" });
+  }
+
+  const orderId = `reqpay_${Date.now()}`;
+  const returnUrl = `${req.protocol}://${req.get(
+    "host"
+  )}/payment/request-payment-response`;
+
+  const paymentHandler = PaymentHandler.getInstance();
+
+  try {
+    // Save temp record
+    await TempRequestPayment.create({
+      orderId,
+      requestId,
+      userId,
+      bookingId,
+      amount,
+      purpose: "Support Request Payment",
+    });
+
+    // HDFC order session
+    const orderSessionResp = await paymentHandler.orderSession({
+      order_id: orderId,
+      amount: parseFloat(amount),
+      currency: "INR",
+      return_url: returnUrl,
+      customer_id: `request-user-${userId}`,
+    });
+
+    return res.json({
+      success: true,
+      paymentUrl: orderSessionResp.payment_links.web,
+    });
+  } catch (err) {
+    console.error("❌ Failed to initiate request payment:", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to initiate request payment" });
+  }
+};
+
+exports.handleRequestPaymentResponse = async (req, res) => {
+  const orderId = req.body.order_id;
+  const paymentHandler = PaymentHandler.getInstance();
+
+  if (!orderId) {
+    return res.send("Missing order ID");
+  }
+
+  try {
+    const orderStatusResp = await paymentHandler.orderStatus(orderId);
+
+    // Verify signature
+    const isValid = validateHMAC_SHA256(
+      req.body,
+      paymentHandler.getResponseKey()
+    );
+    if (!isValid) {
+      return res.send("❌ Signature verification failed");
+    }
+
+    const tempData = await TempRequestPayment.findOneAndDelete({ orderId });
+    if (!tempData) {
+      return res.send("❌ Request temp data not found or expired.");
+    }
+
+    const { requestId, userId, bookingId, amount } = tempData;
+
+    if (orderStatusResp.status === "CHARGED") {
+      // ✅ Mark reply as Paid
+      await Requests.updateOne(
+        { _id: requestId, "reply.amount": amount },
+        { $set: { "reply.$.paymentStatus": "Paid" } }
+      );
+
+      // ✅ Save transaction
+      await RequestTransactions.create({
+        requestId,
+        userId,
+        amount,
+        status: "Paid",
+        bookingId,
+        purpose: "Support request payment",
+      });
+
+      return res.redirect(`/manage-booking?id=${bookingId}&payment=success`);
+    } else {
+      // ❌ Save failed txn
+      await RequestTransactions.create({
+        requestId,
+        userId,
+        bookingId,
+        amount,
+        status: "Failed",
+        purpose: "Support request payment",
+      });
+
+      return res.redirect(`/manage-booking?id=${bookingId}&payment=error`);
+    }
+  } catch (err) {
+    console.error("Request payment response error:", err);
+    return res.redirect(
+      `/manage-booking?id=${req.body.bookingId || ""}&payment=error`
+    );
+  }
+};
+
+exports.initiateRenewalPayment = async (req, res) => {
+  const { email, price, subscription, role } = req.body;
+  const userId = req.session.userId;
+  const orderId = `renew_${Date.now()}`;
+
+  const returnUrl = `${req.protocol}://${req.get(
+    "host"
+  )}/payment/renewal-response`;
+  const paymentHandler = PaymentHandler.getInstance();
+
+  try {
+    // Save renewal temp record
+    await TempSubscription.create({
+      orderId,
+      userId,
+      email,
+      price,
+      subscription,
+      role,
+    });
+
+    // Initiate payment
+    const orderSessionResp = await paymentHandler.orderSession({
+      order_id: orderId,
+      amount: parseFloat(price),
+      currency: "INR",
+      return_url: returnUrl,
+      customer_id: `renew-user-${userId}`,
+    });
+
+    return res.redirect(orderSessionResp.payment_links.web);
+  } catch (err) {
+    console.error("❌ Failed to initiate renewal:", err);
+    res.send("Something went wrong");
+  }
+};
+
+exports.handleRenewalResponse = async (req, res) => {
+  const orderId = req.body.order_id;
+  const paymentHandler = PaymentHandler.getInstance();
+
+  if (!orderId) {
+    return res.send("Missing order ID");
+  }
+
+  try {
+    const orderStatusResp = await paymentHandler.orderStatus(orderId);
+    const isValid = validateHMAC_SHA256(
+      req.body,
+      paymentHandler.getResponseKey()
+    );
+
+    if (!isValid) {
+      return res.send("Signature verification failed");
+    }
+
+    if (orderStatusResp.status === "CHARGED") {
+      const tempData = await TempSubscription.findOneAndDelete({ orderId });
+      if (!tempData) {
+        return res.send("❌ Renewal data not found or expired.");
+      }
+
+      const { email, price, subscription, role, userId } = tempData;
+      const user = await Users.findById(userId);
+      if (!user) {
+        return res.send("User not found");
+      }
+
+      const plan = await Subscriptions.findOne({ subscription, role });
+      if (!plan) {
+        return res.send("Subscription plan not found");
+      }
+
+      const today = new Date();
+      let newExpiryDate;
+
+      console.log("Current expiry date:", user.expiryDate);
+      if (user.expiryDate && today < new Date(user.expiryDate)) {
+        console.log("Extending from existing expiry date");
+        // Extend from existing expiry
+        const startDate = new Date(user.expiryDate);
+        startDate.setDate(startDate.getDate() + 30);
+        newExpiryDate = startDate.toISOString().split("T")[0];
+      } else {
+        console.log("Extending from today");
+        // Expired → start from today
+        const startDate = new Date(today);
+        startDate.setDate(startDate.getDate() + 30);
+        newExpiryDate = startDate.toISOString().split("T")[0];
+      }
+
+      user.subscription = plan._id;
+      user.expiryDate = newExpiryDate; 
+      user.transactions = 0;
+      user.transactionAmount = 0;
+      user.userRole = role;
+
+      await user.save();
+
+      return res.redirect("/manage-subscription");
+    } else {
+      return res.send(
+        `<h3>Renewal failed or pending. Status: ${orderStatusResp.status}</h3>`
+      );
+    }
+  } catch (err) {
+    console.error("Renewal response error:", err);
+    return res.send("Something went wrong");
   }
 };

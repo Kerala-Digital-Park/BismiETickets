@@ -34,7 +34,7 @@
                                                 <% if(userDetails.userRole === "User") { %>
                                                     <a href="/subscription" class="btn btn-primary">Change Plan</a>
                                                 <% } else { %>
-                                                    <a href="/agent-subscription" class="btn btn-primary">Change Plan</a>
+                                                    <a href="/join-us" class="btn btn-primary">Change Plan</a>
                                                 <% } %>
 
                                             </div>
@@ -57,12 +57,7 @@
                                                     <% } %></h5>
                                                     <!-- <small class="mb-0">Subscription ID: 100394949</small> -->
                                                 </div>
-                                                <div>
-                                                    <div class="form-check form-switch">
-                                                        <input class="form-check-input" type="checkbox" id="autoRenew" checked>
-                                                        <small class="ms-2"><label class="form-check-label" for="autoRenew">Auto Renew</label></small>
-                                                    </div>
-                                                </div>
+                                               
                                             </div>
                                             <div class="row d-flex justify-content-between align-items-center">
                                                 <div class="col-md-auto mb-3 mb-md-0 d-flex flex-column">
@@ -74,10 +69,7 @@
                                                     %>
                                                     <%= formattedDate %> 
                                                 </div>
-                                                <div class="col-md-auto mb-3 mb-md-0">
-                                                    <p>Recurring</p>
-                                                    Yes
-                                                </div>
+                                                
                                                 <div class="col-md-auto mb-3 mb-md-0">
                                                     <p>Price</p>
                                                     ₹ <%= userDetails.subscription.price %>
@@ -86,7 +78,7 @@
                                                     <p>Access</p>
                                                     <% if(userDetails.subscription.subscription === "Enterprise") { %>
                                                     <span>Unlimited</span>
-                                                    <% } else if(userDetails.subscription.subscription === "Pro" || "Starter") { %>
+                                                    <% } else if(userDetails.subscription.subscription === "Pro" || "Base") { %>
                                                     <span>Limited</span>
                                                     <% } else { %>
                                                     <span>No Access</span>
@@ -102,7 +94,7 @@
                                           %>
                                           
                                           <div class="col-md-auto ms-auto text-center align-items-center">
-                                            <% if (userDetails.subscription.subscription === "Free" ) { %>
+                                            <% if (userDetails.subscription.subscription === "Starter" ) { %>
                                                 <% if (expiry >= now) { %>
                                                     <button class="btn btn-border border-primary" disabled>Renew Plan</button>
                                                   <% } else { %>
@@ -149,109 +141,64 @@
             </section>
             <!-- ======================= Content END -->
 
-            <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<!-- Hidden Renewal Payment Form -->
+<form id="hdfcRenewalForm" method="POST" action="/payment/initiate-renewal" style="display: none;">
+  <input type="hidden" name="email" />
+  <input type="hidden" name="price" />
+  <input type="hidden" name="subscription" />
+  <input type="hidden" name="role" />
+</form>
 
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("renewBtn").addEventListener("click", function () {
-        
-            let amount = "<%= userDetails.subscription.price %>";
-            const subscription = "<%= userDetails.subscription.subscription %>";
-            const userEmail = "<%= userDetails.email %>";
-            const role = "<%= userDetails.userRole %>";
-           
-            // Convert totalFare to paise (Razorpay uses INR in paise)
-            const amountInPaise = parseFloat(amount.replace(/[^0-9.]/g, "")) * 100;
-            console.log(amountInPaise);
-        
-                // Razorpay Options
-                var options = {
-                    "key": "rzp_test_1ziG9HjgAv6f6j",  // Replace with your Razorpay API Key
-                    "amount": amountInPaise,  // Amount in paise (₹1000 = 100000 paise)
-                    "currency": "INR",
-                    "name": "Bismi",
-                    "description": "UPI Payment",
-                    "image": "https://your-logo-url.com/logo.png",  
-                    "prefill": {
-                        "email": userEmail,
-                    },
-                    "handler": function (response) {
-                            const paymentDetails = {
-                                razorpay_payment_id: response.razorpay_payment_id,
-                                email: userEmail,
-                                price: amountInPaise / 100,
-                                subscription: subscription,
-                                role: role,
-                            };
-        
-                            // Send data to backend via POST request
-                            fetch("/renewal", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify(paymentDetails)
-                            })
-                                .then(res => res.json())
-                                .then(data => {
-                                    console.log("Server Response:", data);
-                                    Swal.fire({
-              icon: 'success',
-              title: 'Renewal Completed!',
-              text: 'Redirecting to subscription page...',
-              confirmButtonText: 'OK'
-            }).then(() => {
-              window.location.href = "/manage-subscription";
-            });
-                                })
-                                .catch(error => console.error("Error:", error));
-                },
-                    "theme": {
-                        "color": "#3399cc"
-                    }
-                };
-            
-                var razorpayInstance = new Razorpay(options);
-                razorpayInstance.open();
-            });
-        
+<script>
+  async function renewFreeBtn() {
+    const subscription = "Starter";
+    try {
+      const response = await fetch("/renewal-free", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subscription })
+      });
+
+      if (!response.ok) {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Fetch Failed',
+          text: 'Failed to fetch subscription details'
         });
-        </script>
+        return;
+      }
 
-        <script>
-            async function renewFreeBtn(){
-                const subscription = "Free";
-                try {
-                    const response = await fetch("/renewal-free",
-                        {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ subscription })
-                        });
+      const data = await response.json();
+      if (data.message) {
+        await Swal.fire({
+          icon: 'info',
+          title: 'Notice',
+          text: data.message
+        });
+      }
+      window.location.href = data.redirectUrl;
+    } catch (error) {
+      window.location.href = "/sign-in";
+      console.error("Error:", error);
+    }
+  }
 
-                    if (!response.ok) {
-                         await Swal.fire({
-        icon: 'error',
-        title: 'Fetch Failed',
-        text: 'Failed to fetch subscription details'
-      });
-                        return;
-                    }
+  // Renewal for paid subscriptions
+  document.getElementById("renewBtn")?.addEventListener("click", function () {
+    const email = "<%= userDetails.email %>";
+    const subscription = "<%= userDetails.subscription.subscription %>";
+    const role = "<%= userDetails.subscription.role %>";
+    const amount = "<%= userDetails.subscription.price %>";
 
-                    const data = await response.json();
-                    if (data.message) {
-                        await Swal.fire({
-        icon: 'info',
-        title: 'Notice',
-        text: data.message
-      });
-                    }
-                    window.location.href = data.redirectUrl;
-                } catch (error) {
-                    window.location.href = "/sign-in";
-                    console.error("Error:", error);
-                }
-            }
-        </script>
-        
+    const form = document.getElementById("hdfcRenewalForm");
+    form.email.value = email;
+    form.price.value = amount;
+    form.subscription.value = subscription;
+    form.role.value = role;
+    form.submit();
+  });
+</script>
+
         </main>
         <!-- **************** MAIN CONTENT END **************** -->
 

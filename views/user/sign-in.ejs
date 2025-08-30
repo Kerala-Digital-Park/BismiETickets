@@ -24,6 +24,12 @@
                     </div>
                   <% } %>
 
+                  <% if (reset === 'success') { %>
+                    <div class="alert alert-success" role="alert">
+                      Your password has been reset successfully. Please sign in with your new password.
+                    </div>
+                  <% } %>
+
                   <!-- Login Form -->
                   <form class="mt-4 text-start" id="login-form" autocomplete="off">
                     
