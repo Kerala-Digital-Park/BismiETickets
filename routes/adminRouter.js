@@ -4,6 +4,21 @@ const adminController = require("../controllers/adminController");
 const session = require('express-session')
 const { isLogin, isLogout } = require("../middleware/adminAuth");
 const upload = require("../multer/multer");
+const Users = require("../models/userModel");
+
+adminRouter.use(async(req, res, next) => {
+      if (req.session.adminId) {
+          try {
+            res.locals.admin = await Users.findById(req.session.adminId); 
+          } catch (error) {
+              console.error('Error fetching admin details:', error);
+              res.locals.admin = null;
+          }
+      } else {
+          res.locals.admin = null;
+      }
+      next();
+});
 
 adminRouter.get("/",isLogin, adminController.viewDashboard);
 adminRouter.get("/login", isLogout, adminController.viewLogin); 

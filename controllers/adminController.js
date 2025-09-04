@@ -73,12 +73,13 @@ const loginAdmin = async (req, res) => {
     req.session.loginTime = new Date();
     
     req.session.save((err) => {
-      if (err) {
-        console.error("❌ Error saving session:", err);
-        return res.status(500).send("Internal Server Error");
-      }
+  if (err) {
+    console.error("❌ Error saving session:", err);
+    return res.status(500).send("Internal Server Error");
+  }
+  console.log("✅ Session saved:", req.session);
   res.json({ success: true });
-    });
+});
 
   } catch (error) {
     console.error(error);
