@@ -36,6 +36,8 @@ connect
     console.log("Error connecting to MongoDB",error);
 })
 
+require("./cronJobs/flightNotifications");
+
 const userRouter = require('./routes/userRouter')
 const adminRouter = require('./routes/adminRouter')
 const paymentRouter = require('./routes/paymentRouter')

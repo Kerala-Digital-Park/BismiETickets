@@ -21,6 +21,7 @@ const LoginActivity = require("../models/loginActivityModel");
 const SessionActivity = require("../models/sessionActivityModel");
 const SigninImage = require("../models/signinImageModel");
 const WalletTransactions = require("../models/walletTransactionModel");
+const Notifications = require("../models/notificationModel");
 const UserActivity = require("../models/userActivityModel");
 const useragent = require("useragent");
 const requestIp = require("request-ip");
@@ -38,26 +39,6 @@ const razorpay = new Razorpay({
   key_id: RAZORPAY_ID_KEY,
   key_secret: RAZORPAY_SECRET_KEY,
 });
-
-async function generatePDF(templatePath, data) {
-  const html = await ejs.renderFile(templatePath, data);
-
-  const browser = await puppeteer.launch({
-    headless: "new", // or true if puppeteer > 20
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  });
-
-  const page = await browser.newPage();
-  await page.setContent(html, { waitUntil: 'networkidle0' });
-
-  const pdfBuffer = await page.pdf({
-    format: 'A4',
-    printBackground: true,
-  });
-
-  await browser.close();
-  return pdfBuffer;
-}
 
 async function generatePDF(templatePath, data) {
   const html = await ejs.renderFile(templatePath, data);
@@ -1547,13 +1528,15 @@ const viewTravelers = async (req, res) => {
 const viewWalletDetails = async (req, res) => {
   const userId = req.session.userId;
   try {
-    const walletHistory = await WalletTransactions.find({userId: userId});
+    const walletHistory = await WalletTransactions.find({userId: userId}).sort({ createdAt: -1 });
+
+    const rewardHistory = await Rewards.find({userId: userId}).sort({ createdAt: -1 });
 
     const user = await Users.findById(userId);
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
-
+    
     const walletBalance = user.walletBalance;
     const rewardBalance = user.rewardBalance;
 
@@ -1586,7 +1569,7 @@ const viewWalletDetails = async (req, res) => {
       }
     }
 
-    res.render("user/wallet-details", { walletHistory, walletBalance, walletLimit, rewardBalance, rewardExpiryStatus });
+    res.render("user/wallet-details", { walletHistory, walletBalance, walletLimit, rewardBalance, rewardExpiryStatus, rewardHistory });
   } catch (error) {
     console.error(error);
     res.render("error", { error });
@@ -3370,8 +3353,79 @@ const addSupportTicket = async (req, res) => {
 const viewNotifications = async (req, res) => {
   const userId = req.session.userId;
   try {
+    const user = await Users.findById(userId).select("userRole");
+    if (!user) return res.status(404).send("User not found");
+
+    const role = user.userRole;
+    console.log("User role:", role);
     const messages = await Support.find({ userId }).sort({ createdAt: -1 }).populate("userId");
-    return res.render('user/notifications', {messages})
+
+        // --- All notifications (we'll filter manually) ---
+    const allNotifications = await Notifications.find({})
+      .sort({ createdAt: -1 })
+      .populate("flightId");
+
+    const finalNotifications = [];
+
+    // === Iterate through notifications and apply custom rules ===
+    for (const notif of allNotifications) {
+      // ---------- CASE 1: Flight Status (sendTo: all) ----------
+      if (notif.type === "Flight Status" && notif.sendTo === "all") {
+        const userBookings = await Bookings.find({ userId }).select("flight");
+
+        // Check if this notification’s flight is booked by this user
+        const bookedFlightIds = userBookings.map(b => String(b.flight));
+        if (bookedFlightIds.includes(String(notif.flightId?._id))) {
+          finalNotifications.push(notif);
+        }
+      }
+
+      // ---------- CASE 2: Request (sendTo: seller) ----------
+      else if (notif.type === "Request" && notif.sendTo === "seller") {
+        if (role === "Agent") {
+          const request = await Requests.findOne({ bookingId: notif.flightId })
+            .populate({
+              path: "bookingId",
+              populate: { path: "flight" }
+            });
+
+          if (request?.bookingId?.flight?.sellerId?.toString() === userId.toString()) {
+            finalNotifications.push(notif);
+          }
+        }
+      }
+
+      // ---------- CASE 3: Booking (sendTo: seller) ----------
+      else if (notif.type === "Booking" && notif.sendTo === "seller") {
+        if (role === "Agent") {
+          const booking = await Bookings.findOne({ flight: notif.flightId })
+            .populate("flight");
+
+          if (booking?.flight?.sellerId?.toString() === userId.toString()) {
+            finalNotifications.push(notif);
+          }
+        }
+      }
+
+      // ---------- CASE 4: Direct user notifications ----------
+      else if (notif.sendTo === "user" && role === "User") {
+        finalNotifications.push(notif);
+      }
+
+      // ---------- CASE 5: Direct seller notifications ----------
+      else if (notif.sendTo === "seller" && role === "Agent") {
+        // Already handled in Booking / Request conditions
+      }
+
+      // ---------- CASE 6: Admin notifications (if needed later) ----------
+      // else if (notif.sendTo === "admin" && role === "Admin") { ... }
+    }
+
+    return res.render("user/notifications", {
+      messages,
+      notifications: finalNotifications,
+    });
+
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
@@ -3665,7 +3719,10 @@ const bookWithWallet = async (req, res) => {
 
     console.log(newBooking,'New booking');
 
-    await handleReward(userId, parsedBooking.baseFare, newBooking.bookingId);
+    // ✅ Handle rewards for eligible users
+    if ( !parsedBooking.discount || parseFloat(parsedBooking.discount.replace(/[^0-9.]/g, "")) === 0 ) {
+      await handleReward(userId, parsedBooking.baseFare, newBooking.bookingId);
+    }
 
     async function handleReward(userId, baseFare, bookingId) {
       try {
@@ -3694,9 +3751,9 @@ const bookWithWallet = async (req, res) => {
         await reward.save();
     
         // Optionally update user reward balance
-        await Users.findByIdAndUpdate(user._id, {
-          $inc: { rewardBalance: rewardPoints }
-        });
+        // await Users.findByIdAndUpdate(user._id, {
+        //   $inc: { rewardBalance: rewardPoints }
+        // });
       } catch (err) {
         console.error("Reward handling error:", err);
       }
@@ -3705,7 +3762,7 @@ const bookWithWallet = async (req, res) => {
       // transaction entry (only for gateway part, not wallet)
       const newTransaction = new Transactions({
         bookingId: newBooking._id,
-        userId: parsedFlight.sellerId,
+        userId: userId,
         totalAmount: totalFare, // paid through gateway
         baseFare: parsedBooking.baseFare.replace(/[^0-9.]/g, ""),
         tax: parsedBooking.otherServices.replace(/[^0-9.]/g, ""),
@@ -3886,6 +3943,152 @@ const updateNotificationSettings = async (req, res) => {
   }
 };
 
+const redeemReward = async (req, res) => {
+  const userId = req.session.userId;
+  if (!userId) return res.status(401).send('Unauthorized');
+
+  try {
+    const rewardId = req.params.id;
+    const reward = await Rewards.findOne({ _id: rewardId, userId, status: 'active' });
+    if (!reward) {
+      return res.status(404).json({ success: false, message: 'Reward not found or already redeemed/expired.' });
+    }
+
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    // Update reward status and user balances
+    reward.status = 'redeemed';
+    await reward.save();
+
+    user.rewardBalance += reward.points;
+    user.walletBalance += reward.points; // Assuming 1 point = 1 currency unit
+    await user.save();
+    res.json({ success: true, message: 'Reward redeemed successfully!'});
+  } catch (error) {
+    console.error('Error redeeming reward:', error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+}
+
+// Helper: Build Invoice & Eticket PDFs
+async function getBookingPDFs(bookingId) {
+  const booking = await Bookings.findById(bookingId).populate("flight");
+  if (!booking) throw new Error("Booking not found");
+
+  const flight = booking.flight;
+  const travelers = booking.travelers;
+  const totalFare = booking.amount;
+  const baseFare = booking.baseFare;
+  const tax = booking.tax;
+  const discount = booking.discount;
+
+  // Invoice
+  const invoiceTemplatePath = path.join(__dirname, "../views/user/invoice.ejs");
+  const invoicePDF = await generatePDF(invoiceTemplatePath, {
+    invoiceNo: booking.bookingId,
+    issuedDate: new Date().toLocaleDateString("en-GB"),
+    booking,
+    flight,
+    travelers,
+    totalAmount: totalFare,
+    baseFare,
+    tax,
+    discount,
+    email: booking.email,
+  });
+
+  // Eticket (based on stops)
+  const stopsCount = flight.stops?.length || 0;
+  const templateFileName =
+    stopsCount <= 1
+      ? "mail-oneWayBookingConfirmation.ejs"
+      : "mail-connectingBookingConfirmation.ejs";
+
+  const eticketTemplatePath = path.join(__dirname, "../views/user/", templateFileName);
+  const eticketPDF = await generatePDF(eticketTemplatePath, {
+    travelers,
+    flightDetails: flight,
+    totalFare,
+    baseFare,
+    otherServices: tax,
+    discount,
+    bookingId: booking.bookingId,
+    requests: [], // optional if you want to pull Requests model
+    layovers: [], // optional if you want to reuse layover function
+  });
+
+  return { invoicePDF, eticketPDF, booking };
+}
+
+// =================== Actions ===================
+
+// Download
+const downloadPDF = async (req, res) => {
+  try {
+    const { type, id } = req.params; // type = invoice | eticket
+    const { invoicePDF, eticketPDF } = await getBookingPDFs(id);
+
+    const fileName = type === "invoice" ? "Invoice.pdf" : "E-ticket.pdf";
+    const buffer = type === "invoice" ? invoicePDF : eticketPDF;
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+    res.end(buffer); // ✅ send raw PDF buffer
+  } catch (err) {
+    console.error("Download error:", err);
+    res.status(500).send("Error downloading PDF");
+  }
+};
+
+// Print
+const printPDF = async (req, res) => {
+  try {
+    const { type, id } = req.params;
+    const { invoicePDF, eticketPDF } = await getBookingPDFs(id);
+
+    const buffer = type === "invoice" ? invoicePDF : eticketPDF;
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "inline"); // open in browser
+    res.end(buffer); // ✅ raw PDF buffer
+  } catch (err) {
+    console.error("Print error:", err);
+    res.status(500).send("Error printing PDF");
+  }
+};
+
+// Email
+const emailPDF = async (req, res) => {
+  try {
+    const { type, id } = req.params;
+    const { invoicePDF, eticketPDF, booking } = await getBookingPDFs(id);
+
+    const attachments = [];
+    if (type === "invoice") {
+      attachments.push({ filename: "Invoice.pdf", content: invoicePDF, contentType: "application/pdf" });
+    }
+    if (type === "eticket") {
+      attachments.push({ filename: "E-ticket.pdf", content: eticketPDF, contentType: "application/pdf" });
+    }
+
+    await transporter.sendMail({
+      from: process.env.EMAIL,
+      to: booking.email,
+      subject: `Your ${type === "invoice" ? "Invoice" : "E-ticket"} for Booking ${booking.bookingId}`,
+      text: "Please find attached.",
+      attachments,
+    });
+
+    res.json({ success: true, message: `${type} sent to ${booking.email}` });
+  } catch (err) {
+    console.error("Email error:", err);
+    res.status(500).send("Error emailing PDF");
+  }
+};
+
 module.exports = {
   viewHomepage,
   viewDashboard,
@@ -3978,4 +4181,9 @@ module.exports = {
   addAddonRequest,
   bookWithWallet,
   updateNotificationSettings,
+  redeemReward,
+  downloadPDF, 
+  printPDF, 
+  emailPDF,
+  
 };

@@ -244,7 +244,9 @@ exports.handleBookingResponse = async (req, res) => {
     await newBooking.save();
 
     // ✅ Handle rewards for eligible users
-    await handleReward(userId, parsedBooking.baseFare, newBooking.bookingId);
+    if ( !parsedBooking.discount || parseFloat(parsedBooking.discount.replace(/[^0-9.]/g, "")) === 0 ) {
+      await handleReward(userId, parsedBooking.baseFare, newBooking.bookingId);
+    }
 
     async function handleReward(userId, baseFare, bookingId) {
       try {
@@ -273,9 +275,9 @@ exports.handleBookingResponse = async (req, res) => {
         await reward.save();
 
         // Optionally update user reward balance
-        await Users.findByIdAndUpdate(user._id, {
-          $inc: { rewardBalance: rewardPoints },
-        });
+        // await Users.findByIdAndUpdate(user._id, {
+        //   $inc: { rewardBalance: rewardPoints },
+        // });
       } catch (err) {
         console.error("Reward handling error:", err);
       }
@@ -284,7 +286,7 @@ exports.handleBookingResponse = async (req, res) => {
     // transaction entry (only for gateway part, not wallet)
     const newTransaction = new Transactions({
       bookingId: newBooking._id,
-      userId: parsedFlight.sellerId,
+      userId: userId,
       totalAmount: totalFareGateway, // paid through gateway
       baseFare: parsedBooking.baseFare.replace(/[^0-9.]/g, ""),
       tax: parsedBooking.otherServices.replace(/[^0-9.]/g, ""),

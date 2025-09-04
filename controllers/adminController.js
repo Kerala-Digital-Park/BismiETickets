@@ -15,14 +15,18 @@ const Support = require("../models/supportModel");
 const Airport = require("../models/airportModel");
 const PopularFlight = require("../models/popularFlightModel");
 const ProfileUpdates = require("../models/profileUpdateModel");
+const LoginActivity = require("../models/loginActivityModel");
 const FilterAirport = require("../models/filterAirportModel");
-  const SessionActivity = require("../models/sessionActivityModel");
+const SessionActivity = require("../models/sessionActivityModel");
 const Request = require("../models/requestModel");
 const UserActivity = require("../models/userActivityModel");
 const SigninImage = require("../models/signinImageModel");
 const Promotion = require("../models/promotionModel"); 
+const Notification = require("../models/notificationModel");
 const moment = require("moment");
 const nodemailer = require("nodemailer");
+const ExcelJS = require("exceljs");
+const PDFDocument = require("pdfkit");
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -377,6 +381,8 @@ const viewUserDetail = async (req, res) => {
       })
       .populate("userId");
 
+    console.log("transactions", transactions);
+
     const profileUpdates = await ProfileUpdates.find({ userId }).sort({ createdAt: -1 });
     const kycUpdates = await KycUpdates.find({ userId }).sort({ createdAt: -1 });
 
@@ -399,6 +405,20 @@ const viewUserDetail = async (req, res) => {
       return { ...activity.toObject(), active };
     });
 
+        // ✅ Get current month and year
+    const now = new Date();
+    const currentMonth = now.getMonth(); // 0-11
+    const currentYear = now.getFullYear();
+
+    // ✅ Count bookings in this month
+    const monthlyBookings = bookings.filter(b => {
+      const bookingDate = new Date(b.createdAt);
+      return (
+        bookingDate.getMonth() === currentMonth &&
+        bookingDate.getFullYear() === currentYear
+      );
+    }).length;
+
     res.render("admin/userDetail", {
       user,
       bookings,
@@ -406,6 +426,7 @@ const viewUserDetail = async (req, res) => {
       sessions: sessionActivities, // optional, if you want raw active sessions
       transactions,
       approvals,
+      monthlyBookings,
     });
   } catch (error) {
     console.error(error);
@@ -544,7 +565,7 @@ const viewAgentDetail = async (req, res) => {
       path: "flight", 
       model: "Flights",
     },
-    }).populate("userId");
+    }).populate("userId").sort({ createdAt: -1 });
     const listingTransactions = (
   await Transaction.find()
     .populate({
@@ -553,7 +574,7 @@ const viewAgentDetail = async (req, res) => {
         path: "flight",
         model: "Flights",
       },
-    })
+    }).sort({ createdAt: -1 })
 ).filter((tx) => {
   return (
     tx.bookingId &&
@@ -570,19 +591,6 @@ const viewAgentDetail = async (req, res) => {
 ];
     const loginActivities = await LoginActivity.find({ user: agentId }).sort({ loginTime: -1 });
        
-//   const db = mongoose.connection.db;
-//   const rawSessions = await db.collection('sessions').find({}).toArray();
-
-// const userSessions = rawSessions.map(s => ({
-//   _id: s._id,
-//   expires: s.expires,
-//   sessionData: JSON.parse(s.session),
-// }))    
-// .filter(s => {
-//       const data = s.sessionData;
-//       return data.userId === agentId && !data.adminId; // only user-only sessions
-//     });
-
 // Fetch active sessions for this user
     const sessionActivities = await SessionActivity.find({ user: agentId });
 
@@ -594,7 +602,26 @@ const viewAgentDetail = async (req, res) => {
       return { ...activity.toObject(), active };
     });
 
-    res.render("admin/agentDetail", { agent, flights, bookings, loginActivities: loginActivitiesWithStatus, sessions: sessionActivities, transactions, approvals, listingTransactions });
+        // ✅ Get current month and year
+    const now = new Date();
+    const currentMonth = now.getMonth(); // 0-11
+    const currentYear = now.getFullYear();
+
+    // ✅ Count bookings in this month
+    const monthlyBookings = bookings.filter(b => {
+      const bookingDate = new Date(b.createdAt);
+      return (
+        bookingDate.getMonth() === currentMonth &&
+        bookingDate.getFullYear() === currentYear
+      );
+    }).length;
+
+    const totalEarnings = listingTransactions.reduce((sum, b) => {
+      const fare = parseFloat(b.baseFare) || 0; // ensure numeric
+      return sum + fare;
+    }, 0);
+
+    res.render("admin/agentDetail", { agent, flights, bookings, loginActivities: loginActivitiesWithStatus, sessions: sessionActivities, transactions, approvals, listingTransactions, monthlyBookings, totalEarnings });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
@@ -3408,17 +3435,6 @@ const sendPromotion = async (req, res) => {
       users = await User.find({ role: "User", status: "Inactive" }, "email");
     }
 
-    // Send emails
-    // const mailOptions = {
-    //   from: process.env.EMAIL_USER,
-    //   subject,
-    //   text: message
-    // };
-
-    // for (const user of users) {
-    //   mailOptions.to = user.email;
-    //   await transporter.sendMail(mailOptions);
-    // }
     for (const user of users) {
   const mailOptions = {
     from: `"Bismi Support Team" <${process.env.EMAIL_USER}>`,
@@ -3460,6 +3476,918 @@ const sendPromotion = async (req, res) => {
     res.redirect("/admin/coupons?error=Failed to send promotion");
   }
 }
+
+const viewNotifications = async (req, res) => {
+  const flightId = req.query.id;
+  const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  try {
+    const matchQuery = { $or: [{ sendTo: "admin" }, { sendTo: "all" }] };
+    
+    if (flightId) {
+      matchQuery.flightId = flightId;
+    }
+
+    if (search) {
+      matchQuery.$or = [
+        { type: { $regex: search, $options: "i" } },
+        { "flightId.inventoryId": { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Aggregation to fetch notifications with search + pagination
+    const notifications = await Notification.aggregate([
+      {
+        $lookup: {
+          from: "flights", // collection name in MongoDB
+          localField: "flightId",
+          foreignField: "_id",
+          as: "flightId",
+        },
+      },
+      { $unwind: "$flightId" },
+      { $match: matchQuery },
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+    ]);
+
+    // Aggregation for total count
+    const countResult = await Notification.aggregate([
+      {
+        $lookup: {
+          from: "flights",
+          localField: "flightId",
+          foreignField: "_id",
+          as: "flightId",
+        },
+      },
+      { $unwind: "$flightId" },
+      { $match: matchQuery },
+      { $count: "total" },
+    ]);
+
+    const totalCount = countResult[0]?.total || 0;
+    const totalPages = Math.ceil(totalCount / limit);
+
+    res.render("admin/notifications", {
+      notifications,
+      search,
+      currentPage: page,
+      totalPages,
+      totalCount,
+      limit,
+      flightId,
+    });
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+const exportTransactionsExcel = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const transactions = await Transaction.find({ userId })
+      .populate({
+        path: "bookingId",
+        populate: { path: "flight" },
+      })
+      .populate("userId");
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Transactions");
+
+    // Define columns
+    worksheet.columns = [
+      { header: "Ref. No", key: "ref", width: 20 },
+      { header: "Date", key: "date", width: 25 },
+      { header: "Booking ID", key: "bookingId", width: 20 },
+      { header: "Particulars", key: "particulars", width: 15 },
+      { header: "Destination", key: "destination", width: 30 },
+      { header: "Travel Date", key: "travelDate", width: 20 },
+      { header: "Amount", key: "amount", width: 15 },
+      { header: "Balance", key: "balance", width: 15 },
+      { header: "User", key: "user", width: 20 },
+    ];
+
+    // Add rows
+    transactions.forEach((t) => {
+      let particulars, balance;
+      if (t.credit === 0) {
+        particulars = "Deposited";
+        balance = -t.debit;
+      } else {
+        particulars = "Withdrawn";
+        balance = t.credit;
+      }
+
+      const booking = t.bookingId;
+      const flight = booking && booking.flight;
+
+      worksheet.addRow({
+        ref: t.transactionId || "N/A",
+        date: new Date(t.createdAt).toLocaleString("en-IN"),
+        bookingId: booking ? booking.bookingId : "N/A",
+        particulars,
+        destination: flight
+          ? `${flight.arrivalName}, ${flight.toCountry}`
+          : "N/A",
+        travelDate: flight
+          ? new Date(flight.departureDate).toLocaleDateString("en-IN")
+          : "N/A",
+        amount: `₹ ${t.totalAmount}`,
+        balance: `₹ ${balance}`,
+        user: t.userId?.name || "N/A",
+      });
+    });
+
+    // Styling header row
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.font = { bold: true };
+      cell.alignment = { horizontal: "center" };
+    });
+
+    // Send file
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=transactions.xlsx"
+    );
+
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (err) {
+    console.error("Excel export error:", err);
+    res.status(500).send("Failed to export Excel");
+  }
+};
+
+// ✅ Export to PDF
+const exportTransactionsPDF = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const transactions = await Transaction.find({ userId })
+      .populate({
+        path: "bookingId",
+        populate: { path: "flight" },
+      })
+      .populate("userId");
+
+    const doc = new PDFDocument({ margin: 30, size: "A4", layout: "landscape" });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=transactions.pdf");
+
+    doc.pipe(res);
+
+    // Title
+    doc.fontSize(18).text("Transactions Report", { align: "center" });
+    doc.moveDown(2);
+
+    // Table settings
+    const tableTop = 100;
+    const colWidths = [70, 120, 90, 90, 180, 100, 100, 100, 120]; // last col widened for "User"
+    const headers = [
+      "Ref No",
+      "Date",
+      "Booking Id",
+      "Particulars",
+      "Destination",
+      "Travel Date",
+      "Amount",
+      "Balance",
+      "User",
+    ];
+
+    // Draw headers with borders
+    let x = doc.page.margins.left;
+    let y = tableTop;
+    headers.forEach((header, i) => {
+      doc.rect(x, y, colWidths[i], 25).stroke(); // header cell border
+      doc.font("Helvetica-Bold").fontSize(11).text(header, x + 5, y + 7, {
+        width: colWidths[i] - 10,
+        align: "left",
+      });
+      x += colWidths[i];
+    });
+
+    y += 25; // move below header row
+
+    // Draw rows
+    transactions.forEach((t) => {
+      let particulars, balance;
+      if (t.credit === 0) {
+        particulars = "Deposited";
+        balance = -t.debit;
+      } else {
+        particulars = "Withdrawn";
+        balance = t.credit;
+      }
+
+      const booking = t.bookingId;
+      const flight = booking && booking.flight;
+
+      const row = [
+        t.transactionId,
+        new Date(t.createdAt).toLocaleString("en-IN"),
+        booking ? booking.bookingId : "N/A",
+        particulars,
+        flight ? `${flight.arrivalName}, ${flight.toCountry}` : "N/A",
+        flight
+          ? new Date(flight.departureDate).toLocaleDateString("en-IN")
+          : "N/A",
+        `INR ${t.totalAmount || 0}`,
+        `INR ${balance || 0}`,
+        t.userId?.name || "N/A",
+      ];
+
+      // Find tallest cell height in this row
+      let rowHeight = 25;
+      row.forEach((text, i) => {
+        const h = doc.heightOfString(text, { width: colWidths[i] - 10 });
+        if (h + 10 > rowHeight) rowHeight = h + 10;
+      });
+
+      // Draw cells with borders and text
+      x = doc.page.margins.left;
+      row.forEach((text, i) => {
+        doc.rect(x, y, colWidths[i], rowHeight).stroke(); // cell border
+        doc.font("Helvetica").fontSize(10).text(text, x + 5, y + 5, {
+          width: colWidths[i] - 10,
+          align: "left",
+        });
+        x += colWidths[i];
+      });
+
+      y += rowHeight;
+
+      // Page break check
+      if (y > doc.page.height - 50) {
+        doc.addPage();
+        y = 50;
+      }
+    });
+
+    doc.end();
+  } catch (err) {
+    console.error("PDF export error:", err);
+    res.status(500).send("Failed to export PDF");
+  }
+};
+
+// ✅ Send by Email
+const sendTransactionsEmail = async (req, res) => {
+  try {
+    const adminId = req.session.adminId;
+    const admin = await User.findById(adminId, { role: "Admin" });
+    const userId = req.params.id;
+    const toEmail = admin.email;
+    const transactions = await Transaction.find({ userId })
+  .populate({
+    path: "bookingId",
+    populate: { path: "flight" }
+  })
+  .populate("userId");
+
+    // Prepare CSV with all table headers
+    let content = "Ref No,Date,Booking Id,Particulars,Destination,Travel Date,Amount,Balance,User\n";
+
+    function csvSafe(value) {
+      if (value == null) return "";
+      const str = String(value).replace(/"/g, '""');
+      return `"${str}"`;
+    }
+
+    transactions.forEach((t) => {
+      let particulars, balance;
+      if (t.credit === 0) {
+        particulars = "Deposited";
+        balance = -t.debit;
+      } else {
+        particulars = "Withdrawn";
+        balance = t.credit;
+      }
+
+      const booking = t.bookingId;
+      const flight = booking && booking.flight;
+
+      content += [
+        csvSafe(t.transactionId),
+        csvSafe(t.createdAt.toLocaleString("en-IN")),
+        csvSafe(booking ? booking.bookingId : "N/A"),
+        csvSafe(particulars),
+        csvSafe(flight ? `${flight.arrivalName}, ${flight.toCountry}` : "N/A"),
+        csvSafe(flight ? new Date(flight.departureDate).toLocaleDateString("en-IN") : "N/A"),
+        csvSafe(t.totalAmount),
+        csvSafe(balance),
+        csvSafe(t.userId?.name || "N/A")
+      ].join(",") + "\n";
+    });
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: "info@btrips.in",
+      subject: "Transactions Report",
+      text: "Attached is the transactions report.",
+      attachments: [
+        {
+          filename: "transactions.csv",
+          content,
+        },
+      ],
+    });
+
+    res.json({ success: true, message: "Email sent successfully!" });
+  } catch (err) {
+    console.error("Email send error:", err);
+    res.status(500).send("Failed to send email");
+  }
+};
+
+const exportListingTransactionsExcel = async (req, res) => {
+  try {
+    const agentId = req.params.id;
+
+    // Fetch all transactions with booking + flight populated
+    const allTransactions = await Transaction.find()
+      .populate({
+        path: "bookingId",
+        populate: { path: "flight" },
+      })
+      .populate("userId")
+      .sort({ createdAt: -1 });
+
+    // Filter only those where flight.sellerId == agentId
+    const transactions = allTransactions.filter((tx) => {
+      return (
+        tx.bookingId &&
+        tx.bookingId.flight &&
+        String(tx.bookingId.flight.sellerId) === String(agentId)
+      );
+    });
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Listing Transactions");
+
+    // Define columns (matching your Listing Ledger table)
+    worksheet.columns = [
+      { header: "Ref. No", key: "ref", width: 20 },
+      { header: "Date", key: "date", width: 25 },
+      { header: "Inventory ID", key: "inventoryId", width: 20 },
+      { header: "Particulars", key: "particulars", width: 40 },
+      { header: "Destination", key: "destination", width: 30 },
+      { header: "Travel Date", key: "travelDate", width: 20 },
+      { header: "Booking ID", key: "bookingId", width: 20 },
+      { header: "Amount", key: "amount", width: 15 },
+      { header: "Balance", key: "balance", width: 15 },
+    ];
+
+    // Add rows
+    transactions.forEach((t) => {
+      let particulars, balance;
+      if (t.credit === 0) {
+        particulars = "Deposited";
+        balance = -t.debit;
+      } else {
+        particulars = "Withdrawn";
+        balance = t.credit;
+      }
+
+      const booking = t.bookingId;
+      const flight = booking && booking.flight;
+
+      worksheet.addRow({
+        ref: t.transactionId || "N/A",
+        date: new Date(t.createdAt).toLocaleString("en-IN"),
+        inventoryId: flight ? flight.inventoryId : "N/A",
+        particulars: flight
+          ? `PNR: ${flight.inventoryDates?.[0]?.pnr || "N/A"} - ${flight.fromCity} // ${flight.toCity} (${flight.stops?.[0]?.airlineCode || ""} ${flight.stops?.[0]?.flightNumber || ""})`
+          : "N/A",
+        destination: flight
+          ? `${flight.arrivalName}, ${flight.toCountry}`
+          : "N/A",
+        travelDate: flight
+          ? new Date(flight.departureDate).toLocaleDateString("en-IN")
+          : "N/A",
+        bookingId: booking ? booking.bookingId : "N/A",
+        amount: t.totalAmount ? `₹ ${t.totalAmount}` : "₹ 0",
+        balance: `₹ ${balance || 0}`,
+      });
+    });
+
+    // Style header row
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.font = { bold: true };
+      cell.alignment = { horizontal: "center" };
+    });
+
+    // Send file
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=listing-transactions.xlsx"
+    );
+
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (err) {
+    console.error("Excel export error:", err);
+    res.status(500).send("Failed to export Excel");
+  }
+};
+
+// ✅ Export to PDF
+const exportListingTransactionsPDF = async (req, res) => {
+  try {
+    const agentId = req.params.id;
+
+    // Fetch only transactions where flight.sellerId matches agentId
+    const allTransactions = await Transaction.find()
+      .populate({
+        path: "bookingId",
+        populate: { path: "flight" },
+      })
+      .populate("userId")
+      .sort({ createdAt: -1 });
+
+    const transactions = allTransactions.filter((tx) => {
+      return (
+        tx.bookingId &&
+        tx.bookingId.flight &&
+        String(tx.bookingId.flight.sellerId) === String(agentId)
+      );
+    });
+
+    const doc = new PDFDocument({ margin: 30, size: "A4", layout: "landscape" });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=listing-transactions.pdf"
+    );
+
+    doc.pipe(res);
+
+    // Title
+    doc.fontSize(18).text("Listing Transactions Report", { align: "center" });
+    doc.moveDown(2);
+
+    // Table settings
+    const tableTop = 100;
+    const colWidths = [
+      70,  // Ref No
+      120, // Date
+      100, // Inventory ID
+      160, // Particulars
+      160, // Destination
+      100, // Travel Date
+      100, // Booking ID
+      100, // Amount
+      100, // Balance
+    ];
+
+    const headers = [
+      "Ref No",
+      "Date",
+      "Inventory ID",
+      "Particulars",
+      "Destination",
+      "Travel Date",
+      "Booking ID",
+      "Amount",
+      "Balance",
+    ];
+
+    // Draw headers with borders
+    let x = doc.page.margins.left;
+    let y = tableTop;
+    headers.forEach((header, i) => {
+      doc.rect(x, y, colWidths[i], 25).stroke();
+      doc.font("Helvetica-Bold").fontSize(11).text(header, x + 5, y + 7, {
+        width: colWidths[i] - 10,
+        align: "left",
+      });
+      x += colWidths[i];
+    });
+
+    y += 25; // move below header row
+
+    // Draw rows
+    transactions.forEach((t) => {
+      let particulars, balance;
+      if (t.credit === 0) {
+        particulars = "Deposited";
+        balance = -t.debit;
+      } else {
+        particulars = "Withdrawn";
+        balance = t.credit;
+      }
+
+      const booking = t.bookingId;
+      const flight = booking && booking.flight;
+
+      const row = [
+        t.transactionId,
+        new Date(t.createdAt).toLocaleString("en-IN"),
+        flight ? flight.inventoryId : "N/A",
+        flight
+          ? `PNR: ${flight.inventoryDates?.[0]?.pnr || "N/A"} - ${flight.fromCity} // ${flight.toCity} (${flight.stops?.[0]?.airlineCode || ""} ${flight.stops?.[0]?.flightNumber || ""})`
+          : "N/A",
+        flight ? `${flight.arrivalName}, ${flight.toCountry}` : "N/A",
+        flight
+          ? new Date(flight.departureDate).toLocaleDateString("en-IN")
+          : "N/A",
+        booking ? booking.bookingId : "N/A",
+        `₹ ${t.totalAmount || 0}`,
+        `₹ ${balance || 0}`,
+      ];
+
+      // Find tallest cell height
+      let rowHeight = 25;
+      row.forEach((text, i) => {
+        const h = doc.heightOfString(text, { width: colWidths[i] - 10 });
+        if (h + 10 > rowHeight) rowHeight = h + 10;
+      });
+
+      // Draw each cell
+      x = doc.page.margins.left;
+      row.forEach((text, i) => {
+        doc.rect(x, y, colWidths[i], rowHeight).stroke();
+        doc.font("Helvetica").fontSize(10).text(text, x + 5, y + 5, {
+          width: colWidths[i] - 10,
+          align: "left",
+        });
+        x += colWidths[i];
+      });
+
+      y += rowHeight;
+
+      // Page break
+      if (y > doc.page.height - 50) {
+        doc.addPage();
+        y = 50;
+      }
+    });
+
+    doc.end();
+  } catch (err) {
+    console.error("PDF export error:", err);
+    res.status(500).send("Failed to export PDF");
+  }
+};
+
+// ✅ Send Listing Transactions by Email
+const sendListingTransactionsEmail = async (req, res) => {
+  try {
+    const adminId = req.session.adminId;
+    const admin = await User.findById(adminId, { role: "Admin" });
+    const agentId = req.params.id;
+
+    // Fetch all transactions with booking + flight populated
+    const allTransactions = await Transaction.find()
+      .populate({
+        path: "bookingId",
+        populate: { path: "flight" },
+      })
+      .populate("userId")
+      .sort({ createdAt: -1 });
+
+    // Filter for only listing transactions (where flight.sellerId == agentId)
+    const transactions = allTransactions.filter((tx) => {
+      return (
+        tx.bookingId &&
+        tx.bookingId.flight &&
+        String(tx.bookingId.flight.sellerId) === String(agentId)
+      );
+    });
+
+    // Prepare CSV with headers
+    let content =
+      "Ref No,Date,Inventory ID,Particulars,Destination,Travel Date,Booking ID,Amount,Balance,User\n";
+
+    function csvSafe(value) {
+      if (value == null) return "";
+      const str = String(value).replace(/"/g, '""');
+      return `"${str}"`;
+    }
+
+    // Add rows
+    transactions.forEach((t) => {
+      let particulars, balance;
+      if (t.credit === 0) {
+        particulars = "Deposited";
+        balance = -t.debit;
+      } else {
+        particulars = "Withdrawn";
+        balance = t.credit;
+      }
+
+      const booking = t.bookingId;
+      const flight = booking && booking.flight;
+
+      content +=
+        [
+          csvSafe(t.transactionId),
+          csvSafe(new Date(t.createdAt).toLocaleString("en-IN")),
+          csvSafe(flight ? flight.inventoryId : "N/A"),
+          csvSafe(
+            flight
+              ? `PNR: ${flight.inventoryDates?.[0]?.pnr || "N/A"} - ${flight.fromCity} // ${flight.toCity} (${flight.stops?.[0]?.airlineCode || ""} ${flight.stops?.[0]?.flightNumber || ""})`
+              : "N/A"
+          ),
+          csvSafe(flight ? `${flight.arrivalName}, ${flight.toCountry}` : "N/A"),
+          csvSafe(
+            flight
+              ? new Date(flight.departureDate).toLocaleDateString("en-IN")
+              : "N/A"
+          ),
+          csvSafe(booking ? booking.bookingId : "N/A"),
+          csvSafe(`INR ${t.totalAmount || 0}`),
+          csvSafe(`INR ${balance || 0}`),
+          csvSafe(t.userId?.name || "N/A"),
+        ].join(",") + "\n";
+    });
+
+    // Send email with CSV attachment
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: "info@btrips.in", // 👈 you can swap this with admin.email
+      subject: "Listing Transactions Report",
+      text: "Attached is the listing transactions report.",
+      attachments: [
+        {
+          filename: "listing-transactions.csv",
+          content,
+        },
+      ],
+    });
+
+    res.json({ success: true, message: "Email sent successfully!" });
+  } catch (err) {
+    console.error("Email send error:", err);
+    res.status(500).send("Failed to send email");
+  }
+};
+
+const exportPayoutTransactionsExcel = async (req, res) => {
+  try {
+    const agentId = req.params.id;
+
+    const transactions = await Transaction.find({ userId: agentId })
+      .populate("userId")
+      .sort({ createdAt: -1 });
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Payout Transactions");
+
+    // Define columns to match your payout ledger table
+    worksheet.columns = [
+      { header: "Ref. No", key: "ref", width: 20 },
+      { header: "Date", key: "date", width: 25 },
+      { header: "Particulars", key: "particulars", width: 15 },
+      { header: "Bank Details", key: "bankName", width: 20 },
+      { header: "IFSC Code", key: "ifsc", width: 20 },
+      { header: "From Account", key: "accountHolder", width: 25 },
+      { header: "Amount", key: "amount", width: 15 },
+      { header: "Balance", key: "balance", width: 15 },
+    ];
+
+    // Add rows
+    transactions.forEach((t) => {
+      let particulars, balance;
+      if (t.credit === 0) {
+        particulars = "Deposited";
+        balance = -t.debit;
+      } else {
+        particulars = "Withdrawn";
+        balance = t.credit;
+      }
+
+      const agent = t.userId; // agent details
+
+      worksheet.addRow({
+        ref: t.transactionId || "N/A",
+        date: new Date(t.createdAt).toLocaleString("en-IN"),
+        particulars,
+        bankName: agent?.bankDetails?.bankName || "N/A",
+        ifsc: agent?.bankDetails?.ifscCode || "N/A",
+        accountHolder: agent?.bankDetails?.accountHolderName || "N/A",
+        amount: `₹ ${t.totalAmount || 0}`,
+        balance: `₹ ${balance || 0}`,
+      });
+    });
+
+    // Styling header row
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.font = { bold: true };
+      cell.alignment = { horizontal: "center" };
+    });
+
+    // Send file
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=payout-transactions.xlsx"
+    );
+
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (err) {
+    console.error("Excel export error:", err);
+    res.status(500).send("Failed to export Excel");
+  }
+};
+
+// ✅ Export to PDF
+const exportPayoutTransactionsPDF = async (req, res) => {
+  try {
+    const agentId = req.params.id;
+
+    const transactions = await Transaction.find({ userId: agentId })
+      .populate("userId")
+      .sort({ createdAt: -1 });
+
+    const doc = new PDFDocument({ margin: 30, size: "A4", layout: "landscape" });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=payout-transactions.pdf"
+    );
+
+    doc.pipe(res);
+
+    // Title
+    doc.fontSize(18).text("Payout Transactions Report", { align: "center" });
+    doc.moveDown(2);
+
+    // Table settings
+    const tableTop = 100;
+    const colWidths = [70, 120, 100, 120, 100, 150, 100, 100];
+    const headers = [
+      "Ref No",
+      "Date",
+      "Particulars",
+      "Bank Details",
+      "IFSC Code",
+      "From Account",
+      "Amount",
+      "Balance",
+    ];
+
+    // Draw headers
+    let x = doc.page.margins.left;
+    let y = tableTop;
+    headers.forEach((header, i) => {
+      doc.rect(x, y, colWidths[i], 25).stroke();
+      doc.font("Helvetica-Bold").fontSize(11).text(header, x + 5, y + 7, {
+        width: colWidths[i] - 10,
+        align: "left",
+      });
+      x += colWidths[i];
+    });
+
+    y += 25;
+
+    // Rows
+    transactions.forEach((t) => {
+      let particulars, balance;
+      if (t.credit === 0) {
+        particulars = "Deposited";
+        balance = -t.debit;
+      } else {
+        particulars = "Withdrawn";
+        balance = t.credit;
+      }
+
+      const agent = t.userId;
+
+      const row = [
+        t.transactionId,
+        new Date(t.createdAt).toLocaleString("en-IN"),
+        particulars,
+        agent?.bankDetails?.bankName || "N/A",
+        agent?.bankDetails?.ifscCode || "N/A",
+        agent?.bankDetails?.accountHolderName || "N/A",
+        `₹ ${t.totalAmount || 0}`,
+        `₹ ${balance || 0}`,
+      ];
+
+      // Row height
+      let rowHeight = 25;
+      row.forEach((text, i) => {
+        const h = doc.heightOfString(String(text), { width: colWidths[i] - 10 });
+        if (h + 10 > rowHeight) rowHeight = h + 10;
+      });
+
+      // Draw cells
+      x = doc.page.margins.left;
+      row.forEach((text, i) => {
+        doc.rect(x, y, colWidths[i], rowHeight).stroke();
+        doc.font("Helvetica").fontSize(10).text(String(text), x + 5, y + 5, {
+          width: colWidths[i] - 10,
+          align: "left",
+        });
+        x += colWidths[i];
+      });
+
+      y += rowHeight;
+
+      // Page break
+      if (y > doc.page.height - 50) {
+        doc.addPage();
+        y = 50;
+      }
+    });
+
+    doc.end();
+  } catch (err) {
+    console.error("PDF export error:", err);
+    res.status(500).send("Failed to export PDF");
+  }
+};
+
+// ✅ Send by Email
+const sendPayoutTransactionsEmail = async (req, res) => {
+  try {
+    const adminId = req.session.adminId;
+    const admin = await User.findById(adminId, { role: "Admin" });
+    const agentId = req.params.id;
+
+    const transactions = await Transaction.find({ userId: agentId })
+      .populate("userId")
+      .sort({ createdAt: -1 });
+
+    // Prepare CSV
+    let content =
+      "Ref No,Date,Particulars,Bank Details,IFSC Code,From Account,Amount,Balance\n";
+
+    function csvSafe(value) {
+      if (value == null) return "";
+      const str = String(value).replace(/"/g, '""');
+      return `"${str}"`;
+    }
+
+    transactions.forEach((t) => {
+      let particulars, balance;
+      if (t.credit === 0) {
+        particulars = "Deposited";
+        balance = -t.debit;
+      } else {
+        particulars = "Withdrawn";
+        balance = t.credit;
+      }
+
+      const agent = t.userId;
+
+      content +=
+        [
+          csvSafe(t.transactionId),
+          csvSafe(new Date(t.createdAt).toLocaleString("en-IN")),
+          csvSafe(particulars),
+          csvSafe(agent?.bankDetails?.bankName || "N/A"),
+          csvSafe(agent?.bankDetails?.ifscCode || "N/A"),
+          csvSafe(agent?.bankDetails?.accountHolderName || "N/A"),
+          csvSafe(`INR ${t.totalAmount || 0}`),
+          csvSafe(`INR ${balance || 0}`),
+        ].join(",") + "\n";
+    });
+
+    // Send email
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: "info@btrips.in", // 👈 dynamic admin email
+      subject: "Payout Transactions Report",
+      text: "Attached is the payout transactions report.",
+      attachments: [
+        {
+          filename: "payout-transactions.csv",
+          content,
+        },
+      ],
+    });
+
+    res.json({ success: true, message: "Email sent successfully!" });
+  } catch (err) {
+    console.error("Email send error:", err);
+    res.status(500).send("Failed to send email");
+  }
+};
 
 module.exports = {
   viewLogin,
@@ -3535,5 +4463,14 @@ module.exports = {
   addSigninImage,
   sendReply,
   sendPromotion,
-
+  viewNotifications,
+  exportTransactionsExcel,
+  exportTransactionsPDF,
+  sendTransactionsEmail,
+  exportListingTransactionsExcel,
+  exportListingTransactionsPDF,
+  sendListingTransactionsEmail,
+  exportPayoutTransactionsExcel,
+  exportPayoutTransactionsPDF,
+  sendPayoutTransactionsEmail,
 };

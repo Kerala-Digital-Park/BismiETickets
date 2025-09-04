@@ -926,20 +926,48 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
         const userId = e.currentTarget.dataset.userId;
 
+		const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "Do you really want to suspend this agent?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#6c757d",
+          confirmButtonText: "Yes, suspend!",
+          cancelButtonText: "Cancel"
+        });
+
+        if (!result.isConfirmed) return;
+
         try {
           const response = await fetch(`/admin/user-suspend?id=${userId}`);
-          const result = await response.json();
+          const data = await response.json();
 
           if (response.ok) {
-            alert("Agent suspended successfully");
-            // Optionally update the UI, e.g., disable button or show status
-			window.location.reload();
+            Swal.fire({
+              icon: "success",
+              title: "Suspended",
+              text: "Agent suspended successfully.",
+              confirmButtonText: "OK"
+            }).then(() => {
+              window.location.reload();
+            });
           } else {
-            alert("Failed to suspend agent: " + result.message);
+            Swal.fire({
+              icon: "error",
+              title: "Failed",
+              text: data.message || "Failed to suspend agent.",
+              confirmButtonText: "OK"
+            });
           }
         } catch (err) {
-          alert("Error suspending agent");
           console.error(err);
+		  Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "An error occurred while suspending the agent.",
+            confirmButtonText: "OK"
+          });
         }
       });
     });

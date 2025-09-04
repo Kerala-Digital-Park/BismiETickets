@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const Flight = require("./flightModel");          
 const User = require("./userModel");
 const Counter = require("./counterModel");
+const Notifications = require("./notificationModel");
 
 const bookingSchema = mongoose.Schema(
   {
@@ -121,6 +122,33 @@ bookingSchema.pre("save", async function (next) {
     this.bookingId = `BFL${paddedNumber}`;
   }
 
+  next();
+});
+
+bookingSchema.post("save", async function (doc, next) {
+  try {
+    const flight = await Flight.findById(doc.flight);
+
+    if (flight) {
+      // Notification for Admin
+      await Notifications.create({
+        flightId: flight._id,
+        type: "Booking",
+        content: `A new booking ${doc.bookingId} has been made for flight ${flight.inventoryId}`,
+        sendTo: "admin",
+      });
+
+      // Notification for Seller
+      await Notifications.create({
+        flightId: flight._id,
+        type: "Booking",
+        content: `You have received a new booking ${doc.bookingId} for your flight ${flight.inventoryId}`,
+        sendTo: "seller",
+      });
+    }
+  } catch (err) {
+    console.error("Error creating booking notification:", err);
+  }
   next();
 });
 

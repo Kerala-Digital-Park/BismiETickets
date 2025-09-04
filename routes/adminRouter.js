@@ -44,7 +44,17 @@ adminRouter.get("/inventory-detail", isLogin, adminController.viewInventoryDetai
 adminRouter.get('/supports/search', isLogin, adminController.getSupports);
 adminRouter.get('/user-suspend', isLogin, adminController.suspendUser);
 adminRouter.get("/sessions", adminController.viewActiveSessions);
-adminRouter.get("/signin-images", isLogin, adminController.viewSigninImages)
+adminRouter.get("/signin-images", isLogin, adminController.viewSigninImages);
+adminRouter.get('/notifications/:id', isLogin, adminController.viewNotifications);
+adminRouter.get("/transactions/export/excel/:id", isLogin, adminController.exportTransactionsExcel);
+adminRouter.get("/transactions/export/pdf/:id", isLogin, adminController.exportTransactionsPDF);
+adminRouter.get("/transactions/send-email/:id", isLogin, adminController.sendTransactionsEmail);
+adminRouter.get("/listing-transactions/export/excel/:id", isLogin, adminController.exportListingTransactionsExcel);
+adminRouter.get("/listing-transactions/export/pdf/:id", isLogin, adminController.exportListingTransactionsPDF);
+adminRouter.get("/listing-transactions/send-email/:id", isLogin, adminController.sendListingTransactionsEmail);
+adminRouter.get("/payout-transactions/export/excel/:id", isLogin, adminController.exportPayoutTransactionsExcel);
+adminRouter.get("/payout-transactions/export/pdf/:id", isLogin, adminController.exportPayoutTransactionsPDF);
+adminRouter.get("/payout-transactions/send-email/:id", isLogin, adminController.sendPayoutTransactionsEmail);
 
 adminRouter.post('/login', adminController.loginAdmin);
 adminRouter.post('/add-coupon',isLogin, adminController.viewAddCoupon);

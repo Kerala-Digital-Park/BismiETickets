@@ -387,19 +387,37 @@ Main Content START -->
 
 						<script>
 							document.getElementById("payNowBtn").addEventListener("click", function () {
+								const payBtn = this;
 								const bookingData = JSON.parse(sessionStorage.getItem("bookingData"));
 								const flightDetails = JSON.parse(sessionStorage.getItem("flightDetails"));
 								const walletConfirmed = parseFloat(sessionStorage.getItem("walletConfirmedAmount")) || 0;
 
-								const totalFare = parseFloat(bookingData.totalFare.replace(/[^0-9.]/g, ""));
-
+								
 								if (!bookingData || !flightDetails) {
-									alert("Missing booking data.");
+									Swal.fire({
+										icon: "warning",
+										title: "Missing Data",
+										text: "Missing booking data.",
+										confirmButtonText: "OK"
+									});
 									return;
-								}
-
+								}  
+								const totalFare = parseFloat(bookingData.totalFare.replace(/[^0-9.]/g, ""));
+								
 								// ✅ If wallet covers full fare → direct wallet booking
 								if (walletConfirmed >= totalFare) {
+									      payBtn.disabled = true;
+
+      Swal.fire({
+        title: "Processing...",
+        text: "Please wait while we confirm your booking.",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
 									fetch("/book-with-wallet", {
 										method: "POST",
 										headers: { "Content-Type": "application/json" },
@@ -411,13 +429,30 @@ Main Content START -->
 									})  .then(res => res.json())
   .then(data => {
     if (data.success) {
-      window.location.href = data.redirectUrl; // ✅ use URL from backend
+              Swal.fire({
+          icon: "success",
+          title: "Booking Confirmed",
+          text: "Your booking was successful!",
+          confirmButtonText: "OK"
+        }).then(() => {
+          window.location.href = data.redirectUrl; 
+		});
     } else {
-      alert(data.message || "Wallet booking failed.");
+      Swal.fire({
+          icon: "error",
+          title: "Failed",
+          text: data.message || "Wallet booking failed.",
+          confirmButtonText: "OK"
+        });
     }
   })
   .catch(err => {
-    alert("Error: " + err.message);
+    Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error: " + err.message,
+        confirmButtonText: "OK"
+      });
   });
   return;
 }

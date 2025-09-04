@@ -1196,21 +1196,49 @@
         e.preventDefault();
         const userId = e.currentTarget.dataset.userId;
 
+		const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "Do you really want to suspend this user?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#6c757d",
+          confirmButtonText: "Yes, suspend!",
+          cancelButtonText: "Cancel"
+        });
+
+        if (!result.isConfirmed) return;
+
         try {
           const response = await fetch(`/admin/user-suspend?id=${userId}`);
-          const result = await response.json();
+          const data = await response.json();
 
           if (response.ok) {
-            alert("User suspended successfully");
-            // Optionally update the UI, e.g., disable button or show status
-			window.location.reload();
-          } else {
-            alert("Failed to suspend user: " + result.message);
-          }
+  Swal.fire({
+    icon: "success",
+    title: "Suspended",
+    text: "User suspended successfully",
+    confirmButtonText: "OK"
+  }).then(() => {
+    window.location.reload();
+  });
+} else {
+  Swal.fire({
+    icon: "error",
+    title: "Failed",
+    text: data.message || "Failed to suspend user.",
+    confirmButtonText: "OK"
+  });
+}
         } catch (err) {
-          alert("Error suspending user");
-          console.error(err);
-        }
+           console.error("Error suspending user:", err);
+  Swal.fire({
+    icon: "error",
+    title: "Error",
+    text: "An error occurred while suspending the user.",
+    confirmButtonText: "OK"
+  });
+}
       });
     });
   });

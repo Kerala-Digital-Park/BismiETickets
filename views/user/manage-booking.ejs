@@ -502,23 +502,27 @@ Page banner START -->
                                                 <ul class="list-group list-group-borderless">
                                                     <li class="list-group-item d-flex mb-0"><i
                                                             class="bi bi-printer-fill me-2"></i>
-                                                        <span class="h6 fw-normal">Print E-ticket(s)</span>
+                                                        <a href="/booking/print-eticket/<%=bookings._id%>" class="h6 fw-normal">Print E-ticket(s)</a>
                                                     </li>
                                                     <li class="list-group-item d-flex mb-0"><i
                                                             class="bi bi-file-earmark-arrow-down-fill me-2"></i>
-                                                        <span class="h6 fw-normal">Download E-ticket(s)</span>
+                                                        <a href="/booking/download-eticket/<%=bookings._id%>" class="h6 fw-normal">Download E-ticket(s)</a>
                                                     </li>
-                                                    <li class="list-group-item d-flex mb-0"><i
-                                                            class="bi bi-envelope-at-fill me-2"></i>
-                                                        <span class="h6 fw-normal">Email E-ticket(s)</span>
-                                                    </li>
+                                                    <li class="list-group-item d-flex mb-0">
+  <i class="bi bi-envelope-at-fill me-2"></i>
+  <a href="/booking/email-eticket/<%= bookings._id %>" 
+     class="h6 fw-normal email-eticket"
+     data-id="<%= bookings._id %>">
+     Email E-ticket(s)
+  </a>
+</li>
                                                     <li class="list-group-item d-flex mb-0"><i
                                                             class="bi bi-printer me-2"></i>
-                                                        <span class="h6 fw-normal">Print Invoice(s)</span>
+                                                        <a href="/booking/print-invoice/<%=bookings._id%>" class="h6 fw-normal">Print Invoice(s)</a>
                                                     </li>
                                                     <li class="list-group-item d-flex mb-0"><i
                                                             class="bi bi-file-earmark-arrow-down me-2"></i>
-                                                        <span class="h6 fw-normal">Download Invoice(s)</span>
+                                                        <a href="/booking/download-invoice/<%=bookings._id%>" class="h6 fw-normal">Download Invoice(s)</a>
                                                     </li>
 
                                                 </ul>
@@ -633,6 +637,55 @@ Page banner START -->
                             <!-- Right side content END -->
                         </div>
                     </div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".email-eticket").forEach(link => {
+    link.addEventListener("click", async (e) => {
+      e.preventDefault(); // stop normal navigation
+
+      const bookingId = e.currentTarget.dataset.id;
+
+    // Show waiting/loading message
+      Swal.fire({
+        title: "Sending Email...",
+        text: "Please wait while we send your e-ticket.",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      try {
+        const response = await fetch(`/booking/email-eticket/${bookingId}`);
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          Swal.fire({
+            icon: "success",
+            title: "Email Sent",
+            text: result.message,
+            confirmButtonColor: "#3085d6"
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Failed",
+            text: result.message || "Error sending email.",
+            confirmButtonColor: "#d33"
+          });
+        }
+      } catch (err) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Something went wrong while sending email.",
+          confirmButtonColor: "#d33"
+        });
+      }
+    });
+  });
+});
+</script>
                     <!-- Tab content 1 END -->
                     <!-- Tab content 2 START -->
                     <div class="tab-pane" id="tab-2">
@@ -1702,7 +1755,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!currentName || !newName) {
       e.preventDefault();
-      alert("Please select a passenger and enter the new name.");
+       Swal.fire({
+    icon: "warning",
+    title: "Missing Information",
+    text: "Please select a passenger and enter the new name.",
+    confirmButtonText: "OK"
+  });
       return;
     }
 

@@ -108,6 +108,9 @@ userRouter.get("/agent-subscription", isLogin, userController.viewAgentSubscript
 userRouter.get("/transactions", isLogin, userController.viewTransactions);
 userRouter.get("/notifications", isLogin, userController.viewNotifications);
 userRouter.get("/popular-flights", userController.viewPopularFlights);
+userRouter.get("/booking/download-:type/:id", isLogin, userController.downloadPDF); 
+userRouter.get("/booking/print-:type/:id", isLogin, userController.printPDF);
+userRouter.get("/booking/email-:type/:id", isLogin, userController.emailPDF); 
 
 userRouter.post("/sign-up", userController.signup);
 userRouter.post("/sign-in", userController.signin);
@@ -158,7 +161,8 @@ userRouter.post("/service-request/:bookingId", isLogin, upload.array("file", 4),
 userRouter.post("/support-request/:bookingId", isLogin, upload.array("file", 4), userController.addSupportRequest);
 userRouter.post("/addon-request/:bookingId", isLogin, userController.addAddonRequest);
 userRouter.post("/book-with-wallet", isLogin, userController.bookWithWallet);
-userRouter.post('/update-notifications', isLogin, userController.updateNotificationSettings);
+userRouter.post("/update-notifications", isLogin, userController.updateNotificationSettings);
+userRouter.post("/rewards/redeem/:id", isLogin, userController.redeemReward);
 
 
 userRouter.put("/update-listing", isLogin, userController.updateListingById);

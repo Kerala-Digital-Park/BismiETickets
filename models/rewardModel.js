@@ -19,8 +19,8 @@ const rewardSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["processed", "active", "redeemed", "expired"],
-      default: "processed",
+      enum: ["active", "redeemed", "expired"],
+      default: "active",
     },
     expiryDate: {
       type: Date,
@@ -28,5 +28,16 @@ const rewardSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+rewardSchema.pre("save", function (next) {
+  if (
+    this.expiryDate &&
+    this.expiryDate < new Date() &&
+    this.status !== "redeemed"
+  ) {
+    this.status = "expired";
+  }
+  next();
+});
 
 module.exports = mongoose.model("Rewards", rewardSchema);

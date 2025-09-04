@@ -46,7 +46,7 @@
                                         <!-- Digit -->
                                         <div>
                                             <h3 class="mb-0 fw-bold">
-                                                <%= bookings.length %>
+                                                <%= monthlyBookings %>
                                             </h3>
                                             <span class="mb-0 h6 fw-light">Booking this month</span>
                                         </div>
@@ -386,7 +386,7 @@
                                                                         </ul>
                                                                     </div>
                                                                 </div>
-                                                                <a href="/admin/booking/<%= booking._id %>"
+                                                                <a href="/admin/booking-detail/<%= booking._id %>"
                                                                     class="btn btn-sm btn-dark flex-shrink-0 mb-0 ms-3">View
                                                                     Details</a>
                                                             </div>
@@ -856,7 +856,8 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+
+                                </div>
 
                                 <div class="tab-pane" id="tab-3-3">
                                     <div class="row">
@@ -988,11 +989,10 @@
                                                     title="Create Transactions">
                                                     <i class="bi bi-plus-square-fill"></i> Add Transactions
                                                 </button>
-                                                <button type="button" class="btn btn-info btn-sm me-2"
+                                                <!-- <button type="button" class="btn btn-info btn-sm me-2"
                                                     data-bs-toggle="modal" data-bs-target="#newaddon" title="Email"> <i
                                                         class="bi bi-envelope-at-fill"></i> Email
                                                 </button>
-
                                                 <button type="button" class="btn btn-primary btn-sm me-2"
                                                     data-bs-toggle="modal" data-bs-target="#newaddon"
                                                     title="Pdf Download">
@@ -1002,8 +1002,61 @@
                                                     data-bs-toggle="modal" data-bs-target="#newaddon"
                                                     title="Excel Download">
                                                     <i class="bi bi-file-earmark-spreadsheet-fill "></i> Excel
-                                                </button>
-                                                <form class="rounded position-relative me-2">
+                                                </button> -->
+
+<button type="button" onclick="sendEmail()" class="btn btn-info btn-sm me-2">
+  <i class="bi bi-envelope-at-fill"></i> Email
+</button>
+
+<button type="button" onclick="window.location.href='/admin/transactions/export/pdf/<%= user._id %>'" 
+        class="btn btn-primary btn-sm me-2">
+  <i class="bi bi-download me-2"></i> PDF
+</button>
+
+<button type="button" onclick="downloadExcel('<%= user._id %>')" class="btn btn-success btn-sm me-2">
+  <i class="bi bi-file-earmark-spreadsheet-fill"></i> Excel
+</button>
+
+<script>
+  function downloadExcel(userId) {
+    window.location.href = `/admin/transactions/export/excel/${userId}`;
+  }
+</script>
+
+<script>
+function sendEmail() {
+  fetch("/admin/transactions/send-email/<%= user._id %>", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+   
+  })
+  .then(res => res.json())
+  .then(data => {
+    Swal.fire({
+      icon: "success",
+      title: "Email Sent",
+      text: data.message,
+      confirmButtonColor: "#3085d6",
+    });
+  })
+  .catch(err => {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Error sending email",
+      confirmButtonColor: "#d33",
+    });
+  });
+}
+</script>
+
+<script>
+  function downloadPDF(userId) {
+    window.location.href = `/admin/transactions/export/pdf/${userId}`;
+  }
+</script>
+
+                                                <!-- <form class="rounded position-relative me-2">
                                                     <input class="form-control  bg-transparent" type="search"
                                                         placeholder="Search Data" aria-label="Search">
                                                     <button
@@ -1011,7 +1064,7 @@
                                                         type="submit">
                                                         <i class="fas fa-search fs-6"></i>
                                                     </button>
-                                                </form>
+                                                </form> -->
                                             </div>
 
                                         </div>
@@ -1219,13 +1272,28 @@ switch (selectedRadio) {
 
             const result = await response.json();
             if (result.success) {
-                alert("Notification settings saved!");
+                Swal.fire({
+                    icon: "success",
+                    title: "Saved!",
+                    text: "Notification settings have been saved successfully.",
+                    confirmButtonColor: "#3085d6"
+                });
             } else {
-                alert("Failed to save settings.");
+                Swal.fire({
+                    icon: "error",
+                    title: "Failed",
+                    text: "Failed to save notification settings.",
+                    confirmButtonColor: "#d33"
+                });
             }
         } catch (err) {
             console.error("Error:", err);
-            alert("Something went wrong.");
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Something went wrong. Please try again.",
+                confirmButtonColor: "#d33"
+            });
         }
     });
 });
@@ -1736,21 +1804,49 @@ switch (selectedRadio) {
                             e.preventDefault();
                             const userId = e.currentTarget.dataset.userId;
 
-                            try {
-                                const response = await fetch(`/admin/user-suspend?id=${userId}`);
-                                const result = await response.json();
+                            Swal.fire({
+                title: "Are you sure?",
+                text: "Do you really want to suspend this user?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, suspend user",
+                cancelButtonText: "Cancel"
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch(`/admin/user-suspend?id=${userId}`);
+                        const result = await response.json();
 
-                                if (response.ok) {
-                                    alert("User suspended successfully");
-                                    // Optionally update the UI, e.g., disable button or show status
-                                    window.location.reload();
-                                } else {
-                                    alert("Failed to suspend user: " + result.message);
-                                }
-                            } catch (err) {
-                                alert("Error suspending user");
-                                console.error(err);
-                            }
+                        if (response.ok) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Suspended!",
+                                text: "User suspended successfully.",
+                                confirmButtonColor: "#3085d6"
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Failed",
+                                text: "Failed to suspend user: " + result.message,
+                                confirmButtonColor: "#d33"
+                            });
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: "Something went wrong while suspending the user.",
+                            confirmButtonColor: "#d33"
+                        });
+                    }
+                }
+            });
                         });
                     });
                 });

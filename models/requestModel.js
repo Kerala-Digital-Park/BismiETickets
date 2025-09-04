@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
 
 const Users = require("./userModel");
-const Bookings = require("./bookingModel");
 const Counter = require("./counterModel");
+const Notifications = require("./notificationModel");
+const Booking = require("./bookingModel");
+const Flight = require("./flightModel");
 
 const requestSchema = mongoose.Schema(
   {
@@ -136,6 +138,34 @@ requestSchema.pre("save", async function (next) {
     this.requestId = `REQ${paddedNumber}`;
   }
 
+  next();
+});
+
+requestSchema.post("save", async function (doc, next) {
+  try {
+    const booking = await Booking.findById(doc.bookingId).populate("flight");
+    if (booking && booking.flight) {
+      const flight = booking.flight;
+
+      // Notification for Admin
+      await Notifications.create({
+        flightId: flight._id,
+        type: "Request",
+        content: `A new request ${doc.requestId} has been raised for booking ${booking.bookingId} (Flight ${flight.flightNumber})`,
+        sendTo: "admin",
+      });
+
+      // Notification for Seller
+      await Notifications.create({
+        flightId: flight._id,
+        type: "Request",
+        content: `You have received a new request ${doc.requestId} for booking ${booking.bookingId} on your flight ${flight.flightNumber}`,
+        sendTo: "seller",
+      });
+    }
+  } catch (err) {
+    console.error("Error creating request notification:", err);
+  }
   next();
 });
 
