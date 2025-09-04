@@ -646,11 +646,24 @@ Main Content START -->
 					}
 				});
 			</script>
-			<!-- =======================
-Main Content END -->
+			
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const walletBalance = parseFloat(document.getElementById("walletBalance").innerText) || 0;
+  const confirmBtn = document.getElementById("confirmWalletBtn");
+  const input = document.getElementById("walletUseAmount");
+
+  if (walletBalance <= 0) {
+    confirmBtn.disabled = true;
+    input.disabled = true; // optional: prevent typing amount
+    document.getElementById("walletMessage").innerText = "Wallet balance is 0. You cannot use wallet for this booking.";
+  }
+});
+</script>
+
+			<!-- ======================= Main Content END -->
 
 		</main>
 		<!-- **************** MAIN CONTENT END **************** -->
-
 
 		<%- include('./partials/footer') %>
