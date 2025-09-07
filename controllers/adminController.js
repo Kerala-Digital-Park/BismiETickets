@@ -23,6 +23,7 @@ const UserActivity = require("../models/userActivityModel");
 const SigninImage = require("../models/signinImageModel");
 const Promotion = require("../models/promotionModel"); 
 const Notification = require("../models/notificationModel");
+const WalletTransaction = require("../models/walletTransactionModel");
 const moment = require("moment");
 const nodemailer = require("nodemailer");
 const ExcelJS = require("exceljs");
@@ -4390,6 +4391,42 @@ const sendPayoutTransactionsEmail = async (req, res) => {
   }
 };
 
+const addTransaction = async (req, res) => {
+  try {
+      const { userId, subject, content, amount } = req.body;
+  
+      if (!userId || !subject || !content || !amount) {
+        return res.status(400).json({ message: "All fields are required." });
+      }
+  
+      const user = await User.findById(userId);
+      if (!user) return res.status(404).json({ message: "User not found." });
+  
+      // Deduct from user wallet (allow negative balance if needed)
+      user.walletBalance = (user.walletBalance || 0) - Number(amount);
+  
+      // Save transaction
+      const walletTransaction = new WalletTransaction({
+        userId,
+        purpose: `${subject} - ${content}`,
+        amount,
+        status: "Deducted",
+      });
+  
+      await walletTransaction.save();
+      await user.save();
+  
+      return res.status(200).json({
+        success: true,
+        message: "Transaction added successfully.",
+        walletTransaction,
+      });
+    } catch (err) {
+      console.error("❌ Add Transaction Error:", err);
+      res.status(500).json({ success: false, message: "Server error while adding transaction." });
+    }
+}
+
 module.exports = {
   viewLogin,
   loginAdmin,
@@ -4474,4 +4511,6 @@ module.exports = {
   exportPayoutTransactionsExcel,
   exportPayoutTransactionsPDF,
   sendPayoutTransactionsEmail,
+  addTransaction,
+
 };

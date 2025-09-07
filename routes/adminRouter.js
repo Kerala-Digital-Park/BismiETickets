@@ -102,7 +102,7 @@ adminRouter.post('/toggle-sales-status/:id', isLogin, adminController.toggleSale
 adminRouter.post('/toggle-halfday-sale/:id', isLogin, adminController.toggleHalfdaySale);
 adminRouter.post('/send-reply/:id', isLogin, adminController.sendReply);
 adminRouter.post('/send-promotion', isLogin, adminController.sendPromotion);
-
+adminRouter.post('/transactions/add', isLogin, adminController.addTransaction);
 
 
 adminRouter.delete('/delete-user/:id',isLogin, adminController.deleteUser);

@@ -1100,6 +1100,7 @@
                                                     title="Create Transactions">
                                                     <i class="bi bi-plus-square-fill"></i> Add Transactions
                                                 </button>
+
 <button type="button" onclick="sendEmail()" class="btn btn-info btn-sm me-2">
   <i class="bi bi-envelope-at-fill"></i> Email
 </button>
@@ -1234,6 +1235,87 @@ function sendEmail() {
                                     </div>
                                 </div>
 
+<!-- Add Transaction Modal -->
+<div class="modal fade" id="newaddon" tabindex="-1" aria-labelledby="newaddonLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newaddonLabel">Add Transaction</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="transactionForm">
+        <div class="modal-body">
+          <input type="hidden" name="userId" value="<%= agent._id %>">
+
+          <div class="mb-3">
+            <label class="form-label">Subject</label>
+            <input type="text" name="subject" class="form-control" value="Booking Transaction" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Content</label>
+            <textarea name="content" class="form-control" rows="3" placeholder="Enter content" required></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Amount (₹)</label>
+            <input type="number" name="amount" class="form-control" placeholder="Enter amount" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="walletBtn" class="btn btn-success">
+            <i class="bi bi-wallet2"></i> Collect from Wallet
+          </button>
+          <!-- <button type="submit" class="btn btn-dark">Save Transaction</button> -->
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("transactionForm");
+  const walletBtn = document.getElementById("walletBtn");
+
+  // Collect Amount from Wallet
+  walletBtn.addEventListener("click", async () => {
+    const amount = form.amount.value;
+    if (!amount || amount <= 0) {
+      return Swal.fire({ icon: "warning", title: "Invalid Amount", text: "Please enter a valid amount." });
+    }
+
+    try {
+      const response = await fetch(`/admin/transactions/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: "<%= agent._id %>",
+          amount: amount,
+          subject: form.subject.value,
+          content: form.content.value
+        }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Wallet Deducted",
+          text: result.message || "Amount collected from wallet successfully!",
+        }).then(() => {
+          location.reload();
+        });
+      } else {
+        Swal.fire({ icon: "error", title: "Error", text: result.message || "Wallet transaction failed." });
+      }
+    } catch (err) {
+      Swal.fire({ icon: "error", title: "Error", text: "Something went wrong while deducting from wallet." });
+    }
+  });
+});
+</script>
+
                                 <div class="tab-pane" id="tab-5-5">
                             <div class="row">
                                 <div class="card">
@@ -1242,7 +1324,7 @@ function sendEmail() {
                                             <h5 class="card-header-title"> Listing Ledger </h5>
                                         </div>
                                         <button type="button" class="btn btn-dark btn-sm me-2"
-                                            data-bs-toggle="modal" data-bs-target="#newaddon"
+                                            data-bs-toggle="modal" data-bs-target="#newaddonlisting"
                                             title="Create Transactions">
                                             <i class="bi bi-plus-square-fill"></i> Add Transactions
                                         </button>
@@ -1296,6 +1378,87 @@ function sendListingEmail() {
   function downloadPDF(agentId) {
     window.location.href = `/admin/listing-transactions/export/pdf/${agentId}`;
   }
+</script>
+
+<!-- Add Transaction Modal -->
+<div class="modal fade" id="newaddonlisting" tabindex="-1" aria-labelledby="newaddonLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newaddonLabel">Add Transaction</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="listingTransactionForm">
+        <div class="modal-body">
+          <input type="hidden" name="userId" value="<%= agent._id %>">
+
+          <div class="mb-3">
+            <label class="form-label">Subject</label>
+            <input type="text" name="subject" class="form-control" value="Listing Transaction" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Content</label>
+            <textarea name="content" class="form-control" rows="3" placeholder="Enter content" required></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Amount (₹)</label>
+            <input type="number" name="amount" class="form-control" placeholder="Enter amount" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="walletBtnListing" class="btn btn-success">
+            <i class="bi bi-wallet2"></i> Collect from Wallet
+          </button>
+          <!-- <button type="submit" class="btn btn-dark">Save Transaction</button> -->
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("listingTransactionForm");
+  const walletBtn = document.getElementById("walletBtnListing");
+
+  // Collect Amount from Wallet
+  walletBtn.addEventListener("click", async () => {
+    const amount = form.amount.value;
+    if (!amount || amount <= 0) {
+      return Swal.fire({ icon: "warning", title: "Invalid Amount", text: "Please enter a valid amount." });
+    }
+
+    try {
+      const response = await fetch(`/admin/transactions/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: "<%= agent._id %>",
+          amount: amount,
+          subject: form.subject.value,
+          content: form.content.value
+        }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Wallet Deducted",
+          text: result.message || "Amount collected from wallet successfully!",
+        }).then(() => {
+          location.reload();
+        });
+      } else {
+        Swal.fire({ icon: "error", title: "Error", text: result.message || "Wallet transaction failed." });
+      }
+    } catch (err) {
+      Swal.fire({ icon: "error", title: "Error", text: "Something went wrong while deducting from wallet." });
+    }
+  });
+});
 </script>
 
                                         <!-- <form class="rounded position-relative me-2">
@@ -1382,7 +1545,7 @@ function sendListingEmail() {
                                             <h4 class="card-header-title">Payout Ledger</h4>
                                         </div>
                                         <button type="button" class="btn btn-dark btn-sm me-2"
-                                            data-bs-toggle="modal" data-bs-target="#newaddon"
+                                            data-bs-toggle="modal" data-bs-target="#newaddonpayout"
                                             title="Create Transactions">
                                             <i class="bi bi-plus-square-fill"></i> Add Transactions
                                         </button>
@@ -1436,6 +1599,87 @@ function sendPayoutEmail() {
   function downloadPDF(agentId) {
     window.location.href = `/admin/payout-transactions/export/pdf/${agentId}`;
   }
+</script>
+
+<!-- Add Transaction Modal -->
+<div class="modal fade" id="newaddonpayout" tabindex="-1" aria-labelledby="newaddonLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newaddonLabel">Add Transaction</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="payoutTransactionForm">
+        <div class="modal-body">
+          <input type="hidden" name="userId" value="<%= agent._id %>">
+
+          <div class="mb-3">
+            <label class="form-label">Subject</label>
+            <input type="text" name="subject" class="form-control" value="Payout Transaction" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Content</label>
+            <textarea name="content" class="form-control" rows="3" placeholder="Enter content" required></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Amount (₹)</label>
+            <input type="number" name="amount" class="form-control" placeholder="Enter amount" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="walletBtnPayout" class="btn btn-success">
+            <i class="bi bi-wallet2"></i> Collect from Wallet
+          </button>
+          <!-- <button type="submit" class="btn btn-dark">Save Transaction</button> -->
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("payoutTransactionForm");
+  const walletBtn = document.getElementById("walletBtnPayout");
+
+  // Collect Amount from Wallet
+  walletBtn.addEventListener("click", async () => {
+    const amount = form.amount.value;
+    if (!amount || amount <= 0) {
+      return Swal.fire({ icon: "warning", title: "Invalid Amount", text: "Please enter a valid amount." });
+    }
+
+    try {
+      const response = await fetch(`/admin/transactions/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: "<%= agent._id %>",
+          amount: amount,
+          subject: form.subject.value,
+          content: form.content.value
+        }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Wallet Deducted",
+          text: result.message || "Amount collected from wallet successfully!",
+        }).then(() => {
+          location.reload();
+        });
+      } else {
+        Swal.fire({ icon: "error", title: "Error", text: result.message || "Wallet transaction failed." });
+      }
+    } catch (err) {
+      Swal.fire({ icon: "error", title: "Error", text: "Something went wrong while deducting from wallet." });
+    }
+  });
+});
 </script>
 
                                         <!-- <form class="rounded position-relative me-2">

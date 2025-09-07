@@ -20,7 +20,7 @@ const walletTransactionSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Paid", "Pending", "Cancelled", "Loaded"],
+      enum: ["Paid", "Pending", "Cancelled", "Loaded", "Deducted"],
       default: "Pending"
     },
     purpose: {
