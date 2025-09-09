@@ -685,7 +685,7 @@ Swal.fire({
                   <div class="card-header border-bottom">
                     <!-- Title -->
                     <h5 class="card-title mb-0">
-                      <img src="/assets/images/element/09.svg" class="h-80px" alt="">
+                      <img src="<%= flightDetails.stops[0].airlineLogo %>" class="h-80px" alt="">
                       <%= flightDetails.from %> - <%= flightDetails.to %>
                     </h5>
                   </div>
@@ -707,8 +707,8 @@ Swal.fire({
                         <tbody class="border-top-0">
                           <tr>
                             <td>Adult</td>
-                            <td>2 PC</td>
-                            <td>7 Kg</td>
+                            <td><%= flightDetails.baggage.adult.checkIn.numberOfPieces %> PC</td>
+                            <td><%= flightDetails.baggage.adult.cabin.weightPerPiece %> Kg</td>
                           </tr>
                         </tbody>
                       </table>
@@ -718,8 +718,8 @@ Swal.fire({
 
                   <!-- Card footer -->
                   <div class="card-footer d-flex justify-content-between align-items-center pt-0 px-sm-4">
-                    <span>*1PC = 23KG</span>
-                    <a href="#" class="btn btn-sm btn-primary-soft mb-0">Add luggage</a>
+                    <span>*1PC = <%= flightDetails.baggage.adult.checkIn.weightPerPiece %>KG</span>
+                    <!-- <a href="#" class="btn btn-sm btn-primary-soft mb-0">Add luggage</a> -->
                   </div>
                 </div>
                 <!-- Card END -->
