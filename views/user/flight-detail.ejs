@@ -64,12 +64,12 @@
                   <!-- Ticket START -->
                   <div class="card border">
                     <!-- Card header -->
-                    <div class="card-header d-flex justify-content-between pb-0">
+                    <!-- <div class="card-header d-flex justify-content-between pb-0">
                       <a href="#" class="btn btn-link text-decoration-underline p-0 mb-0" data-bs-toggle="modal"
                         data-bs-target="#baggageFare">
                         <i class="bi bi-eye-fill me-1"></i>Baggage & Fare Rules
                       </a>
-                    </div>
+                    </div> -->
 
                     <% if (flightDetails.stops && flightDetails.stops.length> 1) { %>
                       <!-- Multi-stop Flight Layout -->
@@ -144,17 +144,25 @@
                             </div>
                           </div>
 
-                          <% if (i < flightDetails.stops.length - 1) { const stopSec=parseInt(flightDetails.stops[i +
-                            1].stopDuration || 0); const layoverHr=Math.floor(stopSec / 3600); const
-                            layoverMin=Math.floor((stopSec % 3600) / 60); %>
-                            <!-- Layover Info -->
-                            <div class="bg-light rounded-2 text-center text-danger p-2 my-4">
-                              Layover:
-                              <% if (layoverHr> 0) { %><%= layoverHr %> hr <% } %>
-                                    <% if (layoverMin> 0 || layoverHr === 0) { %><%= layoverMin %> min<% } %>
-                                          in <%= flightDetails.stops[i + 1].departureCity %>
-                            </div>
-                            <% } %>
+<% if (i < flightDetails.stops.length - 1) { 
+     // Build Date objects for current stop arrival and next stop departure
+     const arrDateTime = new Date(`${flightDetails.stops[i].arrivalDay} ${flightDetails.stops[i].arrivalTime}`);
+     const depDateTime = new Date(`${flightDetails.stops[i + 1].departureDay} ${flightDetails.stops[i + 1].departureTime}`);
+
+     let layoverMs = depDateTime - arrDateTime; // difference in ms
+     if (layoverMs < 0) layoverMs = 0; // fallback safety
+
+     const layoverHr = Math.floor(layoverMs / (1000 * 60 * 60));
+     const layoverMin = Math.floor((layoverMs % (1000 * 60 * 60)) / (1000 * 60));
+%>
+  <!-- Layover Info -->
+  <div class="bg-light rounded-2 text-center text-danger p-2 my-4">
+    Layover:
+    <% if (layoverHr > 0) { %><%= layoverHr %> hr <% } %>
+    <% if (layoverMin > 0 || layoverHr === 0) { %><%= layoverMin %> min<% } %>
+    in <%= flightDetails.stops[i + 1].departureCity %>
+  </div>
+<% } %>
 
                               <% } %>
                       </div>
@@ -229,6 +237,20 @@
                           </div>
                         </div>
                         <% } %>
+
+                     <div class="card-footer pt-4">
+                        <ul class="list-inline bg-light rounded-2 d-sm-flex text-center justify-content-sm-between mb-0 px-4 py-2">
+                                                    <%
+                                                    refundableClass = flightDetails.refundable ? 'text-success' : 'text-danger';
+                                                    refundableText = flightDetails.refundable ? 'Refundable' : 'Non-Refundable';
+                                                    %>
+                                                    <li class="list-inline-item <%= refundableClass %>"><%= refundableText %></li>
+                                                    <li class="list-inline-item text-primary">Checked baggage : <%= flightDetails.baggage.adult.checkIn.weightPerPiece %> kg
+                                                    </li>
+                                                    <li class="list-inline-item text-primary"> Carry-on baggage :  <%= flightDetails.baggage.adult.cabin.weightPerPiece %> Kg
+                                                    </li>
+                                                </ul>
+                                            </div>
 
                   </div>
                   <!-- Ticket END -->

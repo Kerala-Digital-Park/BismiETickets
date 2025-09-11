@@ -2107,6 +2107,9 @@ const viewLatestBookings = async (req, res) => {
         $match: matchStage
       },
       {
+        $sort: { createdAt: -1 }
+      },
+      {
         $facet: {
           data: [
             { $skip: skip },
@@ -2188,7 +2191,10 @@ const viewUpcomingBookings = async (req, res) => {
         }
       },
       { $unwind: { path: "$flightData", preserveNullAndEmptyArrays: true } },
-      { $match: matchStage }
+      { $match: matchStage },
+      {
+        $sort: { createdAt: -1 }
+      },
     ];
 
     const allResults = await Booking.aggregate(pipeline);
@@ -2274,7 +2280,10 @@ const viewCancelledBookings = async (req, res) => {
         }
       },
       { $unwind: { path: "$flightData", preserveNullAndEmptyArrays: true } },
-      { $match: matchStage }
+      { $match: matchStage },
+      {
+        $sort: { createdAt: -1 }
+      },
     ];
 
     const allResults = await Booking.aggregate(pipeline);
@@ -2360,7 +2369,10 @@ const viewPastBookings = async (req, res) => {
         }
       },
       { $unwind: { path: "$flightData", preserveNullAndEmptyArrays: true } },
-      { $match: matchStage }
+      { $match: matchStage },
+      {
+        $sort: { createdAt: -1 }
+      },
     ];
 
     const allResults = await Booking.aggregate(pipeline);
@@ -2461,6 +2473,9 @@ const viewFailedBookings = async (req, res) => {
         $match: matchStage
       },
       {
+        $sort: { createdAt: -1 }
+      },
+      {
         $facet: {
           data: [
             { $skip: skip },
@@ -2555,6 +2570,9 @@ const viewInitiatedBookings = async (req, res) => {
       },
       {
         $match: matchStage
+      },
+      {
+        $sort: { createdAt: -1 }
       },
       {
         $facet: {
@@ -4427,6 +4445,82 @@ const addTransaction = async (req, res) => {
     }
 }
 
+const updateSeatById = async( req, res ) => {
+  console.log("Update flight")
+  const flightId = req.query.id;
+  const flightData = req.body;
+  console.log(flightId, flightData)
+
+  try {
+    const updatedFlight = await Flight.findByIdAndUpdate(flightId, flightData, { new: true });
+    console.log(updatedFlight);
+    if (!updatedFlight) {
+      return res.status(404).json({ message: "Flight not found" });
+    }
+    res.json({ message: "Flight updated successfully", flight: updatedFlight });
+  } catch (error) {
+    console.error("Error updating flight:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+const updateDateById = async( req, res ) => {
+  console.log("Update flight")
+  const flightId = req.query.id;
+  const flightData = req.body;
+  console.log(flightId, flightData)
+
+  try {
+    const updatedFlight = await Flight.findByIdAndUpdate(flightId, flightData, { new: true });
+    console.log(updatedFlight);
+    if (!updatedFlight) {
+      return res.status(404).json({ message: "Flight not found" });
+    }
+    res.json({ message: "Flight updated successfully", flight: updatedFlight });
+  } catch (error) {
+    console.error("Error updating flight:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+const updateBaggageById = async( req, res ) => {
+  console.log("Update flight")
+  const flightId = req.query.id;
+  const flightData = req.body;
+  console.log(flightId, flightData)
+
+  try {
+    const updatedFlight = await Flight.findByIdAndUpdate(flightId, flightData, { new: true });
+    console.log(updatedFlight);
+    if (!updatedFlight) {
+      return res.status(404).json({ message: "Flight not found" });
+    }
+    res.json({ message: "Flight updated successfully", flight: updatedFlight });
+  } catch (error) {
+    console.error("Error updating flight:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+const updateListingById = async( req, res ) => {
+  console.log("Update flight")
+  const flightId = req.query.id;
+  const flightData = req.body;
+  console.log(flightId, flightData)
+
+  try {
+    const updatedFlight = await Flight.findByIdAndUpdate(flightId, flightData, { new: true });
+    console.log(updatedFlight);
+    if (!updatedFlight) {
+      return res.status(404).json({ message: "Flight not found" });
+    }
+    res.json({ message: "Flight updated successfully", flight: updatedFlight });
+  } catch (error) {
+    console.error("Error updating flight:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 module.exports = {
   viewLogin,
   loginAdmin,
@@ -4512,5 +4606,8 @@ module.exports = {
   exportPayoutTransactionsPDF,
   sendPayoutTransactionsEmail,
   addTransaction,
-
+  updateSeatById,
+  updateDateById,
+  updateBaggageById,
+  updateListingById,
 };

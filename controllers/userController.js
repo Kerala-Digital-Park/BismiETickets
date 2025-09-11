@@ -429,7 +429,7 @@ const sendOtp = async (req, res) => {
   otpStore[email] = { otp, expiresAt };
 
   await transporter.sendMail({
-  from: `"BismiETickets" <${process.env.EMAIL}>`,
+  from: `"BTrips" <${process.env.EMAIL}>`,
   to: email,
   subject: "🔐 Your One-Time Password (OTP) for Secure Login",
   html: `
@@ -437,14 +437,14 @@ const sendOtp = async (req, res) => {
     <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
       
       <div style="background:#004aad; color:#ffffff; padding:16px; text-align:center;">
-        <h2 style="margin:0;">BismiETickets</h2>
+        <h2 style="margin:0;">BTRIPS</h2>
       </div>
       
       <div style="padding:24px; color:#333333;">
-        <p style="font-size:16px;">Hi <strong>${email}</strong>,</p>
+        <p style="font-size:16px;">Hi <strong>${user.name}</strong>,</p>
         
         <p style="font-size:15px; line-height:1.6;">
-          We received a request to log in to your BismiETickets account.  
+          We received a request to log in to your BTrips account.  
           Please use the following <strong>One-Time Password (OTP)</strong> to complete your login:
         </p>
         
@@ -461,12 +461,12 @@ const sendOtp = async (req, res) => {
         
         <p style="margin-top:32px; font-size:14px; color:#777;">
           Thanks,<br>
-          <strong>The BismiETickets Team</strong>
+          <strong>The BTrips Team</strong>
         </p>
       </div>
       
       <div style="background:#f1f1f1; text-align:center; padding:12px; font-size:12px; color:#666;">
-        © ${new Date().getFullYear()} BismiETickets. All rights reserved.
+        © ${new Date().getFullYear()} BTrips. All rights reserved.
       </div>
     </div>
   </div>
@@ -3159,7 +3159,26 @@ const changeStatus = async (req, res) => {
   }
 }
 
-  const addBank = async (req, res) => {
+const updateBaggageById = async( req, res ) => {
+  console.log("Update flight")
+  const flightId = req.query.id;
+  const flightData = req.body;
+  console.log(flightId, flightData)
+
+  try {
+    const updatedFlight = await Flights.findByIdAndUpdate(flightId, flightData, { new: true });
+    console.log(updatedFlight);
+    if (!updatedFlight) {
+      return res.status(404).json({ message: "Flight not found" });
+    }
+    res.json({ message: "Flight updated successfully", flight: updatedFlight });
+  } catch (error) {
+    console.error("Error updating flight:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+const addBank = async (req, res) => {
   const userId = req.session.userId;
   const { accountHolderName, accountNumber, ifscCode, bankName, branchName } = req.body.bankDetails;
   console.log(accountHolderName, userId);
@@ -4166,6 +4185,7 @@ module.exports = {
   viewAgentSubscription,
   updateSeatById,
   updateDateById,
+  updateBaggageById,
   addBank,
   removeBank,
   viewTransactions,

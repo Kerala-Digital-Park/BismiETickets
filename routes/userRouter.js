@@ -169,5 +169,6 @@ userRouter.put("/update-listing", isLogin, userController.updateListingById);
 userRouter.put("/update-seats", isLogin, userController.updateSeatById);
 userRouter.put("/update-dates", isLogin, userController.updateDateById);
 userRouter.put('/update-status', isLogin, userController.changeStatus);
+userRouter.put('/update-baggage', isLogin, userController.updateBaggageById);
 
 module.exports = userRouter;

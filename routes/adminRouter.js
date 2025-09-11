@@ -109,4 +109,10 @@ adminRouter.delete('/delete-user/:id',isLogin, adminController.deleteUser);
 adminRouter.delete('/delete-agent/:id',isLogin, adminController.deleteAgent);
 
 
+adminRouter.put("/update-seats", isLogin, adminController.updateSeatById);
+adminRouter.put("/update-dates", isLogin, adminController.updateDateById);
+adminRouter.put('/update-baggage', isLogin, adminController.updateBaggageById);
+adminRouter.put("/update-listing", isLogin, adminController.updateListingById);
+
+
 module.exports = adminRouter;

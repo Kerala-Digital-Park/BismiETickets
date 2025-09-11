@@ -120,7 +120,7 @@
 						<div class="hstack gap-4 gap-md-5 flex-wrap mt-2">
 								<h6 class="fw-normal mb-0"><%= booking.userId.name %></h6>
 								<h6 class="fw-normal mb-0"><%= booking.userId.email %></h6>
-								<h6 class="text-success mb-0">₹ <%= booking.flight.inventoryDates[0].fare.adults.toFixed(2) %></h6>
+								<h6 class="text-success mb-0">₹ <%= booking.amount.toFixed(2) %></h6>
 						</div>
 					</div>
 				</div>
