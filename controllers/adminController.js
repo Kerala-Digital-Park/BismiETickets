@@ -24,10 +24,13 @@ const SigninImage = require("../models/signinImageModel");
 const Promotion = require("../models/promotionModel"); 
 const Notification = require("../models/notificationModel");
 const WalletTransaction = require("../models/walletTransactionModel");
+const ServiceCharge = require("../models/serviceChargeModel");
 const moment = require("moment");
 const nodemailer = require("nodemailer");
 const ExcelJS = require("exceljs");
 const PDFDocument = require("pdfkit");
+const puppeteer = require("puppeteer");
+const ejs = require('ejs');
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -36,6 +39,26 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
+
+async function generatePDF(templatePath, data) {
+  const html = await ejs.renderFile(templatePath, data);
+
+  const browser = await puppeteer.launch({
+    headless: "new", // or true if puppeteer > 20
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
+
+  const page = await browser.newPage();
+  await page.setContent(html, { waitUntil: 'networkidle0' });
+
+  const pdfBuffer = await page.pdf({
+    format: 'A4',
+    printBackground: true,
+  });
+
+  await browser.close();
+  return pdfBuffer;
+}
 
 const viewLogin = async (req, res) => {
   try {
@@ -243,7 +266,12 @@ const viewBookingDetail = async (req, res) => {
     const booking = await Booking.findById(bookingId)
       .populate("userId")
       .populate("flight");
-    res.render("admin/bookingDetail", { booking });
+    const seller = await User.findById(booking.flight.sellerId.toString());
+    const requests = await Request.find({ bookingId: booking._id });
+    const transactions = await Transaction.find({ bookingId: booking._id }).populate("userId").populate("bookingId");
+    const userActivities = await UserActivity.find({ id: booking._id })
+      .populate("user");
+    res.render("admin/bookingDetail", { booking, seller, requests, transactions, userActivities, moment, success: req.query.success || null, error: req.query.error || null, payment: req.query.payment || null });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Server error" });
@@ -4521,6 +4549,358 @@ const updateListingById = async( req, res ) => {
   }
 }
 
+async function getBookingPDFs(bookingId) {
+  const booking = await Booking.findById(bookingId).populate("flight");
+  if (!booking) throw new Error("Booking not found");
+
+  const flight = booking.flight;
+  const travelers = booking.travelers;
+  const totalFare = booking.amount;
+  const baseFare = booking.baseFare;
+  const tax = booking.tax;
+  const discount = booking.discount;
+
+    // Invoice
+    const invoiceTemplatePath = path.join(__dirname, "../views/user/invoice.ejs");
+    const invoicePDF = await generatePDF(invoiceTemplatePath, {
+      invoiceNo: booking.bookingId,
+      issuedDate: new Date().toLocaleDateString("en-GB"),
+      booking,
+      flight,
+      travelers,
+      totalAmount: totalFare,
+      baseFare,
+      tax,
+      discount,
+      email: booking.email,
+    });
+
+  // Eticket (based on stops)
+  const stopsCount = flight.stops?.length || 0;
+  const templateFileName =
+    stopsCount <= 1
+      ? "mail-oneWayBookingConfirmation.ejs"
+      : "mail-connectingBookingConfirmation.ejs";
+
+  const eticketTemplatePath = path.join(__dirname, "../views/user/", templateFileName);
+  const eticketPDF = await generatePDF(eticketTemplatePath, {
+    travelers,
+    flightDetails: flight,
+    totalFare,
+    baseFare,
+    otherServices: tax,
+    discount,
+    bookingId: booking.bookingId,
+    requests: [], // optional if you want to pull Requests model
+    layovers: [], // optional if you want to reuse layover function
+  });
+
+  return { invoicePDF, eticketPDF, booking };
+}
+
+const downloadPDF = async (req, res) => {
+  try {
+    const { id } = req.params; // type = invoice | eticket
+    const { eticketPDF } = await getBookingPDFs(id);
+
+    const fileName = "E-ticket.pdf";
+    const buffer = eticketPDF;
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+    res.end(buffer); // ✅ send raw PDF buffer
+  } catch (err) {
+    console.error("Download error:", err);
+    res.status(500).send("Error downloading PDF");
+  }
+};
+
+const requestCancellation = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason, charges } = req.body;
+    const userId = req.session.adminId;
+    const booking = await Booking.findById(id).populate("flight").populate("userId");
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+
+    if (booking.status === "Cancelled") {
+      return res.status(400).json({ message: "Booking is already cancelled." });
+    }
+
+    // Update booking status
+    booking.cancellationReason = reason;
+    booking.cancellationCharges = charges;
+    booking.cancellationRequested = true;
+    await booking.save();
+
+    await Support.create({
+      userId,
+      enquiryType: "other",
+      category: "Cancellation",
+      priority: "High Priority",
+      subject: `Cancellation request for booking ${booking.bookingId}`,
+      message: reason,
+    });
+
+    // Notify user via email
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: booking.userId.email,
+      subject: "Cancellation Request Received",
+      html: `<p>Dear ${booking.userId.name},</p>
+             <p>We have received cancellation request for booking ID: ${booking.bookingId}.</p>
+             <p>Reason: ${reason}</p>
+             <p>Cancellation charges (if any): ₹${charges}</p>
+             <p>Our team will process the request and get back to you shortly.</p>
+             <p>Thank you for choosing us.</p>
+             <p>Best regards,<br/>Btrips Team</p>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    return res.json({ success: true, message: "Cancellation request submitted." });
+  } catch (err) {
+    console.error("Cancellation request failed:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+const emailPDF = async (req, res) => {
+  console.log("Email PDF")
+  try {
+    const { type, id } = req.params;
+    const {email} = req.body;
+    console.log(email)
+    const { invoicePDF, eticketPDF, booking } = await getBookingPDFs(id);
+
+    const attachments = [];
+    if (type === "invoice") {
+      attachments.push({ filename: "Invoice.pdf", content: invoicePDF, contentType: "application/pdf" });
+    }
+    if (type === "eticket") {
+      attachments.push({ filename: "E-ticket.pdf", content: eticketPDF, contentType: "application/pdf" });
+    }
+
+    await transporter.sendMail({
+      from: process.env.EMAIL,
+      to: email,
+      subject: `Your ${type === "invoice" ? "Invoice" : "E-ticket"} for Booking ${booking.bookingId}`,
+      text: "Please find attached.",
+      attachments,
+    });
+
+    res.json({ success: true, message: `${type} sent to ${booking.email}`});
+  } catch (err) {
+    console.error("Email error:", err);
+    res.status(500).send("Error emailing PDF");
+  }
+};
+
+const addServiceRequest = async (req, res) => {
+  const bookingId = req.params.bookingId;
+  const userId = req.session.adminId;
+
+  try {
+    const { passengerName, subject, reqContent } = req.body;
+    console.log("Received:", { passengerName, subject, reqContent });
+    console.log("Files:", req.files);
+
+    if (!userId || !bookingId || !passengerName) {
+      return res.redirect(`/admin/booking-detail/${bookingId}?error=Missing+required+fields`);
+    }
+
+    const bookingExists = await Booking.findById(bookingId);
+    if (!bookingExists) {
+      return res.redirect(`/admin/booking-detail/${bookingId}?error=Booking+not+found`);
+    }
+
+    const filePaths = (req.files || []).map(file => `/uploads/requests/${file.filename}`);
+
+    const request = new Request({
+      userId,
+      bookingId,
+      category: "service",
+      subject,
+      passengerName,
+      request: reqContent,
+      fileUrl: filePaths
+    });
+
+    await request.save();
+
+    return res.redirect(`/admin/booking-detail/${bookingId}?success=Request+submitted`);
+  } catch (error) {
+    console.error("Error creating request:", error);
+    return res.redirect(`/admin/booking-detail/${bookingId}?error=Server+error`);
+  }
+};
+
+const addSupportRequest = async (req, res) => {
+  const bookingId = req.params.bookingId;
+  const userId = req.session.adminId;
+
+  try {
+    const { passengerName, subject, reqContent, firstName, lastName } = req.body;
+    console.log("Received:", { passengerName, subject, reqContent, firstName, lastName });
+    console.log("Files:", req.files);
+
+    if (!userId || !bookingId || !passengerName) {
+      return res.redirect(`/admin/booking-detail/${bookingId}?error=Missing+required+fields`);
+    }
+
+    const bookingExists = await Booking.findById(bookingId);
+    if (!bookingExists) {
+      return res.redirect(`/admin/booking-detail/${bookingId}?error=Booking+not+found`);
+    }
+
+    const filePaths = (req.files || []).map(file => `/uploads/requests/${file.filename}`);
+
+    const request = new Request({
+      userId,
+      bookingId,
+      category: "support",
+      subject,
+      passengerName,
+      request: reqContent || "",
+      fileUrl: filePaths,
+      reqName: [
+        {
+          firstName: firstName || "",
+          lastName: lastName || ""
+        }
+      ]
+    });
+
+    await request.save();
+
+    return res.redirect(`/admin/booking-detail/${bookingId}?success=Request+submitted`);
+  } catch (error) {
+    console.error("Error creating request:", error);
+    return res.redirect(`/admin/booking-detail/${bookingId}?error=Server+error`);
+  }
+};
+
+const addServiceCharge = async (req, res) => {
+  const bookingId = req.params.bookingId;
+  const userId = req.session.adminId;
+
+  try {
+    const { supplierCost, customerCost, paymentMethod, purpose, supplier } = req.body;
+
+    if (!userId || !bookingId ) {
+      return res.redirect(`/admin/booking-detail/${bookingId}?error=Missing+required+fields`);
+    }
+
+    const bookingExists = await Booking.findById(bookingId);
+    if (!bookingExists) {
+      return res.redirect(`/admin/booking-detail/${bookingId}?error=Booking+not+found`);
+    }
+
+    const serviceCharge = new ServiceCharge({
+      bookingId,
+      userId,
+      supplier,
+      supplierCost,
+      customerCost,
+      paymentMethod,
+      purpose
+    });
+
+    await serviceCharge.save();
+
+    return res.redirect(`/admin/booking-detail/${bookingId}?success=Service+charge+added`);
+  } catch (error) {
+    console.error("Error creating request:", error);
+    return res.redirect(`/admin/booking-detail/${bookingId}?error=Server+error`);
+  }
+};
+
+const deleteServiceRequest = async (req, res) => {
+  try {
+    await Request.findByIdAndDelete(req.params.id);
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const editPassengers = async (req, res) => {
+  const bookingId = req.params.bookingId;
+  try {
+    const { first_name, last_name, title, type, given_name, surname, dob, passport_number, passport_expiry } = req.body;
+
+    // Find booking by bookingId
+    const booking = await Booking.findOne({ bookingId });
+    if (!booking) {
+      return res.redirect(`/admin/booking-detail/${bookingId}?error=Booking+not+found`);
+    }
+
+    // Find traveler by given + surname
+    const traveler = booking.travelers.find(
+      (t) =>
+        t.first_name.toLowerCase() === first_name.toLowerCase() &&
+        t.last_name.toLowerCase() === last_name.toLowerCase()
+    );
+
+    if (!traveler) {
+      return res.redirect(`/admin/booking-detail/${bookingId}?error=Passenger+not+found`);
+    }
+
+    // Update traveler fields if provided
+    traveler.type = type || traveler.type;
+    traveler.title = title || traveler.title;
+    traveler.first_name = given_name || traveler.first_name;
+    traveler.last_name = surname || traveler.last_name;
+    traveler.dob = dob || traveler.dob;
+    traveler.passport_number = passport_number || traveler.passport_number;
+    traveler.passport_expiry = passport_expiry || traveler.passport_expiry;
+
+    await booking.save();
+
+    return res.redirect(`/admin/booking-detail/${bookingId}?success=Passenger+updated+successfully`);
+  } catch (error) {
+    console.error("Error updating passenger:", error);
+    return res.redirect(`/admin/booking-detail/${bookingId}?error=Server+error`);
+  }
+};
+
+const editReservations = async (req, res) => {
+  const bookingId = req.params.bookingId;
+  try {
+    const { first_name, last_name, eticket, seat, remarks } = req.body;
+
+    // Find booking by bookingId
+    const booking = await Booking.findOne({ bookingId });
+    if (!booking) {
+      return res.redirect(`/admin/booking-detail/${bookingId}?error=Booking+not+found`);
+    }
+
+    // Find traveler by given + surname
+    const traveler = booking.travelers.find(
+      (t) =>
+        t.first_name.toLowerCase() === first_name.toLowerCase() &&
+        t.last_name.toLowerCase() === last_name.toLowerCase()
+    );
+
+    if (!traveler) {
+      return res.redirect(`/admin/booking-detail/${bookingId}?error=Passenger+not+found`);
+    }
+
+    // Update reservation-related fields
+    traveler.eticket_no = eticket || traveler.eticket_no;
+    traveler.seat_no = seat || traveler.seat_no;
+    traveler.remarks = remarks || traveler.remarks;
+
+    await booking.save();
+
+    return res.redirect(`/admin/booking-detail/${bookingId}?success=Passenger+updated+successfully`);
+  } catch (error) {
+    console.error("Error updating reservation:", error);
+    return res.redirect(`/admin/booking-detail/${bookingId}?error=Server+error`);
+  }
+};
+
 module.exports = {
   viewLogin,
   loginAdmin,
@@ -4585,8 +4965,6 @@ module.exports = {
   suspendUser,
   signOutUserSession,
   updateNotificationSettings,
-  // blockInventory,
-  // unblockInventory,
   toggleInventory,
   toggleSalesStatus,
   toggleHalfdaySale,
@@ -4610,4 +4988,13 @@ module.exports = {
   updateDateById,
   updateBaggageById,
   updateListingById,
+  downloadPDF,
+  requestCancellation,
+  emailPDF,
+  addServiceRequest,
+  addSupportRequest,
+  addServiceCharge,
+  deleteServiceRequest,
+  editPassengers,
+  editReservations,
 };

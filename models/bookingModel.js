@@ -63,6 +63,18 @@ const bookingSchema = mongoose.Schema(
           type: Date,
           required: true,
         },
+        eticket_no:{
+          type: String,
+          required: false
+        }, 
+        seat_no:{
+          type: String,
+          required: false
+        },
+        remarks:{
+          type: String,
+          required: false
+        },
       },
     ],
     mobile_number: {
@@ -106,6 +118,14 @@ const bookingSchema = mongoose.Schema(
       type: String,
       required: false
     }, 
+    cancellationCharges: {
+      type: Number,
+      default: 0
+    },
+    cancellationRequested: {
+      type: Boolean,
+      default: false
+    }
   },
   { timestamps: true }
 );

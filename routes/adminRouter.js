@@ -70,6 +70,10 @@ adminRouter.get("/listing-transactions/send-email/:id", isLogin, adminController
 adminRouter.get("/payout-transactions/export/excel/:id", isLogin, adminController.exportPayoutTransactionsExcel);
 adminRouter.get("/payout-transactions/export/pdf/:id", isLogin, adminController.exportPayoutTransactionsPDF);
 adminRouter.get("/payout-transactions/send-email/:id", isLogin, adminController.sendPayoutTransactionsEmail);
+adminRouter.get("/booking/download-eticket/:id", isLogin, adminController.downloadPDF); 
+adminRouter.post("/booking/email-:type/:id", isLogin, adminController.emailPDF); 
+
+
 
 adminRouter.post('/login', adminController.loginAdmin);
 adminRouter.post('/add-coupon',isLogin, adminController.viewAddCoupon);
@@ -95,24 +99,32 @@ adminRouter.post('/withdrawn-payment-status/:bookingId', isLogin, adminControlle
 adminRouter.post("/sessions/signout-user", isLogin, adminController.signOutUserSession);
 adminRouter.post('/notification-settings', isLogin, adminController.updateNotificationSettings);
 adminRouter.post("/signin-images", upload.single("signinImage"), isLogin, adminController.addSigninImage);
-// adminRouter.post('/block-inventory/:id', isLogin, adminController.blockInventory);
-// adminRouter.post('/unblock-inventory/:id', isLogin, adminController.unblockInventory);
 adminRouter.post('/toggle-inventory/:id', isLogin, adminController.toggleInventory);
 adminRouter.post('/toggle-sales-status/:id', isLogin, adminController.toggleSalesStatus);
 adminRouter.post('/toggle-halfday-sale/:id', isLogin, adminController.toggleHalfdaySale);
 adminRouter.post('/send-reply/:id', isLogin, adminController.sendReply);
 adminRouter.post('/send-promotion', isLogin, adminController.sendPromotion);
 adminRouter.post('/transactions/add', isLogin, adminController.addTransaction);
+adminRouter.post('/request-cancellation/:id', isLogin, adminController.requestCancellation);
+adminRouter.post("/support-request/:bookingId", isLogin, upload.array("file", 4), adminController.addSupportRequest);
+adminRouter.post("/service-request/:bookingId", isLogin, upload.array("file", 4), adminController.addServiceRequest);
+adminRouter.post("/service-charge/:bookingId", isLogin, adminController.addServiceCharge);
+adminRouter.post("/edit-passengers/:bookingId", isLogin, adminController.editPassengers);
+adminRouter.post("/edit-reservations/:bookingId", isLogin, adminController.editReservations);
+
 
 
 adminRouter.delete('/delete-user/:id',isLogin, adminController.deleteUser);
 adminRouter.delete('/delete-agent/:id',isLogin, adminController.deleteAgent);
+adminRouter.delete("/service-request/delete/:id", isLogin, adminController.deleteServiceRequest);
+
 
 
 adminRouter.put("/update-seats", isLogin, adminController.updateSeatById);
 adminRouter.put("/update-dates", isLogin, adminController.updateDateById);
 adminRouter.put('/update-baggage', isLogin, adminController.updateBaggageById);
 adminRouter.put("/update-listing", isLogin, adminController.updateListingById);
+
 
 
 module.exports = adminRouter;
