@@ -4828,10 +4828,10 @@ const deleteServiceRequest = async (req, res) => {
 const editPassengers = async (req, res) => {
   const bookingId = req.params.bookingId;
   try {
-    const { first_name, last_name, title, type, given_name, surname, dob, passport_number, passport_expiry } = req.body;
+    const { first_name, last_name, title, type, given_name, surname, dob, passport_number, passport_expiry, remarks } = req.body;
 
     // Find booking by bookingId
-    const booking = await Booking.findOne({ bookingId });
+    const booking = await Booking.findOne({ _id: bookingId });
     if (!booking) {
       return res.redirect(`/admin/booking-detail/${bookingId}?error=Booking+not+found`);
     }
@@ -4855,7 +4855,7 @@ const editPassengers = async (req, res) => {
     traveler.dob = dob || traveler.dob;
     traveler.passport_number = passport_number || traveler.passport_number;
     traveler.passport_expiry = passport_expiry || traveler.passport_expiry;
-
+    traveler.remarks = remarks || traveler.remarks;
     await booking.save();
 
     return res.redirect(`/admin/booking-detail/${bookingId}?success=Passenger+updated+successfully`);
@@ -4871,7 +4871,7 @@ const editReservations = async (req, res) => {
     const { first_name, last_name, eticket, seat, remarks } = req.body;
 
     // Find booking by bookingId
-    const booking = await Booking.findOne({ bookingId });
+    const booking = await Booking.findOne({ _id:bookingId });
     if (!booking) {
       return res.redirect(`/admin/booking-detail/${bookingId}?error=Booking+not+found`);
     }

@@ -1205,90 +1205,151 @@ document.getElementById("cancelForm").addEventListener("submit", async (e) => {
 </script>
   
     <!-- select Passenger Update modal -->
-    <div class="modal fade" tabindex="-1" data-bs-backdrop="static" role="dialog" id="paxupdate">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="title m-4">JAMSHEED Passport Informations</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+ 
+    <!-- Passenger Edit Modal -->
+<!-- Passenger Edit Modal -->
+<div class="modal fade" tabindex="-1" id="paxupdate" data-bs-backdrop="static" role="dialog">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
 
-                <div class="modal-body bg-white">
-                    <div class="row">
-                        <div class="col-md-2 mb-3">
-                            <label class="form-label">Title</label>
-                            <input autocomplete="off" type="text" name="title"
-                                onkeyup="this.value = this.value.toUpperCase();" class="form-control" value="MR"
-                                placeholder="Title">
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Passenger Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
 
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label class="form-label">Type</label>
-                            <select name="type" class="form-control" required>
-                                <option value="Adult">Adult</option>
-                                <option>Adult</option>
-                                <option>Child</option>
-                                <option>Infant</option>
+      <!-- Body -->
+      <div class="modal-body bg-white">
+        <p class="text-muted mb-3">
+          Please select a passenger from the dropdown below to edit their details.
+        </p>
 
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Given Name</label>
-                            <input autocomplete="off" type="text" name="given" class="form-control"
-                                value="MUHAMMED SINAN" placeholder="Given Name">
+        <!-- Passenger Selector -->
+        <div class="mb-4">
+          <label class="form-label fw-bold">Select Passenger</label>
+          <select id="passengerSelect" class="form-select">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
 
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Surname</label>
-                            <input autocomplete="off" type="text" name="surname" class="form-control"
-                                value="AMMARAMBATH" placeholder="Surname">
+        <!-- Passenger Form -->
+        <form id="passengerForm" method="POST" action="/admin/edit-passengers/<%= booking._id %>">
+          <!-- Hidden fields to identify passenger -->
+          <input type="hidden" name="first_name" id="hiddenFirstName">
+          <input type="hidden" name="last_name" id="hiddenLastName">
 
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Date of Birth</label>
-                            <input autocomplete="off" type="text" class="form-control" name="birth"
-                                value="2008-03-26" placeholder="birth">
+          <div class="row">
+            <div class="col-md-2 mb-3">
+              <label class="form-label">Title</label>
+              <input type="text" name="title" id="paxTitle" class="form-control"
+                placeholder="Title" onkeyup="this.value=this.value.toUpperCase()">
+            </div>
 
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Passport Number</label>
-                            <input autocomplete="off" type="text" name="number"
-                                onkeyup="this.value = this.value.toUpperCase();" class="form-control"
-                                value="-" placeholder="Passport Number">
+            <div class="col-md-2 mb-3">
+              <label class="form-label">Type</label>
+              <select name="type" id="paxType" class="form-control" required>
+                <option value="Adult">Adult</option>
+                <option value="Child">Child</option>
+                <option value="Infant">Infant</option>
+              </select>
+            </div>
 
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Passport Expiry</label>
-                            <input autocomplete="off" type="text" name="expiry" class="form-control"
-                                value="-" placeholder="expiry">
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Given Name</label>
+              <input type="text" name="given_name" id="paxGiven" class="form-control" placeholder="Given Name">
+            </div>
 
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">BOOKING ID</label>
-                            <input autocomplete="off" type="text" class="form-control" name="norder_id"
-                                value="BFL08813" placeholder="BOOKING ID">
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Surname</label>
+              <input type="text" name="surname" id="paxSurname" class="form-control" placeholder="Surname">
+            </div>
 
-                        </div>
-                        <div class="col-md-8 mb-3">
-                            <label class="form-label">Remarks or Reason for Update</label>
-                            <input autocomplete="off" type="text" name="remarks" class="form-control"
-                                value="" placeholder="remarks about update">
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Date of Birth</label>
+              <input type="date" name="dob" id="paxBirth" class="form-control">
+            </div>
 
-                        </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Passport Number</label>
+              <input type="text" name="passport_number" id="paxPassport" class="form-control"
+                onkeyup="this.value=this.value.toUpperCase()" placeholder="Passport Number">
+            </div>
 
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <a href="#" class="btn btn-danger waves-effect waves-light" data-bs-dismiss="modal"
-                        data-dismiss="modal" aria-label="Close">Close</a>
-                    <button type="submit" class="btn btn-primary waves-effect waves-light">Confirm</button>
-                </div>
-            </div><!-- .modal-content -->
-        </div><!-- .modla-dialog -->
-    </div><!-- .modal -->
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Passport Expiry</label>
+              <input type="date" name="passport_expiry" id="paxExpiry" class="form-control">
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Booking ID</label>
+              <input type="text" class="form-control" value="<%= booking.bookingId %>" readonly>
+            </div>
+
+            <div class="col-md-8 mb-3">
+              <label class="form-label">Remarks or Reason for Update</label>
+              <input type="text" name="remarks" id="paxRemarks" class="form-control"
+                placeholder="Remarks about update">
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        <button type="submit" form="passengerForm" class="btn btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Passengers injected dynamically -->
+<script id="passenger-data">
+  const travelers = <%- JSON.stringify(booking.travelers) %>;
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const passengerSelect = document.getElementById("passengerSelect");
+
+    // Populate dropdown
+    travelers.forEach((t, i) => {
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = `${t.first_name} ${t.last_name}`;
+      passengerSelect.appendChild(option);
+    });
+
+    function loadPassenger(index) {
+      const pax = travelers[index];
+      if (!pax) return;
+
+      // Hidden identifiers
+      document.getElementById("hiddenFirstName").value = pax.first_name;
+      document.getElementById("hiddenLastName").value = pax.last_name;
+
+      // Form fields
+      document.getElementById("paxTitle").value = pax.title || "";
+      document.getElementById("paxType").value = pax.type || "Adult";
+      document.getElementById("paxGiven").value = pax.first_name || "";
+      document.getElementById("paxSurname").value = pax.last_name || "";
+      document.getElementById("paxBirth").value = pax.dob ? pax.dob.split("T")[0] : "";
+      document.getElementById("paxPassport").value = pax.passport_number || "";
+      document.getElementById("paxExpiry").value = pax.passport_expiry ? pax.passport_expiry.split("T")[0] : "";
+      document.getElementById("paxRemarks").value = pax.remarks || "";
+    }
+
+    passengerSelect.addEventListener("change", e => loadPassenger(e.target.value));
+
+    if (travelers.length > 0) {
+      passengerSelect.value = 0;
+      loadPassenger(0);
+    }
+  });
+</script>
 
         <!-- select Update Reservation  modal -->
-    <div class="modal fade" tabindex="-1" role="dialog" data-bs-backdrop="static" id="reservations">
+    <!-- <div class="modal fade" tabindex="-1" role="dialog" data-bs-backdrop="static" id="reservations">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1351,9 +1412,128 @@ document.getElementById("cancelForm").addEventListener("submit", async (e) => {
                         data-dismiss="modal" aria-label="Close">Close</a>
                     <button type="submit" class="btn btn-primary waves-effect waves-light">Confirm</button>
                 </div>
-            </div><!-- .modal-content -->
-        </div><!-- .modla-dialog -->
-    </div><!-- .modal -->
+            </div>
+        </div>
+    </div>
+    -->
+
+<!-- Update Reservation Modal -->
+<div class="modal fade" tabindex="-1" id="reservations" data-bs-backdrop="static" role="dialog">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Reservation Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body bg-white">
+        <p class="text-muted mb-3">
+          Please select a passenger from the dropdown below to edit their reservation details.
+        </p>
+
+        <!-- Passenger Selector -->
+        <div class="mb-4">
+          <label class="form-label fw-bold">Select Passenger</label>
+          <select id="reservationPassengerSelect" class="form-select">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <!-- Reservation Form -->
+        <form id="reservationForm" method="POST" action="/admin/edit-reservations/<%= booking._id %>">
+          <!-- Hidden fields to identify passenger -->
+          <input type="hidden" name="first_name" id="resHiddenFirstName">
+          <input type="hidden" name="last_name" id="resHiddenLastName">
+
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label class="form-label">PNR</label>
+              <input type="text" class="form-control" name="pnr" id="resPnr"
+                onkeyup="this.value=this.value.toUpperCase()" placeholder="PNR" value="<%= booking.flight.inventoryDates[0].pnr %>" readonly>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label">E-Ticket Number</label>
+              <input type="text" class="form-control" name="eticket" id="resEticket"
+                onkeyup="this.value=this.value.toUpperCase()" placeholder="E-Ticket Number">
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Seat</label>
+              <input type="text" class="form-control" name="seat" id="resSeat" placeholder="Seat">
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Checkin</label>
+              <input type="text" class="form-control" name="checkin" id="resCheckin" placeholder="Checkin"  value="<%= booking.flight.baggage.adult.checkIn.weightPerPiece %>" readonly>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Cab</label>
+              <input type="text" class="form-control" name="cab" id="resCab" placeholder="Cab"  value="<%= booking.flight.baggage.adult.cabin.weightPerPiece %>" readonly>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Status</label>
+              <input type="text" class="form-control" name="status" id="resStatus" placeholder="PNR Status"  value="<%= booking.flight.isActive? 'Active':'Inactive' %>" readonly>
+            </div>
+
+            <div class="col-md-12 mb-3">
+              <label class="form-label">Remarks or Reason for Update</label>
+              <input type="text" name="remarks" id="resRemarks" class="form-control" placeholder="Remarks">
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        <button type="submit" form="reservationForm" class="btn btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const resSelect = document.getElementById("reservationPassengerSelect");
+
+    // Populate dropdown
+    travelers.forEach((t, i) => {
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = `${t.first_name} ${t.last_name}`;
+      resSelect.appendChild(option);
+    });
+
+    function loadReservation(index) {
+      const pax = travelers[index];
+      if (!pax) return;
+
+      // Hidden identifiers
+      document.getElementById("resHiddenFirstName").value = pax.first_name;
+      document.getElementById("resHiddenLastName").value = pax.last_name;
+
+      // Reservation fields
+      document.getElementById("resEticket").value = pax.eticket_no || "";
+      document.getElementById("resSeat").value = pax.seat_no || "";
+      document.getElementById("resRemarks").value = pax.remarks || "";
+    }
+
+    // On change
+    resSelect.addEventListener("change", e => loadReservation(e.target.value));
+
+    // Load first passenger by default
+    if (travelers.length > 0) {
+      resSelect.value = 0;
+      loadReservation(0);
+    }
+  });
+</script>
 
     <!-- newaddon modal START -->
     <div class="modal fade" id="newaddon" data-bs-backdrop="static" aria-hidden="true">
