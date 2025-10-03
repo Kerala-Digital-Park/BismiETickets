@@ -190,13 +190,12 @@
                         <div class="card-body">
                             <!-- Table head -->
                             <div class="bg-light rounded p-3 d-none d-xxl-block">
-                                <div class="row row-cols-6 g-4">
+                                <div class="row row-cols-5 g-4">
                                     <div class="col "><h6 class="mb-0">Trip Details</h6></div>
                                     <div class="col"><h6 class="mb-0">Trip Date</h6></div>
                                     <div class="col"><h6 class="mb-0">Ref & User</h6></div>
                                     <div class="col"><h6 class="mb-0">Amount</h6></div>
                                     <div class="col"><h6 class="mb-0">ID & Seller</h6></div>
-                                    <div class="col"><h6 class="mb-0">Action</h6></div>
                                 </div>
                             </div>
 
@@ -207,7 +206,7 @@
                               <% } else { %>
                                 <% bookings.forEach((booking) => { %>
                                   <!-- Booking card row -->
-                                  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 row-cols-xxl-6 g-2 g-sm-4 align-items-md-center border-bottom px-2 py-4">
+								                  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 row-cols-xl-5 row-cols-xxl-5 g-2 g-sm-4 align-items-md-center border-bottom px-2 py-4">
                                     <!-- Trip Details -->
                                     <div class="col">
                                       <small class="d-block d-xxl-none">Trip Details</small>
@@ -215,7 +214,9 @@
                                         <div class="avatar avatar-md flex-shrink-0">
                                           <img class="rounded-circle" src="<%= booking.flightData?.stops[0]?.airlineLogo %>" alt="Airline Logo">
                                         </div>
+                                        <a href="/admin/booking-detail/<%= booking._id %>">
                                         <h6 class="mb-0 ms-2"><%= booking.flightData?.fromCity %> ➝ <%= booking.flightData?.toCity %> on <%= booking.flightData?.stops[0]?.airline %></h6>
+                                        </a>
                                       </div>
                                     </div>
                               

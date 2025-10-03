@@ -293,7 +293,7 @@ Page Banner END -->
 																			</td>
 																			<td>
 																				<input type="text" class="form-control oneWayPnr" style="width: 100px;"
-																					placeholder="Enter PNR">
+																					placeholder="Enter PNR" onkeyup="this.value = this.value.toUpperCase();">
 																			</td>
 																			<td>
 																				<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control oneWaySeats" placeholder="Number of seats" required>
@@ -784,7 +784,7 @@ Page Banner END -->
 																			</td>
 																			<td>
 																				<input type="text" class="form-control connectingPnr" style="width: 100px;"
-																					placeholder="Enter PNR">
+																					placeholder="Enter PNR" onkeyup="this.value = this.value.toUpperCase();">
 																			</td>
 																			<td>
 																				<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control connectingSeats" placeholder="Number of seats" required>
@@ -1023,6 +1023,12 @@ Page Banner END -->
 				async function searchFlight(event) {
 					event.preventDefault();
 
+					// Disable button and change text
+					const searchBtn = document.getElementById("searchFlightBtn");
+					const originalText = searchBtn.innerHTML;
+					searchBtn.disabled = true;
+							searchBtn.innerHTML = "Searching flights...";
+
 					const form = document.getElementById("connectingForm");
 					if (!form) {
 						console.error("Form element not found!");
@@ -1066,6 +1072,10 @@ Page Banner END -->
 
 					} catch (error) {
 						console.error("Error fetching or filtering flights:", error);
+					} finally {
+						// Re-enable button and restore original text
+						searchBtn.disabled = false;
+						searchBtn.innerHTML = originalText;
 					}
 				}
 
@@ -1189,33 +1199,33 @@ Page Banner END -->
 						document.getElementById('connectingFromCountry').value = departureAirport?.countryName || "";
 						document.getElementById('connectingToCountry').value = arrivalAirport?.countryName || "";
 
-						if (flights.length > 0) {
-							const checked = flights[0].checkedLuggage?.[0]?.luggageAllowance;
-							const cabin = flights[0].cabinLuggage?.[0]?.luggageAllowance;
+						// if (flights.length > 0) {
+						// 	const checked = flights[0].checkedLuggage?.[0]?.luggageAllowance;
+						// 	const cabin = flights[0].cabinLuggage?.[0]?.luggageAllowance;
 
-							if (checked) {
-								document.getElementById("adultConnectCheckinNumber").value = checked.maxPiece || 0;
-								document.getElementById("adultConnectCheckinWeight").value = checked.maxTotalWeight || 0;
+						// 	if (checked) {
+						// 		document.getElementById("adultConnectCheckinNumber").value = checked.maxPiece || 0;
+						// 		document.getElementById("adultConnectCheckinWeight").value = checked.maxTotalWeight || 0;
 
-								// Assuming same baggage for all pax types — customize if needed:
-								document.getElementById("childConnectCheckinNumber").value = checked.maxPiece || 0;
-								document.getElementById("childConnectCheckinWeight").value = checked.maxTotalWeight || 0;
+						// 		// Assuming same baggage for all pax types — customize if needed:
+						// 		document.getElementById("childConnectCheckinNumber").value = checked.maxPiece || 0;
+						// 		document.getElementById("childConnectCheckinWeight").value = checked.maxTotalWeight || 0;
 
-								document.getElementById("infantConnectCheckinNumber").value = checked.maxPiece || 0;
-								document.getElementById("infantConnectCheckinWeight").value = checked.maxTotalWeight || 0;
-							}
+						// 		document.getElementById("infantConnectCheckinNumber").value = checked.maxPiece || 0;
+						// 		document.getElementById("infantConnectCheckinWeight").value = checked.maxTotalWeight || 0;
+						// 	}
 
-							if (cabin) {
-								document.getElementById("adultConnectCabinNumber").value = cabin.maxPiece || 0;
-								document.getElementById("adultConnectCabinWeight").value = cabin.maxWeightPerPiece || 0;
+						// 	if (cabin) {
+						// 		document.getElementById("adultConnectCabinNumber").value = cabin.maxPiece || 0;
+						// 		document.getElementById("adultConnectCabinWeight").value = cabin.maxWeightPerPiece || 0;
 
-								document.getElementById("childConnectCabinNumber").value = cabin.maxPiece || 0;
-								document.getElementById("childConnectCabinWeight").value = cabin.maxWeightPerPiece || 0;
+						// 		document.getElementById("childConnectCabinNumber").value = cabin.maxPiece || 0;
+						// 		document.getElementById("childConnectCabinWeight").value = cabin.maxWeightPerPiece || 0;
 
-								document.getElementById("infantConnectCabinNumber").value = cabin.maxPiece || 0;
-								document.getElementById("infantConnectCabinWeight").value = cabin.maxWeightPerPiece || 0;
-							}
-						}
+						// 		document.getElementById("infantConnectCabinNumber").value = cabin.maxPiece || 0;
+						// 		document.getElementById("infantConnectCabinWeight").value = cabin.maxWeightPerPiece || 0;
+						// 	}
+						// }
 
 					});
 				}
@@ -1227,6 +1237,12 @@ Page Banner END -->
 
 					async function searchOneWayFlight(event) {
 						event.preventDefault();
+
+						// Disable button and change text
+						const searchBtn = document.getElementById("searchOneWayFlightBtn");
+						const originalText = searchBtn.innerHTML;
+						searchBtn.disabled = true;
+						searchBtn.innerHTML = "Searching flights...";
 
 						const form = document.getElementById("onewayForm");
 						if (!form) {
@@ -1267,6 +1283,10 @@ Page Banner END -->
 
 						} catch (error) {
 							console.error("Error fetching or filtering flights:", error);
+						} finally {
+							// Re-enable button and restore original text
+							searchBtn.disabled = false;
+							searchBtn.innerHTML = originalText;
 						}
 					}
 
@@ -1341,32 +1361,32 @@ Page Banner END -->
 								document.getElementById('oneWayArrivalCity').value = leg.arrivalAirport?.cityName || "";
 							});
 
-							if (flights.length > 0) {
-								const checked = flights[0].checkedLuggage?.[0]?.luggageAllowance;
-								const cabin = flights[0].cabinLuggage?.[0]?.luggageAllowance;
+							// if (flights.length > 0) {
+							// 	const checked = flights[0].checkedLuggage?.[0]?.luggageAllowance;
+							// 	const cabin = flights[0].cabinLuggage?.[0]?.luggageAllowance;
 
-								if (checked) {
-									document.getElementById("adultCheckinNumber").value = checked.maxPiece || "";
-									document.getElementById("adultCheckinWeight").value = checked.maxWeightPerPiece || "";
+							// 	if (checked) {
+							// 		document.getElementById("adultCheckinNumber").value = checked.maxPiece || "";
+							// 		document.getElementById("adultCheckinWeight").value = checked.maxWeightPerPiece || "";
 
-									document.getElementById("childCheckinNumber").value = checked.maxPiece || "";
-									document.getElementById("childCheckinWeight").value = checked.maxWeightPerPiece || "";
+							// 		document.getElementById("childCheckinNumber").value = checked.maxPiece || "";
+							// 		document.getElementById("childCheckinWeight").value = checked.maxWeightPerPiece || "";
 
-									document.getElementById("infantCheckinNumber").value = checked.maxPiece || "";
-									document.getElementById("infantCheckinWeight").value = checked.maxWeightPerPiece || "";
-								}
+							// 		document.getElementById("infantCheckinNumber").value = checked.maxPiece || "";
+							// 		document.getElementById("infantCheckinWeight").value = checked.maxWeightPerPiece || "";
+							// 	}
 
-								if (cabin) {
-									document.getElementById("adultCabinNumber").value = cabin.maxPiece || 0;
-									document.getElementById("adultCabinWeight").value = cabin.maxWeightPerPiece || 0;
+							// 	if (cabin) {
+							// 		document.getElementById("adultCabinNumber").value = cabin.maxPiece || 0;
+							// 		document.getElementById("adultCabinWeight").value = cabin.maxWeightPerPiece || 0;
 
-									document.getElementById("childCabinNumber").value = cabin.maxPiece || 0;
-									document.getElementById("childCabinWeight").value = cabin.maxWeightPerPiece || 0;
+							// 		document.getElementById("childCabinNumber").value = cabin.maxPiece || 0;
+							// 		document.getElementById("childCabinWeight").value = cabin.maxWeightPerPiece || 0;
 
-									document.getElementById("infantCabinNumber").value = cabin.maxPiece || 0;
-									document.getElementById("infantCabinWeight").value = cabin.maxWeightPerPiece || 0;
-								}
-							}
+							// 		document.getElementById("infantCabinNumber").value = cabin.maxPiece || 0;
+							// 		document.getElementById("infantCabinWeight").value = cabin.maxWeightPerPiece || 0;
+							// 	}
+							// }
 
 						});
 					}

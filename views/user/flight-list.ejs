@@ -644,8 +644,15 @@
                             <!-- Price START -->
                             <div class="col-md-3 text-md-end">
                               <!-- Price -->
-                              <h4>₹ <%= flight.inventoryDates[0].fare.adults %>
-                              </h4>
+                              <div class="d-flex align-items-center justify-content-md-end mb-2">
+                                <h4>₹ <%= flight.inventoryDates[0].fare.adults %></h4>
+                                <button type="button" class="btn btn-sm btn-outline-info ms-2 price-calc-btn" 
+                                  data-flight-id="<%= flight._id %>"
+                                  data-adult-fare="<%= flight.inventoryDates[0].fare.adults %>"
+                                  data-infant-fare="<%= flight.inventoryDates[0].fare.infants %>">
+                                  <i class="bi bi-info-circle"></i>
+                                </button>
+                              </div>
                               <button class="btn btn-dark mb-0 mb-sm-2 book-now-btn"
                                 onclick="bookNow('<%= flight._id%>')">
                                 Select
@@ -703,6 +710,55 @@
       </section>
 
       <script>
+        // Initialize tooltips and update when passenger counts change
+        document.addEventListener("DOMContentLoaded", () => {
+          updatePriceTooltips();
+          
+          // Add event listeners to passenger count buttons
+          document.getElementById("decreaseAdults").addEventListener("click", updatePriceTooltips);
+          document.getElementById("increaseAdults").addEventListener("click", updatePriceTooltips);
+          document.getElementById("decreaseChildren").addEventListener("click", updatePriceTooltips);
+          document.getElementById("increaseChildren").addEventListener("click", updatePriceTooltips);
+          document.getElementById("decreaseInfants").addEventListener("click", updatePriceTooltips);
+          document.getElementById("increaseInfants").addEventListener("click", updatePriceTooltips);
+        });
+
+        function updatePriceTooltips() {
+          const adults = parseInt(document.getElementById("adults").textContent) || 0;
+          const children = parseInt(document.getElementById("children").textContent) || 0;
+          const infants = parseInt(document.getElementById("infants").textContent) || 0;
+          
+          document.querySelectorAll('.price-calc-btn').forEach(button => {
+            const adultFare = parseFloat(button.dataset.adultFare);
+            const infantFare = parseFloat(button.dataset.infantFare);
+            
+            // Calculate total price
+            const adultTotal = adults * adultFare;
+            const childTotal = children * adultFare;
+            const infantTotal = infants * infantFare;
+            const totalPrice = adultTotal + childTotal + infantTotal;
+            
+            // Create detailed tooltip content
+            const tooltipContent = `₹${totalPrice} Total` + "<br>" +
+              `Adults (${adults}): ₹${adultFare} × ${adults} = ₹${adultTotal}` + "<br>" +
+              `Children (${children}): ₹${adultFare} × ${children} = ₹${childTotal}` + "<br>" +
+              `Infants (${infants}): ₹${infantFare} × ${infants} = ₹${infantTotal}`;
+            
+            // Update the title attribute
+            button.setAttribute('title', tooltipContent);
+            
+            // Reinitialize tooltip for this button
+            const tooltipInstance = bootstrap.Tooltip.getInstance(button);
+            if (tooltipInstance) {
+              tooltipInstance.dispose();
+            }
+            new bootstrap.Tooltip(button, {
+              placement: 'top',
+              html: true
+            });
+          });
+        }
+
         async function bookNow(id) {
           console.log("Booking flight with ID:", id);
 

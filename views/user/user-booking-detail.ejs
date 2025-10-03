@@ -551,7 +551,7 @@
             <div class="row g-3">
               <div class="col-md-3">
                 <label class="form-label">PNR</label>
-                <input type="text" class="form-control" id="modal-pnr">
+                <input type="text" class="form-control" id="modal-pnr" onkeyup="this.value = this.value.toUpperCase();">
               </div>
               <div class="col-md-3">
                 <label class="form-label">E-Ticket Number</label>
@@ -1221,7 +1221,7 @@
             </div>              
             <div class="col-md-3">
               <label class="form-label">PNR *</label>
-              <input type="text" class="form-control" value="<%= bookings.flight.inventoryDates[0].pnr %>">
+              <input type="text" class="form-control" value="<%= bookings.flight.inventoryDates[0].pnr %>" onkeyup="this.value = this.value.toUpperCase();">
             </div>
             <div class="col-md-2">
               <label class="form-label">Return *</label>

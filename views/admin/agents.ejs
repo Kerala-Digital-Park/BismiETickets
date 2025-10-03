@@ -61,10 +61,9 @@
 												<table class="table">
 													<thead>
 														<tr>
-															<th>Seller Details</th>
+															<th>Seller</th>
 															<th>Balance</th>
-															<th>Mobile & Kyc</th>
-															<th>Subscription</th>
+															<th>Mobile & Details</th>
 															<th>Lists & Bookings</th>
 															<th>Status</th>
 															<th>Actions</th>
@@ -90,6 +89,20 @@
 																						<%= user.name %>
 																					</h6>
 																				</a>
+																				
+																			</div>
+																		</div>
+																	</td>
+																	<td>
+																		<h5 class="mb-0 fw-3">
+																	    	₹ <%= user.walletBalance ? user.walletBalance.toLocaleString('en-IN') : 0 %>
+  																		</h5>
+																	</td>
+																	
+																		<td>
+																			<div class="col">
+																				<h6 class="mb-0 fw-normal">
+																					<%= user.mobile %></h6>
 																				<ul class="nav nav-divider small">
 																					<li class="nav-item">
 																						<%= user.email %>
@@ -99,43 +112,8 @@
 																					</li>
 																				</ul>
 																			</div>
-																		</div>
-																	</td>
-																	<td>
-																		<h5 class="mb-0 fw-3">
-																	    	₹ <%= user.walletBalance ? user.walletBalance.toLocaleString('en-IN') : 0 %>
-  																		</h5>
-																	</td>
-																	<% let kycClass; if(user.kyc==="Completed" ){
-																		kycClass="text-success" ; } else
-																		if(user.kyc==="Initial" ){
-																		kycClass="text-warning" ; } else{
-																		kycClass="text-danger" } %>
-																		<td>
-																			<div class="col">
-																				<h6 class="mb-0 fw-normal">
-																					<%= user.mobile %></small>
-																						<h6 class="mb-0 fw-normal">Kyc:
-																							<span class="<%= kycClass %>">
-																								<%= user.kyc %>
-																							</span></h6>
-																			</div>
 																		</td>
-																		<td>
-																			<div class="col">
-																				<h6 class="mb-0 fw-normal">
-																					<%= user.subscription ?
-																						user.subscription.subscription
-																						: 'N/A' %></small>
-																						<h6 class="mb-0 fw-normal">
-																							Validity: <%= new
-																								Date(user.expiryDate).toLocaleDateString('en-GB',
-																								{ day: '2-digit' ,
-																								month: 'short' ,
-																								year: 'numeric' }) %>
-																						</h6>
-																			</div>
-																		</td>
+																		
 																		<% let booking; if(user.totalBookings> 1){
 																			booking= "Bookings"
 																			}
